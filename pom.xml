@@ -49,7 +49,8 @@
             <groupId>ms.uk.eclipse</groupId>
             <artifactId>Core</artifactId>
             <version>1.0-SNAPSHOT</version>
-            <scope>provided</scope>
+            <scope>system</scope>
+            <systemPath>${basedir}/lib/core.jar</systemPath>
         </dependency>
     </dependencies>
     <build>
