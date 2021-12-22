@@ -1,0 +1,91 @@
+package ms.uk.eclipse.managers;
+
+import land.strafe.api.collection.GlueList;
+import land.strafe.api.config.FileConfiguration;
+import ms.uk.eclipse.PracticePlugin;
+import ms.uk.eclipse.arena.Arena;
+import ms.uk.eclipse.gametype.Gametype;
+import ms.uk.eclipse.queue.Queuetype;
+import ms.uk.eclipse.util.SaveableData;
+
+public class ArenaManager implements SaveableData {
+	final FileConfiguration config = new FileConfiguration("arenas.yml", "plugins/Practice");
+	final GametypeManager gametypeManager = PracticePlugin.INSTANCE.getGametypeManager();
+	final QueuetypeManager queuetypeManager = PracticePlugin.INSTANCE.getQueuetypeManager();
+	final GlueList<Arena> list = new GlueList<>();
+
+	public void registerArena(Arena arena) {
+		list.add(arena);
+	}
+
+	public void remove(Arena arena) {
+		list.remove(arena);
+
+		for (Gametype gametype : gametypeManager.getGametypes()) {
+			gametype.getArenas().remove(arena);
+		}
+
+		for (Queuetype queuetype : queuetypeManager.getQueuetypes()) {
+			queuetype.getArenas().remove(arena);
+		}
+	}
+
+	public boolean contains(Arena arena) {
+		for (int i = 0; i < list.size(); i++) {
+			Arena a = list.get(i);
+			if (a.equals(arena)) {
+				return true;
+			}
+		}
+
+		return false;
+	}
+
+	public FileConfiguration getConfig() {
+		return config;
+	}
+
+	public GlueList<Arena> getArenas() {
+		return list;
+	}
+
+	public Arena getArenaByName(String string) {
+		for (int i = 0; i < list.size(); i++) {
+			Arena a = list.get(i);
+			if (a.getName().equalsIgnoreCase(string)) {
+				return a;
+			}
+		}
+
+		return null;
+	}
+
+	@Override
+	public void save() {
+
+		for (Arena arena : getArenas()) {
+			arena.save();
+		}
+
+		config.save();
+	}
+
+	@Override
+	public void load() {
+		try {
+			for (String key : getConfig().getConfigurationSection("Arena.").getKeys(false)) {
+
+				if (key == null) {
+					continue;
+				}
+
+				Arena arena = new Arena(key);
+
+				arena.load();
+
+				registerArena(arena);
+			}
+		} catch (Exception e) {
+		}
+	}
+}

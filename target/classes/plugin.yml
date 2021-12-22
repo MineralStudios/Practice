@@ -1,0 +1,6 @@
+name: StrafePractice
+version: .dev1
+author: OpaqueEclipse
+main: ms.uk.eclipse.PracticePlugin
+description: Strafe Practice Plugin!
+depend: [StrafeCore]
