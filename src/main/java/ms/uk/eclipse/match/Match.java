@@ -340,6 +340,10 @@ public class Match {
 				}
 			}
 		}
+
+		for (Location location : buildLog) {
+			location.getBlock().setType(Material.AIR);
+		}
 	}
 
 	public void setInventoryStats(Profile p, int health, int amountOfPots) {

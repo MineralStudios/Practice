@@ -8,13 +8,6 @@
     <packaging>jar</packaging>
     <name>Practice</name>
 
-    <parent>
-        <groupId>ms.uk.eclipse</groupId>
-        <artifactId>parent</artifactId>
-        <version>dev-SNAPSHOT</version>
-        <relativePath>../pom.xml</relativePath>
-    </parent>
-
     <reporting>
         <plugins>
             <plugin>
