@@ -56,7 +56,7 @@ public class MovementListener implements Listener {
         if (player.getMatch().getData().getDeadlyWater()) {
             Material type = player.bukkit().getLocation().getBlock().getType();
             if (type == Material.WATER || type == Material.STATIONARY_WATER) {
-                player.bukkit().setHealth(0.0D);
+                player.getMatch().end(player);
             }
         }
     }

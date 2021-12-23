@@ -1,7 +1,5 @@
 package ms.uk.eclipse.util;
 
-import net.jafama.FastMath;
-
 public class MathUtil {
 	private static final int DEFAULT_K_FACTOR = 25;
 	private static final int WIN = 1;
@@ -37,7 +35,7 @@ public class MathUtil {
 	}
 
 	private static double getExpectedScore(int rating, int opponentRating) {
-		return 1 / (1 + FastMath.pow(10, ((double) (opponentRating - rating) / 400)));
+		return 1 / (1 + Math.pow(10, ((double) (opponentRating - rating) / 400)));
 	}
 
 	public static int roundUp(int val, int multiple) {

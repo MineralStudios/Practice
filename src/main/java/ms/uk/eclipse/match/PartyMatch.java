@@ -130,7 +130,6 @@ public class PartyMatch extends Match {
 				int attackerHealth = (int) a.bukkit().getHealth();
 				a.heal();
 				a.removePotionEffects();
-				a.bukkit().setFireTicks(0);
 				int attackerAmountOfPots = a.getNumber(Material.POTION, (short) 16421)
 						+ a.getNumber(Material.MUSHROOM_SOUP, new ItemStack(Material.MUSHROOM_SOUP).getDurability());
 				setInventoryStats(a, attackerHealth, attackerAmountOfPots);
@@ -149,14 +148,17 @@ public class PartyMatch extends Match {
 
 			matchManager.remove(this);
 			victim.message(new ChatMessage(CC.RED + "You lost", CC.PRIMARY, false));
-			victim.bukkit().remove();
 			new Scoreboard(victim).setBoard();
 
 			Bukkit.getServer().getScheduler().runTaskLater(PracticePlugin.INSTANCE, new Runnable() {
 				public void run() {
-					victim.bukkit().getHandle().playerConnection
-							.a(new PacketPlayInClientCommand(EnumClientCommand.PERFORM_RESPAWN));
+					if (victim.bukkit().isDead()) {
+						victim.bukkit().getHandle().playerConnection
+								.a(new PacketPlayInClientCommand(EnumClientCommand.PERFORM_RESPAWN));
+					}
 
+					victim.heal();
+					victim.removePotionEffects();
 					victim.teleportToLobby();
 					victim.setInventoryForLobby();
 				}
@@ -186,13 +188,16 @@ public class PartyMatch extends Match {
 		remaining.remove(victim);
 		participants.remove(victim);
 
-		victim.bukkit().remove();
 		Bukkit.getServer().getScheduler().runTaskLater(PracticePlugin.INSTANCE, new Runnable() {
 
 			public void run() {
-				victim.bukkit().getHandle().playerConnection
-						.a(new PacketPlayInClientCommand(EnumClientCommand.PERFORM_RESPAWN));
+				if (victim.bukkit().isDead()) {
+					victim.bukkit().getHandle().playerConnection
+							.a(new PacketPlayInClientCommand(EnumClientCommand.PERFORM_RESPAWN));
+				}
 
+				victim.heal();
+				victim.removePotionEffects();
 				victim.spectate(attackerParty.get(0));
 				new Scoreboard(victim).setBoard();
 			}

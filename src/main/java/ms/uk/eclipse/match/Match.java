@@ -232,7 +232,7 @@ public class Match {
 		int attackerHealth = (int) attacker.bukkit().getHealth();
 		attacker.heal();
 		attacker.removePotionEffects();
-		attacker.bukkit().setFireTicks(0);
+		attacker.bukkit().hidePlayer(victim.bukkit());
 
 		String rankedMessage = null;
 
@@ -301,13 +301,16 @@ public class Match {
 		attacker.removeFromMatch();
 		victim.removeFromMatch();
 		matchManager.remove(this);
-		victim.bukkit().remove();
 
 		Bukkit.getServer().getScheduler().runTaskLater(PracticePlugin.INSTANCE, new Runnable() {
 			public void run() {
-				victim.bukkit().getHandle().playerConnection
-						.a(new PacketPlayInClientCommand(EnumClientCommand.PERFORM_RESPAWN));
+				if (victim.bukkit().isDead()) {
+					victim.bukkit().getHandle().playerConnection
+							.a(new PacketPlayInClientCommand(EnumClientCommand.PERFORM_RESPAWN));
+				}
 
+				victim.heal();
+				victim.removePotionEffects();
 				victim.teleportToLobby();
 				victim.setInventoryForLobby();
 			}

@@ -45,8 +45,14 @@ public class DamageListener implements Listener {
 			return;
 		}
 
+		if (e.getFinalDamage() >= player.getHealth()) {
+			victim.getMatch().end(victim);
+			e.setCancelled(true);
+			return;
+		}
+
 		if (e.getCause() == DamageCause.VOID) {
-			player.setHealth(0.0D);
+			victim.getMatch().end(victim);
 			e.setCancelled(true);
 			return;
 		}

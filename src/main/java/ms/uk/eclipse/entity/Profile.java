@@ -247,6 +247,7 @@ public class Profile {
 		this.player.setFoodLevel(20);
 		this.player.setHealth(20);
 		this.player.setSaturation(20);
+		this.player.setFireTicks(0);
 	}
 
 	public void setMatch(Match match) {
