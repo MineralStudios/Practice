@@ -337,6 +337,10 @@ public class Match {
 		for (Item item : m.getArena().getLocation1().getWorld().getEntitiesByClass(Item.class)) {
 			EntityHuman lastHolder = ((EntityItem) ((CraftItem) item).getHandle()).lastHolder;
 
+			if (lastHolder == null) {
+				continue;
+			}
+
 			for (Profile participant : participants) {
 				if (lastHolder.getBukkitEntity().getUniqueId() == participant.getUUID()) {
 					item.remove();
