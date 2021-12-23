@@ -5,6 +5,7 @@ import java.util.Iterator;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.Material;
+import org.bukkit.craftbukkit.v1_8_R3.CraftWorld;
 import org.bukkit.craftbukkit.v1_8_R3.entity.CraftItem;
 import org.bukkit.entity.Item;
 import org.bukkit.inventory.ItemStack;
@@ -13,6 +14,7 @@ import org.bukkit.scoreboard.Team;
 import ms.uk.eclipse.PracticePlugin;
 import ms.uk.eclipse.core.utils.message.CC;
 import ms.uk.eclipse.core.utils.message.ChatMessage;
+import ms.uk.eclipse.core.utils.message.ErrorMessage;
 import ms.uk.eclipse.entity.Profile;
 import ms.uk.eclipse.party.Party;
 import ms.uk.eclipse.scoreboard.Scoreboard;
@@ -22,6 +24,7 @@ import net.minecraft.server.v1_8_R3.EntityHuman;
 import net.minecraft.server.v1_8_R3.EntityItem;
 import net.minecraft.server.v1_8_R3.PacketPlayInClientCommand;
 import net.minecraft.server.v1_8_R3.PacketPlayInClientCommand.EnumClientCommand;
+import net.minecraft.server.v1_8_R3.World;
 
 public class PartyMatch extends Match {
 	public ProfileList team1RemainingPlayers;
@@ -50,7 +53,9 @@ public class PartyMatch extends Match {
 	@Override
 	public void start() {
 
-		if (arenaManager.getArenas().size() == 0) {
+		if (m.getArena() == null) {
+			playerManager.broadcast(participants, new ErrorMessage("An arena could not be found"));
+			end(player1);
 			return;
 		}
 
@@ -59,6 +64,10 @@ public class PartyMatch extends Match {
 		Location location2 = m.getArena().getLocation2();
 		location1.setDirection(m.getArena().getLocation1EyeVector());
 		location2.setDirection(m.getArena().getLocation2EyeVector());
+
+		World world = ((CraftWorld) location1.getWorld()).getHandle();
+		world.getWorldData().f(false);
+		world.getWorldData().setStorm(false);
 
 		org.bukkit.scoreboard.Scoreboard team1sb = getDisplayNameBoard(team1RemainingPlayers, team2RemainingPlayers);
 		org.bukkit.scoreboard.Scoreboard team2sb = getDisplayNameBoard(team2RemainingPlayers, team1RemainingPlayers);

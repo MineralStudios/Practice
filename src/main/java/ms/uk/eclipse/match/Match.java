@@ -6,6 +6,7 @@ import java.util.concurrent.ConcurrentLinkedDeque;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.Material;
+import org.bukkit.craftbukkit.v1_8_R3.CraftWorld;
 import org.bukkit.craftbukkit.v1_8_R3.entity.CraftItem;
 import org.bukkit.entity.Item;
 import org.bukkit.inventory.ItemStack;
@@ -43,6 +44,7 @@ import net.minecraft.server.v1_8_R3.EntityHuman;
 import net.minecraft.server.v1_8_R3.EntityItem;
 import net.minecraft.server.v1_8_R3.PacketPlayInClientCommand;
 import net.minecraft.server.v1_8_R3.PacketPlayInClientCommand.EnumClientCommand;
+import net.minecraft.server.v1_8_R3.World;
 
 public class Match {
 	ProfileList participants = new ProfileList();
@@ -204,6 +206,9 @@ public class Match {
 		Location location2 = m.getArena().getLocation2();
 		location1.setDirection(m.getArena().getLocation1EyeVector());
 		location2.setDirection(m.getArena().getLocation2EyeVector());
+		World world = ((CraftWorld) location1.getWorld()).getHandle();
+		world.getWorldData().f(false);
+		world.getWorldData().setStorm(false);
 		handleFollowers();
 		prepareForMatch(player1);
 		prepareForMatch(player2);

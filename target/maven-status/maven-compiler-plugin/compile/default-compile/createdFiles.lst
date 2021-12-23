@@ -106,6 +106,7 @@ ms/uk/eclipse/party/Party.class
 ms/uk/eclipse/listeners/DamageListener.class
 ms/uk/eclipse/inventory/menus/OtherPartiesMenu.class
 ms/uk/eclipse/inventory/menus/HitDelayMenu$2.class
+ms/uk/eclipse/listeners/DeathListener$1.class
 ms/uk/eclipse/listeners/InteractListener$1.class
 ms/uk/eclipse/scoreboard/Scoreboard$1.class
 ms/uk/eclipse/commands/stats/PotsCommand.class
