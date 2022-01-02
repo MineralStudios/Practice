@@ -40,13 +40,6 @@ public class MathUtil {
 
 	public static int roundUp(int val, int multiple) {
 		int mod = val % multiple;
-
-		if (mod == 0) {
-			return val;
-		}
-
-		val += (multiple - mod);
-
-		return val;
+		return mod == 0 ? val : val + multiple - mod;
 	}
 }

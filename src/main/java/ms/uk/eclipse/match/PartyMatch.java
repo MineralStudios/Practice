@@ -149,7 +149,7 @@ public class PartyMatch extends Match {
 				Bukkit.getServer().getScheduler().runTaskLater(PracticePlugin.INSTANCE, new Runnable() {
 					public void run() {
 						a.teleportToLobby();
-						a.setInventoryForLobby();
+						a.setInventoryForParty();
 					}
 				}, 40);
 
@@ -169,7 +169,7 @@ public class PartyMatch extends Match {
 					victim.heal();
 					victim.removePotionEffects();
 					victim.teleportToLobby();
-					victim.setInventoryForLobby();
+					victim.setInventoryForParty();
 				}
 			}, 1);
 

@@ -72,9 +72,13 @@ public class Queuetype implements SaveableData {
 			}
 		}
 
-		if (!arenaIterator.hasNext() || arena == null) {
+		if (!arenaIterator.hasNext()) {
 			arenaIterator = arenas.object2BooleanEntrySet().fastIterator();
 			return nextArena(g);
+		}
+
+		if (arena == null) {
+			return null;
 		}
 
 		if (g.getArenas().keySet().contains(arena)) {

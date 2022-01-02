@@ -8,10 +8,8 @@ import org.bukkit.GameMode;
 import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.configuration.ConfigurationSection;
-import org.bukkit.craftbukkit.v1_8_R3.entity.CraftLivingEntity;
 import org.bukkit.craftbukkit.v1_8_R3.entity.CraftPlayer;
 import org.bukkit.entity.ArmorStand;
-import org.bukkit.entity.Horse;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.potion.PotionEffect;
 import org.bukkit.scheduler.BukkitRunnable;
@@ -58,10 +56,10 @@ import ms.uk.eclipse.queue.Queuetype;
 import ms.uk.eclipse.scoreboard.Scoreboard;
 import ms.uk.eclipse.tasks.MenuTask;
 import ms.uk.eclipse.tournaments.Tournament;
+import ms.uk.eclipse.util.PearlCooldown;
 import ms.uk.eclipse.util.ProfileList;
 import ms.uk.eclipse.util.messages.ErrorMessages;
 import net.md_5.bungee.api.chat.ClickEvent;
-import net.minecraft.server.v1_8_R3.EntityLiving;
 
 public class Profile {
 	final CraftPlayer player;
@@ -88,7 +86,6 @@ public class Profile {
 	Boolean requests = true;
 	Profile duelReciever;
 	boolean partyOpenCooldown = false;
-	Integer pearlCooldown = 0;
 	PlayerStatus status = PlayerStatus.IN_LOBBY;
 	boolean inMatchCountdown = false;
 	Object2ObjectOpenHashMap<QueueEntry, ItemStack[]> customKits = new Object2ObjectOpenHashMap<>();
@@ -98,6 +95,7 @@ public class Profile {
 	Object2IntOpenHashMap<Gametype> eloMap = new Object2IntOpenHashMap<>();
 	boolean inventoryClickCancelled = false;
 	Tournament tournament;
+	PearlCooldown pearlCooldown = new PearlCooldown(this);
 	Tournament spectatingTournament;
 
 	public Profile(org.bukkit.entity.Player player) {
@@ -105,6 +103,7 @@ public class Profile {
 		this.matchData = new MatchData();
 		this.uuid = player.getUniqueId();
 		this.inventory = new PlayerInventory(player.getInventory());
+		pearlCooldown.start();
 	}
 
 	public void setPreviousSubmitAction(SubmitAction submitAction) {
@@ -112,7 +111,13 @@ public class Profile {
 	}
 
 	public void saveElo(Gametype g) {
-		eloManager.updateElo(this, g.getName(), eloMap.getOrDefault(g, 1000));
+		Integer elo = eloMap.get(g);
+
+		if (elo == null) {
+			return;
+		}
+
+		eloManager.updateElo(this, g.getName(), elo);
 	}
 
 	public CraftPlayer bukkit() {
@@ -127,7 +132,7 @@ public class Profile {
 		return openMenu;
 	}
 
-	public Integer getPearlCooldown() {
+	public PearlCooldown getPearlCooldown() {
 		return pearlCooldown;
 	}
 
@@ -897,8 +902,7 @@ public class Profile {
 	}
 
 	public void setPearlCooldown(int i) {
-		pearlCooldown = i;
-		bukkit().setLevel(i);
+		pearlCooldown.setTimeRemaining(i);
 	}
 
 	public void setScoreboard(Scoreboard scoreboard) {

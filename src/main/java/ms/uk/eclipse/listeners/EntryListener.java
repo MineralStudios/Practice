@@ -25,7 +25,6 @@ public class EntryListener implements Listener {
 	@EventHandler
 	public void onPlayerJoin(PlayerJoinEvent event) {
 		event.setJoinMessage(null);
-		event.getPlayer().setWalkSpeed(0.2F);
 		Profile player = playerManager.getProfile(event.getPlayer());
 		player.bukkit().setGameMode(GameMode.SURVIVAL);
 		player.heal();

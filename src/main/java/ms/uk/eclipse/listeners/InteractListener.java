@@ -99,15 +99,15 @@ public class InteractListener implements Listener {
 					return;
 				}
 
-				if (player.getPearlCooldown() > 0) {
+				if (player.getPearlCooldown().isActive()) {
 					e.setCancelled(true);
-					player.message(new ChatMessage("You can pearl again in " + player.getPearlCooldown() + " seconds",
+					player.message(new ChatMessage(
+							"You can pearl again in " + player.getPearlCooldown().getTimeRemaining() + " seconds",
 							CC.PRIMARY, false).highlightText(CC.ACCENT, " " + player.getPearlCooldown()));
 					return;
 				}
 
-				PearlCooldown p = new PearlCooldown(player.getMatch().getData().getPearlCooldown(), player);
-				p.start();
+				player.getPearlCooldown().setTimeRemaining(player.getMatch().getData().getPearlCooldown());
 				e.setCancelled(false);
 
 				return;

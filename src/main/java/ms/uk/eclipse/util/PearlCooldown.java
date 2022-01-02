@@ -1,37 +1,45 @@
 package ms.uk.eclipse.util;
 
 import org.bukkit.Bukkit;
-import org.bukkit.scheduler.BukkitScheduler;
 
 import ms.uk.eclipse.PracticePlugin;
 import ms.uk.eclipse.entity.Profile;
 
 public class PearlCooldown {
-	int taskID;
-	Profile player;
+	final Profile profile;
+	Integer time = 0;
 
-	public PearlCooldown(int seconds, Profile player) {
-		player.setPearlCooldown(seconds);
-		this.player = player;
+	public PearlCooldown(Profile profile) {
+		this.profile = profile;
 	}
 
 	public void start() {
-		BukkitScheduler scheduler = Bukkit.getServer().getScheduler();
-		taskID = scheduler.scheduleSyncRepeatingTask(PracticePlugin.INSTANCE, new Runnable() {
+		Bukkit.getServer().getScheduler().scheduleSyncRepeatingTask(PracticePlugin.INSTANCE, new Runnable() {
 			@Override
 			public void run() {
+				if (time > 0) {
+					time--;
+					profile.bukkit().setLevel(time);
 
-				if (player.getPearlCooldown() == 0) {
-					cancel();
-					return;
+					if (time <= 0) {
+						profile.bukkit().setLevel(0);
+					}
 				}
-
-				player.setPearlCooldown(player.getPearlCooldown() - 1);
 			}
 		}, 0L, 20L);
 	}
 
-	public void cancel() {
-		Bukkit.getScheduler().cancelTask(taskID);
+	public int getTimeRemaining() {
+		return time;
 	}
+
+	public boolean isActive() {
+		return time > 0;
+	}
+
+	public void setTimeRemaining(int time) {
+		this.time = time;
+		profile.bukkit().setLevel(time);
+	}
+
 }
