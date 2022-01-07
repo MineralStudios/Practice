@@ -1,7 +1,5 @@
 package ms.uk.eclipse.listeners;
 
-import java.util.Iterator;
-
 import org.bukkit.GameMode;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
@@ -51,12 +49,9 @@ public class EntryListener implements Listener {
 
 			LeftMessage m = new LeftMessage(victim.getName(), "party");
 
-			Iterator<Profile> iter = p.getPartyMembers().iterator();
-
 			if (p.getPartyLeader().equals(victim)) {
-				while (iter.hasNext()) {
-					Profile plr = iter.next();
-					iter.remove();
+				while (!p.getPartyMembers().isEmpty()) {
+					Profile plr = p.getPartyMembers().removeFirst();
 					plr.removeFromParty();
 					plr.message(m);
 				}
@@ -66,8 +61,7 @@ public class EntryListener implements Listener {
 
 				victim.removeFromParty();
 
-				while (iter.hasNext()) {
-					Profile plr = iter.next();
+				for (Profile plr : p.getPartyMembers()) {
 					plr.message(m);
 				}
 			}

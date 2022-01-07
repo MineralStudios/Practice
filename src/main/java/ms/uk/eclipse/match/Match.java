@@ -303,7 +303,6 @@ public class Match {
 		victim.setPearlCooldown(0);
 		new Scoreboard(player1).setBoard();
 		new Scoreboard(player2).setBoard();
-		attacker.removeFromMatch();
 		victim.removeFromMatch();
 		matchManager.remove(this);
 
@@ -324,6 +323,7 @@ public class Match {
 		Bukkit.getServer().getScheduler().runTaskLater(PracticePlugin.INSTANCE, new Runnable() {
 			public void run() {
 
+				attacker.removeFromMatch();
 				attacker.teleportToLobby();
 				attacker.setInventoryForLobby();
 

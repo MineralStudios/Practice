@@ -33,7 +33,7 @@ public class SpectateMenu extends Menu {
                     new ChatMessage(m.getPlayer1().getName() + " vs " + m.getPlayer2().getName(), CC.SECONDARY, false)
                             .toString())
                     .build();
-            add(skull, new CommandTask("spec " + m.getPlayer1().getName()));
+            add(skull, new CommandTask("spec " + m.getParticipants().get(0).getName()));
         }
     }
 }

@@ -29,7 +29,11 @@ public class DeathListener implements Listener {
                     victim.heal();
                     victim.removePotionEffects();
                     victim.teleportToLobby();
-                    victim.setInventoryForLobby();
+                    if (victim.isInParty()) {
+                        victim.setInventoryForParty();
+                    } else {
+                        victim.setInventoryForLobby();
+                    }
                 }
             }, 1);
             return;

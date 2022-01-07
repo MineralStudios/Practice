@@ -1,18 +1,23 @@
 package ms.uk.eclipse.match;
 
 import org.bukkit.Bukkit;
+import org.bukkit.Location;
 import org.bukkit.Material;
+import org.bukkit.craftbukkit.v1_8_R3.entity.CraftItem;
+import org.bukkit.entity.Item;
 
 import ms.uk.eclipse.PracticePlugin;
 import ms.uk.eclipse.core.utils.message.CC;
-import ms.uk.eclipse.entity.Profile;
 import ms.uk.eclipse.entity.PlayerStatus;
+import ms.uk.eclipse.entity.Profile;
 import ms.uk.eclipse.scoreboard.Scoreboard;
 import ms.uk.eclipse.tournaments.Tournament;
 import net.md_5.bungee.api.chat.ClickEvent;
 import net.md_5.bungee.api.chat.ComponentBuilder;
 import net.md_5.bungee.api.chat.HoverEvent;
 import net.md_5.bungee.api.chat.TextComponent;
+import net.minecraft.server.v1_8_R3.EntityHuman;
+import net.minecraft.server.v1_8_R3.EntityItem;
 import net.minecraft.server.v1_8_R3.PacketPlayInClientCommand;
 import net.minecraft.server.v1_8_R3.PacketPlayInClientCommand.EnumClientCommand;
 
@@ -30,7 +35,7 @@ public class TournamentMatch extends Match {
         int attackerHealth = (int) attacker.bukkit().getHealth();
         attacker.heal();
         attacker.removePotionEffects();
-        attacker.bukkit().setFireTicks(0);
+        attacker.bukkit().hidePlayer(victim.bukkit());
 
         int attackerAmountOfPots = attacker.getNumber(Material.POTION, (short) 16421)
                 + attacker.getNumber(Material.MUSHROOM_SOUP);
@@ -68,16 +73,18 @@ public class TournamentMatch extends Match {
         victim.setPearlCooldown(0);
         new Scoreboard(player1).setBoard();
         new Scoreboard(player2).setBoard();
-        attacker.removeFromMatch();
         victim.removeFromMatch();
         matchManager.remove(this);
-        victim.bukkit().remove();
 
         Bukkit.getServer().getScheduler().runTaskLater(PracticePlugin.INSTANCE, new Runnable() {
             public void run() {
-                victim.bukkit().getHandle().playerConnection
-                        .a(new PacketPlayInClientCommand(EnumClientCommand.PERFORM_RESPAWN));
+                if (victim.bukkit().isDead()) {
+                    victim.bukkit().getHandle().playerConnection
+                            .a(new PacketPlayInClientCommand(EnumClientCommand.PERFORM_RESPAWN));
+                }
 
+                victim.heal();
+                victim.removePotionEffects();
                 victim.teleportToLobby();
                 victim.setInventoryForLobby();
             }
@@ -88,6 +95,7 @@ public class TournamentMatch extends Match {
         Bukkit.getServer().getScheduler().runTaskLater(PracticePlugin.INSTANCE, new Runnable() {
             public void run() {
 
+                attacker.removeFromMatch();
                 tournament.removePlayer(victim);
                 tournament.removeMatch(match);
 
@@ -116,5 +124,23 @@ public class TournamentMatch extends Match {
                 }
             }
         }, 40);
+
+        for (Item item : m.getArena().getLocation1().getWorld().getEntitiesByClass(Item.class)) {
+            EntityHuman lastHolder = ((EntityItem) ((CraftItem) item).getHandle()).lastHolder;
+
+            if (lastHolder == null) {
+                continue;
+            }
+
+            for (Profile participant : participants) {
+                if (lastHolder.getBukkitEntity().getUniqueId() == participant.getUUID()) {
+                    item.remove();
+                }
+            }
+        }
+
+        for (Location location : buildLog) {
+            location.getBlock().setType(Material.AIR);
+        }
     }
 }

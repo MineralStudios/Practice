@@ -129,6 +129,7 @@ public class PartyMatch extends Match {
 		setInventoryStats(victim, 0, victimAmountOfPots);
 		victim.setPearlCooldown(0);
 		victim.removeFromMatch();
+		victim.heal();
 
 		if (remaining.size() <= 1) {
 
@@ -149,7 +150,11 @@ public class PartyMatch extends Match {
 				Bukkit.getServer().getScheduler().runTaskLater(PracticePlugin.INSTANCE, new Runnable() {
 					public void run() {
 						a.teleportToLobby();
-						a.setInventoryForParty();
+						if (a.isInParty()) {
+							a.setInventoryForParty();
+						} else {
+							a.setInventoryForLobby();
+						}
 					}
 				}, 40);
 
@@ -166,10 +171,14 @@ public class PartyMatch extends Match {
 								.a(new PacketPlayInClientCommand(EnumClientCommand.PERFORM_RESPAWN));
 					}
 
-					victim.heal();
 					victim.removePotionEffects();
 					victim.teleportToLobby();
-					victim.setInventoryForParty();
+
+					if (victim.isInParty()) {
+						victim.setInventoryForParty();
+					} else {
+						victim.setInventoryForLobby();
+					}
 				}
 			}, 1);
 
@@ -205,9 +214,8 @@ public class PartyMatch extends Match {
 							.a(new PacketPlayInClientCommand(EnumClientCommand.PERFORM_RESPAWN));
 				}
 
-				victim.heal();
 				victim.removePotionEffects();
-				victim.spectate(attackerParty.get(0));
+				victim.spectate(remaining.get(0));
 				new Scoreboard(victim).setBoard();
 			}
 

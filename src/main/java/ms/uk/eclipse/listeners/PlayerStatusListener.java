@@ -5,11 +5,16 @@ import java.util.List;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 
-import ms.uk.eclipse.entity.Profile;
+import ms.uk.eclipse.PracticePlugin;
 import ms.uk.eclipse.entity.PlayerStatus;
+import ms.uk.eclipse.entity.Profile;
 import ms.uk.eclipse.event.PlayerStatusChangeEvent;
+import ms.uk.eclipse.managers.MatchManager;
+import ms.uk.eclipse.match.Match;
 
 public class PlayerStatusListener implements Listener {
+
+    final MatchManager matchManager = PracticePlugin.INSTANCE.getMatchManager();
 
     @EventHandler
     public void onPlayerStatusChange(PlayerStatusChangeEvent e) {
@@ -49,7 +54,11 @@ public class PlayerStatusListener implements Listener {
                 List<Profile> list2 = p.getSpectatingMatch().getParticipants();
 
                 for (i = 0; i < list2.size(); i++) {
-                    b.showPlayer(list2.get(i).bukkit());
+                    p.bukkit().showPlayer(list2.get(i).bukkit());
+                }
+
+                for (Match match : matchManager.getMatchs()) {
+                    match.updateVisiblity(p.getSpectatingMatch(), p);
                 }
 
                 return;

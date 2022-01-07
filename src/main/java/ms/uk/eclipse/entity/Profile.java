@@ -556,7 +556,11 @@ public class Profile {
 
 		if (status != PlayerStatus.FOLLOWING) {
 			this.player.setGameMode(GameMode.SURVIVAL);
-			this.setInventoryForLobby();
+			if (this.isInParty()) {
+				this.setInventoryForParty();
+			} else {
+				this.setInventoryForLobby();
+			}
 			return;
 		}
 
@@ -584,7 +588,11 @@ public class Profile {
 		this.player.setGameMode(GameMode.SURVIVAL);
 
 		teleportToLobby();
-		this.setInventoryForLobby();
+		if (this.isInParty()) {
+			this.setInventoryForParty();
+		} else {
+			this.setInventoryForLobby();
+		}
 	}
 
 	public Match getSpectatingMatch() {
@@ -607,14 +615,14 @@ public class Profile {
 			return;
 		}
 
-		Match match = p.getMatch();
-		match.addSpectator(this);
-		spectatingMatch = match;
-
 		if (getPlayerStatus() != PlayerStatus.IN_LOBBY && getPlayerStatus() != PlayerStatus.FOLLOWING) {
 			message(ErrorMessages.YOU_ARE_NOT_IN_LOBBY);
 			return;
 		}
+
+		Match match = p.getMatch();
+		match.addSpectator(this);
+		spectatingMatch = match;
 
 		this.player.setGameMode(GameMode.SPECTATOR);
 
@@ -645,13 +653,13 @@ public class Profile {
 			return;
 		}
 
-		spectatingTournament = t;
-		t.addSpectator(this);
-
 		if (getPlayerStatus() != PlayerStatus.IN_LOBBY && getPlayerStatus() != PlayerStatus.FOLLOWING) {
 			message(ErrorMessages.YOU_ARE_NOT_IN_LOBBY);
 			return;
 		}
+
+		spectatingTournament = t;
+		t.addSpectator(this);
 
 		this.player.setGameMode(GameMode.SPECTATOR);
 
