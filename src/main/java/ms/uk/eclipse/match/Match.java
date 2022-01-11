@@ -83,7 +83,7 @@ public class Match {
 		Kit kit = new Kit(m.getKit());
 
 		if (m.getQueueEntry() != null) {
-			ItemStack[] customKit = p.getCustomKit(m.getQueueEntry());
+			ItemStack[] customKit = m.getQueueEntry().getCustomKit(p);
 
 			if (customKit != null) {
 				kit.setContents(customKit);
@@ -185,8 +185,8 @@ public class Match {
 		String s2 = "Opponent: " + player1.getName();
 
 		if (m.isRanked()) {
-			s1 += " (Elo: " + player2.getElo(m.getQueueEntry().getGametype()) + ")";
-			s2 += " (Elo: " + player1.getElo(m.getQueueEntry().getGametype()) + ")";
+			s1 += " (Elo: " + m.getQueueEntry().getGametype().getElo(player2) + ")";
+			s2 += " (Elo: " + m.getQueueEntry().getGametype().getElo(player1) + ")";
 		}
 
 		player1.message(new ChatMessage(s1, CC.PRIMARY, false));
@@ -243,15 +243,15 @@ public class Match {
 
 		if (m.isRanked()) {
 			Gametype g = m.getQueueEntry().getGametype();
-			int attackerElo = attacker.getElo(g);
-			int victimElo = victim.getElo(g);
+			int attackerElo = g.getElo(attacker);
+			int victimElo = g.getElo(victim);
 			int newAttackerElo = MathUtil.getNewRating(attackerElo, victimElo, true);
 			int newVictimElo = MathUtil.getNewRating(victimElo, attackerElo, false);
 			rankedMessage = CC.GREEN + attacker.getName() + " (+" + (newAttackerElo - attackerElo) + ") " + CC.RED
 					+ victim.getName() + " (" + (newVictimElo - victimElo) + ")";
 			new Thread(() -> {
-				attacker.setElo(newAttackerElo, g);
-				victim.setElo(newVictimElo, g);
+				g.setElo(newAttackerElo, attacker);
+				g.setElo(newVictimElo, victim);
 				g.updatePlayerLeaderboard(victim, newVictimElo);
 				g.updatePlayerLeaderboard(attacker, newAttackerElo);
 			}).start();

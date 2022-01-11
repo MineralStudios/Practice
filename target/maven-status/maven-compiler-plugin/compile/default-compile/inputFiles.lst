@@ -40,6 +40,7 @@
 /home/jaiden/Documents/Practice/src/main/java/ms/uk/eclipse/inventory/Menu.java
 /home/jaiden/Documents/Practice/src/main/java/ms/uk/eclipse/commands/config/SettingsConfigCommand.java
 /home/jaiden/Documents/Practice/src/main/java/ms/uk/eclipse/managers/PvPBotsManager.java
+/home/jaiden/Documents/Practice/src/main/java/ms/uk/eclipse/util/LeaderboardMap.java
 /home/jaiden/Documents/Practice/src/main/java/ms/uk/eclipse/inventory/menus/SelectCategorizedExistingKitMenu.java
 /home/jaiden/Documents/Practice/src/main/java/ms/uk/eclipse/commands/tournament/TournamentCommand.java
 /home/jaiden/Documents/Practice/src/main/java/ms/uk/eclipse/match/Match.java

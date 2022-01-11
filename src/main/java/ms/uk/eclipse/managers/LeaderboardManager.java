@@ -2,12 +2,11 @@ package ms.uk.eclipse.managers;
 
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
-import java.util.Map;
-import java.util.concurrent.ConcurrentHashMap;
 
 import ms.uk.eclipse.PracticePlugin;
 import ms.uk.eclipse.core.sql.SQLManager;
 import ms.uk.eclipse.entity.Profile;
+import ms.uk.eclipse.util.LeaderboardMap;
 
 public class LeaderboardManager {
 	String table = "Leaderboard";
@@ -49,8 +48,8 @@ public class LeaderboardManager {
 		updateElo(p, g, elo);
 	}
 
-	public Map<String, Integer> getLeaderboardMap(String g) {
-		Map<String, Integer> map = new ConcurrentHashMap<>();
+	public LeaderboardMap getLeaderboardMap(String g) {
+		LeaderboardMap map = new LeaderboardMap();
 
 		try {
 			AutoCloseable[] statement = SQLManager.prepare("SELECT * FROM " + table + " WHERE GAMETYPE=?");
@@ -61,7 +60,11 @@ public class LeaderboardManager {
 
 			while (r.next()) {
 				String value = r.getString("PLAYER");
-				map.put(value, getEloEntry(value, g));
+				int elo = getEloEntry(value, g);
+
+				if (elo > 1000) {
+					map.put(value, elo);
+				}
 			}
 
 			SQLManager.close(statement);

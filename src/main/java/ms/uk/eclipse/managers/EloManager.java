@@ -66,7 +66,11 @@ public class EloManager {
 		return false;
 	}
 
-	public void setEloEntry(final Profile p, final String g, int i) {
+	public void setEloEntry(final Profile p, final String g, int elo) {
+		if (elo == 1000) {
+			return;
+		}
+
 		try {
 			AutoCloseable[] insert = SQLManager
 					.prepare("INSERT INTO " + table + " (GAMETYPE, UUID, PLAYER, ELO) VALUES (?, ?, ?, ?)");
@@ -74,7 +78,7 @@ public class EloManager {
 			stmt.setString(1, g);
 			stmt.setString(2, p.getUUID().toString());
 			stmt.setString(3, p.getName());
-			stmt.setInt(4, i);
+			stmt.setInt(4, elo);
 			SQLManager.execute(insert);
 			SQLManager.close(insert);
 		} catch (Exception e) {

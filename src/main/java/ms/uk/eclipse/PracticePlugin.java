@@ -117,7 +117,7 @@ public class PracticePlugin extends JavaPlugin {
 
 	public void registerCommands(Command... cmds) {
 		for (Command c : cmds) {
-			MinecraftServer.getServer().server.getCommandMap().register(c.getName(), "Practice", c);
+			MinecraftServer.getServer().server.getCommandMap().registerOverride(c.getName(), "Practice", c);
 		}
 	}
 

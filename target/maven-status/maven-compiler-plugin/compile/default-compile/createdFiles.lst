@@ -3,7 +3,6 @@ ms/uk/eclipse/commands/config/PvPBotsCommand.class
 ms/uk/eclipse/util/Countdown$2.class
 ms/uk/eclipse/managers/MatchManager.class
 ms/uk/eclipse/inventory/menus/EloMenu.class
-ms/uk/eclipse/gametype/Gametype$1.class
 ms/uk/eclipse/PracticePlugin.class
 ms/uk/eclipse/managers/CatagoryManager.class
 ms/uk/eclipse/util/PearlCooldown.class
@@ -59,6 +58,7 @@ ms/uk/eclipse/kit/Kit.class
 ms/uk/eclipse/commands/config/CatagoryCommand.class
 ms/uk/eclipse/commands/config/LobbyCommand.class
 ms/uk/eclipse/commands/config/SettingsConfigCommand.class
+ms/uk/eclipse/util/LeaderboardMap.class
 ms/uk/eclipse/managers/PlayerSettingsManager.class
 ms/uk/eclipse/kit/KitEditorManager.class
 ms/uk/eclipse/commands/spectator/FollowCommand.class
@@ -79,6 +79,7 @@ ms/uk/eclipse/managers/LeaderboardManager.class
 ms/uk/eclipse/commands/settings/TogglePlayerVisibilityCommand.class
 ms/uk/eclipse/commands/party/PartyCommand.class
 ms/uk/eclipse/match/Match$2.class
+ms/uk/eclipse/util/LeaderboardMap$Entry.class
 ms/uk/eclipse/party/PartyRequest.class
 ms/uk/eclipse/inventory/menus/PearlCooldownMenu$1.class
 ms/uk/eclipse/queue/QueueEntry.class

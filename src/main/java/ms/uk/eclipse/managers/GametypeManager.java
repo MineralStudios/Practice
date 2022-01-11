@@ -30,10 +30,6 @@ public class GametypeManager implements SaveableData {
 		for (Queuetype queuetype : queuetypeManager.getQueuetypes()) {
 			queuetype.getGametypes().remove(gametype);
 		}
-
-		for (Profile profile : playerManager.getProfiles()) {
-			profile.getEloMap().remove(gametype);
-		}
 	}
 
 	public boolean contains(Gametype gametype) {

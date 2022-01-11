@@ -43,7 +43,7 @@ public class EloMenu extends Menu {
             for (Gametype g : gametypeManager.getGametypes()) {
                 ItemStack item = new ItemBuilder(g.getDisplayItem())
                         .name(new ChatMessage(g.getDisplayName(), CC.WHITE, true).toString())
-                        .lore(arg.getName() + "'s Elo: " + arg.getElo(g)).build();
+                        .lore(arg.getName() + "'s Elo: " + g.getElo(arg)).build();
                 add(item);
             }
         }

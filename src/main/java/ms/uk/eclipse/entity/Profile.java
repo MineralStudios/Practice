@@ -7,17 +7,13 @@ import org.bukkit.Bukkit;
 import org.bukkit.GameMode;
 import org.bukkit.Location;
 import org.bukkit.Material;
-import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.craftbukkit.v1_8_R3.entity.CraftPlayer;
 import org.bukkit.entity.ArmorStand;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.potion.PotionEffect;
 import org.bukkit.scheduler.BukkitRunnable;
 
-import it.unimi.dsi.fastutil.objects.Object2IntOpenHashMap;
-import it.unimi.dsi.fastutil.objects.Object2ObjectOpenHashMap;
 import land.strafe.api.collection.GlueList;
-import land.strafe.api.config.FileConfiguration;
 import ms.uk.eclipse.PracticePlugin;
 import ms.uk.eclipse.core.inventory.PlayerInventory;
 import ms.uk.eclipse.core.tasks.CommandTask;
@@ -31,7 +27,6 @@ import ms.uk.eclipse.core.utils.message.Message;
 import ms.uk.eclipse.core.utils.message.RequestMessage;
 import ms.uk.eclipse.core.utils.message.StrikingMessage;
 import ms.uk.eclipse.event.PlayerStatusChangeEvent;
-import ms.uk.eclipse.gametype.Gametype;
 import ms.uk.eclipse.inventory.Menu;
 import ms.uk.eclipse.inventory.SubmitAction;
 import ms.uk.eclipse.inventory.menus.MechanicsMenu;
@@ -39,11 +34,7 @@ import ms.uk.eclipse.inventory.menus.SelectGametypeMenu;
 import ms.uk.eclipse.inventory.menus.SelectModeMenu;
 import ms.uk.eclipse.inventory.menus.SelectQueuetypeMenu;
 import ms.uk.eclipse.kit.Kit;
-import ms.uk.eclipse.managers.EloManager;
-import ms.uk.eclipse.managers.GametypeManager;
-import ms.uk.eclipse.managers.PartyManager;
 import ms.uk.eclipse.managers.PlayerManager;
-import ms.uk.eclipse.managers.QueueEntryManager;
 import ms.uk.eclipse.managers.QueuetypeManager;
 import ms.uk.eclipse.match.DuelRequest;
 import ms.uk.eclipse.match.Match;
@@ -66,12 +57,8 @@ public class Profile {
 	final UUID uuid;
 	final PlayerInventory inventory;
 	final PracticePlugin instance = PracticePlugin.INSTANCE;
-	final GametypeManager gametypeManager = instance.getGametypeManager();
 	final QueuetypeManager queuetypeManager = instance.getQueuetypeManager();
 	final PlayerManager playerManager = instance.getPlayerManager();
-	final PartyManager partyManager = instance.getPartyManager();
-	final EloManager eloManager = PracticePlugin.INSTANCE.getEloManager();
-	final QueueEntryManager queueEntryManager = PracticePlugin.INSTANCE.getQueueEntryManager();
 	Match match;
 	Scoreboard b;
 	Match spectatingMatch;
@@ -88,11 +75,9 @@ public class Profile {
 	boolean partyOpenCooldown = false;
 	PlayerStatus status = PlayerStatus.IN_LOBBY;
 	boolean inMatchCountdown = false;
-	Object2ObjectOpenHashMap<QueueEntry, ItemStack[]> customKits = new Object2ObjectOpenHashMap<>();
 	Party party;
 	QueueEntry kitEditorData;
 	SubmitAction prevSubmitAction;
-	Object2IntOpenHashMap<Gametype> eloMap = new Object2IntOpenHashMap<>();
 	boolean inventoryClickCancelled = false;
 	Tournament tournament;
 	PearlCooldown pearlCooldown = new PearlCooldown(this);
@@ -108,16 +93,6 @@ public class Profile {
 
 	public void setPreviousSubmitAction(SubmitAction submitAction) {
 		this.prevSubmitAction = submitAction;
-	}
-
-	public void saveElo(Gametype g) {
-		Integer elo = eloMap.get(g);
-
-		if (elo == null) {
-			return;
-		}
-
-		eloManager.updateElo(this, g.getName(), elo);
 	}
 
 	public CraftPlayer bukkit() {
@@ -138,42 +113,6 @@ public class Profile {
 
 	public void openMenu(Menu m) {
 		m.open(this);
-	}
-
-	public ItemStack[] getCustomKit(QueueEntry queueEntry) {
-		ItemStack[] kit = customKits.get(queueEntry);
-
-		if (kit == null) {
-			ConfigurationSection cs = playerManager.getConfig().getConfigurationSection(getName() + ".KitData."
-					+ queueEntry.getGametype().getName() + "." + queueEntry.getQueuetype().getName());
-
-			if (cs == null) {
-				return null;
-			}
-
-			GlueList<ItemStack> items = new GlueList<>();
-
-			for (String key : cs.getKeys(false)) {
-				Object o = cs.get(key);
-
-				if (o == null) {
-					items.add(null);
-					continue;
-				}
-
-				if (o instanceof ItemStack) {
-					items.add((ItemStack) o);
-					continue;
-				}
-
-				items.add(null);
-			}
-
-			kit = items.toArray(new ItemStack[0]);
-			customKits.put(queueEntry, kit);
-		}
-
-		return kit;
 	}
 
 	public boolean getPlayersVisible() {
@@ -204,17 +143,6 @@ public class Profile {
 		this.requests = duelRequests;
 	}
 
-	public Integer getElo(Gametype g) {
-		Integer elo = eloMap.get(g);
-
-		if (elo == null) {
-			elo = eloManager.getEloEntry(g.getName(), player.getUniqueId());
-			eloMap.put(g, elo);
-		}
-
-		return elo;
-	}
-
 	public Scoreboard getBoard() {
 		return b;
 	}
@@ -225,15 +153,6 @@ public class Profile {
 		}
 
 		b = null;
-	}
-
-	public void setElo(Integer elo, Gametype g) {
-		this.eloMap.put(g, elo);
-		saveElo(g);
-	}
-
-	public Object2IntOpenHashMap<Gametype> getEloMap() {
-		return eloMap;
 	}
 
 	public void increaseHitCount() {
@@ -759,32 +678,11 @@ public class Profile {
 	}
 
 	public void saveKit() {
-		ItemStack[] cont = getInventory().getContents();
-
 		if (kitEditorData == null) {
 			return;
 		}
 
-		customKits.put(kitEditorData, cont);
-		FileConfiguration config = playerManager.getConfig();
-		String path = getName() + ".KitData." + kitEditorData.getGametype().getName() + "."
-				+ kitEditorData.getQueuetype().getName() + ".";
-
-		for (int f = 0; f < cont.length; f++) {
-			ItemStack item = cont[f];
-
-			if (item == null) {
-				config.set(path + f, "empty");
-				continue;
-			}
-
-			config.set(path + f, item);
-		}
-
-		config.save();
-
-		bukkit().closeInventory();
-		message(new ChatMessage("Your kit has been saved", CC.PRIMARY, false));
+		kitEditorData.saveKit(this);
 	}
 
 	public void sendPlayerToKitEditor(QueueEntry qe) {

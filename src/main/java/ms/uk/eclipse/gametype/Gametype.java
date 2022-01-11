@@ -1,10 +1,6 @@
 package ms.uk.eclipse.gametype;
 
-import java.util.Collections;
-import java.util.Comparator;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 import java.util.Map.Entry;
 
 import org.bukkit.Material;
@@ -12,7 +8,7 @@ import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.inventory.ItemStack;
 
 import it.unimi.dsi.fastutil.objects.Object2BooleanOpenHashMap;
-import it.unimi.dsi.fastutil.objects.Object2IntLinkedOpenHashMap;
+import it.unimi.dsi.fastutil.objects.Object2IntOpenHashMap;
 import land.strafe.api.collection.GlueList;
 import land.strafe.api.config.FileConfiguration;
 import ms.uk.eclipse.PracticePlugin;
@@ -21,9 +17,11 @@ import ms.uk.eclipse.entity.Profile;
 import ms.uk.eclipse.kit.Kit;
 import ms.uk.eclipse.managers.ArenaManager;
 import ms.uk.eclipse.managers.CatagoryManager;
+import ms.uk.eclipse.managers.EloManager;
 import ms.uk.eclipse.managers.LeaderboardManager;
 import ms.uk.eclipse.managers.QueuetypeManager;
 import ms.uk.eclipse.queue.Queuetype;
+import ms.uk.eclipse.util.LeaderboardMap;
 import ms.uk.eclipse.util.SaveableData;
 
 public class Gametype implements SaveableData {
@@ -48,14 +46,47 @@ public class Gametype implements SaveableData {
 	boolean event = false;
 	Kit kit;
 	String path;
-	Map<String, Integer> leaderboardMap;
+	LeaderboardMap leaderboardMap;
+	Object2IntOpenHashMap<Profile> eloMap = new Object2IntOpenHashMap<>();
 	Catagory catagory;
 	final LeaderboardManager leaderboardManager = PracticePlugin.INSTANCE.getLeaderboardManager();
 	final CatagoryManager catagoryManager = PracticePlugin.INSTANCE.getCatagoryManager();
+	final EloManager eloManager = PracticePlugin.INSTANCE.getEloManager();
 
 	public Gametype(String name) {
 		this.name = name;
 		this.path = "Gametype." + getName() + ".";
+	}
+
+	public Integer getElo(Profile profile) {
+		Integer elo = eloMap.get(profile);
+
+		if (elo == null) {
+			elo = eloManager.getEloEntry(getName(), profile.getUUID());
+			eloMap.put(profile, elo);
+		}
+
+		return elo;
+	}
+
+	public void saveElo(Profile profile) {
+		Integer elo = eloMap.get(profile);
+
+		if (elo == null) {
+			return;
+		}
+
+		eloManager.updateElo(profile, getName(), elo);
+	}
+
+	public void setElo(Integer elo, Profile profile) {
+		this.eloMap.put(profile, elo);
+
+		if (elo == null) {
+			return;
+		}
+
+		eloManager.updateElo(profile, getName(), elo);
 	}
 
 	public boolean getRegeneration() {
@@ -244,53 +275,13 @@ public class Gametype implements SaveableData {
 
 	public void updatePlayerLeaderboard(Profile p, int elo) {
 		leaderboardMap.put(p.getName(), elo);
-		Map<String, Integer> sortedMap = sortByValue(leaderboardMap);
-		if (sortedMap.size() > 10)
-			sortedMap = reduceSize(sortedMap, 10);
-		leaderboardMap = sortedMap;
-		updateLeaderboard(p, elo);
-	}
-
-	private void updateLeaderboard(Profile p, int elo) {
 		leaderboardManager.updateElo(p, this.getName(), elo);
-	}
-
-	private Map<String, Integer> sortByValue(Map<String, Integer> unsortMap) {
-		List<Map.Entry<String, Integer>> list = new GlueList<Map.Entry<String, Integer>>(unsortMap.entrySet());
-		Collections.reverseOrder();
-		Collections.sort(list, new Comparator<Map.Entry<String, Integer>>() {
-			public int compare(Map.Entry<String, Integer> o1, Map.Entry<String, Integer> o2) {
-				return (o2.getValue()).compareTo(o1.getValue());
-			}
-		});
-
-		Object2IntLinkedOpenHashMap<String> sortedMap = new Object2IntLinkedOpenHashMap<String>();
-
-		for (int i = 0; i < list.size(); i++) {
-			Map.Entry<String, Integer> entry = list.get(i);
-			sortedMap.put(entry.getKey(), entry.getValue());
-		}
-
-		return sortedMap;
-	}
-
-	public Map<String, Integer> reduceSize(Map<String, Integer> map, int size) {
-		Map<String, Integer> reducedMap = new HashMap<String, Integer>();
-		int i = 1;
-		for (Entry<String, Integer> e : map.entrySet()) {
-			if (size > i) {
-				reducedMap.put(e.getKey(), e.getValue());
-				i++;
-			} else
-				break;
-		}
-		return reducedMap;
 	}
 
 	public List<String> getLeaderboardLore() {
 		List<String> lore = new GlueList<>();
 
-		for (Map.Entry<String, Integer> entry : leaderboardMap.entrySet()) {
+		for (ms.uk.eclipse.util.LeaderboardMap.Entry entry : leaderboardMap.getEntries()) {
 			lore.add(entry.getKey() + ": " + entry.getValue());
 		}
 
