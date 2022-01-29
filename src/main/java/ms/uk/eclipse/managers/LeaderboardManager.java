@@ -61,10 +61,7 @@ public class LeaderboardManager {
 			while (r.next()) {
 				String value = r.getString("PLAYER");
 				int elo = getEloEntry(value, g);
-
-				if (elo > 1000) {
-					map.put(value, elo);
-				}
+				map.put(value, elo);
 			}
 
 			SQLManager.close(statement);

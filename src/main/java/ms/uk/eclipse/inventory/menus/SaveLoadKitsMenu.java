@@ -15,10 +15,12 @@ public class SaveLoadKitsMenu extends Menu {
         setClickCancelled(true);
     }
 
-    public void update() {
+    @Override
+    public boolean update() {
         ItemStack item = new ItemBuilder(new ItemStack(160, 1, (short) 13))
                 .name(new ChatMessage("Save Kit", CC.PRIMARY, false).toString()).build();
         Runnable r = viewer.getPlayerStatus() == PlayerStatus.KIT_CREATOR ? viewer::saveCreatedKit : viewer::saveKit;
         setSlot(4, item, r);
+        return true;
     }
 }

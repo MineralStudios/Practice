@@ -31,7 +31,8 @@ public class EloMenu extends Menu {
         setClickCancelled(true);
     }
 
-    public void update() {
+    @Override
+    public boolean update() {
         if (arg == null) {
             for (Gametype g : gametypeManager.getGametypes()) {
                 ItemStack item = new ItemBuilder(g.getDisplayItem())
@@ -39,13 +40,17 @@ public class EloMenu extends Menu {
                         .lore(strArg + "'s Elo: " + playerManager.getOfflinePlayerElo(g, strArg)).build();
                 add(item);
             }
-        } else {
-            for (Gametype g : gametypeManager.getGametypes()) {
-                ItemStack item = new ItemBuilder(g.getDisplayItem())
-                        .name(new ChatMessage(g.getDisplayName(), CC.WHITE, true).toString())
-                        .lore(arg.getName() + "'s Elo: " + g.getElo(arg)).build();
-                add(item);
-            }
+
+            return true;
         }
+
+        for (Gametype g : gametypeManager.getGametypes()) {
+            ItemStack item = new ItemBuilder(g.getDisplayItem())
+                    .name(new ChatMessage(g.getDisplayName(), CC.WHITE, true).toString())
+                    .lore(arg.getName() + "'s Elo: " + g.getElo(arg)).build();
+            add(item);
+        }
+
+        return true;
     }
 }

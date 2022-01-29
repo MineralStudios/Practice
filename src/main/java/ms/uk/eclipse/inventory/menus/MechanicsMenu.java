@@ -26,7 +26,7 @@ public class MechanicsMenu extends Menu {
         }
 
         @Override
-        public void update() {
+        public boolean update() {
                 MatchData match = viewer.getMatchData();
                 ItemStack kit = new ItemBuilder(Material.DIAMOND_CHESTPLATE)
                                 .lore(new ChatMessage(match.getKitName(), CC.SECONDARY, false).toString())
@@ -170,7 +170,7 @@ public class MechanicsMenu extends Menu {
                         }
                 };
                 setSlot(27, resetMeta, resetTask);
-
+                return true;
         }
 
         public SubmitAction getAction() {

@@ -24,7 +24,7 @@ public class OtherPartiesMenu extends Menu {
     }
 
     @Override
-    public void update() {
+    public boolean update() {
         clear();
 
         for (Party p : partyManager.getPartys()) {
@@ -35,5 +35,7 @@ public class OtherPartiesMenu extends Menu {
                 add(skull, new CommandTask("duel " + partyLeader.getName()));
             }
         }
+
+        return true;
     }
 }

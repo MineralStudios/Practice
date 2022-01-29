@@ -37,7 +37,8 @@ public class SelectGametypeMenu extends Menu {
 		setClickCancelled(true);
 	}
 
-	public void update() {
+	@Override
+	public boolean update() {
 
 		for (Entry<Gametype, Integer> entry : q.getGametypes().object2IntEntrySet()) {
 
@@ -94,5 +95,7 @@ public class SelectGametypeMenu extends Menu {
 			ItemStack item = itemBuild.build();
 			setSlot(entry.getValue(), item, new MenuTask(new SelectCategorizedGametypeMenu(q, c, true, kitEditor)));
 		}
+
+		return true;
 	}
 }

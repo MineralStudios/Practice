@@ -24,7 +24,8 @@ public class LeaderboardMenu extends Menu {
         setClickCancelled(true);
     }
 
-    public void update() {
+    @Override
+    public boolean update() {
         for (Gametype g : gametypeManager.getGametypes()) {
 
             if (g.isInCatagory()) {
@@ -53,5 +54,7 @@ public class LeaderboardMenu extends Menu {
             item.setItemMeta(meta);
             add(item, new MenuTask(new CatagorizedLeaderboardMenu(c)));
         }
+
+        return true;
     }
 }

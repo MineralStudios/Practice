@@ -20,7 +20,8 @@ public class SelectKnockbackMenu extends Menu {
         this.menu = menu;
     }
 
-    public void update() {
+    @Override
+    public boolean update() {
         for (KnockbackProfile k : KnockbackProfileList.getKnockbackProfiles()) {
             try {
                 ItemStack item = new ItemBuilder(Material.GOLD_SWORD)
@@ -39,5 +40,7 @@ public class SelectKnockbackMenu extends Menu {
                 continue;
             }
         }
+
+        return true;
     }
 }

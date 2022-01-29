@@ -19,7 +19,8 @@ public class SelectKitMenu extends Menu {
         this.menu = menu;
     }
 
-    public void update() {
+    @Override
+    public boolean update() {
         ItemStack item = new ItemBuilder(Material.LEATHER_CHESTPLATE)
                 .name(new ChatMessage("Choose Existing Kit", CC.PRIMARY, false).toString()).build();
         ItemStack item2 = new ItemBuilder(Material.GOLD_CHESTPLATE)
@@ -27,5 +28,6 @@ public class SelectKitMenu extends Menu {
         setSlot(2, item, new MenuTask(new SelectExistingKitMenu(menu, false)));
         Runnable runnable = viewer::sendPlayerToKitCreator;
         setSlot(6, item2, runnable);
+        return true;
     }
 }

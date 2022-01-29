@@ -20,7 +20,7 @@ public class CatagorizedLeaderboardMenu extends Menu {
     }
 
     @Override
-    public void update() {
+    public boolean update() {
         for (Gametype g : c.getGametypes()) {
             ItemBuilder itemBuild = new ItemBuilder(g.getDisplayItem())
                     .name(new ChatMessage(g.getDisplayName(), CC.WHITE, true).toString());
@@ -37,5 +37,7 @@ public class CatagorizedLeaderboardMenu extends Menu {
 
             add(item);
         }
+
+        return true;
     }
 }

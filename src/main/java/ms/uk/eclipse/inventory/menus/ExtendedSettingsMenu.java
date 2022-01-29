@@ -13,11 +13,11 @@ public class ExtendedSettingsMenu extends SettingsMenu {
 	@Override
 	public void init() {
 		super.init();
-		setSlot(3,
+		setSlot(4,
 				new ItemBuilder(Material.GOLDEN_CARROT)
 						.name(new ChatMessage("Toggle Player Visibility", CC.WHITE, true).toString()).build(),
 				new CommandTask("toggleplayervisibility"));
-		setSlot(4,
+		setSlot(5,
 				new ItemBuilder(Material.WOOD_SWORD)
 						.name(new ChatMessage("Toggle Duel Requests", CC.WHITE, true).toString()).build(),
 				new CommandTask("toggleduelrequests"));

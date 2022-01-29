@@ -27,7 +27,8 @@ public class SelectExistingKitMenu extends Menu {
         this.simple = simple;
     }
 
-    public void update() {
+    @Override
+    public boolean update() {
         clear();
 
         for (Gametype g : gametypeManager.getGametypes()) {
@@ -58,5 +59,7 @@ public class SelectExistingKitMenu extends Menu {
                     .name(new ChatMessage(c.getDisplayName(), CC.WHITE, true).toString()).build();
             add(item, new MenuTask(new SelectCategorizedExistingKitMenu(c, menu, simple)));
         }
+
+        return true;
     }
 }

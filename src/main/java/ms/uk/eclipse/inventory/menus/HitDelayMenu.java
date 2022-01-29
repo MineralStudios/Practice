@@ -20,7 +20,8 @@ public class HitDelayMenu extends Menu {
                 this.menu = menu;
         }
 
-        public void update() {
+        @Override
+        public boolean update() {
                 ItemStack item = new ItemBuilder(new ItemStack(Material.WOOL, 1, DyeColor.RED.getData()))
                                 .name(new ChatMessage("SUBTRACT 1", CC.PRIMARY, false).toString()).build();
                 ItemStack item2 = new ItemBuilder(new ItemStack(Material.WOOL, 1, DyeColor.GREEN.getData()))
@@ -50,5 +51,7 @@ public class HitDelayMenu extends Menu {
                 };
                 setSlot(6, item2, addTask);
                 setSlot(4, item3, new MenuTask(menu));
+
+                return true;
         }
 }

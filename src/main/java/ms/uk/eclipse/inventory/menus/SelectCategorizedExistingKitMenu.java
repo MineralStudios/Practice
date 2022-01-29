@@ -21,7 +21,7 @@ public class SelectCategorizedExistingKitMenu extends SelectExistingKitMenu {
 	}
 
 	@Override
-	public void update() {
+	public boolean update() {
 		for (Gametype g : c.getGametypes()) {
 			ItemStack item = new ItemBuilder(g.getDisplayItem())
 					.name(new ChatMessage(g.getDisplayName(), CC.WHITE, true).toString()).build();
@@ -44,5 +44,7 @@ public class SelectCategorizedExistingKitMenu extends SelectExistingKitMenu {
 			};
 			add(item, selectGametypeTask);
 		}
+
+		return true;
 	}
 }

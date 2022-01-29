@@ -37,4 +37,6 @@ public class ErrorMessages {
         public static final Message PARTY_DOES_NOT_EXIST = new ErrorMessage("That party does not exist");
         public static final Message PARTY_NOT_OPEN = new ErrorMessage("That party is not open");
         public static final Message YOU_CAN_NOT_INVITE_YOURSELF = new ErrorMessage("You can not invite yourself");
+        public static final Message REQUEST_SENDER_NOT_ONLINE = new ErrorMessage("The request sender is not online");
+        public static final Message REQUEST_EXPIRED = new ErrorMessage("That party request has expired");
 }

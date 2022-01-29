@@ -67,10 +67,6 @@ public class EloManager {
 	}
 
 	public void setEloEntry(final Profile p, final String g, int elo) {
-		if (elo == 1000) {
-			return;
-		}
-
 		try {
 			AutoCloseable[] insert = SQLManager
 					.prepare("INSERT INTO " + table + " (GAMETYPE, UUID, PLAYER, ELO) VALUES (?, ?, ?, ?)");

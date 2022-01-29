@@ -228,7 +228,7 @@ public class PartyCommand extends PlayerCommand {
 				Profile player1 = playerManager.getProfile(args[1]);
 
 				if (player1 == null) {
-					player.message(new ErrorMessage("The request sender is not online"));
+					player.message(ErrorMessages.REQUEST_SENDER_NOT_ONLINE);
 					return;
 				}
 
@@ -248,7 +248,7 @@ public class PartyCommand extends PlayerCommand {
 					return;
 				}
 
-				player.message(new ErrorMessage("That party request has expired"));
+				player.message(ErrorMessages.REQUEST_EXPIRED);
 
 				return;
 			case "list":

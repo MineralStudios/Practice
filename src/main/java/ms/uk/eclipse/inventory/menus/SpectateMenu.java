@@ -23,7 +23,7 @@ public class SpectateMenu extends Menu {
     }
 
     @Override
-    public void update() {
+    public boolean update() {
         clear();
         for (Match m : matchManager.getMatchs()) {
             QueueEntry queueEntry = m.getData().getQueueEntry();
@@ -35,5 +35,7 @@ public class SpectateMenu extends Menu {
                     .build();
             add(skull, new CommandTask("spec " + m.getParticipants().get(0).getName()));
         }
+
+        return true;
     }
 }

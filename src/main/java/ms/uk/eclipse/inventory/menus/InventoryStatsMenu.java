@@ -28,9 +28,11 @@ public class InventoryStatsMenu extends Menu {
         setClickCancelled(true);
     }
 
-    public void update() {
+    @Override
+    public boolean update() {
         ItemStack lever = new ItemBuilder(Material.LEVER)
                 .name(new StrikingMessage("View Opponent Inventory", CC.PRIMARY, true).toString()).build();
         setSlot(53, lever, new CommandTask("viewinventory " + opponent));
+        return true;
     }
 }

@@ -23,7 +23,7 @@ public class SelectCategorizedGametypeMenu extends SelectGametypeMenu {
 	}
 
 	@Override
-	public void update() {
+	public boolean update() {
 		for (Gametype g : c.getGametypes()) {
 			ItemBuilder itemBuild = new ItemBuilder(g.getDisplayItem())
 					.name(new ChatMessage(g.getDisplayName(), CC.WHITE, true).toString());
@@ -62,5 +62,7 @@ public class SelectCategorizedGametypeMenu extends SelectGametypeMenu {
 
 			setSlot(q.getGametypes().getInt(g), item, runnable);
 		}
+
+		return true;
 	}
 }

@@ -20,7 +20,8 @@ public class SelectModeMenu extends Menu {
                 this.action = action;
         }
 
-        public void update() {
+        @Override
+        public boolean update() {
                 viewer.setPreviousSubmitAction(action);
                 ItemStack item = new ItemBuilder(Material.GREEN_RECORD)
                                 .name(new ChatMessage("Simple Mode", CC.GREEN, true).toString()).lore().build();
@@ -36,6 +37,6 @@ public class SelectModeMenu extends Menu {
 
                 setSlot(2, item, new MenuTask(new SelectExistingKitMenu(new SelectArenaMenu(action), true)));
                 setSlot(6, item2, new MenuTask(new MechanicsMenu(action)));
-
+                return true;
         }
 }

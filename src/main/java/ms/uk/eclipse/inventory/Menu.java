@@ -60,8 +60,7 @@ public class Menu {
 	}
 
 	public void add(ItemStack item) {
-		Integer Slot = findUnusedSlot();
-		setSlot(Slot, item);
+		setSlot(findUnusedSlot(), item);
 	}
 
 	public void add(ItemStack item, Object d) {
@@ -70,7 +69,8 @@ public class Menu {
 		setSlot(slot, item);
 	}
 
-	public void update() {
+	public boolean update() {
+		return false;
 	}
 
 	public Int2ObjectOpenHashMap<ItemStack> getItems() {
@@ -126,14 +126,14 @@ public class Menu {
 		return inventory;
 	}
 
+	Inventory inv;
+
 	public void open(Profile player) {
 		viewer = player;
-		update();
-		Inventory inv = toInventory(player.bukkit());
+		boolean updated = update() || inv == null;
 
-		if (inv == null) {
-			player.bukkit().kickPlayer("Inventory error!");
-			return;
+		if (updated) {
+			inv = toInventory(player.bukkit());
 		}
 
 		player.bukkit().openInventory(inv);
@@ -150,8 +150,8 @@ public class Menu {
 		return dataMap.get(i);
 	}
 
-	public void setTitle(Message s) {
-		title = s;
+	public void setTitle(Message title) {
+		this.title = title;
 	}
 
 	public void clear() {

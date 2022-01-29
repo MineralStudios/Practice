@@ -38,7 +38,8 @@ public class SelectArenaMenu extends Menu {
         this.action = action;
     }
 
-    public void update() {
+    @Override
+    public boolean update() {
         Iterator<Arena> arenas = simpleMode ? viewer.getMatchData().getGametype().getEnabledArenas().iterator()
                 : arenaManager.getArenas().iterator();
 
@@ -98,5 +99,6 @@ public class SelectArenaMenu extends Menu {
 
             add(item, arenaRunnable);
         }
+        return true;
     }
 }

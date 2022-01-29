@@ -21,7 +21,7 @@ public class SelectQueuetypeMenu extends Menu {
     }
 
     @Override
-    public void update() {
+    public boolean update() {
         clear();
         for (Queuetype q : queuetypeManager.getQueuetypes()) {
             try {
@@ -32,5 +32,7 @@ public class SelectQueuetypeMenu extends Menu {
                 continue;
             }
         }
+
+        return true;
     }
 }

@@ -2,7 +2,7 @@ package ms.uk.eclipse.commands.settings;
 
 import ms.uk.eclipse.core.CorePlugin;
 import ms.uk.eclipse.core.commands.PlayerCommand;
-import ms.uk.eclipse.core.entity.Player;
+import ms.uk.eclipse.core.entity.Profile;
 import ms.uk.eclipse.core.managers.PlayerManager;
 import ms.uk.eclipse.inventory.menus.ExtendedSettingsMenu;
 
@@ -15,7 +15,7 @@ public class ExtendedSettingsCommand extends PlayerCommand {
 
 	@Override
 	public void execute(org.bukkit.entity.Player player, String[] args) {
-		Player p = playerManager.getPlayer(player);
+		Profile p = playerManager.getPlayer(player);
 		p.openMenu(new ExtendedSettingsMenu());
 	}
 }

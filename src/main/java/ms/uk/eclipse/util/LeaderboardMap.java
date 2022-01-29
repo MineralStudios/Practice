@@ -1,5 +1,6 @@
 package ms.uk.eclipse.util;
 
+import java.util.Iterator;
 import java.util.List;
 
 import land.strafe.api.collection.GlueList;
@@ -45,31 +46,41 @@ public class LeaderboardMap {
 
     GlueList<Entry> entryList = new GlueList<>();
 
-    int lastIndex;
+    private int binaryLinearSearch(int value) {
+        int lastIndex = entryList.size() - 1;
+        int firstIndex = 0;
+        int mid = lastIndex / 2;
+        int midValue = get(mid).getValue();
 
-    private int binarySearch(int value, int lastValue) {
-        int mid = entryList.size() / 2;
-        int initalValue = get(mid).getValue();
+        if (midValue > value) {
+            firstIndex = mid + 1;
 
-        if (initalValue > value) {
-            while ((mid == lastValue ? lastValue : get(mid).getValue()) > value) {
-                mid = (mid + lastIndex) / 2;
+            for (int i = firstIndex; i <= lastIndex; i++) {
+                midValue = get(i).getValue();
 
-                if (mid >= lastIndex) {
-                    break;
+                if (midValue > value) {
+                    continue;
                 }
+
+                return i;
+            }
+        } else if (midValue < value) {
+            lastIndex = mid;
+
+            for (int i = firstIndex; i <= lastIndex; i++) {
+                midValue = get(i).getValue();
+
+                if (midValue > value) {
+                    continue;
+                }
+
+                return i;
             }
         } else {
-            while (get(mid).getValue() < value) {
-                mid /= 2;
-
-                if (mid <= 0) {
-                    break;
-                }
-            }
+            return mid;
         }
 
-        return mid;
+        return -1;
     }
 
     private int findPosition(int elo) {
@@ -77,8 +88,19 @@ public class LeaderboardMap {
             return 0;
         }
 
-        int lastValue = get(lastIndex = entryList.size() - 1).getValue();
-        return elo <= lastValue ? -1 : binarySearch(elo, lastValue);
+        boolean full = entryList.size() >= size;
+        int lastValue = get(entryList.size() - 1).getValue();
+        boolean lastPosition = elo <= lastValue;
+
+        if (lastPosition) {
+            if (full) {
+                return -1;
+            }
+
+            return entryList.size();
+        }
+
+        return binaryLinearSearch(elo);
     }
 
     public Entry get(int index) {
@@ -103,6 +125,23 @@ public class LeaderboardMap {
         if (entryList.size() > size) {
             for (int i = size; i < entryList.size(); i++) {
                 entryList.remove(i);
+            }
+        }
+
+        boolean encountered = false;
+
+        Iterator<Entry> iterator = entryList.iterator();
+
+        while (iterator.hasNext()) {
+            Entry entry = iterator.next();
+
+            if (entry.getKey().equalsIgnoreCase(key)) {
+                if (encountered) {
+                    iterator.remove();
+                    break;
+                }
+
+                encountered = true;
             }
         }
     }

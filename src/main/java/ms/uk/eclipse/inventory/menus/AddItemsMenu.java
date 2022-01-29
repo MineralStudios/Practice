@@ -12,18 +12,20 @@ import ms.uk.eclipse.core.utils.message.StrikingMessage;
 import ms.uk.eclipse.inventory.Menu;
 
 public class AddItemsMenu extends Menu {
+	static List<Material> EXCLUDED = new GlueList<>(Arrays.asList(Material.DIAMOND_HELMET, Material.DIAMOND_CHESTPLATE,
+			Material.DIAMOND_LEGGINGS, Material.DIAMOND_BOOTS, Material.MUSHROOM_SOUP, Material.POTION,
+			Material.GOLDEN_APPLE, Material.ENDER_PEARL, Material.WATER_BUCKET, Material.LAVA_BUCKET));
+
+	static List<Material> INCLUDED = new GlueList<>(
+			Arrays.asList(Material.COOKED_BEEF, Material.GOLDEN_CARROT, Material.GRILLED_PORK));
+
 	public AddItemsMenu() {
 		super(new StrikingMessage("Add Items", CC.PRIMARY, true));
 		setClickCancelled(true);
 	}
 
-	public void update() {
-		List<Material> excluded = new GlueList<>(Arrays.asList(Material.DIAMOND_HELMET, Material.DIAMOND_CHESTPLATE,
-				Material.DIAMOND_LEGGINGS, Material.DIAMOND_BOOTS, Material.MUSHROOM_SOUP, Material.POTION,
-				Material.GOLDEN_APPLE, Material.ENDER_PEARL, Material.WATER_BUCKET, Material.LAVA_BUCKET));
-
-		List<Material> included = new GlueList<>(
-				Arrays.asList(Material.COOKED_BEEF, Material.GOLDEN_CARROT, Material.GRILLED_PORK));
+	@Override
+	public boolean update() {
 
 		for (ItemStack is : viewer.getKitEditorData().getGametype().getKit().getContents()) {
 
@@ -33,7 +35,7 @@ public class AddItemsMenu extends Menu {
 
 			Material i = is.getType();
 
-			if (excluded.contains(i)) {
+			if (EXCLUDED.contains(i)) {
 				continue;
 			}
 
@@ -43,18 +45,20 @@ public class AddItemsMenu extends Menu {
 
 			Runnable runnable = () -> viewer.getInventory().addItem(is);
 
-			if (included.contains(i)) {
-				for (Material m : included) {
+			if (INCLUDED.contains(i)) {
+				for (Material m : INCLUDED) {
 					ItemStack item = new ItemStack(m, 64);
 
 					runnable = () -> viewer.getInventory().addItem(is);
 
 					add(item, runnable);
 				}
-				return;
+				return true;
 			}
 
 			add(is, runnable);
 		}
+
+		return true;
 	}
 }

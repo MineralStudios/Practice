@@ -20,7 +20,8 @@ public class SelectTournamentMenu extends Menu {
         super(new StrikingMessage("Select Tournament", CC.PRIMARY, true));
     }
 
-    public void update() {
+    @Override
+    public boolean update() {
         for (Gametype g : gametypeManager.getGametypes()) {
             if (!g.getEvent()) {
                 continue;
@@ -47,5 +48,7 @@ public class SelectTournamentMenu extends Menu {
 
             add(item, runnable);
         }
+
+        return true;
     }
 }
