@@ -1,6 +1,6 @@
-name: StrafePractice
+name: MineralPractice
 version: .dev1
 author: OpaqueEclipse
 main: ms.uk.eclipse.PracticePlugin
-description: Strafe Practice Plugin!
-depend: [StrafeCore]
+description: Mineral Practice Plugin!
+depend: [MineralCore]

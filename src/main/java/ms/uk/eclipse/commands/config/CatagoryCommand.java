@@ -1,16 +1,11 @@
 package ms.uk.eclipse.commands.config;
 
+import java.util.Iterator;
+
 import ms.uk.eclipse.PracticePlugin;
 import ms.uk.eclipse.core.commands.PlayerCommand;
-import ms.uk.eclipse.core.utils.message.AddedMessage;
+import ms.uk.eclipse.core.rank.RankPower;
 import ms.uk.eclipse.core.utils.message.CC;
-import ms.uk.eclipse.core.utils.message.ChatMessage;
-import ms.uk.eclipse.core.utils.message.CreatedMessage;
-import ms.uk.eclipse.core.utils.message.DeletedMessage;
-import ms.uk.eclipse.core.utils.message.SetValueMessage;
-import ms.uk.eclipse.core.utils.message.StrikingMessage;
-import ms.uk.eclipse.core.utils.message.UsageMessage;
-import ms.uk.eclipse.entity.Profile;
 import ms.uk.eclipse.gametype.Catagory;
 import ms.uk.eclipse.gametype.Gametype;
 import ms.uk.eclipse.managers.ArenaManager;
@@ -19,7 +14,9 @@ import ms.uk.eclipse.managers.GametypeManager;
 import ms.uk.eclipse.managers.PlayerManager;
 import ms.uk.eclipse.managers.QueuetypeManager;
 import ms.uk.eclipse.queue.Queuetype;
+import ms.uk.eclipse.util.messages.ChatMessages;
 import ms.uk.eclipse.util.messages.ErrorMessages;
+import ms.uk.eclipse.util.messages.UsageMessages;
 
 public class CatagoryCommand extends PlayerCommand {
 
@@ -30,51 +27,59 @@ public class CatagoryCommand extends PlayerCommand {
 	final GametypeManager gametypeManager = PracticePlugin.INSTANCE.getGametypeManager();
 
 	public CatagoryCommand() {
-		super("catagory", "practice.permission.config");
+		super("catagory", RankPower.MANAGER);
 	}
 
 	@Override
-	public void execute(org.bukkit.entity.Player pl, String[] args) {
+	public void execute(org.bukkit.entity.Player player, String[] args) {
 
-		String arg = "";
+		String arg = args.length > 0 ? args[0] : "";
 
-		if (args.length > 0) {
-			arg = args[0];
-		}
-
-		Profile player = playerManager.getProfile(pl);
 		Catagory catagory;
 		Gametype gametype;
+		String catagoryName;
+		String gametypeName;
+		StringBuilder sb;
 
 		switch (arg.toLowerCase()) {
+			default:
+				ChatMessages.CATAGORY_COMMANDS.send(player);
+				ChatMessages.CATAGORY_CREATE.send(player);
+				ChatMessages.CATAGORY_DISPLAY.send(player);
+				ChatMessages.CATAGORY_QUEUE.send(player);
+				ChatMessages.CATAGORY_LIST.send(player);
+				ChatMessages.CATAGORY_ADD.send(player);
+				ChatMessages.CATAGORY_REMOVE.send(player);
+				ChatMessages.CATAGORY_DELETE.send(player);
+				return;
 			case "create":
 				if (args.length < 2) {
-					player.message(new UsageMessage("/catagory create <Name>"));
+					UsageMessages.CATAGORY_CREATE.send(player);
 					return;
 				}
 
-				catagory = new Catagory(args[1]);
+				catagoryName = args[1];
 
-				if (catagoryManager.contains(catagory)) {
-					player.message(ErrorMessages.CATAGORY_ALREADY_EXISTS);
+				if (catagoryManager.getCatagoryByName(catagoryName) != null) {
+					ErrorMessages.ARENA_ALREADY_EXISTS.send(player);
 					return;
 				}
 
+				catagory = new Catagory(catagoryName);
 				catagoryManager.registerCatagory(catagory);
-
-				player.message(new CreatedMessage("The " + args[1] + " catagory"));
-
+				ChatMessages.CATAGORY_CREATED.clone().replace("%catagory%", catagoryName).send(player);
 				return;
 			case "setdisplay":
 				if (args.length < 2) {
-					player.message(new UsageMessage("/catagory setdisplay <Catagory> <DisplayName>"));
+					UsageMessages.CATAGORY_DISPLAY.send(player);
 					return;
 				}
 
-				catagory = catagoryManager.getCatagoryByName(args[1]);
+				catagoryName = args[1];
+				catagory = catagoryManager.getCatagoryByName(catagoryName);
 
 				if (catagory == null) {
-					player.message(ErrorMessages.CATAGORY_DOES_NOT_EXIST);
+					ErrorMessages.CATAGORY_DOES_NOT_EXIST.send(player);
 					return;
 				}
 
@@ -84,128 +89,140 @@ public class CatagoryCommand extends PlayerCommand {
 					catagory.setDisplayName(args[2].replace("&", "§"));
 				}
 
-				player.message(
-						new SetValueMessage("The display item for " + args[1], "the item in your hand", CC.GREEN));
+				ChatMessages.CATAGORY_DISPLAY_SET.clone().replace("%catagory%", catagoryName).send(player);
 
 				return;
 			case "queue":
 				if (args.length < 4) {
-					player.message(new UsageMessage("/catagory queue <Catagory> <Queuetype> <Slot/False>"));
+					UsageMessages.CATAGORY_QUEUE.send(player);
 					return;
 				}
 
-				catagory = catagoryManager.getCatagoryByName(args[1]);
+				catagoryName = args[1];
+				catagory = catagoryManager.getCatagoryByName(catagoryName);
 
 				Queuetype queuetype = queuetypeManager.getQueuetypeByName(args[2]);
 
 				if (catagory == null) {
-					player.message(ErrorMessages.CATAGORY_DOES_NOT_EXIST);
+					ErrorMessages.CATAGORY_DOES_NOT_EXIST.send(player);
 					return;
 				}
 
 				if (queuetype == null) {
-					player.message(ErrorMessages.QUEUETYPE_DOES_NOT_EXIST);
+					ErrorMessages.QUEUETYPE_DOES_NOT_EXIST.send(player);
 					return;
 				}
 
-				if (args[3].equalsIgnoreCase("false")) {
+				String slotName = args[3];
+
+				if (slotName.equalsIgnoreCase("false")) {
 					catagory.removeFromQueuetype(queuetype);
 				} else {
 					Integer slot;
 
 					try {
-						slot = Integer.parseInt(args[3]);
+						slot = Integer.parseInt(slotName);
 					} catch (Exception e) {
+						ErrorMessages.INVALID_SLOT.send(player);
 						return;
 					}
 
 					catagory.addToQueuetype(queuetype, slot);
 				}
 
-				player.message(new SetValueMessage("The slot in the queue for " + args[1], args[3], CC.GREEN));
+				ChatMessages.CATAGORY_QUEUE.clone().replace("%catagory%", catagoryName).replace("%slot%",
+						slotName).send(player);
 
 				return;
 			case "add":
 				if (args.length < 3) {
-					player.message(new UsageMessage("/catagory add <Catagory> <Gametype>"));
+					UsageMessages.CATAGORY_ADD.send(player);
 					return;
 				}
 
-				catagory = catagoryManager.getCatagoryByName(args[1]);
-				gametype = gametypeManager.getGametypeByName(args[2]);
+				catagoryName = args[1];
+				catagory = catagoryManager.getCatagoryByName(catagoryName);
 
 				if (catagory == null) {
-					player.message(ErrorMessages.CATAGORY_DOES_NOT_EXIST);
+					ErrorMessages.CATAGORY_DOES_NOT_EXIST.send(player);
 					return;
 				}
 
+				gametypeName = args[2];
+				gametype = gametypeManager.getGametypeByName(gametypeName);
+
 				if (gametype == null) {
-					player.message(ErrorMessages.GAMETYPE_DOES_NOT_EXIST);
+					ErrorMessages.GAMETYPE_DOES_NOT_EXIST.send(player);
 					return;
 				}
 
 				gametype.addToCatagory(catagory);
-				player.message(new AddedMessage(args[2], "the catagory", CC.GREEN));
+				ChatMessages.CATAGORY_ADDED.clone().replace("%gametype%", gametypeName)
+						.replace("%catagory%", catagoryName).send(player);
 
 				return;
 			case "remove":
 				if (args.length < 3) {
-					player.message(new UsageMessage("/catagory remove <Catagory> <Gametype>"));
+					UsageMessages.CATAGORY_REMOVE.send(player);
 					return;
 				}
 
-				catagory = catagoryManager.getCatagoryByName(args[1]);
-				gametype = gametypeManager.getGametypeByName(args[2]);
+				catagoryName = args[1];
+				catagory = catagoryManager.getCatagoryByName(catagoryName);
 
 				if (catagory == null) {
-					player.message(ErrorMessages.CATAGORY_DOES_NOT_EXIST);
+					ErrorMessages.CATAGORY_DOES_NOT_EXIST.send(player);
 					return;
 				}
 
+				gametypeName = args[2];
+				gametype = gametypeManager.getGametypeByName(gametypeName);
+
 				if (gametype == null) {
-					player.message(ErrorMessages.GAMETYPE_DOES_NOT_EXIST);
+					ErrorMessages.GAMETYPE_DOES_NOT_EXIST.send(player);
 					return;
 				}
 
 				gametype.removeFromCatagory(catagory);
-				player.message(new DeletedMessage(args[2]));
+				ChatMessages.CATAGORY_REMOVED.clone().replace("%gametype%", gametypeName)
+						.replace("%catagory%", catagoryName).send(player);
 
 				return;
 			case "list":
-				player.message(new StrikingMessage("Catagory List", CC.PRIMARY, true));
+				sb = new StringBuilder(CC.GRAY + "[");
 
-				for (Catagory c : catagoryManager.getCatagorys()) {
-					player.message(new ChatMessage(c.getName(), CC.SECONDARY, false));
+				Iterator<Catagory> arenaIter = catagoryManager.getCatagorys().iterator();
+
+				while (arenaIter.hasNext()) {
+					Catagory c = arenaIter.next();
+					sb.append(CC.GREEN + c.getName());
+
+					if (arenaIter.hasNext()) {
+						sb.append(CC.GRAY + ", ");
+					}
 				}
+
+				sb.append(CC.GRAY + "]");
+
+				player.sendMessage(sb.toString());
 
 				return;
 			case "delete":
 				if (args.length < 2) {
-					player.message(new UsageMessage("/catagory delete <Catagory>"));
+					UsageMessages.CATAGORY_DELETE.send(player);
 					return;
 				}
 
-				catagory = catagoryManager.getCatagoryByName(args[1]);
+				catagoryName = args[1];
+				catagory = catagoryManager.getCatagoryByName(catagoryName);
 
 				if (catagory == null) {
-					player.message(ErrorMessages.CATAGORY_DOES_NOT_EXIST);
+					ErrorMessages.CATAGORY_DOES_NOT_EXIST.send(player);
 					return;
 				}
 
 				catagoryManager.remove(catagory);
-				player.message(new DeletedMessage("The " + args[1] + " catagory"));
-
-				return;
-			default:
-				player.message(new StrikingMessage("Catagory Help", CC.PRIMARY, true));
-				player.message(new ChatMessage("/catagory create <Name>", CC.SECONDARY, false));
-				player.message(new ChatMessage("/catagory setdisplay <Catagory> <DisplayName>", CC.SECONDARY, false));
-				player.message(
-						new ChatMessage("/catagory queue <Catagory> <Queuetype> <Slot/False>", CC.SECONDARY, false));
-				player.message(new ChatMessage("/catagory list", CC.SECONDARY, false));
-				player.message(new ChatMessage("/catagory add <Catagory> <Gametype>", CC.SECONDARY, false));
-				player.message(new ChatMessage("/catagory remove <Catagory> <Gametype>", CC.SECONDARY, false));
-				player.message(new ChatMessage("/catagory delete <Name>", CC.SECONDARY, false));
+				ChatMessages.CATAGORY_DELETED.clone().replace("%catagory%", catagoryName).send(player);
 
 				return;
 		}

@@ -5,19 +5,19 @@ import org.bukkit.inventory.ItemStack;
 import ms.uk.eclipse.PracticePlugin;
 import ms.uk.eclipse.core.utils.item.ItemBuilder;
 import ms.uk.eclipse.core.utils.message.CC;
-import ms.uk.eclipse.core.utils.message.ChatMessage;
-import ms.uk.eclipse.core.utils.message.StrikingMessage;
+
 import ms.uk.eclipse.gametype.Gametype;
-import ms.uk.eclipse.inventory.Menu;
+import ms.uk.eclipse.inventory.PracticeMenu;
 import ms.uk.eclipse.managers.GametypeManager;
 import ms.uk.eclipse.tournaments.Tournament;
 
-public class SelectTournamentMenu extends Menu {
+public class SelectTournamentMenu extends PracticeMenu {
 
     final GametypeManager gametypeManager = PracticePlugin.INSTANCE.getGametypeManager();
+    final static String TITLE = CC.BLUE + "Select Tournament";
 
     public SelectTournamentMenu() {
-        super(new StrikingMessage("Select Tournament", CC.PRIMARY, true));
+        super(TITLE);
     }
 
     @Override
@@ -28,7 +28,7 @@ public class SelectTournamentMenu extends Menu {
             }
 
             ItemStack item = new ItemBuilder(g.getDisplayItem())
-                    .name(new ChatMessage(g.getDisplayName(), CC.WHITE, true).toString()).lore().build();
+                    .name(g.getDisplayName()).lore().build();
 
             Runnable runnable = new Runnable() {
                 @Override

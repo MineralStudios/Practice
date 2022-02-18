@@ -13,7 +13,7 @@ import ms.uk.eclipse.PracticePlugin;
 import ms.uk.eclipse.core.tasks.CommandTask;
 import ms.uk.eclipse.entity.Profile;
 import ms.uk.eclipse.entity.PlayerStatus;
-import ms.uk.eclipse.inventory.Menu;
+import ms.uk.eclipse.inventory.PracticeMenu;
 import ms.uk.eclipse.managers.PlayerManager;
 import ms.uk.eclipse.tasks.MenuTask;
 
@@ -23,7 +23,7 @@ public class InventoryListener implements Listener {
 	@EventHandler
 	public void onInventoryClick(InventoryClickEvent e) {
 		Profile player = playerManager.getProfile((org.bukkit.entity.Player) e.getWhoClicked());
-		Menu menu = player.getOpenMenu();
+		PracticeMenu menu = player.getOpenMenu();
 
 		boolean canClick = player.bukkit().isOp() && player.bukkit().getGameMode().equals(GameMode.CREATIVE);
 

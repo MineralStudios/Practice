@@ -9,12 +9,13 @@ import org.bukkit.event.player.PlayerLoginEvent;
 import org.bukkit.event.player.PlayerQuitEvent;
 
 import ms.uk.eclipse.PracticePlugin;
-import ms.uk.eclipse.core.utils.message.LeftMessage;
+import ms.uk.eclipse.core.utils.message.ChatMessage;
 import ms.uk.eclipse.entity.Profile;
 import ms.uk.eclipse.managers.PartyManager;
 import ms.uk.eclipse.managers.PlayerManager;
 import ms.uk.eclipse.party.Party;
 import ms.uk.eclipse.scoreboard.Scoreboard;
+import ms.uk.eclipse.util.messages.ChatMessages;
 
 public class EntryListener implements Listener {
 	final PlayerManager playerManager = PracticePlugin.INSTANCE.getPlayerManager();
@@ -47,13 +48,13 @@ public class EntryListener implements Listener {
 				return;
 			}
 
-			LeftMessage m = new LeftMessage(victim.getName(), "party");
+			ChatMessage leftMessage = ChatMessages.LEFT_PARTY.clone().replace("%player%", victim.getName());
 
 			if (p.getPartyLeader().equals(victim)) {
 				while (!p.getPartyMembers().isEmpty()) {
 					Profile plr = p.getPartyMembers().removeFirst();
 					plr.removeFromParty();
-					plr.message(m);
+					plr.message(leftMessage);
 				}
 
 				partyManager.remove(p);
@@ -62,7 +63,7 @@ public class EntryListener implements Listener {
 				victim.removeFromParty();
 
 				for (Profile plr : p.getPartyMembers()) {
-					plr.message(m);
+					plr.message(leftMessage);
 				}
 			}
 		}

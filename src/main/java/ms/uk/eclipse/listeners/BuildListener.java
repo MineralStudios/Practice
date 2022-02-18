@@ -12,10 +12,10 @@ import org.bukkit.event.block.BlockPlaceEvent;
 import org.bukkit.event.player.PlayerBucketEmptyEvent;
 
 import ms.uk.eclipse.PracticePlugin;
-import ms.uk.eclipse.core.utils.message.ErrorMessage;
 import ms.uk.eclipse.entity.Profile;
 import ms.uk.eclipse.managers.PlayerManager;
 import ms.uk.eclipse.match.Match;
+import ms.uk.eclipse.util.messages.ErrorMessages;
 
 public class BuildListener implements Listener {
 	final PlayerManager playerManager = PracticePlugin.INSTANCE.getPlayerManager();;
@@ -67,7 +67,7 @@ public class BuildListener implements Listener {
 		if (e.getBlockPlaced().getType() == Material.TNT) {
 
 			if (match.getPlacedTnt() > 128) {
-				player.message(new ErrorMessage("You have reached the maximum tnt limit"));
+				player.message(ErrorMessages.MAX_TNT);
 				e.setCancelled(true);
 				return;
 			}
@@ -88,14 +88,11 @@ public class BuildListener implements Listener {
 			return;
 		}
 
-		Match match = player.getMatch();
-		e.setCancelled(!match.getData().getBuild());
+		e.setCancelled(!player.getMatch().getData().getBuild());
 	}
 
 	@EventHandler
 	public void onBlockIgnite(BlockIgniteEvent event) {
-		if (event.getCause() != IgniteCause.FLINT_AND_STEEL) {
-			event.setCancelled(true);
-		}
+		event.setCancelled(event.getCause() != IgniteCause.FLINT_AND_STEEL);
 	}
 }

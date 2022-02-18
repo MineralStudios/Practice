@@ -7,15 +7,15 @@ import land.strafe.server.combat.KnockbackProfile;
 import land.strafe.server.combat.KnockbackProfileList;
 import ms.uk.eclipse.core.utils.item.ItemBuilder;
 import ms.uk.eclipse.core.utils.message.CC;
-import ms.uk.eclipse.core.utils.message.ChatMessage;
-import ms.uk.eclipse.core.utils.message.StrikingMessage;
-import ms.uk.eclipse.inventory.Menu;
 
-public class SelectKnockbackMenu extends Menu {
+import ms.uk.eclipse.inventory.PracticeMenu;
+
+public class SelectKnockbackMenu extends PracticeMenu {
     MechanicsMenu menu;
+    final static String TITLE = CC.BLUE + "Select Knockback";
 
     public SelectKnockbackMenu(MechanicsMenu menu) {
-        super(new StrikingMessage("Select Knockback", CC.PRIMARY, true));
+        super(TITLE);
         setClickCancelled(true);
         this.menu = menu;
     }
@@ -25,7 +25,7 @@ public class SelectKnockbackMenu extends Menu {
         for (KnockbackProfile k : KnockbackProfileList.getKnockbackProfiles()) {
             try {
                 ItemStack item = new ItemBuilder(Material.GOLD_SWORD)
-                        .name(new ChatMessage(k.getName(), CC.WHITE, true).toString()).build();
+                        .name(k.getName()).build();
 
                 Runnable runnable = new Runnable() {
                     @Override

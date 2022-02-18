@@ -1,18 +1,15 @@
 package ms.uk.eclipse.commands.config;
 
+import java.util.Iterator;
+
+import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 
 import ms.uk.eclipse.PracticePlugin;
 import ms.uk.eclipse.arena.Arena;
 import ms.uk.eclipse.core.commands.PlayerCommand;
+import ms.uk.eclipse.core.rank.RankPower;
 import ms.uk.eclipse.core.utils.message.CC;
-import ms.uk.eclipse.core.utils.message.ChatMessage;
-import ms.uk.eclipse.core.utils.message.CreatedMessage;
-import ms.uk.eclipse.core.utils.message.DeletedMessage;
-import ms.uk.eclipse.core.utils.message.SetValueMessage;
-import ms.uk.eclipse.core.utils.message.StrikingMessage;
-import ms.uk.eclipse.core.utils.message.UsageMessage;
-import ms.uk.eclipse.entity.Profile;
 import ms.uk.eclipse.gametype.Gametype;
 import ms.uk.eclipse.kit.Kit;
 import ms.uk.eclipse.managers.ArenaManager;
@@ -20,7 +17,9 @@ import ms.uk.eclipse.managers.GametypeManager;
 import ms.uk.eclipse.managers.PlayerManager;
 import ms.uk.eclipse.managers.QueuetypeManager;
 import ms.uk.eclipse.queue.Queuetype;
+import ms.uk.eclipse.util.messages.ChatMessages;
 import ms.uk.eclipse.util.messages.ErrorMessages;
+import ms.uk.eclipse.util.messages.UsageMessages;
 
 public class GametypeCommand extends PlayerCommand {
 
@@ -30,65 +29,93 @@ public class GametypeCommand extends PlayerCommand {
 	final ArenaManager arenaManager = PracticePlugin.INSTANCE.getArenaManager();
 
 	public GametypeCommand() {
-		super("gametype", "practice.permission.config");
+		super("gametype", RankPower.MANAGER);
 	}
 
 	@Override
-	public void execute(org.bukkit.entity.Player pl, String[] args) {
+	public void execute(Player player, String[] args) {
 
-		String arg = "";
-		if (args.length > 0) {
-			arg = args[0];
-		}
+		String arg = args.length > 0 ? args[0] : "";
 
-		Profile player = playerManager.getProfile(pl);
 		Gametype gametype;
 		Arena arena;
+		String gametypeName;
+		String toggled;
+		String arenaName;
+		StringBuilder sb;
+
 		switch (arg.toLowerCase()) {
+			default:
+				ChatMessages.GAMETYPE_COMMANDS.send(player);
+				ChatMessages.GAMETYPE_CREATE.send(player);
+				ChatMessages.GAMETYPE_KIT.send(player);
+				ChatMessages.GAMETYPE_LOAD_KIT.send(player);
+				ChatMessages.GAMETYPE_DAMAGE_TICKS.send(player);
+				ChatMessages.GAMETYPE_GRIEFING.send(player);
+				ChatMessages.GAMETYPE_BUILD.send(player);
+				ChatMessages.GAMETYPE_LOOTING.send(player);
+				ChatMessages.GAMETYPE_DAMAGE.send(player);
+				ChatMessages.GAMETYPE_HUNGER.send(player);
+				ChatMessages.GAMETYPE_REGEN.send(player);
+				ChatMessages.GAMETYPE_EPEARL.send(player);
+				ChatMessages.GAMETYPE_ARENA_FOR_ALL.send(player);
+				ChatMessages.GAMETYPE_DISPLAY.send(player);
+				ChatMessages.GAMETYPE_QUEUE.send(player);
+				ChatMessages.GAMETYPE_LIST.send(player);
+				ChatMessages.GAMETYPE_ARENA.send(player);
+				ChatMessages.GAMETYPE_EVENT_ARENA.send(player);
+				ChatMessages.GAMETYPE_EVENT.send(player);
+				ChatMessages.GAMETYPE_DEADLY_WATER.send(player);
+				ChatMessages.GAMETYPE_DELETE.send(player);
+				return;
 			case "create":
 				if (args.length < 2) {
-					player.message(new UsageMessage("/gametype create <Name>"));
+					UsageMessages.GAMETYPE_CREATE.send(player);
 					return;
 				}
 
-				gametype = new Gametype(args[1]);
+				gametypeName = args[1];
 
-				if (gametypeManager.contains(gametype)) {
-					player.message(ErrorMessages.GAMETYPE_ALREADY_EXISTS);
+				if (gametypeManager.getGametypeByName(gametypeName) != null) {
+					ErrorMessages.GAMETYPE_ALREADY_EXISTS.send(player);
 					return;
 				}
+
+				gametype = new Gametype(gametypeName);
 
 				gametypeManager.registerGametype(gametype);
-				player.message(new CreatedMessage("The " + args[1] + " gametype"));
-
+				ChatMessages.GAMETYPE_CREATED.clone().replace("%gametype%", gametypeName).send(player);
 				return;
 			case "loadkit":
 				if (args.length < 2) {
-					player.message(new UsageMessage("/gametype loadkit <Name>"));
+					UsageMessages.GAMETYPE_LOAD_KIT.send(player);
 					return;
 				}
 
-				gametype = gametypeManager.getGametypeByName(args[1]);
+				gametypeName = args[1];
+				gametype = gametypeManager.getGametypeByName(gametypeName);
 
 				if (gametype == null) {
-					player.message(ErrorMessages.GAMETYPE_DOES_NOT_EXIST);
+					ErrorMessages.GAMETYPE_DOES_NOT_EXIST.send(player);
 					return;
 				}
 
-				player.giveKit(gametype.getKit());
-				player.message(new SetValueMessage("Your inventory", "the " + args[1] + " kit", CC.GREEN));
+				player.getInventory().setContents(gametype.getKit().getContents());
+				player.getInventory().setArmorContents(gametype.getKit().getArmourContents());
+				ChatMessages.GAMETYPE_LOADED_KIT.clone().replace("%gametype%", gametypeName).send(player);
 
 				return;
 			case "kit":
 				if (args.length < 2) {
-					player.message(new UsageMessage("/gametype kit <Gametype>"));
+					UsageMessages.GAMETYPE_KIT.send(player);
 					return;
 				}
 
-				gametype = gametypeManager.getGametypeByName(args[1]);
+				gametypeName = args[1];
+				gametype = gametypeManager.getGametypeByName(gametypeName);
 
 				if (gametype == null) {
-					player.message(ErrorMessages.GAMETYPE_DOES_NOT_EXIST);
+					ErrorMessages.GAMETYPE_DOES_NOT_EXIST.send(player);
 					return;
 				}
 
@@ -96,19 +123,20 @@ public class GametypeCommand extends PlayerCommand {
 				ItemStack[] armourContents = player.getInventory().getArmorContents();
 
 				gametype.setKit(new Kit(contents, armourContents));
-				player.message(new SetValueMessage("The kit for " + args[1], "your inventory contents", CC.GREEN));
+				ChatMessages.GAMETYPE_KIT_SET.clone().replace("%gametype%", gametypeName).send(player);
 
 				return;
 			case "setdisplay":
 				if (args.length < 2) {
-					player.message(new UsageMessage("/gametype setdisplay <Gametype> <DisplayName>"));
+					UsageMessages.GAMETYPE_DISPLAY.send(player);
 					return;
 				}
 
-				gametype = gametypeManager.getGametypeByName(args[1]);
+				gametypeName = args[1];
+				gametype = gametypeManager.getGametypeByName(gametypeName);
 
 				if (gametype == null) {
-					player.message(ErrorMessages.GAMETYPE_DOES_NOT_EXIST);
+					ErrorMessages.GAMETYPE_DOES_NOT_EXIST.send(player);
 					return;
 				}
 
@@ -118,430 +146,501 @@ public class GametypeCommand extends PlayerCommand {
 					gametype.setDisplayName(args[2].replace("&", "§"));
 				}
 
-				player.message(new SetValueMessage("The display item ", "for " + args[1], CC.GREEN));
-
+				ChatMessages.GAMETYPE_DISPLAY_SET.clone().replace("%gametype%", gametypeName).send(player);
 				return;
+			case "hitdelay":
 			case "nodamageticks":
 				if (args.length < 3) {
-					player.message(new UsageMessage("/gametype nodamageticks <Gametype> <Ticks>"));
+					UsageMessages.GAMETYPE_DAMAGE_TICKS.send(player);
 					return;
 				}
 
-				gametype = gametypeManager.getGametypeByName(args[1]);
+				gametypeName = args[1];
+				gametype = gametypeManager.getGametypeByName(gametypeName);
 
 				if (gametype == null) {
-					player.message(ErrorMessages.GAMETYPE_DOES_NOT_EXIST);
+					ErrorMessages.GAMETYPE_DOES_NOT_EXIST.send(player);
 					return;
 				}
+
+				String noDamageTicksStr = args[2];
+
+				Integer ndt;
 
 				try {
-					gametype.setNoDamageTicks(Integer.parseInt(args[2]));
-					player.message(new SetValueMessage("The hit delay ", args[2], CC.GREEN));
-					return;
+					ndt = Integer.parseInt(noDamageTicksStr);
 				} catch (Exception e) {
+					ErrorMessages.INVALID_NUMBER.send(player);
+					return;
 				}
 
-				player.message(new UsageMessage("/gametype nodamageticks <Gametype> <Ticks>"));
-
+				gametype.setNoDamageTicks(ndt);
+				ChatMessages.GAMETYPE_DAMAGE_TICKS_SET.clone().replace("%gametype%", gametypeName).replace("%delay%",
+						noDamageTicksStr).send(player);
 				return;
 			case "regen":
 				if (args.length < 3) {
-					player.message(new UsageMessage("/gametype regen <Gametype> <True/False>"));
+					UsageMessages.GAMETYPE_REGEN.send(player);
 					return;
 				}
 
-				gametype = gametypeManager.getGametypeByName(args[1]);
+				gametypeName = args[1];
+				gametype = gametypeManager.getGametypeByName(gametypeName);
 
 				if (gametype == null) {
-					player.message(ErrorMessages.GAMETYPE_DOES_NOT_EXIST);
+					ErrorMessages.GAMETYPE_DOES_NOT_EXIST.send(player);
 					return;
 				}
 
-				switch (args[2]) {
+				toggled = args[2].toLowerCase();
+
+				switch (toggled) {
 					case "false":
 						gametype.setRegeneration(false);
-						player.message(new SetValueMessage("Regeneration", "false", CC.RED));
-						return;
+						break;
 					case "true":
 						gametype.setRegeneration(true);
-						player.message(new SetValueMessage("Regeneration", "true", CC.GREEN));
+						break;
+					default:
+						UsageMessages.GAMETYPE_REGEN.send(player);
 						return;
 				}
 
-				player.message(new UsageMessage("/gametype regen <Gametype> <True/False>"));
-
+				ChatMessages.GAMETYPE_REGEN_SET.clone().replace("%gametype%", gametypeName)
+						.replace("%toggled%", toggled).send(player);
 				return;
 			case "griefing":
 				if (args.length < 3) {
-					player.message(new UsageMessage("/gametype griefing <Gametype> <True/False>"));
+					UsageMessages.GAMETYPE_GRIEFING.send(player);
 					return;
 				}
 
-				gametype = gametypeManager.getGametypeByName(args[1]);
+				gametypeName = args[1];
+				gametype = gametypeManager.getGametypeByName(gametypeName);
 
 				if (gametype == null) {
-					player.message(ErrorMessages.GAMETYPE_DOES_NOT_EXIST);
+					ErrorMessages.GAMETYPE_DOES_NOT_EXIST.send(player);
 					return;
 				}
 
-				if (args[2].equalsIgnoreCase("false")) {
-					gametype.setGriefing(false);
-					player.message(new SetValueMessage("Griefing", "false", CC.RED));
-					return;
+				toggled = args[2].toLowerCase();
+
+				switch (toggled) {
+					case "false":
+						gametype.setGriefing(false);
+						break;
+					case "true":
+						gametype.setGriefing(true);
+						break;
+					default:
+						UsageMessages.GAMETYPE_GRIEFING.send(player);
+						return;
 				}
 
-				if (args[2].equalsIgnoreCase("true")) {
-					gametype.setGriefing(true);
-					player.message(new SetValueMessage("Griefing", "true", CC.GREEN));
-					return;
-				}
-
-				player.message(new UsageMessage("/gametype griefing <Gametype> <True/False>"));
+				ChatMessages.GAMETYPE_GRIEFING_SET.clone().replace("%gametype%", gametypeName)
+						.replace("%toggled%", toggled).send(player);
 
 				return;
 			case "queue":
 				if (args.length < 4) {
-					player.message(new UsageMessage("/gametype queue <Gametype> <Queuetype> <Slot/False>"));
+					UsageMessages.GAMETYPE_QUEUE.send(player);
 					return;
 				}
 
-				gametype = gametypeManager.getGametypeByName(args[1]);
-				Queuetype queuetype = queuetypeManager.getQueuetypeByName(args[2]);
+				gametypeName = args[1];
+				gametype = gametypeManager.getGametypeByName(gametypeName);
 
 				if (gametype == null) {
-					player.message(ErrorMessages.GAMETYPE_DOES_NOT_EXIST);
+					ErrorMessages.GAMETYPE_DOES_NOT_EXIST.send(player);
 					return;
 				}
+
+				String queuetypeName = args[2];
+				Queuetype queuetype = queuetypeManager.getQueuetypeByName(queuetypeName);
 
 				if (queuetype == null) {
-					player.message(ErrorMessages.QUEUETYPE_DOES_NOT_EXIST);
+					ErrorMessages.QUEUETYPE_DOES_NOT_EXIST.send(player);
 					return;
 				}
 
-				String s = args[3];
+				String slotName = args[3];
 
-				if (s.equalsIgnoreCase("false")) {
+				if (slotName.equalsIgnoreCase("false")) {
 					gametype.removeFromQueuetype(queuetype);
 				} else {
 					Integer slot;
+
 					try {
-						slot = Integer.parseInt(s);
+						slot = Integer.parseInt(slotName);
 					} catch (Exception e) {
+						ErrorMessages.INVALID_SLOT.send(player);
 						return;
 					}
+
 					gametype.addToQueuetype(queuetype, slot);
 				}
 
-				player.message(new SetValueMessage("The slot", s, CC.PRIMARY));
-
+				ChatMessages.GAMETYPE_SLOT_SET.clone().replace("%gametype%", gametypeName)
+						.replace("%queuetype%", queuetypeName).replace("%slot%", slotName).send(player);
 				return;
 			case "build":
 				if (args.length < 3) {
-					player.message(new UsageMessage("/gametype build <Gametype> <True/False>"));
+					UsageMessages.GAMETYPE_BUILD.send(player);
 					return;
 				}
 
-				gametype = gametypeManager.getGametypeByName(args[1]);
+				gametypeName = args[1];
+				gametype = gametypeManager.getGametypeByName(gametypeName);
 
 				if (gametype == null) {
-					player.message(ErrorMessages.GAMETYPE_DOES_NOT_EXIST);
+					ErrorMessages.GAMETYPE_DOES_NOT_EXIST.send(player);
 					return;
 				}
 
-				if (args[2].equalsIgnoreCase("false")) {
-					gametype.setBuild(false);
-					player.message(new SetValueMessage("Build", "false", CC.RED));
-					return;
+				toggled = args[2].toLowerCase();
+
+				switch (toggled) {
+					case "false":
+						gametype.setBuild(false);
+						break;
+					case "true":
+						gametype.setBuild(true);
+						break;
+					default:
+						UsageMessages.GAMETYPE_BUILD.send(player);
+						return;
 				}
 
-				if (args[2].equalsIgnoreCase("true")) {
-					gametype.setBuild(true);
-					player.message(new SetValueMessage("Build", "true", CC.GREEN));
-					return;
-				}
-
-				player.message(new UsageMessage("/gametype build <Gametype> <True/False>"));
+				ChatMessages.GAMETYPE_BUILD_SET.clone().replace("%gametype%", gametypeName)
+						.replace("%toggled%", toggled).send(player);
 
 				return;
 			case "deadlywater":
 				if (args.length < 3) {
-					player.message(new UsageMessage("/gametype deadlywater <Gametype> <True/False>"));
+					UsageMessages.GAMETYPE_DEADLY_WATER.send(player);
 					return;
 				}
 
-				gametype = gametypeManager.getGametypeByName(args[1]);
+				gametypeName = args[1];
+				gametype = gametypeManager.getGametypeByName(gametypeName);
 
 				if (gametype == null) {
-					player.message(ErrorMessages.GAMETYPE_DOES_NOT_EXIST);
+					ErrorMessages.GAMETYPE_DOES_NOT_EXIST.send(player);
 					return;
 				}
 
-				if (args[2].equalsIgnoreCase("false")) {
-					gametype.setDeadlyWater(false);
-					player.message(new SetValueMessage("Deadly water", "false", CC.RED));
-					return;
+				toggled = args[2].toLowerCase();
+
+				switch (toggled) {
+					case "false":
+						gametype.setDeadlyWater(false);
+						break;
+					case "true":
+						gametype.setDeadlyWater(true);
+						break;
+					default:
+						UsageMessages.GAMETYPE_DEADLY_WATER.send(player);
+						return;
 				}
 
-				if (args[2].equalsIgnoreCase("true")) {
-					gametype.setDeadlyWater(true);
-					player.message(new SetValueMessage("Deadly water", "true", CC.GREEN));
-					return;
-				}
-
-				player.message(new UsageMessage("/gametype deadlywater <Gametype> <True/False>"));
+				ChatMessages.GAMETYPE_DEADLY_WATER_SET.clone().replace("%gametype%", gametypeName)
+						.replace("%toggled%", toggled).send(player);
 
 				return;
 			case "looting":
 				if (args.length < 3) {
-					player.message(new UsageMessage("/gametype looting <Gametype> <True/False>"));
+					UsageMessages.GAMETYPE_LOOTING.send(player);
 					return;
 				}
 
-				gametype = gametypeManager.getGametypeByName(args[1]);
+				gametypeName = args[1];
+				gametype = gametypeManager.getGametypeByName(gametypeName);
 
 				if (gametype == null) {
-					player.message(ErrorMessages.GAMETYPE_DOES_NOT_EXIST);
+					ErrorMessages.GAMETYPE_DOES_NOT_EXIST.send(player);
 					return;
 				}
 
-				if (args[2].equalsIgnoreCase("false")) {
-					gametype.setLooting(false);
-					player.message(new SetValueMessage("Looting", "false", CC.RED));
-					return;
+				toggled = args[2].toLowerCase();
+
+				switch (toggled) {
+					case "false":
+						gametype.setLooting(false);
+						break;
+					case "true":
+						gametype.setLooting(true);
+						break;
+					default:
+						UsageMessages.GAMETYPE_LOOTING.send(player);
+						return;
 				}
 
-				if (args[2].equalsIgnoreCase("true")) {
-					gametype.setLooting(true);
-					player.message(new SetValueMessage("Looting", "true", CC.GREEN));
-					return;
-				}
-
-				player.message(new UsageMessage("/gametype looting <Gametype> <True/False>"));
+				ChatMessages.GAMETYPE_LOOTING_SET.clone().replace("%gametype%", gametypeName)
+						.replace("%toggled%", toggled).send(player);
 
 				return;
 			case "damage":
 				if (args.length < 3) {
-					player.message(new UsageMessage("/gametype damage <Gametype> <True/False>"));
+					UsageMessages.GAMETYPE_DAMAGE.send(player);
 					return;
 				}
 
-				gametype = gametypeManager.getGametypeByName(args[1]);
+				gametypeName = args[1];
+				gametype = gametypeManager.getGametypeByName(gametypeName);
 
 				if (gametype == null) {
-					player.message(ErrorMessages.GAMETYPE_DOES_NOT_EXIST);
+					ErrorMessages.GAMETYPE_DOES_NOT_EXIST.send(player);
 					return;
 				}
 
-				if (args[2].equalsIgnoreCase("false")) {
-					gametype.setDamage(false);
-					player.message(new SetValueMessage("Damage", "false", CC.RED));
-					return;
+				toggled = args[2].toLowerCase();
+
+				switch (toggled) {
+					case "false":
+						gametype.setDamage(false);
+						break;
+					case "true":
+						gametype.setDamage(true);
+						break;
+					default:
+						UsageMessages.GAMETYPE_DAMAGE.send(player);
+						return;
 				}
 
-				if (args[2].equalsIgnoreCase("true")) {
-					gametype.setDamage(true);
-					player.message(new SetValueMessage("Damage", "true", CC.GREEN));
-					return;
-				}
-
-				player.message(new UsageMessage("/gametype damage <Gametype> <True/False>"));
+				ChatMessages.GAMETYPE_DAMAGE_SET.clone().replace("%gametype%", gametypeName)
+						.replace("%toggled%", toggled).send(player);
 
 				return;
 			case "hunger":
 				if (args.length < 3) {
-					player.message(new UsageMessage("/gametype hunger <Gametype> <True/False>"));
+					UsageMessages.GAMETYPE_HUNGER.send(player);
 					return;
 				}
 
-				gametype = gametypeManager.getGametypeByName(args[1]);
+				gametypeName = args[1];
+				gametype = gametypeManager.getGametypeByName(gametypeName);
 
 				if (gametype == null) {
-					player.message(ErrorMessages.GAMETYPE_DOES_NOT_EXIST);
+					ErrorMessages.GAMETYPE_DOES_NOT_EXIST.send(player);
 					return;
 				}
 
-				if (args[2].equalsIgnoreCase("false")) {
-					gametype.setHunger(false);
-					player.message(new SetValueMessage("Hunger", "false", CC.RED));
-					return;
+				toggled = args[2].toLowerCase();
+
+				switch (toggled) {
+					case "false":
+						gametype.setHunger(false);
+						break;
+					case "true":
+						gametype.setHunger(true);
+						break;
+					default:
+						UsageMessages.GAMETYPE_HUNGER.send(player);
+						return;
 				}
 
-				if (args[2].equalsIgnoreCase("true")) {
-					gametype.setHunger(true);
-					player.message(new SetValueMessage("Hunger", "true", CC.GREEN));
-					return;
-				}
-
-				player.message(new UsageMessage("/gametype hunger <Gametype> <True/False>"));
+				ChatMessages.GAMETYPE_HUNGER_SET.clone().replace("%gametype%", gametypeName)
+						.replace("%toggled%", toggled).send(player);
 
 				return;
 			case "epearl":
 				if (args.length < 3) {
-					player.message(new UsageMessage("/gametype epearl <Gametype> <Time(s)>"));
+					UsageMessages.GAMETYPE_EPEARL.send(player);
 					return;
 				}
 
-				gametype = gametypeManager.getGametypeByName(args[1]);
+				gametypeName = args[1];
+				gametype = gametypeManager.getGametypeByName(gametypeName);
 
 				if (gametype == null) {
-					player.message(ErrorMessages.GAMETYPE_DOES_NOT_EXIST);
+					ErrorMessages.GAMETYPE_DOES_NOT_EXIST.send(player);
 					return;
 				}
 
-				String cooldown = args[2];
-				gametype.setPearlCooldown(Integer.parseInt(cooldown));
-				player.message(new SetValueMessage("The pearl cooldown ", cooldown, CC.GREEN));
+				String cooldownStr = args[2];
 
-				return;
-			case "list":
-				player.message(new StrikingMessage("Gametype List", CC.PRIMARY, true));
+				Integer number;
 
-				for (Gametype g : gametypeManager.getGametypes()) {
-					player.message(new ChatMessage(g.getName(), CC.SECONDARY, false));
+				try {
+					number = Integer.parseInt(cooldownStr);
+				} catch (Exception e) {
+					ErrorMessages.INVALID_NUMBER.send(player);
+					return;
 				}
 
+				gametype.setPearlCooldown(number);
+				ChatMessages.GAMETYPE_PEARL_COOLDOWN_SET.clone().replace("%gametype%", gametypeName)
+						.replace("%cooldown%", cooldownStr).send(player);
+				return;
+			case "list":
+				sb = new StringBuilder(CC.GRAY + "[");
+
+				Iterator<Gametype> gametypeIter = gametypeManager.getGametypes().iterator();
+
+				while (gametypeIter.hasNext()) {
+					Gametype g = gametypeIter.next();
+					sb.append(CC.GREEN + g.getName());
+
+					if (gametypeIter.hasNext()) {
+						sb.append(CC.GRAY + ", ");
+					}
+				}
+
+				sb.append(CC.GRAY + "]");
+
+				player.sendMessage(sb.toString());
 				return;
 			case "arena":
 				if (args.length < 4) {
-					player.message(new UsageMessage("/gametype arena <Gametype> <Arena> <True/False>"));
+					UsageMessages.GAMETYPE_ARENA.send(player);
 					return;
 				}
 
-				gametype = gametypeManager.getGametypeByName(args[1]);
-				arena = arenaManager.getArenaByName(args[2]);
+				gametypeName = args[1];
+				gametype = gametypeManager.getGametypeByName(gametypeName);
 
 				if (gametype == null) {
-					player.message(ErrorMessages.GAMETYPE_DOES_NOT_EXIST);
+					ErrorMessages.GAMETYPE_DOES_NOT_EXIST.send(player);
 					return;
 				}
 
-				if (args[3].equalsIgnoreCase("false")) {
-					gametype.enableArena(arena, false);
-					player.message(new SetValueMessage("That arena", "disabled", CC.RED));
+				arenaName = args[2];
+				arena = arenaManager.getArenaByName(arenaName);
+
+				if (arena == null) {
+					ErrorMessages.ARENA_DOES_NOT_EXIST.send(player);
 					return;
 				}
 
-				if (args[3].equalsIgnoreCase("true")) {
-					gametype.enableArena(arena, true);
-					player.message(new SetValueMessage("That arena", "enabled", CC.GREEN));
-					return;
+				toggled = args[3].toLowerCase();
+
+				switch (toggled) {
+					case "false":
+						gametype.enableArena(arena, false);
+						break;
+					case "true":
+						gametype.enableArena(arena, true);
+						break;
+					default:
+						UsageMessages.GAMETYPE_ARENA.send(player);
+						return;
 				}
+
+				ChatMessages.GAMETYPE_ARENA_SET.clone().replace("%gametype%", gametypeName)
+						.replace("%toggled%", toggled).replace("%arena%", arenaName).send(player);
 
 				return;
 			case "event":
 				if (args.length < 3) {
-					player.message(new UsageMessage("/gametype event <Gametype> <True/False>"));
+					UsageMessages.GAMETYPE_EVENT.send(player);
 					return;
 				}
 
-				gametype = gametypeManager.getGametypeByName(args[1]);
+				gametypeName = args[1];
+				gametype = gametypeManager.getGametypeByName(gametypeName);
 
 				if (gametype == null) {
-					player.message(ErrorMessages.GAMETYPE_DOES_NOT_EXIST);
+					ErrorMessages.GAMETYPE_DOES_NOT_EXIST.send(player);
 					return;
 				}
 
-				if (args[2].equalsIgnoreCase("false")) {
-					gametype.setEvent(false);
-					player.message(new SetValueMessage("Event mode for this gametype", "disabled", CC.RED));
-					return;
+				toggled = args[2].toLowerCase();
+
+				switch (toggled) {
+					case "false":
+						gametype.setEvent(false);
+						break;
+					case "true":
+						gametype.setEvent(true);
+						break;
+					default:
+						UsageMessages.GAMETYPE_EVENT.send(player);
+						return;
 				}
 
-				if (args[2].equalsIgnoreCase("true")) {
-					gametype.setEvent(true);
-					player.message(new SetValueMessage("Event mode for this gametype", "enabled", CC.GREEN));
-					return;
-				}
+				ChatMessages.GAMETYPE_EVENT_SET.clone().replace("%gametype%", gametypeName)
+						.replace("%toggled%", toggled).send(player);
 
 				return;
 			case "seteventarena":
 				if (args.length < 3) {
-					player.message(new UsageMessage("/gametype seteventarena <Gametype> <Arena>"));
+					UsageMessages.GAMETYPE_EVENT_ARENA.send(player);
 					return;
 				}
 
-				gametype = gametypeManager.getGametypeByName(args[1]);
-				arena = arenaManager.getArenaByName(args[2]);
+				gametypeName = args[1];
+				gametype = gametypeManager.getGametypeByName(gametypeName);
 
 				if (gametype == null) {
-					player.message(ErrorMessages.GAMETYPE_DOES_NOT_EXIST);
+					ErrorMessages.GAMETYPE_DOES_NOT_EXIST.send(player);
+					return;
+				}
+
+				arenaName = args[2];
+				arena = arenaManager.getArenaByName(arenaName);
+
+				if (arena == null) {
+					ErrorMessages.ARENA_DOES_NOT_EXIST.send(player);
 					return;
 				}
 
 				gametype.setEventArena(arena);
-				player.message(new SetValueMessage("The event arena", arena.getName(), CC.RED));
+				ChatMessages.GAMETYPE_EVENT_ARENA_SET.clone().replace("%gametype%", gametypeName)
+						.replace("%arena%", arenaName).send(player);
 				return;
 
 			case "enablearenaforall":
 				if (args.length < 3) {
-					player.message(new UsageMessage("/gametype enablearenaforall <Arena> <True/False>"));
+					UsageMessages.GAMETYPE_ARENA_FOR_ALL.send(player);
 					return;
 				}
 
-				arena = arenaManager.getArenaByName(args[1]);
+				arenaName = args[1];
+				arena = arenaManager.getArenaByName(arenaName);
 
-				if (args[2].equalsIgnoreCase("false")) {
-
-					for (Gametype g : gametypeManager.getGametypes()) {
-						g.enableArena(arena, false);
-					}
-
-					player.message(new SetValueMessage("That arena", "disabled for all gametypes", CC.GREEN));
+				if (arena == null) {
+					ErrorMessages.ARENA_DOES_NOT_EXIST.send(player);
 					return;
 				}
 
-				if (args[2].equalsIgnoreCase("true")) {
+				toggled = args[2].toLowerCase();
 
-					for (Gametype g : gametypeManager.getGametypes()) {
-						g.enableArena(arena, true);
-					}
-
-					player.message(new SetValueMessage("That arena", "enabled for all gametypes", CC.GREEN));
-					return;
+				switch (toggled) {
+					case "false":
+						for (Gametype g : gametypeManager.getGametypes()) {
+							g.enableArena(arena, false);
+						}
+						break;
+					case "true":
+						for (Gametype g : gametypeManager.getGametypes()) {
+							g.enableArena(arena, true);
+						}
+						break;
+					default:
+						UsageMessages.GAMETYPE_ARENA_FOR_ALL.send(player);
+						return;
 				}
 
+				ChatMessages.GAMETYPE_ARENA_FOR_ALL_SET.clone().replace("%arena%", arenaName)
+						.replace("%toggled%", toggled).send(player);
 				return;
 			case "delete":
 				if (args.length < 2) {
-					player.message(new UsageMessage("/gametype delete <Gametype>"));
+					UsageMessages.GAMETYPE_DELETE.send(player);
 					return;
 				}
 
-				gametype = gametypeManager.getGametypeByName(args[1]);
+				gametypeName = args[1];
+				gametype = gametypeManager.getGametypeByName(gametypeName);
 
 				if (gametype == null) {
-					player.message(ErrorMessages.GAMETYPE_DOES_NOT_EXIST);
+					ErrorMessages.GAMETYPE_DOES_NOT_EXIST.send(player);
 					return;
 				}
 
 				gametypeManager.remove(gametype);
-				player.message(new DeletedMessage("The " + args[1] + " gametype"));
+				ChatMessages.GAMETYPE_DELETED.clone().replace("%gametype%", gametypeName).send(player);
 
-				return;
-			default:
-				player.message(new StrikingMessage("Gametype Help", CC.PRIMARY, true));
-				player.message(new ChatMessage("/gametype create <Name>", CC.SECONDARY, false));
-				player.message(new ChatMessage("/gametype kit <Gametype>", CC.SECONDARY, false));
-				player.message(new ChatMessage("/gametype loadkit <Gametype>", CC.SECONDARY, false));
-				player.message(new ChatMessage("/gametype nodamageticks <Gametype> <Ticks>", CC.SECONDARY, false));
-				player.message(new ChatMessage("/gametype griefing <Gametype> <True/False>", CC.SECONDARY, false));
-				player.message(new ChatMessage("/gametype build <Gametype> <True/False>", CC.SECONDARY, false));
-				player.message(new ChatMessage("/gametype looting <Gametype> <True/False>", CC.SECONDARY, false));
-				player.message(new ChatMessage("/gametype damage <Gametype> <True/False>", CC.SECONDARY, false));
-				player.message(new ChatMessage("/gametype hunger <Gametype> <True/False>", CC.SECONDARY, false));
-				player.message(new ChatMessage("/gametype regen <Gametype> <True/False>", CC.SECONDARY, false));
-				player.message(new ChatMessage("/gametype epearl <Gametype> <Time(s)>", CC.SECONDARY, false));
-				player.message(
-						new ChatMessage("/gametype enablearenaforall <Arena> <True/False>", CC.SECONDARY, false));
-				player.message(new ChatMessage("/gametype setdisplay <Gametype> <DisplayName>", CC.SECONDARY, false));
-				player.message(
-						new ChatMessage("/gametype queue <Gametype> <Queuetype> <Slot/False>", CC.SECONDARY, false));
-				player.message(new ChatMessage("/gametype list", CC.SECONDARY, false));
-				player.message(new ChatMessage("/gametype arena <Gametype> <Arena> <True/False>", CC.SECONDARY, false));
-				player.message(new ChatMessage("/gametype seteventarena <Gametype> <Arena>", CC.SECONDARY, false));
-				player.message(new ChatMessage("/gametype event <Gametype> <True/False>", CC.SECONDARY, false));
-				player.message(new ChatMessage("/gametype deadlywater <Gametype> <True/False>", CC.SECONDARY, false));
-				player.message(new ChatMessage("/gametype delete <Name>", CC.SECONDARY, false));
 				return;
 		}
 	}

@@ -1,5 +1,6 @@
 package ms.uk.eclipse.tournaments;
 
+import java.util.Iterator;
 import java.util.concurrent.ConcurrentLinkedDeque;
 
 import org.bukkit.Location;
@@ -8,14 +9,7 @@ import org.bukkit.scheduler.BukkitRunnable;
 import land.strafe.api.collection.GlueList;
 import ms.uk.eclipse.PracticePlugin;
 import ms.uk.eclipse.arena.Arena;
-import ms.uk.eclipse.core.utils.message.CC;
 import ms.uk.eclipse.core.utils.message.ChatMessage;
-import ms.uk.eclipse.core.utils.message.ErrorMessage;
-import ms.uk.eclipse.core.utils.message.InfoMessage;
-import ms.uk.eclipse.core.utils.message.JoinMessage;
-import ms.uk.eclipse.core.utils.message.JoinedMessage;
-import ms.uk.eclipse.core.utils.message.LeftMessage;
-import ms.uk.eclipse.core.utils.message.Message;
 import ms.uk.eclipse.entity.Profile;
 import ms.uk.eclipse.managers.PlayerManager;
 import ms.uk.eclipse.managers.TournamentManager;
@@ -23,6 +17,8 @@ import ms.uk.eclipse.match.Match;
 import ms.uk.eclipse.match.MatchData;
 import ms.uk.eclipse.match.TournamentMatch;
 import ms.uk.eclipse.util.ProfileList;
+import ms.uk.eclipse.util.messages.ChatMessages;
+import ms.uk.eclipse.util.messages.ErrorMessages;
 import net.md_5.bungee.api.chat.ClickEvent;
 
 public class Tournament {
@@ -35,7 +31,7 @@ public class Tournament {
     boolean ended = false;
     MatchData m;
     int round = 1;
-    boolean event = false;
+    boolean event;
     Arena eventArena;
     String host;
     Location loc;
@@ -43,6 +39,7 @@ public class Tournament {
     public Tournament(Profile p) {
         this.m = p.getMatchData();
         this.host = p.getName();
+        this.event = false;
         addPlayer(p);
         tournamentManager.registerTournament(this);
     }
@@ -50,7 +47,7 @@ public class Tournament {
     public Tournament(Profile p, Arena eventArena) {
         this.m = p.getMatchData();
         this.host = p.getName();
-        event = true;
+        this.event = true;
         this.eventArena = eventArena;
         m.setArena(eventArena);
         loc = eventArena.getWaitingLocation();
@@ -61,7 +58,7 @@ public class Tournament {
     public void addPlayer(Profile p) {
 
         if (started) {
-            p.message(new ErrorMessage("The tournament has started"));
+            p.message(ErrorMessages.TOURNAMENT_STARTED);
             return;
         }
 
@@ -72,14 +69,15 @@ public class Tournament {
         p.setTournament(this);
         players.add(p);
 
-        playerManager.broadcast(players, new JoinedMessage(p.getName(), "tournament"));
+        ChatMessage joinedMessage = ChatMessages.JOINED_TOURNAMENT.clone().replace("%player%", p.getName());
+        playerManager.broadcast(players, joinedMessage);
     }
 
     public void removePlayer(Profile p) {
         players.remove(p);
 
-        Message m = new LeftMessage(p.getName(), "tournament");
-        playerManager.broadcast(players, m);
+        ChatMessage leftMessage = ChatMessages.LEFT_TOURNAMENT.clone().replace("%player%", p.getName());
+        playerManager.broadcast(players, leftMessage);
 
         if (players.size() == 0) {
             tournamentManager.remove(this);
@@ -100,8 +98,10 @@ public class Tournament {
             tournamentManager.remove(this);
             ended = true;
 
+            ChatMessage wonMessage = ChatMessages.WON_TOURNAMENT.clone().replace("%player%", winner.getName());
+
             playerManager.broadcast(playerManager.getProfiles(),
-                    new InfoMessage(winner.getName() + " has won the tournament"));
+                    wonMessage);
 
             return;
         }
@@ -113,11 +113,11 @@ public class Tournament {
             return;
         }
 
-        JoinMessage message = new JoinMessage(host, "started a tournament",
-                "with the " + m.getKitName() + " kit, it will start in 30 seconds",
-                new ClickEvent(ClickEvent.Action.RUN_COMMAND, "/join " + host));
+        ChatMessage messageToBroadcast = ChatMessages.BROADCAST_TOURNAMENT.clone()
+                .replace("%player%", host).setTextEvent(new ClickEvent(ClickEvent.Action.RUN_COMMAND, "/join " + host),
+                        ChatMessages.CLICK_TO_JOIN);
 
-        playerManager.broadcast(playerManager.getProfiles(), message);
+        playerManager.broadcast(playerManager.getProfiles(), messageToBroadcast);
 
         Tournament t = this;
         new BukkitRunnable() {
@@ -133,7 +133,7 @@ public class Tournament {
                             p.stopSpectating();
                         }
                     }
-                    winner.message(new InfoMessage("There was not enough players to start the tournament"));
+                    ErrorMessages.TOURNAMENT_NOT_ENOUGH_PLAYERS.send(winner.bukkit());
                     tournamentManager.remove(t);
                     ended = true;
                     return;
@@ -161,18 +161,17 @@ public class Tournament {
             return;
         }
 
-        ProfileList tempList = new ProfileList(players);
+        Iterator<Profile> iter = players.iterator();
 
-        while (!tempList.isEmpty()) {
-            Profile p1 = tempList.removeFirst();
+        while (iter.hasNext()) {
+            Profile p1 = iter.next();
 
-            if (tempList.isEmpty()) {
-                p1.message(new ChatMessage("There is no avalable opponent for this round, you have skipped this round",
-                        CC.PRIMARY, false));
+            if (!iter.hasNext()) {
+                ChatMessages.NO_OPPONENT.send(p1.bukkit());
                 return;
             }
 
-            Profile p2 = tempList.removeFirst();
+            Profile p2 = iter.next();
 
             TournamentMatch match = new TournamentMatch(p1, p2, m, this);
             match.start();
@@ -192,9 +191,9 @@ public class Tournament {
         }
 
         if (matches.isEmpty()) {
-            Message message = new InfoMessage("Round " + round + " is over. The next round will start in 5 seconds");
+            ChatMessage broadcastedMessage = ChatMessages.ROUND_OVER.clone().replace("%round%", "" + round);
 
-            playerManager.broadcast(players, message);
+            playerManager.broadcast(players, broadcastedMessage);
 
             new BukkitRunnable() {
                 @Override

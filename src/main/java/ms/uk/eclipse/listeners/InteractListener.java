@@ -14,15 +14,13 @@ import org.bukkit.scheduler.BukkitRunnable;
 
 import ms.uk.eclipse.PracticePlugin;
 import ms.uk.eclipse.core.tasks.CommandTask;
-import ms.uk.eclipse.core.utils.message.CC;
-import ms.uk.eclipse.core.utils.message.ChatMessage;
 import ms.uk.eclipse.entity.Profile;
 import ms.uk.eclipse.entity.PlayerStatus;
 import ms.uk.eclipse.inventory.menus.AddItemsMenu;
 import ms.uk.eclipse.inventory.menus.SaveLoadKitsMenu;
 import ms.uk.eclipse.managers.PlayerManager;
 import ms.uk.eclipse.tasks.MenuTask;
-import ms.uk.eclipse.util.PearlCooldown;
+import ms.uk.eclipse.util.messages.ChatMessages;
 
 public class InteractListener implements Listener {
 	final PlayerManager playerManager = PracticePlugin.INSTANCE.getPlayerManager();
@@ -39,11 +37,11 @@ public class InteractListener implements Listener {
 
 		Action eAction = e.getAction();
 
-		Block soilBlock = e.getPlayer().getLocation().getBlock().getRelative(BlockFace.DOWN);
-
 		if (eAction == Action.PHYSICAL) {
+			Block soilBlock = e.getPlayer().getLocation().getBlock().getRelative(BlockFace.DOWN);
 			if (soilBlock.getType() == Material.SOIL) {
 				e.setCancelled(true);
+				return;
 			}
 		}
 
@@ -101,9 +99,8 @@ public class InteractListener implements Listener {
 
 				if (player.getPearlCooldown().isActive()) {
 					e.setCancelled(true);
-					player.message(new ChatMessage(
-							"You can pearl again in " + player.getPearlCooldown().getTimeRemaining() + " seconds",
-							CC.PRIMARY, false).highlightText(CC.ACCENT, " " + player.getPearlCooldown()));
+					ChatMessages.PEARL.clone().replace("%time%", "" + player.getPearlCooldown().getTimeRemaining())
+							.send(player.bukkit());
 					return;
 				}
 

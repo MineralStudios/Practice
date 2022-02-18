@@ -7,11 +7,10 @@ import org.bukkit.inventory.ItemStack;
 import ms.uk.eclipse.PracticePlugin;
 import ms.uk.eclipse.core.utils.item.ItemBuilder;
 import ms.uk.eclipse.core.utils.message.CC;
-import ms.uk.eclipse.core.utils.message.ChatMessage;
-import ms.uk.eclipse.core.utils.message.StrikingMessage;
+
 import ms.uk.eclipse.gametype.Catagory;
 import ms.uk.eclipse.gametype.Gametype;
-import ms.uk.eclipse.inventory.Menu;
+import ms.uk.eclipse.inventory.PracticeMenu;
 import ms.uk.eclipse.managers.MatchManager;
 import ms.uk.eclipse.managers.PlayerManager;
 import ms.uk.eclipse.managers.QueueEntryManager;
@@ -21,7 +20,7 @@ import ms.uk.eclipse.queue.QueueSearchTask;
 import ms.uk.eclipse.queue.Queuetype;
 import ms.uk.eclipse.tasks.MenuTask;
 
-public class SelectGametypeMenu extends Menu {
+public class SelectGametypeMenu extends PracticeMenu {
 	MatchManager matchManager = PracticePlugin.INSTANCE.getMatchManager();
 	Queuetype q;
 	boolean lore = false;
@@ -30,7 +29,7 @@ public class SelectGametypeMenu extends Menu {
 	final QueueEntryManager queueEntryManager = PracticePlugin.INSTANCE.getQueueEntryManager();
 
 	public SelectGametypeMenu(Queuetype q, boolean lore, boolean kitEditor) {
-		super(new StrikingMessage(q.getDisplayName(), CC.PRIMARY, true));
+		super(CC.BLUE + q.getDisplayName());
 		this.lore = lore;
 		this.kitEditor = kitEditor;
 		this.q = q;
@@ -49,7 +48,7 @@ public class SelectGametypeMenu extends Menu {
 			}
 
 			ItemBuilder itemBuild = new ItemBuilder(g.getDisplayItem())
-					.name(new ChatMessage(g.getDisplayName(), CC.WHITE, true).toString());
+					.name(g.getDisplayName());
 
 			if (lore) {
 				int InGame = 0;
@@ -64,7 +63,8 @@ public class SelectGametypeMenu extends Menu {
 						InGame++;
 					}
 				}
-				itemBuild.lore("In Queue: " + QueueSearchTask.getNumberInQueue(q, g), "In Game: " + InGame);
+				itemBuild.lore(CC.ACCENT + "In Queue: " + QueueSearchTask.getNumberInQueue(q, g),
+						CC.ACCENT + "In Game: " + InGame);
 			} else {
 				itemBuild.lore();
 			}
@@ -90,7 +90,7 @@ public class SelectGametypeMenu extends Menu {
 		for (Entry<Catagory, Integer> entry : q.getCatagories().object2IntEntrySet()) {
 			Catagory c = entry.getKey();
 			ItemBuilder itemBuild = new ItemBuilder(c.getDisplayItem())
-					.name(new ChatMessage(c.getDisplayName(), CC.WHITE, true).toString());
+					.name(c.getDisplayName());
 			itemBuild.lore();
 			ItemStack item = itemBuild.build();
 			setSlot(entry.getValue(), item, new MenuTask(new SelectCategorizedGametypeMenu(q, c, true, kitEditor)));

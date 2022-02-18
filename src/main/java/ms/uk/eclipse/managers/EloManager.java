@@ -7,6 +7,7 @@ import java.util.UUID;
 import ms.uk.eclipse.PracticePlugin;
 import ms.uk.eclipse.core.sql.SQLManager;
 import ms.uk.eclipse.entity.Profile;
+import ms.uk.eclipse.util.LeaderboardMap;
 
 public class EloManager {
 	public String table = "Elo";
@@ -27,12 +28,11 @@ public class EloManager {
 		try {
 			if (eloEntryExists(p.getUUID().toString(), g)) {
 				AutoCloseable[] statement = SQLManager
-						.prepare("UPDATE " + table + " SET ELO=? WHERE GAMETYPE=? AND PLAYER=? AND UUID=?");
+						.prepare("UPDATE " + table + " SET ELO=? WHERE GAMETYPE=? AND UUID=?");
 				PreparedStatement stmt = (PreparedStatement) statement[0];
 				stmt.setInt(1, elo);
 				stmt.setString(2, g);
-				stmt.setString(3, p.getName());
-				stmt.setString(4, p.getUUID().toString());
+				stmt.setString(3, p.getUUID().toString());
 				SQLManager.execute(statement);
 				SQLManager.close(statement);
 				return;
@@ -67,6 +67,10 @@ public class EloManager {
 	}
 
 	public void setEloEntry(final Profile p, final String g, int elo) {
+		if (elo == 1000) {
+			return;
+		}
+
 		try {
 			AutoCloseable[] insert = SQLManager
 					.prepare("INSERT INTO " + table + " (GAMETYPE, UUID, PLAYER, ELO) VALUES (?, ?, ?, ?)");
@@ -124,5 +128,31 @@ public class EloManager {
 			System.out.println("FAILED TO CONNECT TO DATABASE");
 		}
 		return 1000;
+	}
+
+	public LeaderboardMap getLeaderboardMap(String g) {
+		LeaderboardMap map = new LeaderboardMap();
+
+		try {
+			AutoCloseable[] statement = SQLManager.prepare("SELECT * FROM " + table + " WHERE GAMETYPE=?");
+			PreparedStatement stmt = (PreparedStatement) statement[0];
+			stmt.setString(1, g);
+			AutoCloseable[] results = SQLManager.executeQuery(stmt);
+			ResultSet r = (ResultSet) results[0];
+
+			while (r.next()) {
+				String value = r.getString("PLAYER");
+				int elo = getEloEntry(value, g);
+				map.put(value, elo, false);
+			}
+
+			SQLManager.close(statement);
+			SQLManager.close(results);
+
+		} catch (Exception e) {
+			System.out.println("FAILED TO CONNECT TO DATABASE");
+		}
+
+		return map;
 	}
 }

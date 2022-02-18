@@ -2,10 +2,9 @@ package ms.uk.eclipse.commands.settings;
 
 import ms.uk.eclipse.PracticePlugin;
 import ms.uk.eclipse.core.commands.PlayerCommand;
-import ms.uk.eclipse.core.utils.message.CC;
-import ms.uk.eclipse.core.utils.message.ChatMessage;
 import ms.uk.eclipse.entity.Profile;
 import ms.uk.eclipse.managers.PlayerManager;
+import ms.uk.eclipse.util.messages.ChatMessages;
 
 public class ToggleDuelRequestsCommand extends PlayerCommand {
 	final PlayerManager playerManager = PracticePlugin.INSTANCE.getPlayerManager();
@@ -18,8 +17,8 @@ public class ToggleDuelRequestsCommand extends PlayerCommand {
 	public void execute(org.bukkit.entity.Player pl, String[] args) {
 		Profile player = playerManager.getProfile(pl);
 		player.setRequests(!player.getRequests());
-		String ccolor = player.getRequests() ? CC.GREEN : CC.RED;
-		player.message(new ChatMessage("Duel requests have been set to " + player.getRequests(), CC.PRIMARY, false)
-				.highlightText(ccolor, " " + player.getRequests()));
+		ChatMessages.DUEL_REQUESTS_TOGGLED.clone().replace("%toggled%", player.getRequests() ? "enabled" : "disabled")
+				.send(pl);
+		;
 	}
 }

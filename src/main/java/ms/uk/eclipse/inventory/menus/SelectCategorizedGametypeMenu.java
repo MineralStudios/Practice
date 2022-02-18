@@ -4,8 +4,7 @@ import org.bukkit.inventory.ItemStack;
 
 import ms.uk.eclipse.core.utils.item.ItemBuilder;
 import ms.uk.eclipse.core.utils.message.CC;
-import ms.uk.eclipse.core.utils.message.ChatMessage;
-import ms.uk.eclipse.core.utils.message.StrikingMessage;
+
 import ms.uk.eclipse.gametype.Catagory;
 import ms.uk.eclipse.gametype.Gametype;
 import ms.uk.eclipse.match.Match;
@@ -18,7 +17,7 @@ public class SelectCategorizedGametypeMenu extends SelectGametypeMenu {
 
 	public SelectCategorizedGametypeMenu(Queuetype q, Catagory c, boolean lore, boolean kitEditor) {
 		super(q, lore, kitEditor);
-		setTitle(new StrikingMessage(c.getName(), CC.PRIMARY, true));
+		setTitle(CC.BLUE + c.getName());
 		this.c = c;
 	}
 
@@ -26,7 +25,7 @@ public class SelectCategorizedGametypeMenu extends SelectGametypeMenu {
 	public boolean update() {
 		for (Gametype g : c.getGametypes()) {
 			ItemBuilder itemBuild = new ItemBuilder(g.getDisplayItem())
-					.name(new ChatMessage(g.getDisplayName(), CC.WHITE, true).toString());
+					.name(g.getDisplayName());
 			if (lore) {
 				int InGame = 0;
 				for (Match match : matchManager.getMatchs()) {
@@ -40,7 +39,8 @@ public class SelectCategorizedGametypeMenu extends SelectGametypeMenu {
 						InGame++;
 					}
 				}
-				itemBuild.lore("In Queue: " + QueueSearchTask.getNumberInQueue(q, g), "In Game: " + InGame);
+				itemBuild.lore(CC.ACCENT + "In Queue: " + QueueSearchTask.getNumberInQueue(q, g),
+						CC.ACCENT + "In Game: " + InGame);
 			} else {
 				itemBuild.lore();
 			}

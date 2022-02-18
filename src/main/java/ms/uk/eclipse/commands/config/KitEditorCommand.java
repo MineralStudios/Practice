@@ -2,100 +2,103 @@ package ms.uk.eclipse.commands.config;
 
 import ms.uk.eclipse.PracticePlugin;
 import ms.uk.eclipse.core.commands.PlayerCommand;
-import ms.uk.eclipse.core.utils.message.CC;
-import ms.uk.eclipse.core.utils.message.ChatMessage;
-import ms.uk.eclipse.core.utils.message.SetValueMessage;
-import ms.uk.eclipse.core.utils.message.StrikingMessage;
-import ms.uk.eclipse.core.utils.message.UsageMessage;
-import ms.uk.eclipse.entity.Profile;
+import ms.uk.eclipse.core.rank.RankPower;
 import ms.uk.eclipse.kit.KitEditorManager;
 import ms.uk.eclipse.managers.GametypeManager;
 import ms.uk.eclipse.managers.PlayerManager;
 import ms.uk.eclipse.managers.QueuetypeManager;
+import ms.uk.eclipse.util.messages.ChatMessages;
+import ms.uk.eclipse.util.messages.ErrorMessages;
+import ms.uk.eclipse.util.messages.UsageMessages;
 
 public class KitEditorCommand extends PlayerCommand {
-	final KitEditorManager kitEditorConfig = PracticePlugin.INSTANCE.getKitEditorManager();;
+	final KitEditorManager kitEditorManager = PracticePlugin.INSTANCE.getKitEditorManager();;
 	final PlayerManager playerManager = PracticePlugin.INSTANCE.getPlayerManager();
 	final GametypeManager gametypeManager = PracticePlugin.INSTANCE.getGametypeManager();
 	final QueuetypeManager queuetypeManager = PracticePlugin.INSTANCE.getQueuetypeManager();
 
 	public KitEditorCommand() {
-		super("kiteditor", "practice.permission.config");
+		super("kiteditor", RankPower.MANAGER);
 	}
 
 	@Override
-	public void execute(org.bukkit.entity.Player pl, String[] args) {
+	public void execute(org.bukkit.entity.Player player, String[] args) {
 
-		String arg = "";
-		if (args.length > 0) {
-			arg = args[0];
-		}
+		String arg = args.length > 0 ? args[0] : "";
 
-		Profile player = playerManager.getProfile(pl);
 		switch (arg.toLowerCase()) {
+			default:
+				ChatMessages.KIT_EDITOR_COMMANDS.send(player);
+				ChatMessages.KIT_EDITOR_ENABLE.send(player);
+				ChatMessages.KIT_EDITOR_DISPLAY.send(player);
+				ChatMessages.KIT_EDITOR_SLOT.send(player);
+				ChatMessages.KIT_EDITOR_LOCATION.send(player);
+
+				return;
 			case "enable":
 				if (args.length < 2) {
-					player.message(new UsageMessage("/kiteditor enable <True/False>"));
+					UsageMessages.KIT_EDITOR_ENABLE.send(player);
 					return;
 				}
 
-				if (args[1].equalsIgnoreCase("false")) {
-					kitEditorConfig.setEnabled(false);
-					player.message(new SetValueMessage("Kit editor", "false", CC.RED));
-					return;
+				String toggled = args[1].toLowerCase();
+
+				switch (toggled) {
+					case "false":
+						kitEditorManager.setEnabled(false);
+						break;
+					case "true":
+						kitEditorManager.setEnabled(true);
+						break;
+					default:
+						UsageMessages.KIT_EDITOR_ENABLE.send(player);
+						return;
 				}
 
-				if (args[1].equalsIgnoreCase("true")) {
-					kitEditorConfig.setEnabled(true);
-					player.message(new SetValueMessage("Kit editor", "true", CC.GREEN));
-					return;
-				}
-
-				player.message(new UsageMessage("/kiteditor enable <True/False>"));
+				ChatMessages.KIT_EDITOR_ENABLED.clone()
+						.replace("%toggled%", toggled).send(player);
 
 				return;
 			case "setdisplay":
 				if (args.length < 1) {
-					player.message(new UsageMessage("/kiteditor setdisplay <DisplayName>"));
+					UsageMessages.KIT_EDITOR_DISPLAY.send(player);
 					return;
 				}
 
-				kitEditorConfig.setDisplayItem(player.getItemInHand());
+				kitEditorManager.setDisplayItem(player.getItemInHand());
 
 				if (args.length > 1) {
 					String name = args[1].replace("&", "§");
-					kitEditorConfig.setDisplayName(name);
+					kitEditorManager.setDisplayName(name);
 				}
 
-				player.message(new SetValueMessage("The kit editor display item", "the item in your hand", CC.PRIMARY));
+				ChatMessages.KIT_EDITOR_DISPLAY_SET.send(player);
 
 				return;
 			case "slot":
 				if (args.length < 2) {
-					player.message(new UsageMessage("/kiteditor slot <Slot>"));
+					UsageMessages.KIT_EDITOR_SLOT.send(player);
 					return;
 				}
 
+				int slot;
 				String strSlot = args[1];
-				int slot = Integer.parseInt(strSlot);
-				kitEditorConfig.setSlot(slot);
+				try {
+					slot = Integer.parseInt(strSlot);
+				} catch (Exception e) {
+					ErrorMessages.INVALID_SLOT.send(player);
+					return;
+				}
 
-				player.message(new SetValueMessage("The kit editor slot", strSlot, CC.PRIMARY));
+				kitEditorManager.setSlot(slot);
+
+				ChatMessages.KIT_EDITOR_SLOT_SET.clone().replace("%slot%", strSlot).send(player);
+				;
 
 				return;
 			case "setlocation":
-				kitEditorConfig.setLocation(player.bukkit().getLocation());
-				player.message(new ChatMessage("The kit editor location has been set", CC.PRIMARY, false));
-
-				return;
-			default:
-				player.message(new StrikingMessage("Kit Editor Help", CC.PRIMARY, true));
-				player.message(new ChatMessage("/kiteditor enable <True/False>", CC.SECONDARY, true));
-				player.message(new ChatMessage("/kiteditor infinitehealing <Gametype> <Queuetype> <True/False>",
-						CC.SECONDARY, true));
-				player.message(new ChatMessage("/kiteditor setdisplay <DisplayName>", CC.SECONDARY, true));
-				player.message(new ChatMessage("/kiteditor slot <Slot>", CC.SECONDARY, true));
-				player.message(new ChatMessage("/kiteditor setlocation", CC.SECONDARY, true));
+				kitEditorManager.setLocation(player.getLocation());
+				ChatMessages.KIT_EDITOR_LOCATION_SET.send(player);
 
 				return;
 		}

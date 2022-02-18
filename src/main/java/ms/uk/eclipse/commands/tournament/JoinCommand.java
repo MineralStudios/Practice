@@ -2,14 +2,13 @@ package ms.uk.eclipse.commands.tournament;
 
 import ms.uk.eclipse.PracticePlugin;
 import ms.uk.eclipse.core.commands.PlayerCommand;
-import ms.uk.eclipse.core.utils.message.ErrorMessage;
-import ms.uk.eclipse.core.utils.message.UsageMessage;
 import ms.uk.eclipse.entity.Profile;
 import ms.uk.eclipse.entity.PlayerStatus;
 import ms.uk.eclipse.managers.PlayerManager;
 import ms.uk.eclipse.managers.TournamentManager;
 import ms.uk.eclipse.tournaments.Tournament;
 import ms.uk.eclipse.util.messages.ErrorMessages;
+import ms.uk.eclipse.util.messages.UsageMessages;
 
 public class JoinCommand extends PlayerCommand {
 
@@ -24,13 +23,13 @@ public class JoinCommand extends PlayerCommand {
     public void execute(org.bukkit.entity.Player player, String[] args) {
         Profile p = playerManager.getProfile(player);
 
-        if (args.length <= 0) {
-            p.message(new UsageMessage("/join <Name>"));
+        if (args.length < 1) {
+            p.message(UsageMessages.JOIN);
             return;
         }
 
         if (p.getPlayerStatus() == PlayerStatus.IN_TOURAMENT) {
-            p.message(new ErrorMessage("You are already in a tournament"));
+            p.message(ErrorMessages.ALREADY_IN_TOURNAMENT);
             return;
         }
 
@@ -42,6 +41,7 @@ public class JoinCommand extends PlayerCommand {
         Tournament t = tournamentManager.getTournamentByName(args[0]);
 
         if (t == null) {
+            p.message(ErrorMessages.TOURNAMENT_NOT_EXIST);
             return;
         }
 

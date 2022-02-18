@@ -6,21 +6,21 @@ import org.bukkit.inventory.meta.ItemMeta;
 import ms.uk.eclipse.PracticePlugin;
 import ms.uk.eclipse.core.utils.item.ItemBuilder;
 import ms.uk.eclipse.core.utils.message.CC;
-import ms.uk.eclipse.core.utils.message.ChatMessage;
-import ms.uk.eclipse.core.utils.message.StrikingMessage;
+
 import ms.uk.eclipse.gametype.Catagory;
 import ms.uk.eclipse.gametype.Gametype;
-import ms.uk.eclipse.inventory.Menu;
+import ms.uk.eclipse.inventory.PracticeMenu;
 import ms.uk.eclipse.managers.CatagoryManager;
 import ms.uk.eclipse.managers.GametypeManager;
 import ms.uk.eclipse.tasks.MenuTask;
 
-public class LeaderboardMenu extends Menu {
+public class LeaderboardMenu extends PracticeMenu {
     final GametypeManager gametypeManager = PracticePlugin.INSTANCE.getGametypeManager();
     final CatagoryManager catagoryManager = PracticePlugin.INSTANCE.getCatagoryManager();
+    final static String TITLE = CC.BLUE + "Leaderboards";
 
     public LeaderboardMenu() {
-        super(new StrikingMessage("Leaderboards", CC.PRIMARY, true));
+        super(TITLE);
         setClickCancelled(true);
     }
 
@@ -33,7 +33,7 @@ public class LeaderboardMenu extends Menu {
             }
 
             ItemStack item = new ItemBuilder(g.getDisplayItem())
-                    .name(new ChatMessage(g.getDisplayName(), CC.WHITE, true).toString()).build();
+                    .name(g.getDisplayName()).build();
             ItemMeta meta = item.getItemMeta();
 
             try {
@@ -48,7 +48,7 @@ public class LeaderboardMenu extends Menu {
 
         for (Catagory c : catagoryManager.getCatagorys()) {
             ItemStack item = new ItemBuilder(c.getDisplayItem())
-                    .name(new ChatMessage(c.getDisplayName(), CC.WHITE, true).toString()).build();
+                    .name(c.getDisplayName()).build();
             ItemMeta meta = item.getItemMeta();
             meta.setLore(null);
             item.setItemMeta(meta);

@@ -3,7 +3,6 @@ package ms.uk.eclipse.managers;
 import land.strafe.api.collection.GlueList;
 import land.strafe.api.config.FileConfiguration;
 import ms.uk.eclipse.PracticePlugin;
-import ms.uk.eclipse.entity.Profile;
 import ms.uk.eclipse.gametype.Catagory;
 import ms.uk.eclipse.gametype.Gametype;
 import ms.uk.eclipse.queue.Queuetype;

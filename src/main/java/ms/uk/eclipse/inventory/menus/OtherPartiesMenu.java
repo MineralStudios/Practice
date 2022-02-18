@@ -7,19 +7,19 @@ import ms.uk.eclipse.PracticePlugin;
 import ms.uk.eclipse.core.tasks.CommandTask;
 import ms.uk.eclipse.core.utils.item.ItemBuilder;
 import ms.uk.eclipse.core.utils.message.CC;
-import ms.uk.eclipse.core.utils.message.ChatMessage;
-import ms.uk.eclipse.core.utils.message.StrikingMessage;
+
 import ms.uk.eclipse.entity.Profile;
 import ms.uk.eclipse.entity.PlayerStatus;
-import ms.uk.eclipse.inventory.Menu;
+import ms.uk.eclipse.inventory.PracticeMenu;
 import ms.uk.eclipse.managers.PartyManager;
 import ms.uk.eclipse.party.Party;
 
-public class OtherPartiesMenu extends Menu {
+public class OtherPartiesMenu extends PracticeMenu {
     PartyManager partyManager = PracticePlugin.INSTANCE.getPartyManager();
+    final static String TITLE = CC.BLUE + "Other Parties";
 
     public OtherPartiesMenu() {
-        super(new StrikingMessage("Other Parties", CC.PRIMARY, true));
+        super(TITLE);
         setClickCancelled(true);
     }
 
@@ -31,7 +31,7 @@ public class OtherPartiesMenu extends Menu {
             if (p.getPartyLeader().getPlayerStatus() == PlayerStatus.IN_LOBBY && !p.equals(viewer.getParty())) {
                 Profile partyLeader = p.getPartyLeader();
                 ItemStack skull = new ItemBuilder(Material.SKULL_ITEM)
-                        .name(new ChatMessage(partyLeader.getName(), CC.SECONDARY, false).toString()).build();
+                        .name(partyLeader.getName()).build();
                 add(skull, new CommandTask("duel " + partyLeader.getName()));
             }
         }

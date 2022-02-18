@@ -2,6 +2,8 @@ package ms.uk.eclipse.match;
 
 import java.util.Arrays;
 import java.util.concurrent.ConcurrentLinkedDeque;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
@@ -20,8 +22,6 @@ import ms.uk.eclipse.PracticePlugin;
 import ms.uk.eclipse.core.utils.item.ItemBuilder;
 import ms.uk.eclipse.core.utils.message.CC;
 import ms.uk.eclipse.core.utils.message.ChatMessage;
-import ms.uk.eclipse.core.utils.message.ErrorMessage;
-import ms.uk.eclipse.core.utils.message.StrikingMessage;
 import ms.uk.eclipse.entity.Profile;
 import ms.uk.eclipse.gametype.Gametype;
 import ms.uk.eclipse.inventory.menus.InventoryStatsMenu;
@@ -36,6 +36,9 @@ import ms.uk.eclipse.scoreboard.Scoreboard;
 import ms.uk.eclipse.util.Countdown;
 import ms.uk.eclipse.util.MathUtil;
 import ms.uk.eclipse.util.ProfileList;
+import ms.uk.eclipse.util.items.ItemStacks;
+import ms.uk.eclipse.util.messages.ChatMessages;
+import ms.uk.eclipse.util.messages.ErrorMessages;
 import net.md_5.bungee.api.chat.ClickEvent;
 import net.md_5.bungee.api.chat.ComponentBuilder;
 import net.md_5.bungee.api.chat.HoverEvent;
@@ -59,6 +62,7 @@ public class Match {
 	final PlayerManager playerManager = PracticePlugin.INSTANCE.getPlayerManager();
 	final ArenaManager arenaManager = PracticePlugin.INSTANCE.getArenaManager();
 	final QueueEntryManager queueEntryManager = PracticePlugin.INSTANCE.getQueueEntryManager();
+	static final ExecutorService executor = Executors.newCachedThreadPool();
 
 	public Match(Profile player1, Profile player2, MatchData m) {
 		this.m = m;
@@ -69,6 +73,12 @@ public class Match {
 
 	public Match(MatchData m) {
 		this.m = m;
+	}
+
+	public void prepareForMatch(Profile... profiles) {
+		for (Profile profile : profiles) {
+			prepareForMatch(profile);
+		}
 	}
 
 	public void prepareForMatch(Profile p) {
@@ -157,24 +167,22 @@ public class Match {
 	public void handleFollowers() {
 		for (Profile p : player1.getFollowers()) {
 			p.teleport(player1);
-			p.message(new ChatMessage("You are now spectating " + player1.getName(), CC.PRIMARY, false)
-					.highlightText(CC.ACCENT, player1.getName()));
-			ChatMessage m = new ChatMessage(p.getName() + " is now spectating your match", CC.PRIMARY, false)
-					.highlightText(CC.ACCENT, p.getName());
-			player1.message(m);
-			player2.message(m);
+			p.message(ChatMessages.SPECTATING.clone().replace("%player%", player1.getName()));
+			ChatMessage broadcastedMessage = ChatMessages.SPECTATING_YOUR_MATCH.clone().replace("%player%",
+					p.getName());
+			player1.message(broadcastedMessage);
+			player2.message(broadcastedMessage);
 			p.bukkit().showPlayer(player1.bukkit());
 			p.spectate(player1);
 		}
 
 		for (Profile p : player2.getFollowers()) {
 			p.teleport(player2);
-			p.message(new ChatMessage("You are now spectating " + player2.getName(), CC.PRIMARY, false)
-					.highlightText(CC.ACCENT, player2.getName()));
-			ChatMessage m = new ChatMessage(p.getName() + " is now spectating your match", CC.PRIMARY, false)
-					.highlightText(CC.ACCENT, p.getName());
-			player1.message(m);
-			player2.message(m);
+			p.message(ChatMessages.SPECTATING.clone().replace("%player%", player2.getName()));
+			ChatMessage broadcastedMessage = ChatMessages.SPECTATING_YOUR_MATCH.clone().replace("%player%",
+					p.getName());
+			player1.message(broadcastedMessage);
+			player2.message(broadcastedMessage);
 			p.bukkit().showPlayer(player2.bukkit());
 			p.spectate(player2);
 		}
@@ -189,14 +197,21 @@ public class Match {
 			s2 += " (Elo: " + m.getQueueEntry().getGametype().getElo(player1) + ")";
 		}
 
-		player1.message(new ChatMessage(s1, CC.PRIMARY, false));
-		player2.message(new ChatMessage(s2, CC.PRIMARY, false));
+		player1.bukkit().sendMessage(CC.ACCENT + s1);
+		player2.bukkit().sendMessage(CC.ACCENT + s2);
+	}
+
+	public void setWorldParameters(World world) {
+		world.getWorldData().f(false);
+		world.getWorldData().setThundering(false);
+		world.getWorldData().setStorm(false);
+		world.allowMonsters = false;
 	}
 
 	public void start() {
 
 		if (m.getArena() == null) {
-			playerManager.broadcast(participants, new ErrorMessage("An arena could not be found"));
+			playerManager.broadcast(participants, ErrorMessages.ARENA_NOT_FOUND);
 			end(player1);
 			return;
 		}
@@ -206,12 +221,9 @@ public class Match {
 		Location location2 = m.getArena().getLocation2();
 		location1.setDirection(m.getArena().getLocation1EyeVector());
 		location2.setDirection(m.getArena().getLocation2EyeVector());
-		World world = ((CraftWorld) location1.getWorld()).getHandle();
-		world.getWorldData().f(false);
-		world.getWorldData().setStorm(false);
+		setWorldParameters(((CraftWorld) location1.getWorld()).getHandle());
 		handleFollowers();
-		prepareForMatch(player1);
-		prepareForMatch(player2);
+		prepareForMatch(player1, player2);
 		player1.teleport(location1);
 		player2.teleport(location2);
 		handleOpponentMessages();
@@ -249,12 +261,12 @@ public class Match {
 			int newVictimElo = MathUtil.getNewRating(victimElo, attackerElo, false);
 			rankedMessage = CC.GREEN + attacker.getName() + " (+" + (newAttackerElo - attackerElo) + ") " + CC.RED
 					+ victim.getName() + " (" + (newVictimElo - victimElo) + ")";
-			new Thread(() -> {
+			executor.execute(() -> {
 				g.setElo(newAttackerElo, attacker);
 				g.setElo(newVictimElo, victim);
 				g.updatePlayerLeaderboard(victim, newVictimElo);
 				g.updatePlayerLeaderboard(attacker, newAttackerElo);
-			}).start();
+			});
 		}
 
 		int attackerAmountOfPots = attacker.getNumber(Material.POTION, (short) 16421)
@@ -373,19 +385,14 @@ public class Match {
 		} catch (Exception e) {
 		}
 
-		ItemStack potItem = new ItemBuilder(new ItemStack(Material.POTION, amountOfPots, (short) 16421))
-				.name(new StrikingMessage("Health Potions Left", CC.PRIMARY, true).toString()).build();
-
-		StrikingMessage message = new StrikingMessage("Health: " + health, CC.PRIMARY, true);
-		ItemStack healthItem = new ItemBuilder(new ItemStack(Material.POTION, health, (short) 8193))
-				.name(message.toString()).build();
-
-		if (health == 0) {
-			healthItem = new ItemBuilder(Material.SKULL_ITEM).name(message.toString()).build();
-		}
+		ItemStack potItem = new ItemBuilder(new ItemStack(Material.POTION, 1, (short) 16421))
+				.name("Health Potions Left").amount(amountOfPots).build();
+		ItemStack healthItem = health == 0 ? ItemStacks.NO_HEALTH
+				: new ItemBuilder(new ItemStack(Material.POTION, health, (short) 8193))
+						.name("Health: " + health).build();
 
 		ItemStack hits = new ItemBuilder(Material.BLAZE_ROD)
-				.name(new StrikingMessage(p.getHitCount() + " Hits", CC.PRIMARY, true).toString()).build();
+				.name(p.getHitCount() + " Hits").build();
 		menu.setSlot(47, hits);
 		menu.setSlot(45, healthItem);
 		menu.setSlot(46, potItem);

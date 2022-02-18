@@ -18,7 +18,6 @@ import ms.uk.eclipse.kit.Kit;
 import ms.uk.eclipse.managers.ArenaManager;
 import ms.uk.eclipse.managers.CatagoryManager;
 import ms.uk.eclipse.managers.EloManager;
-import ms.uk.eclipse.managers.LeaderboardManager;
 import ms.uk.eclipse.managers.QueuetypeManager;
 import ms.uk.eclipse.queue.Queuetype;
 import ms.uk.eclipse.util.LeaderboardMap;
@@ -49,7 +48,6 @@ public class Gametype implements SaveableData {
 	LeaderboardMap leaderboardMap;
 	Object2IntOpenHashMap<Profile> eloMap = new Object2IntOpenHashMap<>();
 	Catagory catagory;
-	final LeaderboardManager leaderboardManager = PracticePlugin.INSTANCE.getLeaderboardManager();
 	final CatagoryManager catagoryManager = PracticePlugin.INSTANCE.getCatagoryManager();
 	final EloManager eloManager = PracticePlugin.INSTANCE.getEloManager();
 
@@ -275,7 +273,6 @@ public class Gametype implements SaveableData {
 
 	public void updatePlayerLeaderboard(Profile p, int elo) {
 		leaderboardMap.put(p.getName(), elo);
-		leaderboardManager.updateElo(p, this.getName(), elo);
 	}
 
 	public List<String> getLeaderboardLore() {
@@ -286,10 +283,6 @@ public class Gametype implements SaveableData {
 		}
 
 		return lore;
-	}
-
-	public LeaderboardManager getLeaderboardManager() {
-		return leaderboardManager;
 	}
 
 	@Override
@@ -427,7 +420,7 @@ public class Gametype implements SaveableData {
 		this.kit = new Kit(items.toArray(new ItemStack[0]), armour.toArray(new ItemStack[0]));
 
 		try {
-			leaderboardMap = leaderboardManager.getLeaderboardMap(this.getName());
+			leaderboardMap = eloManager.getLeaderboardMap(this.getName());
 		} catch (Exception e) {
 			e.printStackTrace();
 		}

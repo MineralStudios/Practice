@@ -2,34 +2,31 @@ package ms.uk.eclipse.commands.config;
 
 import ms.uk.eclipse.PracticePlugin;
 import ms.uk.eclipse.core.commands.PlayerCommand;
-import ms.uk.eclipse.core.utils.message.CC;
-import ms.uk.eclipse.core.utils.message.ChatMessage;
-import ms.uk.eclipse.core.utils.message.StrikingMessage;
-import ms.uk.eclipse.entity.Profile;
+import ms.uk.eclipse.core.rank.RankPower;
 import ms.uk.eclipse.managers.PlayerManager;
+import ms.uk.eclipse.util.messages.ChatMessages;
 
 public class ListConfigCommands extends PlayerCommand {
 	final PlayerManager playerManager = PracticePlugin.INSTANCE.getPlayerManager();
 
 	public ListConfigCommands() {
-		super("practice", "practice.permission.config");
+		super("practice", RankPower.MANAGER);
 		setAliases("practiceconfig", "practicecommandslist");
 	}
 
 	@Override
 	public void execute(org.bukkit.entity.Player pl, String[] args) {
-		Profile player = playerManager.getProfile(pl);
-		player.message(new StrikingMessage("Config", CC.PRIMARY, true));
-		player.message(new ChatMessage("Queuetypes: /queuetype", CC.SECONDARY, false));
-		player.message(new ChatMessage("Gametypes: /gametype", CC.SECONDARY, false));
-		player.message(new ChatMessage("Catagories: /catagory", CC.SECONDARY, false));
-		player.message(new ChatMessage("Aim Trainer: /aimtrainer", CC.SECONDARY, false));
-		player.message(new ChatMessage("PvP Bots: /pvpbots", CC.SECONDARY, false));
-		player.message(new ChatMessage("Events: /events", CC.SECONDARY, false));
-		player.message(new ChatMessage("Arenas: /arena", CC.SECONDARY, false));
-		player.message(new ChatMessage("Kit Editor: /kiteditor", CC.SECONDARY, false));
-		player.message(new ChatMessage("Parties: /parties", CC.SECONDARY, false));
-		player.message(new ChatMessage("Lobby: /lobby", CC.SECONDARY, false));
-		player.message(new ChatMessage("Settings: /settingsconfig", CC.SECONDARY, false));
+		ChatMessages.CONFIG_COMMANDS.send(pl);
+		ChatMessages.QUEUETYPE.send(pl);
+		ChatMessages.GAMETYPE.send(pl);
+		ChatMessages.CATAGORY.send(pl);
+		ChatMessages.AIM_TRAINER.send(pl);
+		ChatMessages.PVP_BOTS.send(pl);
+		ChatMessages.EVENTS.send(pl);
+		ChatMessages.ARENA.send(pl);
+		ChatMessages.KIT_EDITOR.send(pl);
+		ChatMessages.PARTIES.send(pl);
+		ChatMessages.LOBBY.send(pl);
+		ChatMessages.SETTINGS_CONFIG.send(pl);
 	}
 }

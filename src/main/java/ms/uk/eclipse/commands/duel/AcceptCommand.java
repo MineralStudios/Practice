@@ -1,10 +1,10 @@
 package ms.uk.eclipse.commands.duel;
 
 import java.util.Iterator;
+import java.util.Map.Entry;
 
 import ms.uk.eclipse.PracticePlugin;
 import ms.uk.eclipse.core.commands.PlayerCommand;
-import ms.uk.eclipse.core.utils.message.UsageMessage;
 import ms.uk.eclipse.entity.Profile;
 import ms.uk.eclipse.entity.PlayerStatus;
 import ms.uk.eclipse.managers.PlayerManager;
@@ -13,6 +13,7 @@ import ms.uk.eclipse.match.Match;
 import ms.uk.eclipse.match.MatchData;
 import ms.uk.eclipse.match.PartyMatch;
 import ms.uk.eclipse.util.messages.ErrorMessages;
+import ms.uk.eclipse.util.messages.UsageMessages;
 
 public class AcceptCommand extends PlayerCommand {
 
@@ -32,7 +33,7 @@ public class AcceptCommand extends PlayerCommand {
 		}
 
 		if (args.length == 0) {
-			player.message(new UsageMessage("/accept <Player>"));
+			player.message(UsageMessages.ACCEPT);
 			return;
 		}
 
@@ -48,17 +49,17 @@ public class AcceptCommand extends PlayerCommand {
 			return;
 		}
 
-		Iterator<DuelRequest> it = player.getRecievedDuelRequests().iterator();
+		Iterator<Entry<DuelRequest, Long>> it = player.getRecievedDuelRequests().entryIterator();
 
 		while (it.hasNext()) {
-			DuelRequest d = it.next();
+			DuelRequest duelRequest = it.next().getKey();
 
-			if (!d.getSender().equals(player1)) {
+			if (!duelRequest.getSender().equals(player1)) {
 				continue;
 			}
 
-			player.getRecievedDuelRequests().remove(d);
-			MatchData m = d.getMatchData();
+			it.remove();
+			MatchData m = duelRequest.getMatchData();
 			Match match = player1.isInParty() && player.isInParty()
 					? new PartyMatch(player1.getParty(), player.getParty(), m)
 					: new Match(player1, player, m);

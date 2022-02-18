@@ -12,7 +12,6 @@ import ms.uk.eclipse.commands.config.KitEditorCommand;
 import ms.uk.eclipse.commands.config.ListConfigCommands;
 import ms.uk.eclipse.commands.config.LobbyCommand;
 import ms.uk.eclipse.commands.config.PartiesCommand;
-import ms.uk.eclipse.commands.config.PvPBotsCommand;
 import ms.uk.eclipse.commands.config.QueuetypeCommand;
 import ms.uk.eclipse.commands.config.SettingsConfigCommand;
 import ms.uk.eclipse.commands.duel.AcceptCommand;
@@ -45,7 +44,6 @@ import ms.uk.eclipse.managers.ArenaManager;
 import ms.uk.eclipse.managers.CatagoryManager;
 import ms.uk.eclipse.managers.EloManager;
 import ms.uk.eclipse.managers.GametypeManager;
-import ms.uk.eclipse.managers.LeaderboardManager;
 import ms.uk.eclipse.managers.MatchManager;
 import ms.uk.eclipse.managers.PartyManager;
 import ms.uk.eclipse.managers.PlayerManager;
@@ -69,7 +67,6 @@ public class PracticePlugin extends JavaPlugin {
 	PartyManager partyManager;
 	CatagoryManager catagoryManager;
 	PvPBotsManager pvPBotsManager;
-	LeaderboardManager leaderboardManager;
 	EloManager eloManager;
 	TournamentManager tournamentManager;
 	QueueEntryManager queueEntryManager;
@@ -79,7 +76,6 @@ public class PracticePlugin extends JavaPlugin {
 		INSTANCE = this;
 
 		eloManager = new EloManager();
-		leaderboardManager = new LeaderboardManager();
 		matchManager = new MatchManager();
 		arenaManager = new ArenaManager();
 		gametypeManager = new GametypeManager();
@@ -103,7 +99,7 @@ public class PracticePlugin extends JavaPlugin {
 		gametypeManager.load();
 
 		registerCommands(new ListConfigCommands(), new ArenaCommand(), new QueuetypeCommand(), new GametypeCommand(),
-				new KitEditorCommand(), new LobbyCommand(), new PartiesCommand(), new PvPBotsCommand(),
+				new KitEditorCommand(), new LobbyCommand(), new PartiesCommand(),
 				new AcceptCommand(), new ViewInventoryCommand(), new DuelCommand(), new SpectateCommand(),
 				new PotsCommand(), new EloCommand(), new LeaderboardsCommand(), new PartyCommand(),
 				new SettingsConfigCommand(), new FollowCommand(), new TogglePlayerVisibilityCommand(),
@@ -169,10 +165,6 @@ public class PracticePlugin extends JavaPlugin {
 
 	public CatagoryManager getCatagoryManager() {
 		return catagoryManager;
-	}
-
-	public LeaderboardManager getLeaderboardManager() {
-		return leaderboardManager;
 	}
 
 	public EloManager getEloManager() {

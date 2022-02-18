@@ -5,18 +5,18 @@ import org.bukkit.inventory.ItemStack;
 import ms.uk.eclipse.PracticePlugin;
 import ms.uk.eclipse.core.utils.item.ItemBuilder;
 import ms.uk.eclipse.core.utils.message.CC;
-import ms.uk.eclipse.core.utils.message.ChatMessage;
-import ms.uk.eclipse.core.utils.message.StrikingMessage;
-import ms.uk.eclipse.inventory.Menu;
+
+import ms.uk.eclipse.inventory.PracticeMenu;
 import ms.uk.eclipse.managers.QueuetypeManager;
 import ms.uk.eclipse.queue.Queuetype;
 import ms.uk.eclipse.tasks.MenuTask;
 
-public class SelectQueuetypeMenu extends Menu {
+public class SelectQueuetypeMenu extends PracticeMenu {
     QueuetypeManager queuetypeManager = PracticePlugin.INSTANCE.getQueuetypeManager();
+    final static String TITLE = CC.BLUE + "Select Queue";
 
     public SelectQueuetypeMenu() {
-        super(new StrikingMessage("Select Queue", CC.PRIMARY, true));
+        super(TITLE);
         setClickCancelled(true);
     }
 
@@ -26,7 +26,7 @@ public class SelectQueuetypeMenu extends Menu {
         for (Queuetype q : queuetypeManager.getQueuetypes()) {
             try {
                 ItemStack item = new ItemBuilder(q.getDisplayItem())
-                        .name(new ChatMessage(q.getDisplayName(), CC.WHITE, true).toString()).build();
+                        .name(q.getDisplayName()).build();
                 add(item, new MenuTask(new SelectGametypeMenu(q, false, true)));
             } catch (NullPointerException e) {
                 continue;

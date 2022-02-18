@@ -1,21 +1,22 @@
 package ms.uk.eclipse.commands.config;
 
+import java.util.Iterator;
+
 import org.bukkit.Location;
+import org.bukkit.craftbukkit.v1_8_R3.entity.CraftPlayer;
+import org.bukkit.entity.Player;
 
 import ms.uk.eclipse.PracticePlugin;
 import ms.uk.eclipse.arena.Arena;
 import ms.uk.eclipse.core.commands.PlayerCommand;
+import ms.uk.eclipse.core.rank.RankPower;
 import ms.uk.eclipse.core.utils.message.CC;
-import ms.uk.eclipse.core.utils.message.ChatMessage;
-import ms.uk.eclipse.core.utils.message.CreatedMessage;
-import ms.uk.eclipse.core.utils.message.DeletedMessage;
-import ms.uk.eclipse.core.utils.message.SetValueMessage;
-import ms.uk.eclipse.core.utils.message.StrikingMessage;
-import ms.uk.eclipse.core.utils.message.UsageMessage;
-import ms.uk.eclipse.entity.Profile;
 import ms.uk.eclipse.managers.ArenaManager;
 import ms.uk.eclipse.managers.PlayerManager;
+import ms.uk.eclipse.util.PlayerUtil;
+import ms.uk.eclipse.util.messages.ChatMessages;
 import ms.uk.eclipse.util.messages.ErrorMessages;
+import ms.uk.eclipse.util.messages.UsageMessages;
 
 public class ArenaCommand extends PlayerCommand {
 
@@ -23,96 +24,91 @@ public class ArenaCommand extends PlayerCommand {
 	final ArenaManager arenaManager = PracticePlugin.INSTANCE.getArenaManager();
 
 	public ArenaCommand() {
-		super("arena", "practice.permission.config");
+		super("arena", RankPower.MANAGER);
 	}
 
 	@Override
-	public void execute(org.bukkit.entity.Player pl, String[] args) {
+	public void execute(Player player, String[] args) {
 
-		String arg = "";
-
-		if (args.length > 0) {
-			arg = args[0];
-		}
-
-		Profile player = playerManager.getProfile(pl);
+		String arg = args.length > 0 ? args[0] : "";
 		Arena arena;
+		String arenaName;
+		StringBuilder sb;
 
 		switch (arg.toLowerCase()) {
 			default:
-				player.message(new StrikingMessage("Arena Help", CC.PRIMARY, true));
-				player.message(new ChatMessage("/arena create <Name>", CC.SECONDARY, false));
-				player.message(new ChatMessage("/arena spawn <Arena> <1/2/Waiting>", CC.SECONDARY, false));
-				player.message(new ChatMessage("/arena setdisplay <Arena> <&{Colour}>", CC.SECONDARY, false));
-				player.message(new ChatMessage("/arena list", CC.SECONDARY, false));
-				player.message(new ChatMessage("/arena tp <Arena>", CC.SECONDARY, false));
-				player.message(new ChatMessage("/arena waitinglocation <Arena>", CC.SECONDARY, false));
-				player.message(new ChatMessage("/arena delete <Name>", CC.SECONDARY, false));
-
+				ChatMessages.ARENA_COMMANDS.send(player);
+				ChatMessages.ARENA_CREATE.send(player);
+				ChatMessages.ARENA_SPAWN.send(player);
+				ChatMessages.ARENA_DISPLAY.send(player);
+				ChatMessages.ARENA_LIST.send(player);
+				ChatMessages.ARENA_TP.send(player);
+				ChatMessages.ARENA_DELETE.send(player);
 				return;
 			case "create":
 				if (args.length < 2) {
-					player.message(new UsageMessage("/arena create <Name>"));
+					UsageMessages.ARENA_CREATE.send(player);
 					return;
 				}
 
-				arena = new Arena(args[1]);
+				arenaName = args[1];
 
-				if (arenaManager.contains(arena)) {
-					player.message(ErrorMessages.ARENA_ALREADY_EXISTS);
+				if (arenaManager.getArenaByName(arenaName) != null) {
+					ErrorMessages.ARENA_ALREADY_EXISTS.send(player);
 					return;
 				}
+
+				arena = new Arena(arenaName);
 
 				arenaManager.registerArena(arena);
-				player.message(new CreatedMessage("The " + args[1] + " arena"));
-
+				ChatMessages.ARENA_CREATED.clone().replace("%arena%", arenaName).send(player);
 				return;
 			case "spawn":
 				if (args.length < 3) {
-					player.message(new UsageMessage("/arena spawn <Arena> <1/2>"));
+					UsageMessages.ARENA_SPAWN.send(player);
 					return;
 				}
 
-				arena = arenaManager.getArenaByName(args[1]);
+				arenaName = args[1];
+				arena = arenaManager.getArenaByName(arenaName);
 
 				if (arena == null) {
-					player.message(ErrorMessages.ARENA_DOES_NOT_EXIST);
+					ErrorMessages.ARENA_DOES_NOT_EXIST.send(player);
 					return;
 				}
 
-				Location loc = player.bukkit().getLocation();
-				SetValueMessage m = new SetValueMessage("The spawn location for " + args[2], "your location", CC.GREEN);
+				Location loc = player.getLocation();
 
 				switch (args[2].toLowerCase()) {
 					case "1":
 						arena.setLocation1(loc);
 						arena.setLocation1EyeVector(loc.getDirection());
-						player.message(m);
 						break;
 					case "2":
 						arena.setLocation2(loc);
 						arena.setLocation2EyeVector(loc.getDirection());
-						player.message(m);
 						break;
 					case "waiting":
 						arena.setWaitingLocation(loc);
-						player.message(m);
 						break;
 					default:
-						player.message(new UsageMessage("/arena spawn <Arena> <1/2>"));
+						UsageMessages.ARENA_SPAWN.send(player);
+						return;
 				}
 
+				ChatMessages.ARENA_SPAWN_SET.clone().replace("%arena%", arenaName).send(player);
 				return;
 			case "setdisplay":
 				if (args.length < 2) {
-					player.message(new UsageMessage("/arena setdisplay <Arena> <DisplayName>"));
+					UsageMessages.ARENA_DISPLAY.send(player);
 					return;
 				}
 
-				arena = arenaManager.getArenaByName(args[1]);
+				arenaName = args[1];
+				arena = arenaManager.getArenaByName(arenaName);
 
 				if (arena == null) {
-					player.message(ErrorMessages.ARENA_DOES_NOT_EXIST);
+					ErrorMessages.ARENA_DOES_NOT_EXIST.send(player);
 					return;
 				}
 
@@ -122,71 +118,65 @@ public class ArenaCommand extends PlayerCommand {
 					arena.setDisplayName(args[2].replace("&", "§"));
 				}
 
-				player.message(
-						new SetValueMessage("The display item for " + args[1], "the item in your hand", CC.GREEN));
-
+				ChatMessages.ARENA_DISPLAY_SET.clone().replace("%arena%", arenaName).send(player);
 				return;
 			case "list":
-				player.message(new StrikingMessage("Arena List", CC.PRIMARY, true));
+				sb = new StringBuilder(CC.GRAY + "[");
 
-				for (Arena a : arenaManager.getArenas()) {
-					player.message(new ChatMessage(a.getName(), CC.SECONDARY, false));
+				Iterator<Arena> arenaIter = arenaManager.getArenas().iterator();
+
+				while (arenaIter.hasNext()) {
+					Arena a = arenaIter.next();
+					sb.append(CC.GREEN + a.getName());
+
+					if (arenaIter.hasNext()) {
+						sb.append(CC.GRAY + ", ");
+					}
 				}
 
+				sb.append(CC.GRAY + "]");
+
+				player.sendMessage(sb.toString());
 				return;
+			case "teleport":
 			case "tp":
 				if (args.length < 2) {
-					player.message(new UsageMessage("/arena tp <Arena>"));
+					UsageMessages.ARENA_TP.send(player);
 					return;
 				}
 
 				arena = arenaManager.getArenaByName(args[1]);
 
 				if (arena == null) {
-					player.message(ErrorMessages.ARENA_DOES_NOT_EXIST);
+					ErrorMessages.ARENA_DOES_NOT_EXIST.send(player);
 					return;
 				}
 
 				try {
-					player.teleport(arena.getLocation1());
+					PlayerUtil.teleport((CraftPlayer) player, arena.getLocation1());
 				} catch (Exception e) {
-					player.message(ErrorMessages.CANNOT_TELEPORT_TO_ARENA);
+					ErrorMessages.CANNOT_TELEPORT_TO_ARENA.send(player);
+					e.printStackTrace();
 				}
 
 				return;
-			case "waitinglocation":
-				if (args.length < 2) {
-					player.message(new UsageMessage("/arena waitinglocation <Arena>"));
-					return;
-				}
-
-				arena = arenaManager.getArenaByName(args[1]);
-
-				if (arena == null) {
-					player.message(ErrorMessages.ARENA_DOES_NOT_EXIST);
-					return;
-				}
-
-				arena.setWaitingLocation(player.bukkit().getLocation());
-
-				player.message(new SetValueMessage("The waiting location for " + args[1], "your location", CC.GREEN));
-
-				return;
+			case "remove":
 			case "delete":
 				if (args.length < 2) {
-					player.message(new UsageMessage("/arena delete <Arena>"));
+					UsageMessages.ARENA_DELETE.send(player);
 					return;
 				}
 
+				arenaName = args[1];
 				arena = arenaManager.getArenaByName(args[1]);
 
 				if (arena == null) {
-					player.message(ErrorMessages.ARENA_DOES_NOT_EXIST);
+					ErrorMessages.ARENA_DOES_NOT_EXIST.send(player);
 					return;
 				}
 
 				arenaManager.remove(arena);
-				player.message(new DeletedMessage("The " + args[1] + " arena"));
+				ChatMessages.ARENA_DELETED.clone().replace("%arena%", arenaName).send(player);
 
 				return;
 		}

@@ -8,31 +8,30 @@ import ms.uk.eclipse.PracticePlugin;
 import ms.uk.eclipse.arena.Arena;
 import ms.uk.eclipse.core.utils.item.ItemBuilder;
 import ms.uk.eclipse.core.utils.message.CC;
-import ms.uk.eclipse.core.utils.message.ChatMessage;
-import ms.uk.eclipse.core.utils.message.ErrorMessage;
-import ms.uk.eclipse.core.utils.message.StrikingMessage;
-import ms.uk.eclipse.inventory.Menu;
+import ms.uk.eclipse.inventory.PracticeMenu;
 import ms.uk.eclipse.inventory.SubmitAction;
 import ms.uk.eclipse.managers.ArenaManager;
 import ms.uk.eclipse.match.PartyMatch;
 import ms.uk.eclipse.party.Party;
 import ms.uk.eclipse.tournaments.Tournament;
+import ms.uk.eclipse.util.messages.ErrorMessages;
 
-public class SelectArenaMenu extends Menu {
+public class SelectArenaMenu extends PracticeMenu {
     MechanicsMenu menu;
     boolean simpleMode = false;
     SubmitAction action;
     final ArenaManager arenaManager = PracticePlugin.INSTANCE.getArenaManager();
+    final static String TITLE = CC.BLUE + "Select Arena";
 
     public SelectArenaMenu(MechanicsMenu menu, SubmitAction action) {
-        super(new StrikingMessage("Select Arena", CC.PRIMARY, true));
+        super(TITLE);
         setClickCancelled(true);
         this.menu = menu;
         this.action = action;
     }
 
     public SelectArenaMenu(SubmitAction action) {
-        super(new StrikingMessage("Select Arena", CC.PRIMARY, true));
+        super(TITLE);
         setClickCancelled(true);
         simpleMode = true;
         this.action = action;
@@ -49,7 +48,7 @@ public class SelectArenaMenu extends Menu {
             ItemStack item;
             try {
                 item = new ItemBuilder(a.getDisplayItem())
-                        .name(new ChatMessage(a.getDisplayName(), CC.WHITE, true).toString()).build();
+                        .name(a.getDisplayName()).build();
             } catch (Exception e) {
                 continue;
             }
@@ -74,12 +73,12 @@ public class SelectArenaMenu extends Menu {
                     Party p = viewer.getParty();
 
                     if (!viewer.getParty().getPartyLeader().equals(viewer)) {
-                        viewer.message(new ErrorMessage("You must be the party leader"));
+                        viewer.message(ErrorMessages.YOU_ARE_NOT_PARTY_LEADER);
                         return;
                     }
 
                     if (p.getPartyMembers().size() < 2) {
-                        viewer.message(new ErrorMessage("You need at least 2 people in a party"));
+                        viewer.message(ErrorMessages.PARTY_NOT_BIG_ENOUGH);
                         return;
                     }
 

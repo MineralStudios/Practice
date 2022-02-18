@@ -2,7 +2,6 @@ package ms.uk.eclipse.commands.spectator;
 
 import ms.uk.eclipse.PracticePlugin;
 import ms.uk.eclipse.core.commands.PlayerCommand;
-import ms.uk.eclipse.core.utils.message.ErrorMessage;
 import ms.uk.eclipse.entity.Profile;
 import ms.uk.eclipse.entity.PlayerStatus;
 import ms.uk.eclipse.inventory.menus.SpectateMenu;
@@ -36,7 +35,7 @@ public class SpectateCommand extends PlayerCommand {
 		Profile playerarg = playerManager.getProfileFromMatch(args[0]);
 
 		if (playerarg == null) {
-			player.message(new ErrorMessage("That player is not in a game"));
+			player.message(ErrorMessages.PLAYER_NOT_IN_MATCH);
 			return;
 		}
 

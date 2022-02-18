@@ -21,13 +21,9 @@ import ms.uk.eclipse.core.tasks.RunnableTask;
 import ms.uk.eclipse.core.utils.item.ItemBuilder;
 import ms.uk.eclipse.core.utils.message.CC;
 import ms.uk.eclipse.core.utils.message.ChatMessage;
-import ms.uk.eclipse.core.utils.message.ErrorMessage;
-import ms.uk.eclipse.core.utils.message.JoinMessage;
 import ms.uk.eclipse.core.utils.message.Message;
-import ms.uk.eclipse.core.utils.message.RequestMessage;
-import ms.uk.eclipse.core.utils.message.StrikingMessage;
 import ms.uk.eclipse.event.PlayerStatusChangeEvent;
-import ms.uk.eclipse.inventory.Menu;
+import ms.uk.eclipse.inventory.PracticeMenu;
 import ms.uk.eclipse.inventory.SubmitAction;
 import ms.uk.eclipse.inventory.menus.MechanicsMenu;
 import ms.uk.eclipse.inventory.menus.SelectGametypeMenu;
@@ -40,21 +36,22 @@ import ms.uk.eclipse.match.DuelRequest;
 import ms.uk.eclipse.match.Match;
 import ms.uk.eclipse.match.MatchData;
 import ms.uk.eclipse.party.Party;
-import ms.uk.eclipse.party.PartyRequest;
 import ms.uk.eclipse.queue.QueueEntry;
 import ms.uk.eclipse.queue.QueueSearchTask;
 import ms.uk.eclipse.queue.Queuetype;
 import ms.uk.eclipse.scoreboard.Scoreboard;
 import ms.uk.eclipse.tasks.MenuTask;
 import ms.uk.eclipse.tournaments.Tournament;
+import ms.uk.eclipse.util.AutoExpireList;
 import ms.uk.eclipse.util.PearlCooldown;
 import ms.uk.eclipse.util.ProfileList;
+import ms.uk.eclipse.util.items.ItemStacks;
+import ms.uk.eclipse.util.messages.ChatMessages;
 import ms.uk.eclipse.util.messages.ErrorMessages;
 import net.md_5.bungee.api.chat.ClickEvent;
 
 public class Profile {
 	final CraftPlayer player;
-	final UUID uuid;
 	final PlayerInventory inventory;
 	final PracticePlugin instance = PracticePlugin.INSTANCE;
 	final QueuetypeManager queuetypeManager = instance.getQueuetypeManager();
@@ -65,11 +62,11 @@ public class Profile {
 	MatchData matchData;
 	Integer hits = 0;
 	Boolean playersVisible = true;
-	Menu openMenu;
+	PracticeMenu openMenu;
 	Profile following;
 	GlueList<Profile> followers = new ProfileList();
-	GlueList<DuelRequest> recievedDuelRequests = new GlueList<>();
-	GlueList<PartyRequest> recievedPartyRequests = new GlueList<>();
+	AutoExpireList<DuelRequest> recievedDuelRequests = new AutoExpireList<>();
+	AutoExpireList<Party> recievedPartyRequests = new AutoExpireList<>();
 	Boolean requests = true;
 	Profile duelReciever;
 	boolean partyOpenCooldown = false;
@@ -86,7 +83,6 @@ public class Profile {
 	public Profile(org.bukkit.entity.Player player) {
 		this.player = (CraftPlayer) player;
 		this.matchData = new MatchData();
-		this.uuid = player.getUniqueId();
 		this.inventory = new PlayerInventory(player.getInventory());
 		pearlCooldown.start();
 	}
@@ -103,7 +99,7 @@ public class Profile {
 		return hits;
 	}
 
-	public Menu getOpenMenu() {
+	public PracticeMenu getOpenMenu() {
 		return openMenu;
 	}
 
@@ -111,7 +107,7 @@ public class Profile {
 		return pearlCooldown;
 	}
 
-	public void openMenu(Menu m) {
+	public void openMenu(PracticeMenu m) {
 		m.open(this);
 	}
 
@@ -131,11 +127,11 @@ public class Profile {
 		return requests;
 	}
 
-	public GlueList<DuelRequest> getRecievedDuelRequests() {
+	public AutoExpireList<DuelRequest> getRecievedDuelRequests() {
 		return recievedDuelRequests;
 	}
 
-	public GlueList<PartyRequest> getRecievedPartyRequests() {
+	public AutoExpireList<Party> getRecievedPartyRequests() {
 		return recievedPartyRequests;
 	}
 
@@ -148,10 +144,6 @@ public class Profile {
 	}
 
 	public void removeScoreboard() {
-		if (b == null) {
-			return;
-		}
-
 		b = null;
 	}
 
@@ -180,7 +172,7 @@ public class Profile {
 		setPlayerStatus(PlayerStatus.FIGHTING);
 	}
 
-	public void setOpenMenu(Menu menu) {
+	public void setOpenMenu(PracticeMenu menu) {
 		this.openMenu = menu;
 	}
 
@@ -284,19 +276,7 @@ public class Profile {
 	}
 
 	public void message(Message m) {
-		if (m instanceof JoinMessage) {
-			JoinMessage message = (JoinMessage) m;
-			message.send(this.bukkit());
-			return;
-		}
-
-		if (m instanceof RequestMessage) {
-			RequestMessage message = (RequestMessage) m;
-			message.send(this.bukkit());
-			return;
-		}
-
-		this.player.sendMessage(m.toString());
+		m.send(this.bukkit());
 	}
 
 	public String getName() {
@@ -306,31 +286,22 @@ public class Profile {
 	public void setInventoryToFollow() {
 		setInventoryClickCancelled(true);
 		inventory.clear();
-
-		ItemStack stop = new ItemBuilder(new ItemStack(351, 1, (short) 1))
-				.name(new StrikingMessage("Stop Following", CC.PRIMARY, true).toString()).build();
-		inventory.setItem(0, stop, (Runnable) this::stopSpectatingAndFollowing);
+		inventory.setItem(0, ItemStacks.STOP_FOLLOWING, (Runnable) this::stopSpectatingAndFollowing);
 		bukkit().updateInventory();
 	}
 
 	public void setInventoryForTournament() {
 		setInventoryClickCancelled(true);
 		inventory.clear();
-
-		ItemStack wait = new ItemBuilder(new ItemStack(351, 1, (short) 14))
-				.name(new StrikingMessage("Please wait before leaving", CC.PRIMARY, true).toString())
-				.build();
-		inventory.setItem(0, wait,
-				(Runnable) () -> this.message(new ErrorMessage("You can not leave yet")));
+		inventory.setItem(0, ItemStacks.WAIT_TO_LEAVE,
+				(Runnable) () -> this.message(ErrorMessages.CAN_NOT_LEAVE_YET));
 
 		Profile pl = this;
 
 		new BukkitRunnable() {
 			@Override
 			public void run() {
-				ItemStack stop = new ItemBuilder(new ItemStack(351, 1, (short) 1))
-						.name(new StrikingMessage("Leave Tournament", CC.PRIMARY, true).toString()).build();
-				inventory.setItem(0, stop, (Runnable) pl::removeFromTournament);
+				inventory.setItem(0, ItemStacks.LEAVE_TOURNAMENT, (Runnable) pl::removeFromTournament);
 			}
 		}.runTaskLater(PracticePlugin.INSTANCE, 20);
 		bukkit().updateInventory();
@@ -339,33 +310,19 @@ public class Profile {
 	public void setInventoryForParty() {
 		setInventoryClickCancelled(true);
 		inventory.clear();
-
-		ItemStack wait = new ItemBuilder(new ItemStack(351, 1, (short) 14))
-				.name(new StrikingMessage("Please wait before leaving", CC.PRIMARY, true).toString())
-				.build();
-		inventory.setItem(0, wait, (Runnable) () -> this.message(new ErrorMessage("You can not leave yet")));
+		inventory.setItem(0, ItemStacks.WAIT_TO_LEAVE, (Runnable) () -> this.message(ErrorMessages.CAN_NOT_LEAVE_YET));
 
 		new BukkitRunnable() {
 			@Override
 			public void run() {
-				ItemStack disband = new ItemBuilder(new ItemStack(351, 1, (short) 1))
-						.name(new StrikingMessage("Leave Party", CC.PRIMARY, true).toString()).build();
-				inventory.setItem(0, disband, new CommandTask("p leave"));
+				inventory.setItem(0, ItemStacks.LEAVE_PARTY, new CommandTask("p leave"));
 			}
 		}.runTaskLater(PracticePlugin.INSTANCE, 20);
 
-		ItemStack list = new ItemBuilder(Material.PAPER)
-				.name(new StrikingMessage("List Players", CC.PRIMARY, true).toString()).build();
-		inventory.setItem(1, list, new CommandTask("p list"));
-		ItemStack duel = new ItemBuilder(Material.WOOD_AXE)
-				.name(new StrikingMessage("Duel", CC.PRIMARY, true).toString()).build();
-		inventory.setItem(4, duel, new CommandTask("duel"));
-		ItemStack split = new ItemBuilder(Material.GOLD_AXE)
-				.name(new StrikingMessage("Party Split", CC.PRIMARY, true).toString()).build();
-		inventory.setItem(5, split, new MenuTask(new SelectModeMenu(SubmitAction.P_SPLIT)));
-		ItemStack open = new ItemBuilder(Material.SKULL_ITEM)
-				.name(new StrikingMessage("Open Party", CC.PRIMARY, true).toString()).build();
-		inventory.setItem(3, open, new CommandTask("p open"));
+		inventory.setItem(1, ItemStacks.LIST_PLAYERS, new CommandTask("p list"));
+		inventory.setItem(4, ItemStacks.DUEL, new CommandTask("duel"));
+		inventory.setItem(5, ItemStacks.PARTY_SPLIT, new MenuTask(new SelectModeMenu(SubmitAction.P_SPLIT)));
+		inventory.setItem(3, ItemStacks.OPEN_PARTY, new CommandTask("p open"));
 		bukkit().updateInventory();
 	}
 
@@ -379,7 +336,7 @@ public class Profile {
 			Queuetype q = list.get(i);
 			try {
 				ItemStack item = new ItemBuilder(q.getDisplayItem())
-						.name(new StrikingMessage(q.getDisplayName(), CC.PRIMARY, true).toString()).build();
+						.name(CC.SECONDARY + CC.B + q.getDisplayName()).build();
 				inventory.setItem(q.getSlotNumber(), item,
 						new MenuTask(new SelectGametypeMenu(q, true, false)));
 			} catch (NullPointerException e) {
@@ -389,8 +346,7 @@ public class Profile {
 
 		if (instance.getKitEditorManager().getEnabled()) {
 			ItemStack editor = new ItemBuilder(instance.getKitEditorManager().getDisplayItem())
-					.name(new StrikingMessage(instance.getKitEditorManager().getDisplayName(), CC.PRIMARY, true)
-							.toString())
+					.name(CC.SECONDARY + CC.B + instance.getKitEditorManager().getDisplayName())
 					.build();
 			inventory.setItem(instance.getKitEditorManager().getSlot(), editor,
 					new MenuTask(new SelectQueuetypeMenu()));
@@ -398,16 +354,14 @@ public class Profile {
 
 		if (instance.getPartyManager().getEnabled()) {
 			ItemStack parties = new ItemBuilder(instance.getPartyManager().getDisplayItem())
-					.name(new StrikingMessage(instance.getPartyManager().getDisplayName(), CC.PRIMARY, true)
-							.toString())
+					.name(CC.SECONDARY + CC.B + instance.getPartyManager().getDisplayName())
 					.build();
 			inventory.setItem(instance.getPartyManager().getSlot(), parties, new CommandTask("p create"));
 		}
 
 		if (instance.getSettingsManager().getEnabled()) {
 			ItemStack settings = new ItemBuilder(instance.getSettingsManager().getDisplayItem())
-					.name(new StrikingMessage(instance.getSettingsManager().getDisplayName(), CC.PRIMARY, true)
-							.toString())
+					.name(CC.SECONDARY + CC.B + instance.getSettingsManager().getDisplayName())
 					.build();
 			inventory.setItem(instance.getSettingsManager().getSlot(), settings, new CommandTask("settings"));
 		}
@@ -418,9 +372,7 @@ public class Profile {
 		setInventoryClickCancelled(true);
 		inventory.clear();
 
-		ItemStack leaveItem = new ItemBuilder(new ItemStack(351, 1, (short) 1))
-				.name(new StrikingMessage("Leave Queue", CC.PRIMARY, true).toString()).build();
-		getInventory().setItem(0, leaveItem,
+		getInventory().setItem(0, ItemStacks.LEAVE_QUEUE,
 				new RunnableTask(this::removeFromQueue, this::setInventoryForLobby));
 		bukkit().updateInventory();
 	}
@@ -428,10 +380,7 @@ public class Profile {
 	public void setInventoryForSpectating() {
 		setInventoryClickCancelled(true);
 		inventory.clear();
-
-		ItemStack leaveItem = new ItemBuilder(new ItemStack(351, 1, (short) 1))
-				.name(new StrikingMessage("Stop Spectating", CC.PRIMARY, true).toString()).build();
-		getInventory().setItem(0, leaveItem, (Runnable) this::stopSpectatingAndFollowing);
+		getInventory().setItem(0, ItemStacks.STOP_SPECTATING, (Runnable) this::stopSpectatingAndFollowing);
 		bukkit().updateInventory();
 	}
 
@@ -489,7 +438,7 @@ public class Profile {
 	public void stopSpectatingAndFollowing() {
 
 		if (status != PlayerStatus.SPECTATING && status != PlayerStatus.FOLLOWING) {
-			message(new ErrorMessage("You are not spectating or following"));
+			message(ErrorMessages.NOT_SPEC_OR_FOLLOWING);
 			return;
 		}
 
@@ -521,7 +470,7 @@ public class Profile {
 	public void spectate(Profile p) {
 
 		if (p.equals(this)) {
-			message(new ErrorMessage("You can not spectate yourself"));
+			message(ErrorMessages.NOT_SPEC_SELF);
 			return;
 		}
 
@@ -546,16 +495,12 @@ public class Profile {
 		this.player.setGameMode(GameMode.SPECTATOR);
 
 		teleport(p);
-		message(new ChatMessage("You are now spectating " + p.getName(), CC.PRIMARY, false).highlightText(CC.ACCENT,
-				p.getName()));
+		ChatMessages.SPECTATING.clone().replace("%player%", p.getName()).send(bukkit());
 
-		message(new ChatMessage("Type /stopspectating to stop spectating", CC.PRIMARY, false).highlightText(CC.ACCENT,
-				"/stopspectating"));
+		ChatMessages.STOP_SPECTATING.send(bukkit());
 
-		ChatMessage m = new ChatMessage(getName() + " is now spectating your match", CC.PRIMARY, false)
-				.highlightText(CC.ACCENT, getName());
-
-		playerManager.broadcast(match.getParticipants(), m);
+		ChatMessage broadcastedMessage = ChatMessages.SPECTATING_YOUR_MATCH.clone().replace("%player%", getName());
+		playerManager.broadcast(match.getParticipants(), broadcastedMessage);
 
 		this.setInventoryForSpectating();
 
@@ -583,10 +528,8 @@ public class Profile {
 		this.player.setGameMode(GameMode.SPECTATOR);
 
 		teleport(t.getEventArena().getWaitingLocation());
-		message(new ChatMessage("You are now spectating the tournament", CC.PRIMARY, false));
-
-		message(new ChatMessage("Type /stopspectating to stop spectating", CC.PRIMARY, false).highlightText(CC.ACCENT,
-				"/stopspectating"));
+		ChatMessages.SPECTATING_TOURNAMENT.send(bukkit());
+		ChatMessages.STOP_SPECTATING.send(bukkit());
 
 		this.setInventoryForSpectating();
 
@@ -620,18 +563,18 @@ public class Profile {
 		bukkit().closeInventory();
 
 		if (player.getPlayerStatus() != PlayerStatus.IN_LOBBY) {
-			message(new ErrorMessage("That player is not in the lobby"));
+			message(ErrorMessages.PLAYER_NOT_IN_LOBBY);
 			return;
 		}
 
 		if (!player.getRequests()) {
-			message(new ErrorMessage("That player has duel requests disabled"));
+			message(ErrorMessages.DUEL_REQUESTS_DISABLED);
 			return;
 		}
 
 		for (DuelRequest d : player.getRecievedDuelRequests()) {
 			if (d.getSender().equals(this)) {
-				message(new ErrorMessage("You already sent that player a duel request"));
+				message(ErrorMessages.DUEL_REQUEST_ALREADY_SENT);
 				return;
 			}
 		}
@@ -639,30 +582,23 @@ public class Profile {
 		DuelRequest request = new DuelRequest(this, matchData);
 		player.getRecievedDuelRequests().add(request);
 		removeFromQueue();
-		message(new ChatMessage("You have sent a duel request", CC.PRIMARY, false).highlightText(CC.ACCENT,
-				"duel request"));
+		ChatMessages.DUEL_REQUEST_SENT.clone().replace("%player%", player.getName()).send(bukkit());
 
 		String sender = getName();
 
 		if (isInParty()) {
 			if (!getParty().getPartyLeader().equals(this)) {
-				message(new ErrorMessage("You are not a party leader"));
+				message(ErrorMessages.YOU_ARE_NOT_PARTY_LEADER);
 				return;
 			}
 
 			sender = getName() + "'s party (" + getParty().getPartyMembers().size() + ") ";
 		}
 
-		RequestMessage message = new RequestMessage(sender, "duel", "with a " + matchData.getKitName() + " kit",
-				new ClickEvent(ClickEvent.Action.RUN_COMMAND, "/accept " + getName()));
-
-		player.message(message);
-
-		Bukkit.getServer().getScheduler().runTaskLater(PracticePlugin.INSTANCE, new Runnable() {
-			public void run() {
-				player.getRecievedDuelRequests().remove(request);
-			}
-		}, 600);
+		ChatMessages.DUEL_REQUEST_RECIEVED.clone().replace("%player%", sender)
+				.setTextEvent(new ClickEvent(ClickEvent.Action.RUN_COMMAND, "/accept " + getName()),
+						ChatMessages.CLICK_TO_ACCEPT)
+				.send(player.bukkit());
 	}
 
 	public void leaveKitEditor() {
@@ -688,17 +624,16 @@ public class Profile {
 	public void sendPlayerToKitEditor(QueueEntry qe) {
 		bukkit().closeInventory();
 
-		try {
-			teleport(PracticePlugin.INSTANCE.getKitEditorManager().getLocation());
-			setInventoryClickCancelled(false);
-		} catch (Exception e) {
-			message(new ErrorMessage(
-					"A kit editor location has not been set, use /kiteditor setlocation to set the location"));
+		Location location = PracticePlugin.INSTANCE.getKitEditorManager().getLocation();
+
+		if (location == null) {
+			message(ErrorMessages.KIT_EDITOR_LOCATION_NOT_SET);
 			return;
 		}
 
-		PlayerInventory playerinv = getInventory();
-		playerinv.clear();
+		teleport(location);
+		setInventoryClickCancelled(false);
+		getInventory().clear();
 		setPlayerStatus(PlayerStatus.KIT_EDITOR);
 		kitEditorData = qe;
 		getInventory().setContents(qe.getGametype().getKit().getContents());
@@ -710,29 +645,28 @@ public class Profile {
 		Kit k = new Kit(cont, armcont);
 		matchData.setKit(k, "Custom");
 		bukkit().closeInventory();
-		message(new ChatMessage("Your kit has been saved", CC.PRIMARY, false));
+		ChatMessages.KIT_SAVED.send(bukkit());
 	}
 
 	public void sendPlayerToKitCreator() {
 		bukkit().closeInventory();
 
-		try {
-			teleport(PracticePlugin.INSTANCE.getKitEditorManager().getLocation());
-			setInventoryClickCancelled(false);
-		} catch (Exception e) {
-			message(new ErrorMessage(
-					"A kit editor location has not been set, use /kiteditor setlocation to set the location"));
+		Location location = PracticePlugin.INSTANCE.getKitEditorManager().getLocation();
+
+		if (location == null) {
+			message(ErrorMessages.KIT_EDITOR_LOCATION_NOT_SET);
 			return;
 		}
 
-		PlayerInventory playerinv = getInventory();
-		playerinv.clear();
+		teleport(location);
+		setInventoryClickCancelled(false);
+		getInventory().clear();
 		setPlayerStatus(PlayerStatus.KIT_CREATOR);
 		this.player.setGameMode(GameMode.CREATIVE);
 	}
 
 	public boolean equals(Profile p) {
-		return p.getUUID().equals(uuid);
+		return p.getUUID().equals(player.getUniqueId());
 	}
 
 	public Profile getOpponent() {
@@ -748,7 +682,7 @@ public class Profile {
 	}
 
 	public UUID getUUID() {
-		return uuid;
+		return player.getUniqueId();
 	}
 
 	public PlayerStatus getPlayerStatus() {
@@ -840,8 +774,19 @@ public class Profile {
 		teleport(playerarg.bukkit().getLocation());
 	}
 
-	public void setPartyOpenCooldown(boolean b) {
-		partyOpenCooldown = b;
+	public void startPartyOpenCooldown() {
+		if (partyOpenCooldown) {
+			return;
+		}
+
+		partyOpenCooldown = true;
+
+		Bukkit.getServer().getScheduler().runTaskLaterAsynchronously(PracticePlugin.INSTANCE,
+				new Runnable() {
+					public void run() {
+						partyOpenCooldown = false;
+					}
+				}, 400);
 	}
 
 	public boolean getPartyOpenCooldown() {

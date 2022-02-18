@@ -7,18 +7,18 @@ import ms.uk.eclipse.PracticePlugin;
 import ms.uk.eclipse.core.tasks.CommandTask;
 import ms.uk.eclipse.core.utils.item.ItemBuilder;
 import ms.uk.eclipse.core.utils.message.CC;
-import ms.uk.eclipse.core.utils.message.ChatMessage;
-import ms.uk.eclipse.core.utils.message.StrikingMessage;
-import ms.uk.eclipse.inventory.Menu;
+
+import ms.uk.eclipse.inventory.PracticeMenu;
 import ms.uk.eclipse.managers.MatchManager;
 import ms.uk.eclipse.match.Match;
 import ms.uk.eclipse.queue.QueueEntry;
 
-public class SpectateMenu extends Menu {
+public class SpectateMenu extends PracticeMenu {
     MatchManager matchManager = PracticePlugin.INSTANCE.getMatchManager();
+    final static String TITLE = CC.BLUE + "Spectate";
 
     public SpectateMenu() {
-        super(new StrikingMessage("Spectate", CC.PRIMARY, true));
+        super(TITLE);
         setClickCancelled(true);
     }
 
@@ -29,9 +29,8 @@ public class SpectateMenu extends Menu {
             QueueEntry queueEntry = m.getData().getQueueEntry();
             ItemStack item = queueEntry == null ? new ItemStack(Material.WOOD_AXE)
                     : m.getData().getQueueEntry().getGametype().getDisplayItem();
-            ItemStack skull = new ItemBuilder(item).name(
-                    new ChatMessage(m.getPlayer1().getName() + " vs " + m.getPlayer2().getName(), CC.SECONDARY, false)
-                            .toString())
+            ItemStack skull = new ItemBuilder(item)
+                    .name(CC.SECONDARY + m.getPlayer1().getName() + " vs " + m.getPlayer2().getName())
                     .build();
             add(skull, new CommandTask("spec " + m.getParticipants().get(0).getName()));
         }

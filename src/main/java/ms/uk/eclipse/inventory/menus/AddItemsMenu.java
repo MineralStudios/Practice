@@ -8,10 +8,10 @@ import org.bukkit.inventory.ItemStack;
 
 import land.strafe.api.collection.GlueList;
 import ms.uk.eclipse.core.utils.message.CC;
-import ms.uk.eclipse.core.utils.message.StrikingMessage;
-import ms.uk.eclipse.inventory.Menu;
 
-public class AddItemsMenu extends Menu {
+import ms.uk.eclipse.inventory.PracticeMenu;
+
+public class AddItemsMenu extends PracticeMenu {
 	static List<Material> EXCLUDED = new GlueList<>(Arrays.asList(Material.DIAMOND_HELMET, Material.DIAMOND_CHESTPLATE,
 			Material.DIAMOND_LEGGINGS, Material.DIAMOND_BOOTS, Material.MUSHROOM_SOUP, Material.POTION,
 			Material.GOLDEN_APPLE, Material.ENDER_PEARL, Material.WATER_BUCKET, Material.LAVA_BUCKET));
@@ -19,8 +19,10 @@ public class AddItemsMenu extends Menu {
 	static List<Material> INCLUDED = new GlueList<>(
 			Arrays.asList(Material.COOKED_BEEF, Material.GOLDEN_CARROT, Material.GRILLED_PORK));
 
+	final static String TITLE = CC.BLUE + "Add Items";
+
 	public AddItemsMenu() {
-		super(new StrikingMessage("Add Items", CC.PRIMARY, true));
+		super(TITLE);
 		setClickCancelled(true);
 	}
 

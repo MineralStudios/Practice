@@ -6,11 +6,11 @@ import org.bukkit.inventory.ItemStack;
 import ms.uk.eclipse.core.tasks.CommandTask;
 import ms.uk.eclipse.core.utils.item.ItemBuilder;
 import ms.uk.eclipse.core.utils.message.CC;
-import ms.uk.eclipse.core.utils.message.StrikingMessage;
-import ms.uk.eclipse.entity.Profile;
-import ms.uk.eclipse.inventory.Menu;
 
-public class InventoryStatsMenu extends Menu {
+import ms.uk.eclipse.entity.Profile;
+import ms.uk.eclipse.inventory.PracticeMenu;
+
+public class InventoryStatsMenu extends PracticeMenu {
     String opponent;
 
     public InventoryStatsMenu(InventoryStatsMenu m) {
@@ -23,7 +23,7 @@ public class InventoryStatsMenu extends Menu {
     }
 
     public InventoryStatsMenu(Profile p, String opponent) {
-        super(new StrikingMessage(p.getName(), CC.PRIMARY, true));
+        super(CC.BLUE + p.getName());
         this.opponent = opponent;
         setClickCancelled(true);
     }
@@ -31,7 +31,7 @@ public class InventoryStatsMenu extends Menu {
     @Override
     public boolean update() {
         ItemStack lever = new ItemBuilder(Material.LEVER)
-                .name(new StrikingMessage("View Opponent Inventory", CC.PRIMARY, true).toString()).build();
+                .name("View Opponent Inventory").build();
         setSlot(53, lever, new CommandTask("viewinventory " + opponent));
         return true;
     }

@@ -9,11 +9,10 @@ import it.unimi.dsi.fastutil.objects.Object2ObjectOpenHashMap;
 import land.strafe.api.collection.GlueList;
 import land.strafe.api.config.FileConfiguration;
 import ms.uk.eclipse.PracticePlugin;
-import ms.uk.eclipse.core.utils.message.CC;
-import ms.uk.eclipse.core.utils.message.ChatMessage;
 import ms.uk.eclipse.entity.Profile;
 import ms.uk.eclipse.gametype.Gametype;
 import ms.uk.eclipse.managers.PlayerManager;
+import ms.uk.eclipse.util.messages.ChatMessages;
 
 public class QueueEntry {
 	Queuetype q;
@@ -96,6 +95,6 @@ public class QueueEntry {
 		config.save();
 
 		profile.bukkit().closeInventory();
-		profile.message(new ChatMessage("Your kit has been saved", CC.PRIMARY, false));
+		ChatMessages.KIT_SAVED.send(profile.bukkit());
 	}
 }

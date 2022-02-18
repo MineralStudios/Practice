@@ -32,7 +32,7 @@ public class Scoreboard {
 			return;
 		}
 
-		b.updateTitle(CC.B + "Strafe " + CC.GRAY + CC.B + "Land");
+		b.updateTitle(CC.PRIMARY + CC.B + "Mineral");
 		this.b = b;
 		instance = this;
 		p.setScoreboard(this);
@@ -50,8 +50,8 @@ public class Scoreboard {
 	}
 
 	public void updateBoard(Board board) {
-		board.updateLines(CC.BOARD_SEPARATOR, "Online: " + CC.SECONDARY + Bukkit.getOnlinePlayers().size(),
-				"In Game: " + CC.SECONDARY + playerManager.getProfilesInMatch().size(), CC.BOARD_SEPARATOR);
+		board.updateLines(CC.BOARD_SEPARATOR, CC.ACCENT + "Online: " + CC.SECONDARY + Bukkit.getOnlinePlayers().size(),
+				CC.ACCENT + "In Game: " + CC.SECONDARY + playerManager.getProfilesInMatch().size(), CC.BOARD_SEPARATOR);
 	}
 
 	public void remove() {

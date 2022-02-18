@@ -13,13 +13,12 @@ import org.bukkit.scoreboard.Team;
 
 import ms.uk.eclipse.PracticePlugin;
 import ms.uk.eclipse.core.utils.message.CC;
-import ms.uk.eclipse.core.utils.message.ChatMessage;
-import ms.uk.eclipse.core.utils.message.ErrorMessage;
 import ms.uk.eclipse.entity.Profile;
 import ms.uk.eclipse.party.Party;
 import ms.uk.eclipse.scoreboard.Scoreboard;
 import ms.uk.eclipse.util.Countdown;
 import ms.uk.eclipse.util.ProfileList;
+import ms.uk.eclipse.util.messages.ErrorMessages;
 import net.minecraft.server.v1_8_R3.EntityHuman;
 import net.minecraft.server.v1_8_R3.EntityItem;
 import net.minecraft.server.v1_8_R3.PacketPlayInClientCommand;
@@ -54,7 +53,7 @@ public class PartyMatch extends Match {
 	public void start() {
 
 		if (m.getArena() == null) {
-			playerManager.broadcast(participants, new ErrorMessage("An arena could not be found"));
+			playerManager.broadcast(participants, ErrorMessages.ARENA_NOT_FOUND);
 			end(player1);
 			return;
 		}
@@ -143,7 +142,7 @@ public class PartyMatch extends Match {
 				int attackerAmountOfPots = a.getNumber(Material.POTION, (short) 16421)
 						+ a.getNumber(Material.MUSHROOM_SOUP, new ItemStack(Material.MUSHROOM_SOUP).getDurability());
 				setInventoryStats(a, attackerHealth, attackerAmountOfPots);
-				a.message(new ChatMessage(CC.GOLD + "You won", CC.PRIMARY, false));
+				a.bukkit().sendMessage(CC.GOLD + "You won");
 				a.setPearlCooldown(0);
 				new Scoreboard(a).setBoard();
 				a.removeFromMatch();
@@ -161,7 +160,7 @@ public class PartyMatch extends Match {
 			}
 
 			matchManager.remove(this);
-			victim.message(new ChatMessage(CC.RED + "You lost", CC.PRIMARY, false));
+			victim.bukkit().sendMessage(CC.RED + "You lost");
 			new Scoreboard(victim).setBoard();
 
 			Bukkit.getServer().getScheduler().runTaskLater(PracticePlugin.INSTANCE, new Runnable() {

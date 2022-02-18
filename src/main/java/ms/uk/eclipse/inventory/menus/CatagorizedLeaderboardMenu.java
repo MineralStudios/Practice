@@ -5,17 +5,16 @@ import org.bukkit.inventory.meta.ItemMeta;
 
 import ms.uk.eclipse.core.utils.item.ItemBuilder;
 import ms.uk.eclipse.core.utils.message.CC;
-import ms.uk.eclipse.core.utils.message.ChatMessage;
-import ms.uk.eclipse.core.utils.message.StrikingMessage;
+
 import ms.uk.eclipse.gametype.Catagory;
 import ms.uk.eclipse.gametype.Gametype;
-import ms.uk.eclipse.inventory.Menu;
+import ms.uk.eclipse.inventory.PracticeMenu;
 
-public class CatagorizedLeaderboardMenu extends Menu {
+public class CatagorizedLeaderboardMenu extends PracticeMenu {
     Catagory c;
 
     public CatagorizedLeaderboardMenu(Catagory c) {
-        super(new StrikingMessage(c.getDisplayName(), CC.PRIMARY, true));
+        super(CC.BLUE + c.getDisplayName());
         this.c = c;
     }
 
@@ -23,7 +22,7 @@ public class CatagorizedLeaderboardMenu extends Menu {
     public boolean update() {
         for (Gametype g : c.getGametypes()) {
             ItemBuilder itemBuild = new ItemBuilder(g.getDisplayItem())
-                    .name(new ChatMessage(g.getDisplayName(), CC.WHITE, true).toString());
+                    .name(g.getDisplayName());
             ItemStack item = itemBuild.build();
             ItemMeta meta = item.getItemMeta();
 

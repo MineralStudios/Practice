@@ -1,23 +1,21 @@
 package ms.uk.eclipse.commands.config;
 
+import java.util.Iterator;
+
 import land.strafe.server.combat.KnockbackProfile;
 import land.strafe.server.combat.KnockbackProfileList;
 import ms.uk.eclipse.PracticePlugin;
 import ms.uk.eclipse.arena.Arena;
 import ms.uk.eclipse.core.commands.PlayerCommand;
+import ms.uk.eclipse.core.rank.RankPower;
 import ms.uk.eclipse.core.utils.message.CC;
-import ms.uk.eclipse.core.utils.message.ChatMessage;
-import ms.uk.eclipse.core.utils.message.CreatedMessage;
-import ms.uk.eclipse.core.utils.message.DeletedMessage;
-import ms.uk.eclipse.core.utils.message.SetValueMessage;
-import ms.uk.eclipse.core.utils.message.StrikingMessage;
-import ms.uk.eclipse.core.utils.message.UsageMessage;
-import ms.uk.eclipse.entity.Profile;
 import ms.uk.eclipse.managers.ArenaManager;
 import ms.uk.eclipse.managers.PlayerManager;
 import ms.uk.eclipse.managers.QueuetypeManager;
 import ms.uk.eclipse.queue.Queuetype;
+import ms.uk.eclipse.util.messages.ChatMessages;
 import ms.uk.eclipse.util.messages.ErrorMessages;
+import ms.uk.eclipse.util.messages.UsageMessages;
 
 public class QueuetypeCommand extends PlayerCommand {
 
@@ -26,191 +24,231 @@ public class QueuetypeCommand extends PlayerCommand {
 	final ArenaManager arenaManager = PracticePlugin.INSTANCE.getArenaManager();
 
 	public QueuetypeCommand() {
-		super("queuetype", "practice.permission.config");
+		super("queuetype", RankPower.MANAGER);
 	}
 
 	@Override
 	public void execute(org.bukkit.entity.Player pl, String[] args) {
 
-		String arg = "";
-		if (args.length > 0) {
-			arg = args[0];
-		}
+		String arg = args.length > 0 ? args[0] : "";
 
-		Profile player = playerManager.getProfile(pl);
 		Queuetype queuetype;
+		String queuetypeName;
+		String toggled;
+		StringBuilder sb;
+
 		switch (arg.toLowerCase()) {
 			default:
-				player.message(new StrikingMessage("Queuetype Help", CC.PRIMARY, true));
-				player.message(new ChatMessage("/queuetype create <Name>", CC.SECONDARY, false));
-				player.message(new ChatMessage("/queuetype setdisplay <Queuetype> <DisplayName>", CC.SECONDARY, false));
-				player.message(new ChatMessage("/queuetype elo <Queuetype> <True/False>", CC.SECONDARY, false));
-				player.message(new ChatMessage("/queuetype slot <Queuetype> <Slot>", CC.SECONDARY, false));
-				player.message(new ChatMessage("/queuetype kb <Queuetype> <KnockbackProfile>", CC.SECONDARY, false));
-				player.message(new ChatMessage("/queuetype kbenabled <Queuetype> <True/False>", CC.SECONDARY, false));
-				player.message(new ChatMessage("/queuetype list", CC.SECONDARY, false));
-				player.message(
-						new ChatMessage("/queuetype arena <Queuetype> <Arena> <True/False>", CC.SECONDARY, false));
-				player.message(new ChatMessage("/queuetype delete <Name>", CC.SECONDARY, false));
-
+				ChatMessages.QUEUETYPE_COMMANDS.send(pl);
+				ChatMessages.QUEUETYPE_CREATE.send(pl);
+				ChatMessages.QUEUETYPE_DISPLAY.send(pl);
+				ChatMessages.QUEUETYPE_RANKED.send(pl);
+				ChatMessages.QUEUETYPE_SLOT.send(pl);
+				ChatMessages.QUEUETYPE_KB.send(pl);
+				ChatMessages.QUEUETYPE_LIST.send(pl);
+				ChatMessages.QUEUETYPE_ARENA.send(pl);
+				ChatMessages.QUEUETYPE_DELETE.send(pl);
 				return;
 			case "create":
 				if (args.length < 2) {
-					player.message(new UsageMessage("/queuetype create <Name>"));
+					UsageMessages.QUEUETYPE_CREATE.send(pl);
 					return;
 				}
 
-				queuetype = new Queuetype(args[1]);
+				queuetypeName = args[1];
 
-				if (queuetypeManager.contains(queuetype)) {
-					player.message(ErrorMessages.QUEUETYPE_ALREADY_EXISTS);
+				if (queuetypeManager.getQueuetypeByName(queuetypeName) != null) {
+					ErrorMessages.QUEUETYPE_ALREADY_EXISTS.send(pl);
 					return;
 				}
+
+				queuetype = new Queuetype(queuetypeName);
 
 				queuetypeManager.registerQueuetype(queuetype);
-				player.message(new CreatedMessage("The " + args[1] + " queue"));
+				ChatMessages.QUEUETYPE_CREATED.clone().replace("%queuetype%", queuetypeName).send(pl);
 
 				return;
 			case "setdisplay":
 				if (args.length < 2) {
-					player.message(new UsageMessage("/queuetype setdisplay <Queuetype> <DisplayName>"));
+					UsageMessages.QUEUETYPE_DISPLAY.send(pl);
 					return;
 				}
 
-				queuetype = queuetypeManager.getQueuetypeByName(args[1]);
+				queuetypeName = args[1];
+				queuetype = queuetypeManager.getQueuetypeByName(queuetypeName);
 
 				if (queuetype == null) {
-					player.message(ErrorMessages.QUEUETYPE_DOES_NOT_EXIST);
+					ErrorMessages.QUEUETYPE_DOES_NOT_EXIST.send(pl);
 					return;
 				}
 
-				queuetype.setDisplayItem(player.getItemInHand());
+				queuetype.setDisplayItem(pl.getItemInHand());
 
 				if (args.length > 2) {
 					queuetype.setDisplayName(args[2].replace("&", "§"));
 				}
 
-				player.message(new ChatMessage("The " + args[1] + " display item has been set", CC.PRIMARY, false)
-						.highlightText(CC.ACCENT, args[1]));
+				ChatMessages.QUEUETYPE_DISPLAY_SET.clone().replace("%queuetype%", queuetypeName).send(pl);
 
 				return;
+			case "ranked":
 			case "elo":
 				if (args.length < 3) {
-					player.message(new UsageMessage("/queuetype ranked <Queuetype> <True/False>"));
+					UsageMessages.QUEUETYPE_RANKED.send(pl);
 					return;
 				}
 
-				queuetype = queuetypeManager.getQueuetypeByName(args[1]);
+				queuetypeName = args[1];
+				queuetype = queuetypeManager.getQueuetypeByName(queuetypeName);
 
 				if (queuetype == null) {
-					player.message(ErrorMessages.QUEUETYPE_DOES_NOT_EXIST);
+					ErrorMessages.QUEUETYPE_DOES_NOT_EXIST.send(pl);
 					return;
 				}
 
-				if (args[2].equalsIgnoreCase("false")) {
-					queuetype.setRanked(false);
-					player.message(new SetValueMessage("Ranked", "false", CC.RED));
-					return;
+				toggled = args[2].toLowerCase();
+
+				switch (toggled) {
+					case "false":
+						queuetype.setRanked(false);
+						break;
+					case "true":
+						queuetype.setRanked(true);
+						break;
+					default:
+						UsageMessages.QUEUETYPE_RANKED.send(pl);
+						return;
 				}
 
-				if (args[2].equalsIgnoreCase("true")) {
-					queuetype.setRanked(true);
-					player.message(new SetValueMessage("Ranked", "true", CC.GREEN));
-					return;
-				}
-
-				player.message(new UsageMessage("/queuetype ranked <Queuetype> <True/False>"));
-
+				ChatMessages.QUEUETYPE_RANKED_SET.clone().replace("%toggled%", toggled).send(pl);
 				return;
 			case "slot":
 				if (args.length < 3) {
-					player.message(new UsageMessage("/queuetype slot <Queuetype> <Slot>"));
+					UsageMessages.QUEUETYPE_SLOT.send(pl);
 					return;
 				}
 
-				queuetype = queuetypeManager.getQueuetypeByName(args[1]);
+				queuetypeName = args[1];
+				queuetype = queuetypeManager.getQueuetypeByName(queuetypeName);
 
 				if (queuetype == null) {
-					player.message(ErrorMessages.QUEUETYPE_DOES_NOT_EXIST);
+					ErrorMessages.QUEUETYPE_DOES_NOT_EXIST.send(pl);
 					return;
 				}
 
-				queuetype.setSlotNumber(Integer.parseInt(args[2]));
-				player.message(new ChatMessage("The hotbar slot has been set", CC.PRIMARY, false));
+				Integer slot;
+				String slotName = args[2];
+
+				try {
+					slot = Integer.parseInt(slotName);
+				} catch (Exception e) {
+					ErrorMessages.INVALID_SLOT.send(pl);
+					return;
+				}
+
+				queuetype.setSlotNumber(slot);
+				ChatMessages.QUEUETYPE_SLOT_SET.clone().replace("%queuetype%", queuetypeName).replace("%slot%",
+						slotName).send(pl);
 
 				return;
 			case "kb":
 				if (args.length < 3) {
-					player.message(new UsageMessage("/queuetype kb <Queuetype> <KnockbackProfile>"));
+					UsageMessages.QUEUETYPE_KB.send(pl);
 					return;
 				}
 
-				queuetype = queuetypeManager.getQueuetypeByName(args[1]);
-				KnockbackProfile kb = KnockbackProfileList.getKnockbackProfileByName(args[2]);
+				queuetypeName = args[1];
+				queuetype = queuetypeManager.getQueuetypeByName(queuetypeName);
 
 				if (queuetype == null) {
-					player.message(ErrorMessages.QUEUETYPE_DOES_NOT_EXIST);
+					ErrorMessages.QUEUETYPE_DOES_NOT_EXIST.send(pl);
 					return;
 				}
 
+				String knockbackName = args[2];
+				KnockbackProfile kb = KnockbackProfileList.getKnockbackProfileByName(knockbackName);
+
 				if (kb == null) {
-					player.message(ErrorMessages.KNOCKBACK_DOES_NOT_EXIST);
+					ErrorMessages.KNOCKBACK_DOES_NOT_EXIST.send(pl);
 					return;
 				}
 
 				queuetype.setKnockback(kb);
-				player.message(new SetValueMessage("The knockback", kb.getName(), CC.GREEN));
+				ChatMessages.QUEUETYPE_KB_SET.clone().replace("%queuetype%", queuetypeName)
+						.replace("%knockback%", knockbackName).send(pl);
 
 				return;
 			case "list":
-				player.message(new StrikingMessage("Queuetype List", CC.PRIMARY, true));
-				for (Queuetype q : queuetypeManager.getQueuetypes()) {
-					player.message(new ChatMessage(q.getName(), CC.SECONDARY, false));
+				sb = new StringBuilder(CC.GRAY + "[");
+
+				Iterator<Queuetype> queuetypeIter = queuetypeManager.getQueuetypes().iterator();
+
+				while (queuetypeIter.hasNext()) {
+					Queuetype q = queuetypeIter.next();
+					sb.append(CC.GREEN + q.getName());
+
+					if (queuetypeIter.hasNext()) {
+						sb.append(CC.GRAY + ", ");
+					}
 				}
+
+				sb.append(CC.GRAY + "]");
+
+				pl.sendMessage(sb.toString());
 
 				return;
 			case "arena":
 				if (args.length < 4) {
-					player.message(new UsageMessage("/queuetype arena <Queuetype> <Arena> <True/False>"));
+					UsageMessages.QUEUETYPE_ARENA.send(pl);
 					return;
 				}
 
-				queuetype = queuetypeManager.getQueuetypeByName(args[1]);
-				Arena arena = arenaManager.getArenaByName(args[2]);
+				queuetypeName = args[1];
+				queuetype = queuetypeManager.getQueuetypeByName(queuetypeName);
 
 				if (queuetype == null) {
-					player.message(ErrorMessages.QUEUETYPE_DOES_NOT_EXIST);
+					ErrorMessages.QUEUETYPE_DOES_NOT_EXIST.send(pl);
 					return;
 				}
 
-				if (args[3].equalsIgnoreCase("false")) {
-					queuetype.enableArena(arena, false);
-					player.message(new SetValueMessage("That arena", "false", CC.RED));
-					return;
+				String arenaName = args[2];
+				Arena arena = arenaManager.getArenaByName(arenaName);
+
+				toggled = args[3].toLowerCase();
+
+				switch (toggled) {
+					case "false":
+						queuetype.enableArena(arena, false);
+						break;
+					case "true":
+						queuetype.enableArena(arena, true);
+						break;
+					default:
+						UsageMessages.QUEUETYPE_RANKED.send(pl);
+						return;
 				}
 
-				if (args[3].equalsIgnoreCase("true")) {
-					queuetype.enableArena(arena, true);
-					player.message(new SetValueMessage("That arena", "true", CC.GREEN));
-					return;
-				}
+				ChatMessages.QUEUETYPE_ARENA_SET.clone().replace("%queuetype%", queuetypeName)
+						.replace("%queuetype%", queuetypeName)
+						.replace("%toggled%", toggled).replace("%arena%", arenaName).send(pl);
 
 				return;
 			case "delete":
 				if (args.length < 2) {
-					player.message(new UsageMessage("/queuetype delete <Queuetype>"));
+					UsageMessages.QUEUETYPE_DELETE.send(pl);
 					return;
 				}
 
-				queuetype = queuetypeManager.getQueuetypeByName(args[1]);
+				queuetypeName = args[1];
+				queuetype = queuetypeManager.getQueuetypeByName(queuetypeName);
 
 				if (queuetype == null) {
-					player.message(ErrorMessages.QUEUETYPE_DOES_NOT_EXIST);
+					ErrorMessages.QUEUETYPE_DOES_NOT_EXIST.send(pl);
 					return;
 				}
 
 				queuetypeManager.remove(queuetype);
-				player.message(new DeletedMessage("The " + args[1] + " queue"));
+				ChatMessages.QUEUETYPE_DELETED.clone().replace("%queuetype%", queuetypeName).send(pl);
 
 				return;
 		}

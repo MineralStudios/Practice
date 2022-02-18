@@ -2,14 +2,14 @@ package ms.uk.eclipse.commands.duel;
 
 import ms.uk.eclipse.PracticePlugin;
 import ms.uk.eclipse.core.commands.PlayerCommand;
-import ms.uk.eclipse.core.utils.message.UsageMessage;
-import ms.uk.eclipse.entity.Profile;
 import ms.uk.eclipse.entity.PlayerStatus;
+import ms.uk.eclipse.entity.Profile;
 import ms.uk.eclipse.inventory.SubmitAction;
 import ms.uk.eclipse.inventory.menus.OtherPartiesMenu;
 import ms.uk.eclipse.inventory.menus.SelectModeMenu;
 import ms.uk.eclipse.managers.PlayerManager;
 import ms.uk.eclipse.util.messages.ErrorMessages;
+import ms.uk.eclipse.util.messages.UsageMessages;
 
 public class DuelCommand extends PlayerCommand {
 
@@ -25,7 +25,7 @@ public class DuelCommand extends PlayerCommand {
 
 		if (args.length == 0) {
 			if (!player.isInParty()) {
-				player.message(new UsageMessage("/duel <Player>"));
+				player.message(UsageMessages.DUEL);
 				return;
 			}
 

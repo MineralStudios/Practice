@@ -2,86 +2,88 @@ package ms.uk.eclipse.commands.config;
 
 import ms.uk.eclipse.PracticePlugin;
 import ms.uk.eclipse.core.commands.PlayerCommand;
-import ms.uk.eclipse.core.utils.message.CC;
-import ms.uk.eclipse.core.utils.message.ChatMessage;
-import ms.uk.eclipse.core.utils.message.SetValueMessage;
-import ms.uk.eclipse.core.utils.message.StrikingMessage;
-import ms.uk.eclipse.core.utils.message.UsageMessage;
-import ms.uk.eclipse.entity.Profile;
+import ms.uk.eclipse.core.rank.RankPower;
 import ms.uk.eclipse.managers.PartyManager;
 import ms.uk.eclipse.managers.PlayerManager;
+import ms.uk.eclipse.util.messages.ChatMessages;
+import ms.uk.eclipse.util.messages.ErrorMessages;
+import ms.uk.eclipse.util.messages.UsageMessages;
 
 public class PartiesCommand extends PlayerCommand {
 	final PlayerManager playerManager = PracticePlugin.INSTANCE.getPlayerManager();
 	final PartyManager partyManager = PracticePlugin.INSTANCE.getPartyManager();
 
 	public PartiesCommand() {
-		super("parties", "practice.permission.config");
+		super("parties", RankPower.MANAGER);
 	}
 
 	@Override
 	public void execute(org.bukkit.entity.Player pl, String[] args) {
 
-		String arg = "";
-		if (args.length > 0) {
-			arg = args[0];
-		}
+		String arg = args.length > 0 ? args[0] : "";
+		String toggled;
 
-		Profile player = playerManager.getProfile(pl);
 		switch (arg.toLowerCase()) {
 			default:
-				player.message(new StrikingMessage("Parties Help", CC.PRIMARY, true));
-				player.message(new ChatMessage("/parties enable <True/False>", CC.SECONDARY, false));
-				player.message(new ChatMessage("/parties setdisplay <DisplayName>", CC.SECONDARY, false));
-				player.message(new ChatMessage("/parties slot <Slot>", CC.SECONDARY, false));
-
+				ChatMessages.PARTIES_COMMANDS.send(pl);
+				ChatMessages.PARTIES_ENABLE.send(pl);
+				ChatMessages.PARTIES_DISPLAY.send(pl);
+				ChatMessages.PARTIES_SLOT.send(pl);
 				return;
 			case "enable":
 				if (args.length < 2) {
-					player.message(new UsageMessage("/parties enable <True/False>"));
+					UsageMessages.PARTIES_ENABLE.send(pl);
 					return;
 				}
 
-				if (args[1].equalsIgnoreCase("false")) {
-					partyManager.setEnabled(false);
-					player.message(new SetValueMessage("Parties", "false", CC.RED));
-					return;
+				toggled = args[1].toLowerCase();
+
+				switch (toggled) {
+					case "false":
+						partyManager.setEnabled(false);
+						break;
+					case "true":
+						partyManager.setEnabled(true);
+						break;
+					default:
+						UsageMessages.PARTIES_ENABLE.send(pl);
+						return;
 				}
 
-				if (args[1].equalsIgnoreCase("true")) {
-					partyManager.setEnabled(true);
-					player.message(new SetValueMessage("Parties", "true", CC.GREEN));
-					return;
-				}
-
-				player.message(new UsageMessage("/parties enable <True/False>"));
-
+				ChatMessages.PARTIES_ENABLED.clone().replace("%toggled%", toggled).send(pl);
 				return;
 			case "setdisplay":
 				if (args.length < 1) {
-					player.message(new UsageMessage("/parties setdisplay <DisplayName>"));
+					UsageMessages.PARTIES_DISPLAY.send(pl);
 					return;
 				}
 
-				partyManager.setDisplayItem(player.getItemInHand());
+				partyManager.setDisplayItem(pl.getItemInHand());
 
-				if (args.length > 1) {
+				if (args.length > 2) {
 					partyManager.setDisplayName(args[1].replace("&", "§"));
 				}
 
-				player.message(new ChatMessage("The display item for parties has been set", CC.PRIMARY, false));
-
+				ChatMessages.PARTIES_DISPLAY_SET.send(pl);
 				return;
 			case "slot":
 				if (args.length < 2) {
-					player.message(new UsageMessage("/parties slot <Slot>"));
+					UsageMessages.PARTIES_SLOT.send(pl);
 					return;
 				}
 
-				int slot = Integer.parseInt(args[1]);
+				int slot;
+				String strSlot = args[1];
+				try {
+					slot = Integer.parseInt(strSlot);
+				} catch (Exception e) {
+					ErrorMessages.INVALID_SLOT.send(pl);
+					return;
+				}
+
 				partyManager.setSlot(slot);
-				player.message(new ChatMessage("The slot for parties has been set to " + slot, CC.PRIMARY, false)
-						.highlightText(CC.ACCENT, " " + slot));
+
+				ChatMessages.PARTIES_SLOT_SET.clone().replace("%slot%", strSlot).send(pl);
 
 				return;
 		}

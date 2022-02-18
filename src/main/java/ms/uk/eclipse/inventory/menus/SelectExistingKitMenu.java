@@ -5,23 +5,23 @@ import org.bukkit.inventory.ItemStack;
 import ms.uk.eclipse.PracticePlugin;
 import ms.uk.eclipse.core.utils.item.ItemBuilder;
 import ms.uk.eclipse.core.utils.message.CC;
-import ms.uk.eclipse.core.utils.message.ChatMessage;
-import ms.uk.eclipse.core.utils.message.StrikingMessage;
+
 import ms.uk.eclipse.gametype.Catagory;
 import ms.uk.eclipse.gametype.Gametype;
-import ms.uk.eclipse.inventory.Menu;
+import ms.uk.eclipse.inventory.PracticeMenu;
 import ms.uk.eclipse.managers.CatagoryManager;
 import ms.uk.eclipse.managers.GametypeManager;
 import ms.uk.eclipse.tasks.MenuTask;
 
-public class SelectExistingKitMenu extends Menu {
+public class SelectExistingKitMenu extends PracticeMenu {
     final GametypeManager gametypeManager = PracticePlugin.INSTANCE.getGametypeManager();
     final CatagoryManager catagoryManager = PracticePlugin.INSTANCE.getCatagoryManager();
-    Menu menu;
+    PracticeMenu menu;
     boolean simple = false;
+    final static String TITLE = CC.BLUE + "Select Existing Kit";
 
-    public SelectExistingKitMenu(Menu menu, boolean simple) {
-        super(new StrikingMessage("Select Existing Kit", CC.PRIMARY, true));
+    public SelectExistingKitMenu(PracticeMenu menu, boolean simple) {
+        super(TITLE);
         setClickCancelled(true);
         this.menu = menu;
         this.simple = simple;
@@ -35,7 +35,7 @@ public class SelectExistingKitMenu extends Menu {
             if (g.isInCatagory())
                 continue;
             ItemStack item = new ItemBuilder(g.getDisplayItem())
-                    .name(new ChatMessage(g.getDisplayName(), CC.WHITE, true).toString()).build();
+                    .name(g.getDisplayName()).build();
 
             Runnable runnable = new Runnable() {
                 @Override
@@ -56,7 +56,7 @@ public class SelectExistingKitMenu extends Menu {
 
         for (Catagory c : catagoryManager.getCatagorys()) {
             ItemStack item = new ItemBuilder(c.getDisplayItem())
-                    .name(new ChatMessage(c.getDisplayName(), CC.WHITE, true).toString()).build();
+                    .name(c.getDisplayName()).build();
             add(item, new MenuTask(new SelectCategorizedExistingKitMenu(c, menu, simple)));
         }
 

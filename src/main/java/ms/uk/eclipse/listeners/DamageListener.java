@@ -11,10 +11,9 @@ import org.bukkit.event.entity.EntityDamageEvent;
 import org.bukkit.event.entity.EntityDamageEvent.DamageCause;
 
 import ms.uk.eclipse.PracticePlugin;
-import ms.uk.eclipse.core.utils.message.CC;
-import ms.uk.eclipse.core.utils.message.ChatMessage;
 import ms.uk.eclipse.entity.Profile;
 import ms.uk.eclipse.managers.PlayerManager;
+import ms.uk.eclipse.util.messages.ChatMessages;
 
 public class DamageListener implements Listener {
 	PlayerManager playerManager = PracticePlugin.INSTANCE.getPlayerManager();
@@ -77,9 +76,8 @@ public class DamageListener implements Listener {
 			org.bukkit.entity.Player shooter = (org.bukkit.entity.Player) arrow.getShooter();
 
 			int health = (int) bukkitVictim.getHealth();
-			shooter.sendMessage(
-					new ChatMessage(bukkitVictim.getName() + " now has a health of " + health, CC.PRIMARY, false)
-							.highlightText(CC.ACCENT, " " + health).toString());
+			ChatMessages.HEALTH.clone().replace("%player%", bukkitVictim.getName()).replace("%health%", "" + health)
+					.send(shooter);
 			shooter.playNote(shooter.getLocation(), Instrument.PIANO, new Note(20));
 			return;
 		}

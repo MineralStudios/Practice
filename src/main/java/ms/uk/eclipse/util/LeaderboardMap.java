@@ -114,6 +114,17 @@ public class LeaderboardMap {
     }
 
     public void put(String key, int value) {
+        Iterator<Entry> iterator = entryList.iterator();
+
+        while (iterator.hasNext()) {
+            Entry entry = iterator.next();
+
+            if (entry.getKey().equalsIgnoreCase(key)) {
+                iterator.remove();
+                break;
+            }
+        }
+
         int position = findPosition(value);
 
         if (position == -1) {
@@ -127,21 +138,25 @@ public class LeaderboardMap {
                 entryList.remove(i);
             }
         }
+    }
 
-        boolean encountered = false;
+    public void put(String key, int value, boolean checkForDuplicates) {
+        if (checkForDuplicates) {
+            put(key, value);
+            return;
+        }
 
-        Iterator<Entry> iterator = entryList.iterator();
+        int position = findPosition(value);
 
-        while (iterator.hasNext()) {
-            Entry entry = iterator.next();
+        if (position == -1) {
+            return;
+        }
 
-            if (entry.getKey().equalsIgnoreCase(key)) {
-                if (encountered) {
-                    iterator.remove();
-                    break;
-                }
+        entryList.add(position, new Entry(key, value));
 
-                encountered = true;
+        if (entryList.size() > size) {
+            for (int i = size; i < entryList.size(); i++) {
+                entryList.remove(i);
             }
         }
     }

@@ -1,15 +1,15 @@
 package ms.uk.eclipse.tasks;
 
-import ms.uk.eclipse.inventory.Menu;
+import ms.uk.eclipse.inventory.PracticeMenu;
 
 public class MenuTask {
-    Menu m;
+    PracticeMenu m;
 
-    public MenuTask(Menu m) {
+    public MenuTask(PracticeMenu m) {
         this.m = m;
     }
 
-    public Menu getMenu() {
+    public PracticeMenu getMenu() {
         return m;
     }
 }
