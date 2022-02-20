@@ -11,6 +11,8 @@ import org.bukkit.util.Vector;
 import land.strafe.api.config.FileConfiguration;
 import ms.uk.eclipse.PracticePlugin;
 import ms.uk.eclipse.util.SaveableData;
+import ms.uk.eclipse.util.VoidWorldGenerator;
+import ms.uk.eclipse.util.WorldUtil;
 
 public class Arena implements SaveableData {
 	final FileConfiguration config = PracticePlugin.INSTANCE.getArenaManager().getConfig();
@@ -100,6 +102,14 @@ public class Arena implements SaveableData {
 
 	public Location getWaitingLocation() {
 		return this.waitingLocation;
+	}
+
+	public synchronized World generate() {
+		World targetw = Bukkit
+				.createWorld(new WorldCreator(getName() + "_" + currentNameID).generator(new VoidWorldGenerator()));
+		WorldUtil.copyWorld(this.world.getWorldFolder(), targetw.getWorldFolder());
+		currentNameID++;
+		return targetw;
 	}
 
 	@Override

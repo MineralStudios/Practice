@@ -36,6 +36,7 @@ import ms.uk.eclipse.scoreboard.Scoreboard;
 import ms.uk.eclipse.util.Countdown;
 import ms.uk.eclipse.util.MathUtil;
 import ms.uk.eclipse.util.ProfileList;
+import ms.uk.eclipse.util.WorldUtil;
 import ms.uk.eclipse.util.items.ItemStacks;
 import ms.uk.eclipse.util.messages.ChatMessages;
 import ms.uk.eclipse.util.messages.ErrorMessages;
@@ -63,6 +64,7 @@ public class Match {
 	final ArenaManager arenaManager = PracticePlugin.INSTANCE.getArenaManager();
 	final QueueEntryManager queueEntryManager = PracticePlugin.INSTANCE.getQueueEntryManager();
 	static final ExecutorService executor = Executors.newCachedThreadPool();
+	org.bukkit.World world = null;
 
 	public Match(Profile player1, Profile player2, MatchData m) {
 		this.m = m;
@@ -221,6 +223,13 @@ public class Match {
 		Location location2 = m.getArena().getLocation2();
 		location1.setDirection(m.getArena().getLocation1EyeVector());
 		location2.setDirection(m.getArena().getLocation2EyeVector());
+
+		if (m.getGriefing() || m.getBuild()) {
+			world = m.getArena().generate();
+			location1.setWorld(world);
+			location2.setWorld(world);
+		}
+
 		setWorldParameters(((CraftWorld) location1.getWorld()).getHandle());
 		handleFollowers();
 		prepareForMatch(player1, player2);
@@ -296,20 +305,16 @@ public class Match {
 		attacker.bukkit().sendMessage(CC.SEPARATOR);
 		attacker.bukkit().sendMessage(viewinv);
 		attacker.bukkit().spigot().sendMessage(winmessage, splitter, losemessage);
-
-		if (m.isRanked()) {
-			attacker.bukkit().sendMessage(rankedMessage);
-		}
-
-		attacker.bukkit().sendMessage(CC.SEPARATOR);
 		victim.bukkit().sendMessage(CC.SEPARATOR);
 		victim.bukkit().sendMessage(viewinv);
 		victim.bukkit().spigot().sendMessage(winmessage, splitter, losemessage);
 
 		if (m.isRanked()) {
+			attacker.bukkit().sendMessage(rankedMessage);
 			victim.bukkit().sendMessage(rankedMessage);
 		}
 
+		attacker.bukkit().sendMessage(CC.SEPARATOR);
 		victim.bukkit().sendMessage(CC.SEPARATOR);
 		attacker.setPearlCooldown(0);
 		victim.setPearlCooldown(0);
@@ -351,6 +356,11 @@ public class Match {
 			}
 		}, 40);
 
+		if (world != null) {
+			WorldUtil.deleteWorld(world);
+			return;
+		}
+
 		for (Item item : m.getArena().getLocation1().getWorld().getEntitiesByClass(Item.class)) {
 			EntityHuman lastHolder = ((EntityItem) ((CraftItem) item).getHandle()).lastHolder;
 
@@ -363,10 +373,6 @@ public class Match {
 					item.remove();
 				}
 			}
-		}
-
-		for (Location location : buildLog) {
-			location.getBlock().setType(Material.AIR);
 		}
 	}
 
