@@ -45,4 +45,12 @@ public class PvPBotsManager implements SaveableData {
 		config.set("Bot.Slot", slot);
 		config.save();
 	}
+
+	@Override
+	public void setDefaults() {
+		enabled = false;
+		displayItem = new ItemStack(Material.BLAZE_ROD);
+		displayName = "PvP Bots";
+		slot = 5;
+	}
 }

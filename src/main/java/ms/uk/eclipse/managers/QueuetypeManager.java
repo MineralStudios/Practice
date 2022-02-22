@@ -1,5 +1,7 @@
 package ms.uk.eclipse.managers;
 
+import org.bukkit.configuration.ConfigurationSection;
+
 import land.strafe.api.collection.GlueList;
 import land.strafe.api.config.FileConfiguration;
 import ms.uk.eclipse.queue.Queuetype;
@@ -58,21 +60,31 @@ public class QueuetypeManager implements SaveableData {
 
 	@Override
 	public void load() {
-		try {
-			for (String key : getConfig().getConfigurationSection("Queue.").getKeys(false)) {
+		ConfigurationSection configSection = getConfig().getConfigurationSection("Queue.");
 
-				if (key == null) {
-					continue;
-				}
-
-				Queuetype queuetype = new Queuetype(key);
-
-				queuetype.load();
-
-				registerQueuetype(queuetype);
-			}
-		} catch (Exception e) {
+		if (configSection == null) {
+			setDefaults();
+			return;
 		}
 
+		for (String key : configSection.getKeys(false)) {
+
+			if (key == null) {
+				continue;
+			}
+
+			Queuetype queuetype = new Queuetype(key);
+
+			queuetype.load();
+
+			registerQueuetype(queuetype);
+		}
+	}
+
+	@Override
+	public void setDefaults() {
+		Queuetype queuetype = new Queuetype("Default");
+		queuetype.setDefaults();
+		registerQueuetype(queuetype);
 	}
 }

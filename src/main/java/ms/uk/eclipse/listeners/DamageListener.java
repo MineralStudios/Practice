@@ -87,18 +87,29 @@ public class DamageListener implements Listener {
 		}
 
 		Profile attacker = playerManager.getProfileFromMatch((org.bukkit.entity.Player) e.getDamager());
-		Profile victim = playerManager.getProfileFromMatch(bukkitVictim);
 
 		if (attacker == null) {
+			e.setCancelled(true);
 			return;
 		}
 
-		if (!attacker.isInParty()) {
-			attacker.increaseHitCount();
+		Profile victim = playerManager.getProfileFromMatch(bukkitVictim);
+
+		if (victim == null) {
+			e.setCancelled(true);
 			return;
 		}
 
-		e.setCancelled(attacker.getMatch().getTeam(attacker).contains(victim));
+		attacker.increaseHitCount();
+
+		if (attacker.getHitCount() >= 100) {
+			victim.getMatch().end(victim);
+			return;
+		}
+
+		if (attacker.isInParty() && victim.isInParty()) {
+			e.setCancelled(attacker.getMatch().getTeam(attacker).contains(victim));
+		}
 	}
 
 	@EventHandler
@@ -114,12 +125,13 @@ public class DamageListener implements Listener {
 		}
 
 		Profile attacker = playerManager.getProfileFromMatch((org.bukkit.entity.Player) e.getCombuster());
-		Profile victim = playerManager.getProfileFromMatch((org.bukkit.entity.Player) e.getEntity());
 
 		if (attacker == null) {
 			e.setCancelled(true);
 			return;
 		}
+
+		Profile victim = playerManager.getProfileFromMatch((org.bukkit.entity.Player) e.getEntity());
 
 		if (victim == null) {
 			e.setCancelled(true);

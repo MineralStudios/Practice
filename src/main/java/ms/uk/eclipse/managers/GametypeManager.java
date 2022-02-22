@@ -1,5 +1,7 @@
 package ms.uk.eclipse.managers;
 
+import org.bukkit.configuration.ConfigurationSection;
+
 import land.strafe.api.collection.GlueList;
 import land.strafe.api.config.FileConfiguration;
 import ms.uk.eclipse.PracticePlugin;
@@ -70,21 +72,31 @@ public class GametypeManager implements SaveableData {
 
 	@Override
 	public void load() {
-		try {
-			for (String key : getConfig().getConfigurationSection("Gametype.").getKeys(false)) {
+		ConfigurationSection configSection = getConfig().getConfigurationSection("Gametype.");
 
-				if (key == null) {
-					continue;
-				}
-
-				Gametype gametype = new Gametype(key);
-
-				gametype.load();
-
-				registerGametype(gametype);
-			}
-		} catch (Exception e) {
+		if (configSection == null) {
+			setDefaults();
+			return;
 		}
 
+		for (String key : configSection.getKeys(false)) {
+
+			if (key == null) {
+				continue;
+			}
+
+			Gametype gametype = new Gametype(key);
+
+			gametype.load();
+
+			registerGametype(gametype);
+		}
+	}
+
+	@Override
+	public void setDefaults() {
+		Gametype gametype = new Gametype("Default");
+		gametype.setDefaults();
+		registerGametype(gametype);
 	}
 }

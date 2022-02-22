@@ -207,4 +207,12 @@ public class Queuetype implements SaveableData {
 			}
 		}
 	}
+
+	@Override
+	public void setDefaults() {
+		this.displayItem = new ItemStack(Material.DIAMOND_SWORD);
+		this.displayName = getName();
+		this.slotNumber = 8;
+		this.ranked = false;
+	}
 }

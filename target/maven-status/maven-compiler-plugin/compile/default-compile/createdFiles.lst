@@ -85,6 +85,7 @@ ms/uk/eclipse/managers/PartyManager.class
 ms/uk/eclipse/match/MatchData.class
 ms/uk/eclipse/event/PlayerStatusChangeEvent.class
 ms/uk/eclipse/inventory/menus/AddItemsMenu.class
+ms/uk/eclipse/scoreboard/BoxingScoreboard.class
 ms/uk/eclipse/commands/duel/AcceptCommand.class
 ms/uk/eclipse/util/WorldUtil.class
 ms/uk/eclipse/listeners/InventoryListener.class
@@ -125,7 +126,6 @@ ms/uk/eclipse/commands/spectator/SpectateCommand.class
 ms/uk/eclipse/util/messages/UsageMessages.class
 ms/uk/eclipse/listeners/HealthListener.class
 ms/uk/eclipse/inventory/menus/ExtendedSettingsMenu.class
-ms/uk/eclipse/util/Countdown$1.class
 ms/uk/eclipse/commands/config/ListConfigCommands.class
 ms/uk/eclipse/managers/GametypeManager.class
 ms/uk/eclipse/match/TournamentMatch$1.class

@@ -38,6 +38,7 @@ public class Gametype implements SaveableData {
 	Boolean looting;
 	Boolean damage;
 	Boolean hunger;
+	Boolean boxing;
 	Boolean inCatagory;
 	Integer pearlCooldown;
 	Object2BooleanOpenHashMap<Arena> arenas = new Object2BooleanOpenHashMap<>();
@@ -131,6 +132,10 @@ public class Gametype implements SaveableData {
 		return hunger;
 	}
 
+	public Boolean getBoxing() {
+		return boxing;
+	}
+
 	public Integer getPearlCooldown() {
 		return pearlCooldown;
 	}
@@ -159,8 +164,8 @@ public class Gametype implements SaveableData {
 		return kit;
 	}
 
-	public void setRegeneration(Boolean Regeneration) {
-		this.regeneration = Regeneration;
+	public void setRegeneration(Boolean regeneration) {
+		this.regeneration = regeneration;
 		save();
 	}
 
@@ -174,13 +179,13 @@ public class Gametype implements SaveableData {
 		save();
 	}
 
-	public void setDisplayItem(ItemStack DisplayItem) {
-		this.displayItem = DisplayItem;
+	public void setDisplayItem(ItemStack displayItem) {
+		this.displayItem = displayItem;
 		save();
 	}
 
-	public void setDisplayName(String DisplayName) {
-		this.displayName = DisplayName;
+	public void setDisplayName(String displayName) {
+		this.displayName = displayName;
 		save();
 	}
 
@@ -189,33 +194,38 @@ public class Gametype implements SaveableData {
 		save();
 	}
 
-	public void setDeadlyWater(Boolean DeadlyWater) {
-		this.deadlyWater = DeadlyWater;
+	public void setDeadlyWater(Boolean deadlyWater) {
+		this.deadlyWater = deadlyWater;
 		save();
 	}
 
-	public void setGriefing(Boolean Griefing) {
-		this.griefing = Griefing;
+	public void setGriefing(Boolean griefing) {
+		this.griefing = griefing;
 		save();
 	}
 
-	public void setBuild(Boolean Build) {
-		this.build = Build;
+	public void setBuild(Boolean build) {
+		this.build = build;
 		save();
 	}
 
-	public void setLooting(Boolean Looting) {
-		this.looting = Looting;
+	public void setLooting(Boolean looting) {
+		this.looting = looting;
 		save();
 	}
 
-	public void setDamage(Boolean Damage) {
-		this.damage = Damage;
+	public void setDamage(Boolean damage) {
+		this.damage = damage;
 		save();
 	}
 
-	public void setHunger(Boolean Hunger) {
-		this.hunger = Hunger;
+	public void setHunger(Boolean hunger) {
+		this.hunger = hunger;
+		save();
+	}
+
+	public void setBoxing(Boolean boxing) {
+		this.boxing = boxing;
 		save();
 	}
 
@@ -294,6 +304,7 @@ public class Gametype implements SaveableData {
 		}
 		config.set(path + "PearlCooldown", pearlCooldown);
 		config.set(path + "Hunger", hunger);
+		config.set(path + "Boxing", boxing);
 		config.set(path + "Damage", damage);
 		config.set(path + "Looting", looting);
 		config.set(path + "Build", build);
@@ -361,6 +372,7 @@ public class Gametype implements SaveableData {
 		this.looting = config.getBoolean(path + "Looting", false);
 		this.damage = config.getBoolean(path + "Damage", true);
 		this.hunger = config.getBoolean(path + "Hunger", true);
+		this.boxing = config.getBoolean(path + "Boxing", false);
 		this.inCatagory = config.getBoolean(path + "InCatagory", false);
 		this.event = config.getBoolean(path + "Event", false);
 		this.eventArena = arenaManager.getArenaByName(config.getString(path + "EventArena", ""));
@@ -424,5 +436,27 @@ public class Gametype implements SaveableData {
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
+	}
+
+	@Override
+	public void setDefaults() {
+		this.regeneration = true;
+		this.displayItem = new ItemStack(Material.DIAMOND_SWORD);
+		this.displayName = getName();
+		this.noDamageTicks = 20;
+		this.deadlyWater = false;
+		this.griefing = false;
+		this.build = false;
+		this.looting = false;
+		this.damage = true;
+		this.hunger = true;
+		this.boxing = false;
+		this.inCatagory = false;
+		this.event = false;
+		this.eventArena = null;
+		this.pearlCooldown = 10;
+
+		this.kit = new Kit(new ItemStack[0], new ItemStack[0]);
+		leaderboardMap = new LeaderboardMap();
 	}
 }

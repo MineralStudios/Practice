@@ -61,8 +61,6 @@ public class InventoryListener implements Listener {
 			((Runnable) object).run();
 			return;
 		}
-
-		return;
 	}
 
 	@EventHandler

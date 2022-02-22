@@ -167,4 +167,10 @@ public class PlayerManager implements SaveableData {
 				lobbyConfig.getInt("Lobby.x", 0), lobbyConfig.getInt("Lobby.y", 70), lobbyConfig.getInt("Lobby.z", 0));
 		spawnLocation.setDirection(spawnDirection);
 	}
+
+	@Override
+	public void setDefaults() {
+		spawnLocation = new Location(Bukkit.getWorlds().get(0),
+				0, 70, 0);
+	}
 }

@@ -63,7 +63,7 @@ public class QueuetypeCommand extends PlayerCommand {
 				}
 
 				queuetype = new Queuetype(queuetypeName);
-
+				queuetype.setDefaults();
 				queuetypeManager.registerQueuetype(queuetype);
 				ChatMessages.QUEUETYPE_CREATED.clone().replace("%queuetype%", queuetypeName).send(pl);
 

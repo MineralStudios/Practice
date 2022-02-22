@@ -96,6 +96,7 @@
 /home/jaiden/Documents/Practice/src/main/java/ms/uk/eclipse/match/MatchData.java
 /home/jaiden/Documents/Practice/src/main/java/ms/uk/eclipse/util/WorldUtil.java
 /home/jaiden/Documents/Practice/src/main/java/ms/uk/eclipse/commands/settings/ExtendedSettingsCommand.java
+/home/jaiden/Documents/Practice/src/main/java/ms/uk/eclipse/scoreboard/BoxingScoreboard.java
 /home/jaiden/Documents/Practice/src/main/java/ms/uk/eclipse/commands/config/QueuetypeCommand.java
 /home/jaiden/Documents/Practice/src/main/java/ms/uk/eclipse/kit/Kit.java
 /home/jaiden/Documents/Practice/src/main/java/ms/uk/eclipse/inventory/menus/SelectExistingKitMenu.java

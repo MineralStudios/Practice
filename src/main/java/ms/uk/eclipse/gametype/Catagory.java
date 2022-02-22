@@ -115,4 +115,16 @@ public class Catagory implements SaveableData {
 			}
 		}
 	}
+
+	@Override
+	public void setDefaults() {
+		this.displayItem = new ItemStack(Material.DIAMOND_SWORD);
+		this.displayName = getName();
+
+		for (Queuetype q : queuetypeManager.getQueuetypes()) {
+			if (config.getBoolean("Catagory." + getName() + "." + q.getName() + ".Enabled", false)) {
+				q.getCatagories().put(this, 0);
+			}
+		}
+	}
 }

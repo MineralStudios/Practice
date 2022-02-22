@@ -67,6 +67,9 @@ public class ChatMessages {
 	public static final ChatMessage GAMETYPE_HUNGER_SET = new ChatMessage(
 			"Hunger for the %gametype% gametype has been set to %toggled%.", CC.YELLOW)
 					.highlightText(CC.GOLD, "%gametype%", "%toggled%");
+	public static final ChatMessage GAMETYPE_BOXING_SET = new ChatMessage(
+			"Boxing for the %gametype% gametype has been set to %toggled%.", CC.YELLOW)
+					.highlightText(CC.GOLD, "%gametype%", "%toggled%");
 	public static final ChatMessage GAMETYPE_EVENT_SET = new ChatMessage(
 			"Event mode for the %gametype% gametype has been set to %toggled%.", CC.YELLOW)
 					.highlightText(CC.GOLD, "%gametype%", "%toggled%");
@@ -354,6 +357,8 @@ public class ChatMessages {
 	public static final ChatMessage GAMETYPE_DAMAGE = new ListElementMessage("/gametype damage <Gametype> <True/False>",
 			CC.SECONDARY);
 	public static final ChatMessage GAMETYPE_HUNGER = new ListElementMessage("/gametype hunger <Gametype> <True/False>",
+			CC.SECONDARY);
+	public static final ChatMessage GAMETYPE_BOXING = new ListElementMessage("/gametype boxing <Gametype> <True/False>",
 			CC.SECONDARY);
 	public static final ChatMessage GAMETYPE_EPEARL = new ListElementMessage("/gametype epearl <Gametype> <Time(s)>",
 			CC.SECONDARY);

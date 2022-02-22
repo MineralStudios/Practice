@@ -17,8 +17,9 @@ public class InMatchScoreboard extends Scoreboard {
 
 	@Override
 	public void updateBoard(Board board) {
-		board.updateLines(CC.BOARD_SEPARATOR, "Opponent: " + CC.SECONDARY + p.getOpponent().getName(),
-				"Your Ping: " + CC.SECONDARY + ((CraftPlayer) board.getPlayer()).getHandle().ping,
-				"Their Ping: " + CC.SECONDARY + p.getOpponent().bukkit().getHandle().ping, CC.BOARD_SEPARATOR);
+		board.updateLines(CC.BOARD_SEPARATOR, CC.ACCENT + "Opponent: " + CC.SECONDARY + p.getOpponent().getName(),
+				CC.ACCENT + "Your Ping: " + CC.SECONDARY + ((CraftPlayer) board.getPlayer()).getHandle().ping,
+				CC.ACCENT + "Their Ping: " + CC.SECONDARY + p.getOpponent().bukkit().getHandle().ping,
+				CC.BOARD_SEPARATOR);
 	}
 }

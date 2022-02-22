@@ -13,7 +13,7 @@ public class TournamentCommand extends PlayerCommand {
     final PlayerManager playerManager = PracticePlugin.INSTANCE.getPlayerManager();
 
     public TournamentCommand() {
-        super("tournamant");
+        super("tournament");
     }
 
     @Override

@@ -1,5 +1,7 @@
 package ms.uk.eclipse.managers;
 
+import org.bukkit.configuration.ConfigurationSection;
+
 import land.strafe.api.collection.GlueList;
 import land.strafe.api.config.FileConfiguration;
 import ms.uk.eclipse.PracticePlugin;
@@ -63,20 +65,31 @@ public class CatagoryManager implements SaveableData {
 
 	@Override
 	public void load() {
-		try {
-			for (String key : getConfig().getConfigurationSection("Catagory.").getKeys(false)) {
+		ConfigurationSection configSection = getConfig().getConfigurationSection("Catagory.");
 
-				if (key == null) {
-					continue;
-				}
-
-				Catagory catagory = new Catagory(key);
-
-				catagory.load();
-
-				registerCatagory(catagory);
-			}
-		} catch (Exception e) {
+		if (configSection == null) {
+			setDefaults();
+			return;
 		}
+
+		for (String key : configSection.getKeys(false)) {
+
+			if (key == null) {
+				continue;
+			}
+
+			Catagory catagory = new Catagory(key);
+
+			catagory.load();
+
+			registerCatagory(catagory);
+		}
+	}
+
+	@Override
+	public void setDefaults() {
+		Catagory catagory = new Catagory("Defualt");
+		catagory.setDefaults();
+		registerCatagory(catagory);
 	}
 }

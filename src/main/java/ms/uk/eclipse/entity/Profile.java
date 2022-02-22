@@ -49,6 +49,8 @@ import ms.uk.eclipse.util.items.ItemStacks;
 import ms.uk.eclipse.util.messages.ChatMessages;
 import ms.uk.eclipse.util.messages.ErrorMessages;
 import net.md_5.bungee.api.chat.ClickEvent;
+import net.md_5.bungee.api.chat.ComponentBuilder;
+import net.md_5.bungee.api.chat.HoverEvent;
 
 public class Profile {
 	final CraftPlayer player;
@@ -579,11 +581,6 @@ public class Profile {
 			}
 		}
 
-		DuelRequest request = new DuelRequest(this, matchData);
-		player.getRecievedDuelRequests().add(request);
-		removeFromQueue();
-		ChatMessages.DUEL_REQUEST_SENT.clone().replace("%player%", player.getName()).send(bukkit());
-
 		String sender = getName();
 
 		if (isInParty()) {
@@ -592,12 +589,20 @@ public class Profile {
 				return;
 			}
 
-			sender = getName() + "'s party (" + getParty().getPartyMembers().size() + ") ";
+			sender += "'s party (" + getParty().getPartyMembers().size() + ") ";
 		}
+
+		DuelRequest request = new DuelRequest(this, matchData);
+		player.getRecievedDuelRequests().add(request);
+		removeFromQueue();
+		ChatMessages.DUEL_REQUEST_SENT.clone().replace("%player%", player.getName()).send(bukkit());
+
+		HoverEvent DATA = new HoverEvent(HoverEvent.Action.SHOW_TEXT,
+				new ComponentBuilder(matchData.toString()).create());
 
 		ChatMessages.DUEL_REQUEST_RECIEVED.clone().replace("%player%", sender)
 				.setTextEvent(new ClickEvent(ClickEvent.Action.RUN_COMMAND, "/accept " + getName()),
-						ChatMessages.CLICK_TO_ACCEPT)
+						DATA)
 				.send(player.bukkit());
 	}
 

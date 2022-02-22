@@ -99,4 +99,12 @@ public class PartyManager implements SaveableData {
 		displayName = config.getString("Parties.DisplayName", "Parties");
 		enabled = config.getBoolean("Parties.Enable", true);
 	}
+
+	@Override
+	public void setDefaults() {
+		slot = 4;
+		displayItem = new ItemStack(Material.NETHER_STAR);
+		displayName = "Parties";
+		enabled = true;
+	}
 }

@@ -59,7 +59,7 @@ public class ArenaCommand extends PlayerCommand {
 				}
 
 				arena = new Arena(arenaName);
-
+				arena.setDefaults();
 				arenaManager.registerArena(arena);
 				ChatMessages.ARENA_CREATED.clone().replace("%arena%", arenaName).send(player);
 				return;

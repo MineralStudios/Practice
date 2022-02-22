@@ -27,7 +27,7 @@ public class PartyMatchScoreboard extends Scoreboard {
         ProfileList opponents = new ProfileList(match.getParticipants());
         opponents.removeAll(team);
 
-        board.updateLines(CC.BOARD_SEPARATOR, "Your Team Remaining: " + CC.SECONDARY + team.size(),
-                "Their Team Remaining: " + CC.SECONDARY + opponents.size(), CC.BOARD_SEPARATOR);
+        board.updateLines(CC.BOARD_SEPARATOR, CC.ACCENT + "Your Team Remaining: " + CC.SECONDARY + team.size(),
+                CC.ACCENT + "Their Team Remaining: " + CC.SECONDARY + opponents.size(), CC.BOARD_SEPARATOR);
     }
 }

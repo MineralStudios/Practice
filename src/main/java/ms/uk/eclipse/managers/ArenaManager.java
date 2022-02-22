@@ -1,5 +1,7 @@
 package ms.uk.eclipse.managers;
 
+import org.bukkit.configuration.ConfigurationSection;
+
 import land.strafe.api.collection.GlueList;
 import land.strafe.api.config.FileConfiguration;
 import ms.uk.eclipse.PracticePlugin;
@@ -72,20 +74,31 @@ public class ArenaManager implements SaveableData {
 
 	@Override
 	public void load() {
-		try {
-			for (String key : getConfig().getConfigurationSection("Arena.").getKeys(false)) {
+		ConfigurationSection configSection = getConfig().getConfigurationSection("Arena.");
 
-				if (key == null) {
-					continue;
-				}
-
-				Arena arena = new Arena(key);
-
-				arena.load();
-
-				registerArena(arena);
-			}
-		} catch (Exception e) {
+		if (configSection == null) {
+			setDefaults();
+			return;
 		}
+
+		for (String key : configSection.getKeys(false)) {
+
+			if (key == null) {
+				continue;
+			}
+
+			Arena arena = new Arena(key);
+
+			arena.load();
+
+			registerArena(arena);
+		}
+	}
+
+	@Override
+	public void setDefaults() {
+		Arena arena = new Arena("Default");
+		arena.setDefaults();
+		registerArena(arena);
 	}
 }

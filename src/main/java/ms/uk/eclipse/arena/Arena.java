@@ -147,4 +147,19 @@ public class Arena implements SaveableData {
 		this.displayItem = config.getItemstack(path + "DisplayItem", new ItemStack(Material.WOOL));
 		this.displayName = config.getString(path + "DisplayName", getName());
 	}
+
+	@Override
+	public void setDefaults() {
+		this.world = Bukkit.createWorld(new WorldCreator("PracticeSpawn"));
+		this.location1 = new Location(world, 0,
+				70, 0);
+		this.location2 = new Location(world, 0,
+				70, 0);
+		this.waitingLocation = new Location(world, 0,
+				70, 0);
+		this.location1EyeVector = location1.getDirection();
+		this.location2EyeVector = location2.getDirection();
+		this.displayItem = new ItemStack(Material.WOOL);
+		this.displayName = getName();
+	}
 }

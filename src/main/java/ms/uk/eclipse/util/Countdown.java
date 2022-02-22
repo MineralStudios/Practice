@@ -26,25 +26,24 @@ public class Countdown {
 	public void start() {
 		BukkitScheduler scheduler = Bukkit.getServer().getScheduler();
 
-		for (int i = 0; i < match.getParticipants().size(); i++) {
-			Profile pl = match.getParticipants().get(i);
-			pl.setInMatchCountdown(true);
-		}
-
-		taskID = scheduler.scheduleSyncRepeatingTask(PracticePlugin.INSTANCE, new Runnable() {
-			@Override
-			public void run() {
-				if (time == 0) {
-					cancel();
-					return;
-				}
-
-				message = ChatMessages.BEGINS_IN.clone().replace("%time%", "" + time);
-
-				playerManager.broadcast(match.getParticipants(), message);
-
-				time = time - 1;
+		scheduler.scheduleSyncDelayedTask(PracticePlugin.INSTANCE, () -> {
+			for (int i = 0; i < match.getParticipants().size(); i++) {
+				Profile pl = match.getParticipants().get(i);
+				pl.setInMatchCountdown(true);
 			}
+		}, 4L);
+
+		taskID = scheduler.scheduleSyncRepeatingTask(PracticePlugin.INSTANCE, () -> {
+			if (time == 0) {
+				cancel();
+				return;
+			}
+
+			message = ChatMessages.BEGINS_IN.clone().replace("%time%", "" + time);
+
+			playerManager.broadcast(match.getParticipants(), message);
+
+			time = time - 1;
 		}, 0L, 20L);
 	}
 

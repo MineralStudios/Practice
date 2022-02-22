@@ -61,4 +61,12 @@ public class PlayerSettingsManager implements SaveableData {
 		displayName = config.getString("Options.DisplayName", "Settings");
 		enabled = config.getBoolean("Options.Enable", true);
 	}
+
+	@Override
+	public void setDefaults() {
+		slot = 3;
+		displayItem = new ItemStack(Material.COMPASS);
+		displayName = "Settings";
+		enabled = true;
+	}
 }

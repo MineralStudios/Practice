@@ -4,6 +4,7 @@ import land.strafe.server.combat.KnockbackProfile;
 import land.strafe.server.combat.KnockbackProfileList;
 import ms.uk.eclipse.PracticePlugin;
 import ms.uk.eclipse.arena.Arena;
+import ms.uk.eclipse.core.utils.message.CC;
 import ms.uk.eclipse.gametype.Gametype;
 import ms.uk.eclipse.kit.Kit;
 import ms.uk.eclipse.managers.ArenaManager;
@@ -14,9 +15,10 @@ public class MatchData {
 	Arena arena;
 	Kit kit;
 	KnockbackProfile kb;
-	Gametype g;
+	Gametype gametype;
 	int noDamageTicks = 20;
 	boolean hunger = true;
+	boolean boxing = false;
 	boolean build = false;
 	boolean damage = true;
 	boolean griefing = false;
@@ -30,38 +32,45 @@ public class MatchData {
 	final ArenaManager arenaManager = PracticePlugin.INSTANCE.getArenaManager();
 
 	public MatchData() {
-		Gametype g = gametypeManager.getGametypes().get(0);
-		kitName = g.getName();
-		arena = arenaManager.getArenas().get(0);
-		kit = g.getKit();
-		kb = KnockbackProfileList.getDefaultKnockbackProfile();
+
+		if (!gametypeManager.getGametypes().isEmpty()) {
+			this.gametype = gametypeManager.getGametypes().get(0);
+			this.kitName = gametype.getDisplayName();
+			this.kit = gametype.getKit();
+
+		}
+
+		if (!arenaManager.getArenas().isEmpty()) {
+			this.arena = arenaManager.getArenas().get(0);
+		}
+
+		this.kb = KnockbackProfileList.getDefaultKnockbackProfile();
 	}
 
 	public MatchData(QueueEntry qe) {
 		this.queueEntry = qe;
-		Gametype g = qe.getGametype();
-		this.g = g;
-		arena = qe.getQueuetype().nextArena(g);
-		kit = g.getKit();
-		noDamageTicks = g.getNoDamageTicks();
+		this.gametype = qe.getGametype();
+		arena = qe.getQueuetype().nextArena(this.gametype);
+		kit = this.gametype.getKit();
+		noDamageTicks = this.gametype.getNoDamageTicks();
 		kb = qe.getQueuetype().getKnockback();
-		hunger = g.getHunger();
-		build = g.getBuild();
-		damage = g.getDamage();
-		griefing = g.getGriefing();
-		deadlyWater = g.getDeadlyWater();
-		regeneration = g.getRegeneration();
+		hunger = this.gametype.getHunger();
+		boxing = this.gametype.getBoxing();
+		build = this.gametype.getBuild();
+		damage = this.gametype.getDamage();
+		griefing = this.gametype.getGriefing();
+		deadlyWater = this.gametype.getDeadlyWater();
+		regeneration = this.gametype.getRegeneration();
 		ranked = qe.getQueuetype().isRanked();
 	}
 
 	public void setGametype(Gametype g) {
-		this.g = g;
+		this.gametype = g;
 		kit = g.getKit();
 		kitName = g.getName();
 		noDamageTicks = g.getNoDamageTicks();
-		kb = noDamageTicks < 10 ? KnockbackProfileList.getComboKnockbackProfile()
-				: KnockbackProfileList.getDefaultKnockbackProfile();
 		hunger = g.getHunger();
+		boxing = g.getBoxing();
 		build = g.getBuild();
 		damage = g.getDamage();
 		griefing = g.getGriefing();
@@ -171,6 +180,36 @@ public class MatchData {
 	}
 
 	public Gametype getGametype() {
-		return g;
+		return gametype;
+	}
+
+	public boolean getBoxing() {
+		return boxing;
+	}
+
+	public String toString() {
+		StringBuilder sb = new StringBuilder();
+		String newLine = CC.R + "\n";
+
+		sb.append(CC.GREEN + "Arena: " + arena.getDisplayName());
+		sb.append(newLine);
+		sb.append(CC.GREEN + "Kit: " + kitName);
+		sb.append(newLine);
+		sb.append(CC.GREEN + "Hit Delay: " + noDamageTicks);
+		sb.append(newLine);
+		sb.append(CC.GREEN + "Hunger: " + hunger);
+		sb.append(newLine);
+		sb.append(CC.GREEN + "Build: " + build);
+		sb.append(newLine);
+		sb.append(CC.GREEN + "Damage: " + damage);
+		sb.append(newLine);
+		sb.append(CC.GREEN + "Griefing: " + griefing);
+		sb.append(newLine);
+		sb.append(CC.GREEN + "Deadly Water: " + deadlyWater);
+		sb.append(newLine);
+		sb.append(CC.GREEN + "Regeneration: " + regeneration);
+		sb.append(newLine);
+		sb.append(CC.GREEN + "Pearl Cooldown: " + pearlCooldown + " seconds");
+		return sb.toString();
 	}
 }

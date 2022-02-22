@@ -56,6 +56,7 @@ public class GametypeCommand extends PlayerCommand {
 				ChatMessages.GAMETYPE_LOOTING.send(player);
 				ChatMessages.GAMETYPE_DAMAGE.send(player);
 				ChatMessages.GAMETYPE_HUNGER.send(player);
+				ChatMessages.GAMETYPE_BOXING.send(player);
 				ChatMessages.GAMETYPE_REGEN.send(player);
 				ChatMessages.GAMETYPE_EPEARL.send(player);
 				ChatMessages.GAMETYPE_ARENA_FOR_ALL.send(player);
@@ -82,7 +83,7 @@ public class GametypeCommand extends PlayerCommand {
 				}
 
 				gametype = new Gametype(gametypeName);
-
+				gametype.setDefaults();
 				gametypeManager.registerGametype(gametype);
 				ChatMessages.GAMETYPE_CREATED.clone().replace("%gametype%", gametypeName).send(player);
 				return;
@@ -440,6 +441,38 @@ public class GametypeCommand extends PlayerCommand {
 				}
 
 				ChatMessages.GAMETYPE_HUNGER_SET.clone().replace("%gametype%", gametypeName)
+						.replace("%toggled%", toggled).send(player);
+
+				return;
+			case "boxing":
+				if (args.length < 3) {
+					UsageMessages.GAMETYPE_BOXING.send(player);
+					return;
+				}
+
+				gametypeName = args[1];
+				gametype = gametypeManager.getGametypeByName(gametypeName);
+
+				if (gametype == null) {
+					ErrorMessages.GAMETYPE_DOES_NOT_EXIST.send(player);
+					return;
+				}
+
+				toggled = args[2].toLowerCase();
+
+				switch (toggled) {
+					case "false":
+						gametype.setBoxing(false);
+						break;
+					case "true":
+						gametype.setBoxing(true);
+						break;
+					default:
+						UsageMessages.GAMETYPE_BOXING.send(player);
+						return;
+				}
+
+				ChatMessages.GAMETYPE_BOXING_SET.clone().replace("%gametype%", gametypeName)
 						.replace("%toggled%", toggled).send(player);
 
 				return;

@@ -66,6 +66,7 @@ public class CatagoryCommand extends PlayerCommand {
 				}
 
 				catagory = new Catagory(catagoryName);
+				catagory.setDefaults();
 				catagoryManager.registerCatagory(catagory);
 				ChatMessages.CATAGORY_CREATED.clone().replace("%catagory%", catagoryName).send(player);
 				return;

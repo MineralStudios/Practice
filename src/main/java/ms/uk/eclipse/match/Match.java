@@ -30,6 +30,7 @@ import ms.uk.eclipse.managers.ArenaManager;
 import ms.uk.eclipse.managers.MatchManager;
 import ms.uk.eclipse.managers.PlayerManager;
 import ms.uk.eclipse.managers.QueueEntryManager;
+import ms.uk.eclipse.scoreboard.BoxingScoreboard;
 import ms.uk.eclipse.scoreboard.InMatchScoreboard;
 import ms.uk.eclipse.scoreboard.PartyMatchScoreboard;
 import ms.uk.eclipse.scoreboard.Scoreboard;
@@ -112,6 +113,10 @@ public class Match {
 			p.bukkit().addPotionEffect(new PotionEffect(PotionEffectType.DAMAGE_RESISTANCE, 999999999, 255));
 		}
 
+		if (m.getBoxing()) {
+			p.bukkit().addPotionEffect(new PotionEffect(PotionEffectType.SPEED, 999999999, 1));
+		}
+
 		for (int i = 0; i < participants.size(); i++) {
 			p.bukkit().showPlayer(participants.get(i).bukkit());
 		}
@@ -129,6 +134,12 @@ public class Match {
 		}
 
 		setDisplayNames(p);
+
+		if (m.getGametype().getBoxing()) {
+			new BoxingScoreboard(p).setBoard();
+			return;
+		}
+
 		new InMatchScoreboard(p).setBoard();
 	}
 

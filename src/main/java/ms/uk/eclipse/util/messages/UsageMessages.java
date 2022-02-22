@@ -39,6 +39,7 @@ public class UsageMessages {
 			"/gametype looting <Gametype> <True/False>");
 	public static final UsageMessage GAMETYPE_DAMAGE = new UsageMessage("/gametype damage <Gametype> <True/False>");
 	public static final UsageMessage GAMETYPE_HUNGER = new UsageMessage("/gametype hunger <Gametype> <True/False>");
+	public static final UsageMessage GAMETYPE_BOXING = new UsageMessage("/gametype boxing <Gametype> <True/False>");
 	public static final UsageMessage GAMETYPE_EPEARL = new UsageMessage("/gametype epearl <Gametype> <Time(s)>");
 	public static final UsageMessage GAMETYPE_ARENA = new UsageMessage(
 			"/gametype arena <Gametype> <Arena> <True/False>");
