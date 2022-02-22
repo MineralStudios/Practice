@@ -14,6 +14,15 @@ public class Scoreboard {
 	Board b;
 	Scoreboard instance;
 	PlayerManager playerManager = PracticePlugin.INSTANCE.getPlayerManager();
+	int updateFrequency = 20;
+
+	public void setUpdateFrequency(int updateFrequency) {
+		this.updateFrequency = updateFrequency;
+	}
+
+	public int getUpdateFrequency() {
+		return updateFrequency;
+	}
 
 	public Scoreboard(Profile p) {
 		this.p = p;
@@ -46,7 +55,7 @@ public class Scoreboard {
 					else
 						remove();
 			}
-		}, 0, 20);
+		}, 0, getUpdateFrequency());
 	}
 
 	public void updateBoard(Board board) {

@@ -13,6 +13,7 @@ public class BoxingScoreboard extends Scoreboard {
 
     public BoxingScoreboard(Profile p) {
         super(p);
+        setUpdateFrequency(10);
     }
 
     @Override
