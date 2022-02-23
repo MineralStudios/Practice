@@ -11,7 +11,7 @@ import org.apache.commons.io.FileUtils;
 import org.bukkit.Bukkit;
 import org.bukkit.World;
 
-import land.strafe.api.collection.GlueList;
+import gg.mineral.api.collection.GlueList;
 
 public class WorldUtil {
 

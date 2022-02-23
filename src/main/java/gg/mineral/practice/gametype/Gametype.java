@@ -7,6 +7,8 @@ import org.bukkit.Material;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.inventory.ItemStack;
 
+import gg.mineral.api.collection.GlueList;
+import gg.mineral.api.config.FileConfiguration;
 import gg.mineral.practice.PracticePlugin;
 import gg.mineral.practice.arena.Arena;
 import gg.mineral.practice.entity.Profile;
@@ -20,8 +22,6 @@ import gg.mineral.practice.util.LeaderboardMap;
 import gg.mineral.practice.util.SaveableData;
 import it.unimi.dsi.fastutil.objects.Object2BooleanOpenHashMap;
 import it.unimi.dsi.fastutil.objects.Object2IntOpenHashMap;
-import land.strafe.api.collection.GlueList;
-import land.strafe.api.config.FileConfiguration;
 
 public class Gametype implements SaveableData {
 	final FileConfiguration config = PracticePlugin.INSTANCE.getGametypeManager().getConfig();

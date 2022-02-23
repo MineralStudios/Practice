@@ -4,7 +4,7 @@ import org.bukkit.Material;
 import org.bukkit.inventory.ItemStack;
 
 import gg.mineral.practice.util.SaveableData;
-import land.strafe.api.config.FileConfiguration;
+import gg.mineral.api.config.FileConfiguration;
 
 public class PlayerSettingsManager implements SaveableData {
 	final FileConfiguration config = new FileConfiguration("playeroptions.yml", "plugins/Practice");

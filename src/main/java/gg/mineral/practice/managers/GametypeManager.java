@@ -7,8 +7,8 @@ import gg.mineral.practice.gametype.Catagory;
 import gg.mineral.practice.gametype.Gametype;
 import gg.mineral.practice.queue.Queuetype;
 import gg.mineral.practice.util.SaveableData;
-import land.strafe.api.collection.GlueList;
-import land.strafe.api.config.FileConfiguration;
+import gg.mineral.api.collection.GlueList;
+import gg.mineral.api.config.FileConfiguration;
 
 public class GametypeManager implements SaveableData {
 	FileConfiguration config = new FileConfiguration("gametype.yml", "plugins/Practice");

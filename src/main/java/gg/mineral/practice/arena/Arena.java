@@ -8,7 +8,7 @@ import org.bukkit.WorldCreator;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.util.Vector;
 
-import land.strafe.api.config.FileConfiguration;
+import gg.mineral.api.config.FileConfiguration;
 import gg.mineral.practice.PracticePlugin;
 import gg.mineral.practice.util.SaveableData;
 import gg.mineral.practice.util.VoidWorldGenerator;

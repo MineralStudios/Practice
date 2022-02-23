@@ -1,7 +1,7 @@
 package gg.mineral.practice.managers;
 
 import gg.mineral.practice.tournaments.Tournament;
-import land.strafe.api.collection.GlueList;
+import gg.mineral.api.collection.GlueList;
 
 public class TournamentManager {
 	GlueList<Tournament> list = new GlueList<>();

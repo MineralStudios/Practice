@@ -1,7 +1,7 @@
 package gg.mineral.practice.managers;
 
 import gg.mineral.practice.match.Match;
-import land.strafe.api.collection.GlueList;
+import gg.mineral.api.collection.GlueList;
 
 public class MatchManager {
 	GlueList<Match> list = new GlueList<>();

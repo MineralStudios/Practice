@@ -3,13 +3,13 @@ package gg.mineral.practice.gametype;
 import org.bukkit.Material;
 import org.bukkit.inventory.ItemStack;
 
+import gg.mineral.api.collection.GlueList;
+import gg.mineral.api.config.FileConfiguration;
 import gg.mineral.practice.PracticePlugin;
 import gg.mineral.practice.managers.GametypeManager;
 import gg.mineral.practice.managers.QueuetypeManager;
 import gg.mineral.practice.queue.Queuetype;
 import gg.mineral.practice.util.SaveableData;
-import land.strafe.api.collection.GlueList;
-import land.strafe.api.config.FileConfiguration;
 
 public class Catagory implements SaveableData {
 

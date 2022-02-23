@@ -3,7 +3,7 @@ package gg.mineral.practice.managers;
 import gg.mineral.practice.gametype.Gametype;
 import gg.mineral.practice.queue.QueueEntry;
 import gg.mineral.practice.queue.Queuetype;
-import land.strafe.api.collection.GlueList;
+import gg.mineral.api.collection.GlueList;
 
 public class QueueEntryManager {
     GlueList<QueueEntry> list = new GlueList<>();

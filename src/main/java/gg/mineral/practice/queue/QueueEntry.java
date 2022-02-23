@@ -11,8 +11,8 @@ import gg.mineral.practice.gametype.Gametype;
 import gg.mineral.practice.managers.PlayerManager;
 import gg.mineral.practice.util.messages.ChatMessages;
 import it.unimi.dsi.fastutil.objects.Object2ObjectOpenHashMap;
-import land.strafe.api.collection.GlueList;
-import land.strafe.api.config.FileConfiguration;
+import gg.mineral.api.collection.GlueList;
+import gg.mineral.api.config.FileConfiguration;
 
 public class QueueEntry {
 	Queuetype q;

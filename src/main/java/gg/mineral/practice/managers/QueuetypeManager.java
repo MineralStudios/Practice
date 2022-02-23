@@ -2,10 +2,10 @@ package gg.mineral.practice.managers;
 
 import org.bukkit.configuration.ConfigurationSection;
 
+import gg.mineral.api.collection.GlueList;
+import gg.mineral.api.config.FileConfiguration;
 import gg.mineral.practice.queue.Queuetype;
 import gg.mineral.practice.util.SaveableData;
-import land.strafe.api.collection.GlueList;
-import land.strafe.api.config.FileConfiguration;
 
 public class QueuetypeManager implements SaveableData {
 	final FileConfiguration config = new FileConfiguration("queues.yml", "plugins/Practice");

@@ -6,9 +6,9 @@ import java.util.List;
 import org.bukkit.Material;
 import org.bukkit.inventory.ItemStack;
 
+import gg.mineral.api.collection.GlueList;
 import gg.mineral.core.utils.message.CC;
 import gg.mineral.practice.inventory.PracticeMenu;
-import land.strafe.api.collection.GlueList;
 
 public class AddItemsMenu extends PracticeMenu {
 	static List<Material> EXCLUDED = new GlueList<>(Arrays.asList(Material.DIAMOND_HELMET, Material.DIAMOND_CHESTPLATE,

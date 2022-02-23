@@ -13,6 +13,7 @@ import org.bukkit.inventory.ItemStack;
 import org.bukkit.potion.PotionEffect;
 import org.bukkit.scheduler.BukkitRunnable;
 
+import gg.mineral.api.collection.GlueList;
 import gg.mineral.core.inventory.PlayerInventory;
 import gg.mineral.core.tasks.CommandTask;
 import gg.mineral.core.tasks.RunnableTask;
@@ -47,7 +48,6 @@ import gg.mineral.practice.util.ProfileList;
 import gg.mineral.practice.util.items.ItemStacks;
 import gg.mineral.practice.util.messages.ChatMessages;
 import gg.mineral.practice.util.messages.ErrorMessages;
-import land.strafe.api.collection.GlueList;
 import net.md_5.bungee.api.chat.ClickEvent;
 import net.md_5.bungee.api.chat.ComponentBuilder;
 import net.md_5.bungee.api.chat.HoverEvent;

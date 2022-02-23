@@ -8,7 +8,7 @@ import org.bukkit.World;
 import org.bukkit.generator.BlockPopulator;
 import org.bukkit.generator.ChunkGenerator;
 
-import land.strafe.api.collection.GlueList;
+import gg.mineral.api.collection.GlueList;
 
 public class VoidWorldGenerator extends ChunkGenerator {
 

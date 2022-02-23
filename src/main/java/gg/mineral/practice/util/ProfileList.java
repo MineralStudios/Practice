@@ -2,8 +2,8 @@ package gg.mineral.practice.util;
 
 import java.util.Collection;
 
+import gg.mineral.api.collection.GlueList;
 import gg.mineral.practice.entity.Profile;
-import land.strafe.api.collection.GlueList;
 
 public class ProfileList extends GlueList<Profile> {
 

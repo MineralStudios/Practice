@@ -14,9 +14,9 @@ import gg.mineral.practice.util.SaveableData;
 import it.unimi.dsi.fastutil.objects.Object2BooleanMap.Entry;
 import it.unimi.dsi.fastutil.objects.Object2BooleanOpenHashMap;
 import it.unimi.dsi.fastutil.objects.Object2IntOpenHashMap;
-import land.strafe.api.config.FileConfiguration;
-import land.strafe.server.combat.KnockbackProfile;
-import land.strafe.server.combat.KnockbackProfileList;
+import gg.mineral.api.config.FileConfiguration;
+import gg.mineral.server.combat.KnockbackProfile;
+import gg.mineral.server.combat.KnockbackProfileList;
 
 public class Queuetype implements SaveableData {
 	final FileConfiguration config = PracticePlugin.INSTANCE.getQueuetypeManager().getConfig();

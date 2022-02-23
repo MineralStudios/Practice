@@ -8,8 +8,8 @@ import gg.mineral.practice.kit.Kit;
 import gg.mineral.practice.managers.ArenaManager;
 import gg.mineral.practice.managers.GametypeManager;
 import gg.mineral.practice.queue.QueueEntry;
-import land.strafe.server.combat.KnockbackProfile;
-import land.strafe.server.combat.KnockbackProfileList;
+import gg.mineral.server.combat.KnockbackProfile;
+import gg.mineral.server.combat.KnockbackProfileList;
 
 public class MatchData {
 	Arena arena;

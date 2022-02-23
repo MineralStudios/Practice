@@ -6,8 +6,8 @@ import org.bukkit.inventory.ItemStack;
 import gg.mineral.core.utils.item.ItemBuilder;
 import gg.mineral.core.utils.message.CC;
 import gg.mineral.practice.inventory.PracticeMenu;
-import land.strafe.server.combat.KnockbackProfile;
-import land.strafe.server.combat.KnockbackProfileList;
+import gg.mineral.server.combat.KnockbackProfile;
+import gg.mineral.server.combat.KnockbackProfileList;
 
 public class SelectKnockbackMenu extends PracticeMenu {
     MechanicsMenu menu;

@@ -8,8 +8,8 @@ import org.bukkit.inventory.ItemStack;
 
 import gg.mineral.practice.party.Party;
 import gg.mineral.practice.util.SaveableData;
-import land.strafe.api.collection.GlueList;
-import land.strafe.api.config.FileConfiguration;
+import gg.mineral.api.collection.GlueList;
+import gg.mineral.api.config.FileConfiguration;
 
 public class PartyManager implements SaveableData {
 	GlueList<Party> list = new GlueList<>();

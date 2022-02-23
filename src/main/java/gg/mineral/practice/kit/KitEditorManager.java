@@ -6,7 +6,7 @@ import org.bukkit.Material;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.util.Vector;
 
-import land.strafe.api.config.FileConfiguration;
+import gg.mineral.api.config.FileConfiguration;
 
 public class KitEditorManager extends FileConfiguration {
 	String displayName;

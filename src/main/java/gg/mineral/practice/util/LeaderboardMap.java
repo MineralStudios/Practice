@@ -3,7 +3,7 @@ package gg.mineral.practice.util;
 import java.util.Iterator;
 import java.util.List;
 
-import land.strafe.api.collection.GlueList;
+import gg.mineral.api.collection.GlueList;
 
 public class LeaderboardMap {
 

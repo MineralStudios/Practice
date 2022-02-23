@@ -15,7 +15,7 @@ import gg.mineral.practice.inventory.menus.InventoryStatsMenu;
 import gg.mineral.practice.util.ProfileList;
 import gg.mineral.practice.util.SaveableData;
 import it.unimi.dsi.fastutil.objects.Object2ObjectOpenHashMap;
-import land.strafe.api.config.FileConfiguration;
+import gg.mineral.api.config.FileConfiguration;
 
 public class PlayerManager implements SaveableData {
 	final FileConfiguration lobbyConfig = new FileConfiguration("lobby.yml", "plugins/Practice");

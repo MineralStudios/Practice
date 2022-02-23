@@ -40,7 +40,7 @@ import gg.mineral.practice.util.WorldUtil;
 import gg.mineral.practice.util.items.ItemStacks;
 import gg.mineral.practice.util.messages.ChatMessages;
 import gg.mineral.practice.util.messages.ErrorMessages;
-import land.strafe.api.collection.GlueList;
+import gg.mineral.api.collection.GlueList;
 import net.md_5.bungee.api.chat.ClickEvent;
 import net.md_5.bungee.api.chat.ComponentBuilder;
 import net.md_5.bungee.api.chat.HoverEvent;
