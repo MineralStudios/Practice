@@ -1,6 +1,6 @@
 name: MineralPractice
 version: .dev1
 author: OpaqueEclipse
-main: ms.uk.eclipse.PracticePlugin
+main: gg.mineral.PracticePlugin
 description: Mineral Practice Plugin!
 depend: [MineralCore]

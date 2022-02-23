@@ -1,0 +1,177 @@
+package gg.mineral.practice;
+
+import org.bukkit.Bukkit;
+import org.bukkit.command.Command;
+import org.bukkit.event.Listener;
+import org.bukkit.plugin.java.JavaPlugin;
+
+import gg.mineral.practice.commands.config.ArenaCommand;
+import gg.mineral.practice.commands.config.CatagoryCommand;
+import gg.mineral.practice.commands.config.GametypeCommand;
+import gg.mineral.practice.commands.config.KitEditorCommand;
+import gg.mineral.practice.commands.config.ListConfigCommands;
+import gg.mineral.practice.commands.config.LobbyCommand;
+import gg.mineral.practice.commands.config.PartiesCommand;
+import gg.mineral.practice.commands.config.QueuetypeCommand;
+import gg.mineral.practice.commands.config.SettingsConfigCommand;
+import gg.mineral.practice.commands.duel.AcceptCommand;
+import gg.mineral.practice.commands.duel.DuelCommand;
+import gg.mineral.practice.commands.party.PartyCommand;
+import gg.mineral.practice.commands.settings.ExtendedSettingsCommand;
+import gg.mineral.practice.commands.settings.ToggleDuelRequestsCommand;
+import gg.mineral.practice.commands.settings.TogglePlayerVisibilityCommand;
+import gg.mineral.practice.commands.spectator.FollowCommand;
+import gg.mineral.practice.commands.spectator.SpectateCommand;
+import gg.mineral.practice.commands.spectator.StopSpectatingCommand;
+import gg.mineral.practice.commands.stats.EloCommand;
+import gg.mineral.practice.commands.stats.LeaderboardsCommand;
+import gg.mineral.practice.commands.stats.PotsCommand;
+import gg.mineral.practice.commands.stats.ViewInventoryCommand;
+import gg.mineral.practice.commands.tournament.JoinCommand;
+import gg.mineral.practice.commands.tournament.TournamentCommand;
+import gg.mineral.practice.kit.KitEditorManager;
+import gg.mineral.practice.listeners.BuildListener;
+import gg.mineral.practice.listeners.ComsumeListener;
+import gg.mineral.practice.listeners.DamageListener;
+import gg.mineral.practice.listeners.DeathListener;
+import gg.mineral.practice.listeners.EntryListener;
+import gg.mineral.practice.listeners.HealthListener;
+import gg.mineral.practice.listeners.InteractListener;
+import gg.mineral.practice.listeners.InventoryListener;
+import gg.mineral.practice.listeners.MovementListener;
+import gg.mineral.practice.listeners.PlayerStatusListener;
+import gg.mineral.practice.managers.ArenaManager;
+import gg.mineral.practice.managers.CatagoryManager;
+import gg.mineral.practice.managers.EloManager;
+import gg.mineral.practice.managers.GametypeManager;
+import gg.mineral.practice.managers.MatchManager;
+import gg.mineral.practice.managers.PartyManager;
+import gg.mineral.practice.managers.PlayerManager;
+import gg.mineral.practice.managers.PlayerSettingsManager;
+import gg.mineral.practice.managers.PvPBotsManager;
+import gg.mineral.practice.managers.QueueEntryManager;
+import gg.mineral.practice.managers.QueuetypeManager;
+import gg.mineral.practice.managers.TournamentManager;
+import net.minecraft.server.v1_8_R3.MinecraftServer;
+
+public class PracticePlugin extends JavaPlugin {
+
+	public static PracticePlugin INSTANCE;
+	ArenaManager arenaManager;
+	GametypeManager gametypeManager;
+	QueuetypeManager queuetypeManager;
+	MatchManager matchManager;
+	PlayerManager playerManager;
+	PlayerSettingsManager playerSettingsManager;
+	KitEditorManager kitEditorManager;
+	PartyManager partyManager;
+	CatagoryManager catagoryManager;
+	PvPBotsManager pvPBotsManager;
+	EloManager eloManager;
+	TournamentManager tournamentManager;
+	QueueEntryManager queueEntryManager;
+
+	@Override
+	public void onEnable() {
+		INSTANCE = this;
+
+		eloManager = new EloManager();
+		matchManager = new MatchManager();
+		arenaManager = new ArenaManager();
+		gametypeManager = new GametypeManager();
+		queuetypeManager = new QueuetypeManager();
+		playerManager = new PlayerManager();
+		playerSettingsManager = new PlayerSettingsManager();
+		kitEditorManager = new KitEditorManager();
+		partyManager = new PartyManager();
+		catagoryManager = new CatagoryManager();
+		pvPBotsManager = new PvPBotsManager();
+		queueEntryManager = new QueueEntryManager();
+		tournamentManager = new TournamentManager();
+
+		playerManager.load();
+		playerSettingsManager.load();
+		partyManager.load();
+		pvPBotsManager.load();
+		arenaManager.load();
+		queuetypeManager.load();
+		catagoryManager.load();
+		gametypeManager.load();
+
+		registerCommands(new ListConfigCommands(), new ArenaCommand(), new QueuetypeCommand(), new GametypeCommand(),
+				new KitEditorCommand(), new LobbyCommand(), new PartiesCommand(),
+				new AcceptCommand(), new ViewInventoryCommand(), new DuelCommand(), new SpectateCommand(),
+				new PotsCommand(), new EloCommand(), new LeaderboardsCommand(), new PartyCommand(),
+				new SettingsConfigCommand(), new FollowCommand(), new TogglePlayerVisibilityCommand(),
+				new ToggleDuelRequestsCommand(), new CatagoryCommand(), new ExtendedSettingsCommand(),
+				new StopSpectatingCommand(), new TournamentCommand(), new JoinCommand());
+
+		registerListeners(new BuildListener(), new InteractListener(), new ComsumeListener(), new InventoryListener(),
+				new DeathListener(), new DamageListener(), new EntryListener(), new HealthListener(),
+				new MovementListener(), new PlayerStatusListener());
+	}
+
+	public void registerCommands(Command... cmds) {
+		for (Command c : cmds) {
+			MinecraftServer.getServer().server.getCommandMap().registerOverride(c.getName(), "Practice", c);
+		}
+	}
+
+	public void registerListeners(Listener... listeners) {
+		for (Listener l : listeners) {
+			Bukkit.getPluginManager().registerEvents(l, this);
+		}
+	}
+
+	public ArenaManager getArenaManager() {
+		return arenaManager;
+	}
+
+	public GametypeManager getGametypeManager() {
+		return gametypeManager;
+	}
+
+	public QueuetypeManager getQueuetypeManager() {
+		return queuetypeManager;
+	}
+
+	public PlayerSettingsManager getSettingsManager() {
+		return playerSettingsManager;
+	}
+
+	public QueueEntryManager getQueueEntryManager() {
+		return queueEntryManager;
+	}
+
+	public KitEditorManager getKitEditorManager() {
+		return kitEditorManager;
+	}
+
+	public PartyManager getPartyManager() {
+		return partyManager;
+	}
+
+	public PlayerManager getPlayerManager() {
+		return playerManager;
+	}
+
+	public MatchManager getMatchManager() {
+		return matchManager;
+	}
+
+	public PvPBotsManager getPvPBotsManager() {
+		return pvPBotsManager;
+	}
+
+	public CatagoryManager getCatagoryManager() {
+		return catagoryManager;
+	}
+
+	public EloManager getEloManager() {
+		return eloManager;
+	}
+
+	public TournamentManager getTournamentManager() {
+		return tournamentManager;
+	}
+}
