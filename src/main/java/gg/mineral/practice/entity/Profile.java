@@ -787,10 +787,8 @@ public class Profile {
 		partyOpenCooldown = true;
 
 		Bukkit.getServer().getScheduler().runTaskLaterAsynchronously(PracticePlugin.INSTANCE,
-				new Runnable() {
-					public void run() {
-						partyOpenCooldown = false;
-					}
+				() -> {
+					partyOpenCooldown = false;
 				}, 400);
 	}
 

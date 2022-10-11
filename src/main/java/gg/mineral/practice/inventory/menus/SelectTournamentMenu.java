@@ -29,20 +29,17 @@ public class SelectTournamentMenu extends PracticeMenu {
             ItemStack item = new ItemBuilder(g.getDisplayItem())
                     .name(g.getDisplayName()).lore().build();
 
-            Runnable runnable = new Runnable() {
-                @Override
-                public void run() {
-                    viewer.bukkit().closeInventory();
+            Runnable runnable = () -> {
+                viewer.bukkit().closeInventory();
 
-                    viewer.getMatchData().setGametype(g);
+                viewer.getMatchData().setGametype(g);
 
-                    if (g.getEventArena() == null) {
-                        return;
-                    }
-
-                    Tournament t = new Tournament(viewer, g.getEventArena());
-                    t.start();
+                if (g.getEventArena() == null) {
+                    return;
                 }
+
+                Tournament t = new Tournament(viewer, g.getEventArena());
+                t.start();
             };
 
             add(item, runnable);

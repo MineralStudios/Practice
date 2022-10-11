@@ -316,7 +316,7 @@ public class Gametype implements SaveableData {
 		config.set(path + "InCatagory", inCatagory);
 
 		if (inCatagory) {
-			config.set(path + "Catagory", catagory);
+			config.set(path + "Catagory", catagory.getName());
 		}
 
 		for (Queuetype q : queuetypeManager.getQueuetypes()) {

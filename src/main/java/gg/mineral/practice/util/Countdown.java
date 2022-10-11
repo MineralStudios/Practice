@@ -3,7 +3,6 @@ package gg.mineral.practice.util;
 import org.bukkit.Bukkit;
 import org.bukkit.scheduler.BukkitScheduler;
 
-import gg.mineral.core.utils.message.ChatMessage;
 import gg.mineral.practice.PracticePlugin;
 import gg.mineral.practice.entity.Profile;
 import gg.mineral.practice.managers.PlayerManager;
@@ -13,7 +12,6 @@ import gg.mineral.practice.util.messages.ChatMessages;
 public class Countdown {
 	int time;
 	int taskID;
-	ChatMessage message;
 	Match match;
 	final PlayerManager playerManager = PracticePlugin.INSTANCE.getPlayerManager();
 
@@ -38,12 +36,11 @@ public class Countdown {
 				return;
 			}
 
-			message = ChatMessages.BEGINS_IN.clone().replace("%time%", "" + time);
+			playerManager.broadcast(match.getParticipants(),
+					ChatMessages.BEGINS_IN.clone().replace("%time%", "" + time));
 
-			playerManager.broadcast(match.getParticipants(), message);
-
-			time = time - 1;
-		}, 0L, 20L);
+			time--;
+		}, 4L, 20L);
 	}
 
 	public void cancel() {

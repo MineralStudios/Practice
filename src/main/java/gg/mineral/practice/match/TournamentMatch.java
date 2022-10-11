@@ -55,7 +55,7 @@ public class TournamentMatch extends Match {
                         new HoverEvent(HoverEvent.Action.SHOW_TEXT,
                                 new ComponentBuilder(CC.RED + "Health Potions Remaining: " + victimAmountOfPots + "\n"
                                         + CC.RED + "Hits: " + victim.getHitCount() + "\n" + CC.RED + "Health: 0")
-                                                .create()));
+                                        .create()));
         winmessage.setHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT,
                 new ComponentBuilder(CC.GREEN + "Health Potions Remaining: " + attackerAmountOfPots + "\n" + CC.GREEN
                         + "Hits: " + attacker.getHitCount() + "\n" + CC.GREEN + "Health: " + attackerHealth).create()));
@@ -76,51 +76,46 @@ public class TournamentMatch extends Match {
         victim.removeFromMatch();
         matchManager.remove(this);
 
-        Bukkit.getServer().getScheduler().runTaskLater(PracticePlugin.INSTANCE, new Runnable() {
-            public void run() {
-                if (victim.bukkit().isDead()) {
-                    victim.bukkit().getHandle().playerConnection
-                            .a(new PacketPlayInClientCommand(EnumClientCommand.PERFORM_RESPAWN));
-                }
-
-                victim.heal();
-                victim.removePotionEffects();
-                victim.teleportToLobby();
-                victim.setInventoryForLobby();
+        Bukkit.getServer().getScheduler().runTaskLater(PracticePlugin.INSTANCE, () -> {
+            if (victim.bukkit().isDead()) {
+                victim.bukkit().getHandle().playerConnection
+                        .a(new PacketPlayInClientCommand(EnumClientCommand.PERFORM_RESPAWN));
             }
+
+            victim.heal();
+            victim.removePotionEffects();
+            victim.teleportToLobby();
+            victim.setInventoryForLobby();
         }, 1);
 
         Match match = this;
 
-        Bukkit.getServer().getScheduler().runTaskLater(PracticePlugin.INSTANCE, new Runnable() {
-            public void run() {
+        Bukkit.getServer().getScheduler().runTaskLater(PracticePlugin.INSTANCE, () -> {
+            attacker.removeFromMatch();
+            tournament.removePlayer(victim);
+            tournament.removeMatch(match);
 
-                attacker.removeFromMatch();
-                tournament.removePlayer(victim);
-                tournament.removeMatch(match);
-
-                if (!tournament.isEnded()) {
-                    if (tournament.isEvent()) {
-                        attacker.teleport(tournament.getWaitingLocation());
-                    } else {
-                        attacker.teleportToLobby();
-                    }
-
-                    attacker.setPlayerStatus(PlayerStatus.IN_TOURAMENT);
-                    attacker.setInventoryForTournament();
+            if (!tournament.isEnded()) {
+                if (tournament.isEvent()) {
+                    attacker.teleport(tournament.getWaitingLocation());
                 } else {
                     attacker.teleportToLobby();
-                    attacker.setInventoryForLobby();
                 }
 
-                if (getSpectators().size() > 0) {
-                    for (Profile p : getSpectators()) {
-                        p.bukkit().sendMessage(CC.SEPARATOR);
-                        p.bukkit().sendMessage(viewinv);
-                        p.bukkit().spigot().sendMessage(winmessage, splitter, losemessage);
-                        p.bukkit().sendMessage(CC.SEPARATOR);
-                        p.stopSpectating();
-                    }
+                attacker.setPlayerStatus(PlayerStatus.IN_TOURAMENT);
+                attacker.setInventoryForTournament();
+            } else {
+                attacker.teleportToLobby();
+                attacker.setInventoryForLobby();
+            }
+
+            if (getSpectators().size() > 0) {
+                for (Profile p : getSpectators()) {
+                    p.bukkit().sendMessage(CC.SEPARATOR);
+                    p.bukkit().sendMessage(viewinv);
+                    p.bukkit().spigot().sendMessage(winmessage, splitter, losemessage);
+                    p.bukkit().sendMessage(CC.SEPARATOR);
+                    p.stopSpectating();
                 }
             }
         }, 40);

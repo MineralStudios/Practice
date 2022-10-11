@@ -48,6 +48,9 @@ public class MechanicsMenu extends PracticeMenu {
 		ItemStack damage = new ItemBuilder(Material.DIAMOND_AXE)
 				.lore(CC.ACCENT + match.getDamage())
 				.name("Toggle Damage").build();
+		ItemStack boxing = new ItemBuilder(Material.IRON_CHESTPLATE)
+				.lore(CC.ACCENT + match.getBoxing())
+				.name("Toggle Boxing").build();
 		ItemStack griefing = new ItemBuilder(Material.TNT)
 				.lore(CC.ACCENT + match.getGriefing())
 				.name("Toggle Griefing").build();
@@ -100,39 +103,38 @@ public class MechanicsMenu extends PracticeMenu {
 			viewer.openMenu(menu);
 		};
 		setSlot(22, regen, regenTask);
+		Runnable boxingTask = () -> {
+			match.setBoxing(!match.getBoxing());
+			viewer.openMenu(menu);
+		};
+		setSlot(23, boxing, boxingTask);
 		Runnable submitTask = () -> {
 			viewer.sendDuelRequest(viewer.getDuelReciever());
 		};
 
 		if (action == SubmitAction.P_SPLIT) {
-			submitTask = new Runnable() {
-				@Override
-				public void run() {
-					viewer.bukkit().closeInventory();
-					Party p = viewer.getParty();
+			submitTask = () -> {
+				viewer.bukkit().closeInventory();
+				Party p = viewer.getParty();
 
-					if (!viewer.getParty().getPartyLeader().equals(viewer)) {
-						viewer.message(ErrorMessages.YOU_ARE_NOT_PARTY_LEADER);
-						return;
-					}
-
-					if (p.getPartyMembers().size() < 2) {
-						viewer.message(ErrorMessages.PARTY_NOT_BIG_ENOUGH);
-						return;
-					}
-
-					PartyMatch m = new PartyMatch(p, viewer.getMatchData());
-					m.start();
+				if (!p.getPartyLeader().equals(viewer)) {
+					viewer.message(ErrorMessages.YOU_ARE_NOT_PARTY_LEADER);
+					return;
 				}
+
+				if (p.getPartyMembers().size() < 2) {
+					viewer.message(ErrorMessages.PARTY_NOT_BIG_ENOUGH);
+					return;
+				}
+
+				PartyMatch m = new PartyMatch(p, viewer.getMatchData());
+				m.start();
 			};
 		} else if (action == SubmitAction.TOURNAMENT) {
-			submitTask = new Runnable() {
-				@Override
-				public void run() {
-					viewer.bukkit().closeInventory();
-					Tournament t = new Tournament(viewer);
-					t.start();
-				}
+			submitTask = () -> {
+				viewer.bukkit().closeInventory();
+				Tournament t = new Tournament(viewer);
+				t.start();
 			};
 		}
 
