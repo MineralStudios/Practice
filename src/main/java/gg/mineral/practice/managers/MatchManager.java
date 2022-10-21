@@ -1,20 +1,22 @@
 package gg.mineral.practice.managers;
 
+import java.util.List;
+
+import gg.mineral.practice.util.GlueList;
 import gg.mineral.practice.match.Match;
-import gg.mineral.api.collection.GlueList;
 
 public class MatchManager {
-	GlueList<Match> list = new GlueList<>();
+	final static GlueList<Match> list = new GlueList<>();
 
-	public void registerMatch(Match match) {
+	public static void register(Match match) {
 		list.add(match);
 	}
 
-	public void remove(Match match) {
+	public static void remove(Match match) {
 		list.remove(match);
 	}
 
-	public GlueList<Match> getMatchs() {
+	public static List<Match> list() {
 		return list;
 	}
 }

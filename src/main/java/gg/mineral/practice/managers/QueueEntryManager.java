@@ -1,40 +1,39 @@
 package gg.mineral.practice.managers;
 
+import java.util.List;
+
+import gg.mineral.practice.util.GlueList;
 import gg.mineral.practice.gametype.Gametype;
 import gg.mineral.practice.queue.QueueEntry;
 import gg.mineral.practice.queue.Queuetype;
-import gg.mineral.api.collection.GlueList;
 
 public class QueueEntryManager {
-    GlueList<QueueEntry> list = new GlueList<>();
+    static final GlueList<QueueEntry> list = new GlueList<>();
 
-    public void register(QueueEntry qe) {
-        list.add(qe);
+    public static void register(QueueEntry queueEntry) {
+        list.add(queueEntry);
     }
 
-    public QueueEntry newEntry(Queuetype q, Gametype g) {
-        QueueEntry entry = null;
+    public static QueueEntry getOrCreate(Queuetype queuetype, Gametype gametype) {
 
-        for (QueueEntry qe : list) {
-            if (qe.getGametype().equals(g) && qe.getQueuetype().equals(q)) {
-                entry = qe;
-                break;
+        for (QueueEntry queueEntry : list()) {
+            if (!queueEntry.getGametype().equals(gametype) || !queueEntry.getQueuetype().equals(queuetype)) {
+                continue;
             }
+
+            return queueEntry;
         }
 
-        if (entry == null) {
-            entry = new QueueEntry(q, g);
-            register(entry);
-        }
-
-        return entry;
+        QueueEntry queueEntry = new QueueEntry(queuetype, gametype);
+        register(queueEntry);
+        return queueEntry;
     }
 
-    public void remove(QueueEntry qe) {
-        list.remove(qe);
+    public static void remove(QueueEntry queueEntry) {
+        list.remove(queueEntry);
     }
 
-    public GlueList<QueueEntry> getEntries() {
+    public static List<QueueEntry> list() {
         return list;
     }
 }

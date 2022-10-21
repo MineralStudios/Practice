@@ -29,7 +29,6 @@ import gg.mineral.practice.commands.stats.PotsCommand;
 import gg.mineral.practice.commands.stats.ViewInventoryCommand;
 import gg.mineral.practice.commands.tournament.JoinCommand;
 import gg.mineral.practice.commands.tournament.TournamentCommand;
-import gg.mineral.practice.kit.KitEditorManager;
 import gg.mineral.practice.listeners.BuildListener;
 import gg.mineral.practice.listeners.ComsumeListener;
 import gg.mineral.practice.listeners.DamageListener;
@@ -40,63 +39,15 @@ import gg.mineral.practice.listeners.InteractListener;
 import gg.mineral.practice.listeners.InventoryListener;
 import gg.mineral.practice.listeners.MovementListener;
 import gg.mineral.practice.listeners.PlayerStatusListener;
-import gg.mineral.practice.managers.ArenaManager;
-import gg.mineral.practice.managers.CatagoryManager;
-import gg.mineral.practice.managers.EloManager;
-import gg.mineral.practice.managers.GametypeManager;
-import gg.mineral.practice.managers.MatchManager;
-import gg.mineral.practice.managers.PartyManager;
-import gg.mineral.practice.managers.PlayerManager;
-import gg.mineral.practice.managers.PlayerSettingsManager;
-import gg.mineral.practice.managers.PvPBotsManager;
-import gg.mineral.practice.managers.QueueEntryManager;
-import gg.mineral.practice.managers.QueuetypeManager;
-import gg.mineral.practice.managers.TournamentManager;
 import net.minecraft.server.v1_8_R3.MinecraftServer;
 
 public class PracticePlugin extends JavaPlugin {
 
 	public static PracticePlugin INSTANCE;
-	ArenaManager arenaManager;
-	GametypeManager gametypeManager;
-	QueuetypeManager queuetypeManager;
-	MatchManager matchManager;
-	PlayerManager playerManager;
-	PlayerSettingsManager playerSettingsManager;
-	KitEditorManager kitEditorManager;
-	PartyManager partyManager;
-	CatagoryManager catagoryManager;
-	PvPBotsManager pvPBotsManager;
-	EloManager eloManager;
-	TournamentManager tournamentManager;
-	QueueEntryManager queueEntryManager;
 
 	@Override
 	public void onEnable() {
 		INSTANCE = this;
-
-		eloManager = new EloManager();
-		matchManager = new MatchManager();
-		arenaManager = new ArenaManager();
-		gametypeManager = new GametypeManager();
-		queuetypeManager = new QueuetypeManager();
-		playerManager = new PlayerManager();
-		playerSettingsManager = new PlayerSettingsManager();
-		kitEditorManager = new KitEditorManager();
-		partyManager = new PartyManager();
-		catagoryManager = new CatagoryManager();
-		pvPBotsManager = new PvPBotsManager();
-		queueEntryManager = new QueueEntryManager();
-		tournamentManager = new TournamentManager();
-
-		playerManager.load();
-		playerSettingsManager.load();
-		partyManager.load();
-		pvPBotsManager.load();
-		arenaManager.load();
-		queuetypeManager.load();
-		catagoryManager.load();
-		gametypeManager.load();
 
 		registerCommands(new ListConfigCommands(), new ArenaCommand(), new QueuetypeCommand(), new GametypeCommand(),
 				new KitEditorCommand(), new LobbyCommand(), new PartiesCommand(),
@@ -112,66 +63,14 @@ public class PracticePlugin extends JavaPlugin {
 	}
 
 	public void registerCommands(Command... cmds) {
-		for (Command c : cmds) {
-			MinecraftServer.getServer().server.getCommandMap().registerOverride(c.getName(), "Practice", c);
+		for (Command cmd : cmds) {
+			MinecraftServer.getServer().server.getCommandMap().register(cmd.getName(), "Practice", cmd);
 		}
 	}
 
 	public void registerListeners(Listener... listeners) {
-		for (Listener l : listeners) {
-			Bukkit.getPluginManager().registerEvents(l, this);
+		for (Listener listener : listeners) {
+			Bukkit.getPluginManager().registerEvents(listener, this);
 		}
-	}
-
-	public ArenaManager getArenaManager() {
-		return arenaManager;
-	}
-
-	public GametypeManager getGametypeManager() {
-		return gametypeManager;
-	}
-
-	public QueuetypeManager getQueuetypeManager() {
-		return queuetypeManager;
-	}
-
-	public PlayerSettingsManager getSettingsManager() {
-		return playerSettingsManager;
-	}
-
-	public QueueEntryManager getQueueEntryManager() {
-		return queueEntryManager;
-	}
-
-	public KitEditorManager getKitEditorManager() {
-		return kitEditorManager;
-	}
-
-	public PartyManager getPartyManager() {
-		return partyManager;
-	}
-
-	public PlayerManager getPlayerManager() {
-		return playerManager;
-	}
-
-	public MatchManager getMatchManager() {
-		return matchManager;
-	}
-
-	public PvPBotsManager getPvPBotsManager() {
-		return pvPBotsManager;
-	}
-
-	public CatagoryManager getCatagoryManager() {
-		return catagoryManager;
-	}
-
-	public EloManager getEloManager() {
-		return eloManager;
-	}
-
-	public TournamentManager getTournamentManager() {
-		return tournamentManager;
 	}
 }

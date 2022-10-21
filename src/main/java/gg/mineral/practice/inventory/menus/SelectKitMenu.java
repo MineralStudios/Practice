@@ -3,30 +3,29 @@ package gg.mineral.practice.inventory.menus;
 import org.bukkit.Material;
 import org.bukkit.inventory.ItemStack;
 
-import gg.mineral.core.utils.item.ItemBuilder;
-import gg.mineral.core.utils.message.CC;
-import gg.mineral.practice.inventory.PracticeMenu;
-import gg.mineral.practice.tasks.MenuTask;
+import gg.mineral.practice.util.items.ItemBuilder;
+import gg.mineral.practice.util.messages.CC;
+import gg.mineral.api.inventory.InventoryBuilder;
 
-public class SelectKitMenu extends PracticeMenu {
+public class SelectKitMenu implements InventoryBuilder {
     MechanicsMenu menu;
     final static String TITLE = CC.BLUE + "Select Kit";
 
     public SelectKitMenu(MechanicsMenu menu) {
         super(TITLE);
-        setClickCancelled(true);
+        setItemDragging(true);
         this.menu = menu;
     }
 
     @Override
-    public boolean update() {
+    public MineralInventory build(Profile profile) {
         ItemStack item = new ItemBuilder(Material.LEATHER_CHESTPLATE)
                 .name("Choose Existing Kit").build();
         ItemStack item2 = new ItemBuilder(Material.GOLD_CHESTPLATE)
                 .name("Create Custom Kit").build();
-        setSlot(2, item, new MenuTask(new SelectExistingKitMenu(menu, false)));
+        set(2, item, new MenuTask(new SelectExistingKitMenu(menu, false)));
         Runnable runnable = viewer::sendPlayerToKitCreator;
-        setSlot(6, item2, runnable);
+        set(6, item2, runnable);
         return true;
     }
 }

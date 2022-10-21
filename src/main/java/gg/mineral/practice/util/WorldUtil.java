@@ -11,8 +11,6 @@ import org.apache.commons.io.FileUtils;
 import org.bukkit.Bukkit;
 import org.bukkit.World;
 
-import gg.mineral.api.collection.GlueList;
-
 public class WorldUtil {
 
 	static GlueList<String> ignore = new GlueList<>(Arrays.asList("uid.dat", "session.dat"));

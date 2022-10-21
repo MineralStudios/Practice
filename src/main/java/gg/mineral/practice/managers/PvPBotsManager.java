@@ -3,42 +3,43 @@ package gg.mineral.practice.managers;
 import org.bukkit.Material;
 import org.bukkit.inventory.ItemStack;
 
-import gg.mineral.practice.util.SaveableData;
-import gg.mineral.api.config.FileConfiguration;
+import gg.mineral.practice.util.FileConfiguration;
 
-public class PvPBotsManager implements SaveableData {
-	final FileConfiguration config = new FileConfiguration("pvpbots.yml", "plugins/Practice");
-	public boolean enabled;
-	public ItemStack displayItem;
-	public String displayName;
-	public int slot;
+public class PvPBotsManager {
+	final static FileConfiguration config = new FileConfiguration("pvpbots.yml", "plugins/Practice");
+	static boolean enabled;
+	static ItemStack displayItem;
+	static String displayName;
+	static public int slot;
 
-	public void setEnabled(boolean enabled) {
-		this.enabled = enabled;
+	static {
+		load();
 	}
 
-	public void setDisplayItem(ItemStack i) {
-		displayItem = i;
+	public static void setEnabled(boolean enabled) {
+		PvPBotsManager.enabled = enabled;
 	}
 
-	public void setDisplayName(String name) {
-		displayName = name;
+	public static void setDisplayItem(ItemStack displayItem) {
+		PvPBotsManager.displayItem = displayItem;
 	}
 
-	public void setSlot(int s) {
-		slot = s;
+	public static void setDisplayName(String displayName) {
+		PvPBotsManager.displayName = displayName;
 	}
 
-	@Override
-	public void load() {
+	public static void setSlot(int slot) {
+		PvPBotsManager.slot = slot;
+	}
+
+	public static void load() {
 		enabled = config.getBoolean("Bot.Enable", true);
 		displayItem = config.getItemstack("Bot.DisplayItem", new ItemStack(Material.BLAZE_ROD));
 		displayName = config.getString("Bot.DisplayName", "PvP Bots");
 		slot = config.getInt("Bot.Slot", 5);
 	}
 
-	@Override
-	public void save() {
+	public static void save() {
 		config.set("Bot.Enable", enabled);
 		config.set("Bot.DisplayItem", displayItem);
 		config.set("Bot.DisplayName", displayName);
@@ -46,8 +47,7 @@ public class PvPBotsManager implements SaveableData {
 		config.save();
 	}
 
-	@Override
-	public void setDefaults() {
+	public static void setDefaults() {
 		enabled = false;
 		displayItem = new ItemStack(Material.BLAZE_ROD);
 		displayName = "PvP Bots";

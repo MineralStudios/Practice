@@ -1,5 +1,7 @@
 package gg.mineral.practice.queue;
 
+import java.sql.SQLException;
+import java.util.Iterator;
 import java.util.Map.Entry;
 
 import gg.mineral.practice.entity.Profile;
@@ -11,7 +13,7 @@ import it.unimi.dsi.fastutil.objects.Object2ObjectOpenHashMap;
 public class QueueSearchTask {
 	static Object2ObjectOpenHashMap<Profile, QueueEntry> map = new Object2ObjectOpenHashMap<>();
 
-	public static void addPlayer(Profile player, QueueEntry qe) {
+	public static void addPlayer(Profile player, QueueEntry qe) throws SQLException {
 		Profile found = searchForMatch(qe);
 
 		if (found == null) {
@@ -19,7 +21,6 @@ public class QueueSearchTask {
 			return;
 		}
 
-		removePlayer(found);
 		Match m = new Match(player, found, new MatchData(qe));
 		m.start();
 	}
@@ -28,26 +29,27 @@ public class QueueSearchTask {
 		map.remove(player);
 	}
 
-	private static Profile searchForMatch(QueueEntry qd) {
+	private static Profile searchForMatch(QueueEntry queueEntry) {
 
-		for (Entry<Profile, QueueEntry> e : map.entrySet()) {
-			if (e.getValue().equals(qd)) {
-				return e.getKey();
+		Iterator<Entry<Profile, QueueEntry>> iterator = map.entrySet().iterator();
+
+		while (iterator.hasNext()) {
+			Entry<Profile, QueueEntry> entry = iterator.next();
+
+			if (!entry.getValue().equals(queueEntry)) {
+				continue;
 			}
+
+			iterator.remove();
+			return entry.getKey();
 		}
 
 		return null;
 	}
 
-	public static int getNumberInQueue(Queuetype q, Gametype g) {
-		int i = 0;
-
-		for (QueueEntry qe : map.values()) {
-			if (qe.getGametype().equals(g) && qe.getQueuetype().equals(q)) {
-				i++;
-			}
-		}
-
-		return i;
+	public static long getNumberInQueue(Queuetype queuetype, Gametype gametype) {
+		return map.values().stream().filter(
+				queueEntry -> queueEntry.getGametype().equals(gametype) && queueEntry.getQueuetype().equals(queuetype))
+				.count();
 	}
 }

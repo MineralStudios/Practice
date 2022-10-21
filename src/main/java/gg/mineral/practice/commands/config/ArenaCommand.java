@@ -6,25 +6,19 @@ import org.bukkit.Location;
 import org.bukkit.craftbukkit.v1_8_R3.entity.CraftPlayer;
 import org.bukkit.entity.Player;
 
-import gg.mineral.core.commands.PlayerCommand;
-import gg.mineral.core.rank.RankPower;
-import gg.mineral.core.utils.message.CC;
-import gg.mineral.practice.PracticePlugin;
 import gg.mineral.practice.arena.Arena;
+import gg.mineral.practice.commands.PlayerCommand;
 import gg.mineral.practice.managers.ArenaManager;
-import gg.mineral.practice.managers.PlayerManager;
 import gg.mineral.practice.util.PlayerUtil;
-import gg.mineral.practice.util.messages.ChatMessages;
-import gg.mineral.practice.util.messages.ErrorMessages;
-import gg.mineral.practice.util.messages.UsageMessages;
+import gg.mineral.practice.util.messages.CC;
+import gg.mineral.practice.util.messages.impl.ChatMessages;
+import gg.mineral.practice.util.messages.impl.ErrorMessages;
+import gg.mineral.practice.util.messages.impl.UsageMessages;
 
 public class ArenaCommand extends PlayerCommand {
 
-	final PlayerManager playerManager = PracticePlugin.INSTANCE.getPlayerManager();
-	final ArenaManager arenaManager = PracticePlugin.INSTANCE.getArenaManager();
-
 	public ArenaCommand() {
-		super("arena", RankPower.MANAGER);
+		super("arena", "practice.permission.admin");
 	}
 
 	@Override
@@ -55,14 +49,14 @@ public class ArenaCommand extends PlayerCommand {
 
 				arenaName = args[1];
 
-				if (arenaManager.getArenaByName(arenaName) != null) {
+				if (ArenaManager.getByName(arenaName) != null) {
 					ErrorMessages.ARENA_ALREADY_EXISTS.send(player);
 					return;
 				}
 
 				arena = new Arena(arenaName);
 				arena.setDefaults();
-				arenaManager.registerArena(arena);
+				ArenaManager.register(arena);
 				ChatMessages.ARENA_CREATED.clone().replace("%arena%", arenaName).send(player);
 				return;
 			case "spawn":
@@ -72,7 +66,7 @@ public class ArenaCommand extends PlayerCommand {
 				}
 
 				arenaName = args[1];
-				arena = arenaManager.getArenaByName(arenaName);
+				arena = ArenaManager.getByName(arenaName);
 
 				if (arena == null) {
 					ErrorMessages.ARENA_DOES_NOT_EXIST.send(player);
@@ -107,7 +101,7 @@ public class ArenaCommand extends PlayerCommand {
 				}
 
 				arenaName = args[1];
-				arena = arenaManager.getArenaByName(arenaName);
+				arena = ArenaManager.getByName(arenaName);
 
 				if (arena == null) {
 					ErrorMessages.ARENA_DOES_NOT_EXIST.send(player);
@@ -125,7 +119,7 @@ public class ArenaCommand extends PlayerCommand {
 				}
 
 				arenaName = args[1];
-				arena = arenaManager.getArenaByName(arenaName);
+				arena = ArenaManager.getByName(arenaName);
 
 				if (arena == null) {
 					ErrorMessages.ARENA_DOES_NOT_EXIST.send(player);
@@ -143,7 +137,7 @@ public class ArenaCommand extends PlayerCommand {
 			case "list":
 				sb = new StringBuilder(CC.GRAY + "[");
 
-				Iterator<Arena> arenaIter = arenaManager.getArenas().iterator();
+				Iterator<Arena> arenaIter = ArenaManager.list().iterator();
 
 				while (arenaIter.hasNext()) {
 					Arena a = arenaIter.next();
@@ -165,7 +159,7 @@ public class ArenaCommand extends PlayerCommand {
 					return;
 				}
 
-				arena = arenaManager.getArenaByName(args[1]);
+				arena = ArenaManager.getByName(args[1]);
 
 				if (arena == null) {
 					ErrorMessages.ARENA_DOES_NOT_EXIST.send(player);
@@ -188,14 +182,14 @@ public class ArenaCommand extends PlayerCommand {
 				}
 
 				arenaName = args[1];
-				arena = arenaManager.getArenaByName(args[1]);
+				arena = ArenaManager.getByName(args[1]);
 
 				if (arena == null) {
 					ErrorMessages.ARENA_DOES_NOT_EXIST.send(player);
 					return;
 				}
 
-				arenaManager.remove(arena);
+				ArenaManager.remove(arena);
 				ChatMessages.ARENA_DELETED.clone().replace("%arena%", arenaName).send(player);
 
 				return;

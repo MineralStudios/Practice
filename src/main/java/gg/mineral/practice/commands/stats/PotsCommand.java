@@ -2,15 +2,14 @@ package gg.mineral.practice.commands.stats;
 
 import org.bukkit.Material;
 
-import gg.mineral.core.commands.PlayerCommand;
-import gg.mineral.practice.PracticePlugin;
+import gg.mineral.practice.commands.PlayerCommand;
+import gg.mineral.practice.entity.PlayerStatus;
 import gg.mineral.practice.entity.Profile;
 import gg.mineral.practice.managers.PlayerManager;
-import gg.mineral.practice.util.messages.ChatMessages;
-import gg.mineral.practice.util.messages.ErrorMessages;
+import gg.mineral.practice.util.messages.impl.ChatMessages;
+import gg.mineral.practice.util.messages.impl.ErrorMessages;
 
 public class PotsCommand extends PlayerCommand {
-	final PlayerManager playerManager = PracticePlugin.INSTANCE.getPlayerManager();
 
 	public PotsCommand() {
 		super("pots");
@@ -19,14 +18,15 @@ public class PotsCommand extends PlayerCommand {
 
 	@Override
 	public void execute(org.bukkit.entity.Player pl, String[] args) {
-		Profile player = playerManager.getProfileFromMatch(pl);
+		Profile profile = PlayerManager
+				.get(p -> p.getUUID().equals(pl.getUniqueId()) && p.getPlayerStatus() == PlayerStatus.FIGHTING);
 
-		if (player == null) {
+		if (profile == null) {
 			pl.sendMessage(ErrorMessages.NOT_IN_MATCH.toString());
 			return;
 		}
 
-		int pots = player.getNumber(Material.POTION, (short) 16421);
+		int pots = profile.getNumber(Material.POTION, (short) 16421);
 		ChatMessages.POTS.clone().replace("%pots%", "" + pots).send(pl);
 	}
 }

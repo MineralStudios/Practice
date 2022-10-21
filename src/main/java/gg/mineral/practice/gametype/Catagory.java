@@ -1,21 +1,18 @@
 package gg.mineral.practice.gametype;
 
+import java.util.List;
+
 import org.bukkit.Material;
 import org.bukkit.inventory.ItemStack;
 
-import gg.mineral.api.collection.GlueList;
-import gg.mineral.api.config.FileConfiguration;
-import gg.mineral.practice.PracticePlugin;
-import gg.mineral.practice.managers.GametypeManager;
+import gg.mineral.practice.managers.CatagoryManager;
 import gg.mineral.practice.managers.QueuetypeManager;
 import gg.mineral.practice.queue.Queuetype;
+import gg.mineral.practice.util.FileConfiguration;
+import gg.mineral.practice.util.GlueList;
 import gg.mineral.practice.util.SaveableData;
 
-public class Catagory implements SaveableData {
-
-	final FileConfiguration config = PracticePlugin.INSTANCE.getCatagoryManager().getConfig();
-	final QueuetypeManager queuetypeManager = PracticePlugin.INSTANCE.getQueuetypeManager();
-	final GametypeManager gametypeManager = PracticePlugin.INSTANCE.getGametypeManager();
+public class Catagory implements SaveableData, QueuetypeElement {
 	ItemStack displayItem;
 	String displayName;
 	final String name;
@@ -27,10 +24,12 @@ public class Catagory implements SaveableData {
 		this.path = "Catagory." + getName() + ".";
 	}
 
+	@Override
 	public ItemStack getDisplayItem() {
 		return displayItem;
 	}
 
+	@Override
 	public String getDisplayName() {
 		return displayName;
 	}
@@ -70,7 +69,7 @@ public class Catagory implements SaveableData {
 	}
 
 	public void removeFromQueuetype(Queuetype queuetype) {
-		queuetype.getCatagories().remove(this);
+		queuetype.getCatagories().removeInt(this);
 		save();
 	}
 
@@ -78,13 +77,15 @@ public class Catagory implements SaveableData {
 		return c.getName().equalsIgnoreCase(getName());
 	}
 
-	public GlueList<Gametype> getGametypes() {
+	public List<Gametype> getGametypes() {
 		return gametypes;
 	}
 
 	@Override
 	public void save() {
-		for (Queuetype q : queuetypeManager.getQueuetypes()) {
+		FileConfiguration config = CatagoryManager.getConfig();
+
+		for (Queuetype q : QueuetypeManager.list()) {
 
 			if (!q.getCatagories().containsKey(this)) {
 				config.set(path + q.getName() + ".Enabled", false);
@@ -105,11 +106,13 @@ public class Catagory implements SaveableData {
 
 	@Override
 	public void load() {
+		FileConfiguration config = CatagoryManager.getConfig();
+
 		this.displayItem = config.getItemstack(path + "DisplayItem",
 				new ItemStack(Material.DIAMOND_SWORD));
 		this.displayName = config.getString(path + "DisplayName", getName());
 
-		for (Queuetype q : queuetypeManager.getQueuetypes()) {
+		for (Queuetype q : QueuetypeManager.list()) {
 			if (config.getBoolean("Catagory." + getName() + "." + q.getName() + ".Enabled", false)) {
 				q.getCatagories().put(this, config.getInt(path + q.getName() + ".Slot", 0));
 			}
@@ -120,11 +123,10 @@ public class Catagory implements SaveableData {
 	public void setDefaults() {
 		this.displayItem = new ItemStack(Material.DIAMOND_SWORD);
 		this.displayName = getName();
+	}
 
-		for (Queuetype q : queuetypeManager.getQueuetypes()) {
-			if (config.getBoolean("Catagory." + getName() + "." + q.getName() + ".Enabled", false)) {
-				q.getCatagories().put(this, 0);
-			}
-		}
+	@Override
+	public List<String> getLeaderboardLore() {
+		return null;
 	}
 }

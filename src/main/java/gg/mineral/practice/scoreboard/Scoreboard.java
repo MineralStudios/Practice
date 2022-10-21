@@ -4,8 +4,9 @@ import org.bukkit.Bukkit;
 import org.bukkit.scheduler.BukkitScheduler;
 
 import gg.mineral.core.board.Board;
-import gg.mineral.core.utils.message.CC;
+import gg.mineral.practice.util.messages.CC;
 import gg.mineral.practice.PracticePlugin;
+import gg.mineral.practice.entity.PlayerStatus;
 import gg.mineral.practice.entity.Profile;
 import gg.mineral.practice.managers.PlayerManager;
 
@@ -13,7 +14,7 @@ public class Scoreboard {
 	Profile p;
 	Board b;
 	Scoreboard instance;
-	PlayerManager playerManager = PracticePlugin.INSTANCE.getPlayerManager();
+
 	int updateFrequency = 20;
 
 	public void setUpdateFrequency(int updateFrequency) {
@@ -56,8 +57,10 @@ public class Scoreboard {
 	}
 
 	public void updateBoard(Board board) {
-		board.updateLines(CC.BOARD_SEPARATOR, CC.ACCENT + "Online: " + CC.SECONDARY + Bukkit.getOnlinePlayers().size(),
-				CC.ACCENT + "In Game: " + CC.SECONDARY + playerManager.getProfilesInMatch().size(), CC.BOARD_SEPARATOR);
+		board.updateLines(CC.BOARD_SEPARATOR, CC.ACCENT + "Online: " + CC.SECONDARY + PlayerManager.list().size(),
+				CC.ACCENT + "In Game: " + CC.SECONDARY
+						+ PlayerManager.getList(profile -> profile.getPlayerStatus() == PlayerStatus.FIGHTING).size(),
+				CC.BOARD_SEPARATOR);
 	}
 
 	public void remove() {

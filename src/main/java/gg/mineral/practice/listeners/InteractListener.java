@@ -12,25 +12,23 @@ import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.scheduler.BukkitRunnable;
 
-import gg.mineral.core.tasks.CommandTask;
 import gg.mineral.practice.PracticePlugin;
 import gg.mineral.practice.entity.PlayerStatus;
 import gg.mineral.practice.entity.Profile;
 import gg.mineral.practice.inventory.menus.AddItemsMenu;
 import gg.mineral.practice.inventory.menus.SaveLoadKitsMenu;
 import gg.mineral.practice.managers.PlayerManager;
-import gg.mineral.practice.tasks.MenuTask;
-import gg.mineral.practice.util.messages.ChatMessages;
+
+import gg.mineral.practice.util.messages.impl.ChatMessages;
 
 public class InteractListener implements Listener {
-	final PlayerManager playerManager = PracticePlugin.INSTANCE.getPlayerManager();
 
 	@EventHandler(priority = EventPriority.HIGHEST)
 	public void onPlayerInteract(PlayerInteractEvent e) {
 
-		Profile player = playerManager.getProfile(e.getPlayer());
+		Profile profile = PlayerManager.get(p -> p.getUUID().equals(e.getPlayer().getUniqueId()));
 
-		if (player.isInMatchCountdown()) {
+		if (profile.isInMatchCountdown()) {
 			e.setCancelled(true);
 			return;
 		}
@@ -49,8 +47,8 @@ public class InteractListener implements Listener {
 			return;
 		}
 
-		if (player.getPlayerStatus() == PlayerStatus.KIT_CREATOR
-				|| player.getPlayerStatus() == PlayerStatus.KIT_EDITOR) {
+		if (profile.getPlayerStatus() == PlayerStatus.KIT_CREATOR
+				|| profile.getPlayerStatus() == PlayerStatus.KIT_EDITOR) {
 			e.setCancelled(true);
 
 			if (e.getClickedBlock() == null) {
@@ -58,14 +56,14 @@ public class InteractListener implements Listener {
 			}
 
 			if (e.getClickedBlock().getType() == Material.ANVIL) {
-				player.openMenu(new SaveLoadKitsMenu());
+				profile.openMenu(new SaveLoadKitsMenu());
 				return;
 			}
 
-			if (player.getPlayerStatus() == PlayerStatus.KIT_CREATOR) {
+			if (profile.getPlayerStatus() == PlayerStatus.KIT_CREATOR) {
 
 				if (e.getClickedBlock().getType() == Material.WOODEN_DOOR) {
-					player.leaveKitCreator();
+					profile.leaveKitCreator();
 					return;
 				}
 
@@ -73,12 +71,12 @@ public class InteractListener implements Listener {
 			}
 
 			if (e.getClickedBlock().getType() == Material.CHEST) {
-				player.openMenu(new AddItemsMenu());
+				profile.openMenu(new AddItemsMenu());
 				return;
 			}
 
 			if (e.getClickedBlock().getType() == Material.WOODEN_DOOR) {
-				player.leaveKitEditor();
+				profile.leaveKitEditor();
 				return;
 			}
 
@@ -88,23 +86,23 @@ public class InteractListener implements Listener {
 		if (e.getMaterial() != null) {
 			if (e.getMaterial() == Material.ENDER_PEARL) {
 
-				if (player.getPlayerStatus() != PlayerStatus.FIGHTING) {
+				if (profile.getPlayerStatus() != PlayerStatus.FIGHTING) {
 					return;
 				}
 
-				if (player.isInMatchCountdown()) {
+				if (profile.isInMatchCountdown()) {
 					e.setCancelled(true);
 					return;
 				}
 
-				if (player.getPearlCooldown().isActive()) {
+				if (profile.getPearlCooldown().isActive()) {
 					e.setCancelled(true);
-					ChatMessages.PEARL.clone().replace("%time%", "" + player.getPearlCooldown().getTimeRemaining())
-							.send(player.bukkit());
+					ChatMessages.PEARL.clone().replace("%time%", "" + profile.getPearlCooldown().getTimeRemaining())
+							.send(profile.bukkit());
 					return;
 				}
 
-				player.getPearlCooldown().setTimeRemaining(player.getMatch().getData().getPearlCooldown());
+				profile.getPearlCooldown().setTimeRemaining(profile.getMatch().getData().getPearlCooldown());
 				e.setCancelled(false);
 
 				return;
@@ -114,18 +112,18 @@ public class InteractListener implements Listener {
 				new BukkitRunnable() {
 					@Override
 					public void run() {
-						if (player.bukkit().getHealth() > 20) {
+						if (profile.bukkit().getHealth() > 20) {
 							return;
 						}
 
-						player.getInventory().setItemInHand(new ItemStack(Material.BOWL));
+						profile.getInventory().setItemInHand(new ItemStack(Material.BOWL));
 
-						if (player.bukkit().getHealth() <= 14.0) {
-							player.bukkit().setHealth(player.bukkit().getHealth() + 6.0);
+						if (profile.bukkit().getHealth() <= 14.0) {
+							profile.bukkit().setHealth(profile.bukkit().getHealth() + 6.0);
 							return;
 						}
 
-						player.bukkit().setHealth(20);
+						profile.bukkit().setHealth(20);
 					}
 				}.runTaskLater(PracticePlugin.INSTANCE, 1);
 				return;
@@ -134,17 +132,17 @@ public class InteractListener implements Listener {
 
 		if (e.getClickedBlock() != null) {
 			if (e.getClickedBlock().getType() == Material.TNT) {
-				Material type = player.getItemInHand().getType();
+				Material type = profile.getItemInHand().getType();
 				if (type != Material.FLINT_AND_STEEL || type != Material.FIREBALL) {
 					return;
 				}
 
-				if (player.getPlayerStatus() != PlayerStatus.FIGHTING) {
+				if (profile.getPlayerStatus() != PlayerStatus.FIGHTING) {
 					e.setCancelled(true);
 					return;
 				}
 
-				if (player.getMatch().getData().getGriefing()) {
+				if (profile.getMatch().getData().getGriefing()) {
 					return;
 				}
 
@@ -153,19 +151,19 @@ public class InteractListener implements Listener {
 			}
 		}
 
-		Object object = player.getInventory().getTask(player.getInventory().getHeldItemSlot());
+		Object object = profile.getInventory().getInteractionPredicate(profile.getInventory().getHeldItemSlot());
 
 		if (object == null) {
 			return;
 		}
 
 		if (object instanceof CommandTask) {
-			player.bukkit().performCommand(((CommandTask) object).getCommand());
+			profile.bukkit().performCommand(((CommandTask) object).getCommand());
 			return;
 		}
 
 		if (object instanceof MenuTask) {
-			player.openMenu(((MenuTask) object).getMenu());
+			profile.openMenu(((MenuTask) object).getMenu());
 			return;
 		}
 

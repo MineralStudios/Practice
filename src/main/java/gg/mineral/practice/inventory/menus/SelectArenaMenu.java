@@ -1,46 +1,46 @@
 package gg.mineral.practice.inventory.menus;
 
+import java.sql.SQLException;
 import java.util.Iterator;
 
 import org.bukkit.inventory.ItemStack;
 
-import gg.mineral.core.utils.item.ItemBuilder;
-import gg.mineral.core.utils.message.CC;
-import gg.mineral.practice.PracticePlugin;
+import gg.mineral.practice.util.items.ItemBuilder;
+import gg.mineral.practice.util.messages.CC;
 import gg.mineral.practice.arena.Arena;
-import gg.mineral.practice.inventory.PracticeMenu;
+import gg.mineral.api.inventory.InventoryBuilder;
 import gg.mineral.practice.inventory.SubmitAction;
 import gg.mineral.practice.managers.ArenaManager;
 import gg.mineral.practice.match.PartyMatch;
 import gg.mineral.practice.party.Party;
 import gg.mineral.practice.tournaments.Tournament;
-import gg.mineral.practice.util.messages.ErrorMessages;
+import gg.mineral.practice.util.messages.impl.ErrorMessages;
 
-public class SelectArenaMenu extends PracticeMenu {
+public class SelectArenaMenu implements InventoryBuilder {
     MechanicsMenu menu;
     boolean simpleMode = false;
     SubmitAction action;
-    final ArenaManager arenaManager = PracticePlugin.INSTANCE.getArenaManager();
+
     final static String TITLE = CC.BLUE + "Select Arena";
 
     public SelectArenaMenu(MechanicsMenu menu, SubmitAction action) {
         super(TITLE);
-        setClickCancelled(true);
+        setItemDragging(true);
         this.menu = menu;
         this.action = action;
     }
 
     public SelectArenaMenu(SubmitAction action) {
         super(TITLE);
-        setClickCancelled(true);
+        setItemDragging(true);
         simpleMode = true;
         this.action = action;
     }
 
     @Override
-    public boolean update() {
+    public MineralInventory build(Profile profile) {
         Iterator<Arena> arenas = simpleMode ? viewer.getMatchData().getGametype().getEnabledArenas().iterator()
-                : arenaManager.getArenas().iterator();
+                : ArenaManager.list().iterator();
 
         while (arenas.hasNext()) {
             Arena a = arenas.next();
@@ -83,7 +83,11 @@ public class SelectArenaMenu extends PracticeMenu {
                     }
 
                     PartyMatch m = new PartyMatch(p, viewer.getMatchData());
-                    m.start();
+                    try {
+                        m.start();
+                    } catch (SQLException e) {
+                        e.printStackTrace();
+                    }
                 };
             } else if (action == SubmitAction.TOURNAMENT && simpleMode) {
                 arenaRunnable = () -> {

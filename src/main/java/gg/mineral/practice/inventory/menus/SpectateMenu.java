@@ -3,28 +3,26 @@ package gg.mineral.practice.inventory.menus;
 import org.bukkit.Material;
 import org.bukkit.inventory.ItemStack;
 
-import gg.mineral.core.tasks.CommandTask;
-import gg.mineral.core.utils.item.ItemBuilder;
-import gg.mineral.core.utils.message.CC;
-import gg.mineral.practice.PracticePlugin;
-import gg.mineral.practice.inventory.PracticeMenu;
+import gg.mineral.practice.util.items.ItemBuilder;
+import gg.mineral.practice.util.messages.CC;
+import gg.mineral.api.inventory.InventoryBuilder;
 import gg.mineral.practice.managers.MatchManager;
 import gg.mineral.practice.match.Match;
 import gg.mineral.practice.queue.QueueEntry;
 
-public class SpectateMenu extends PracticeMenu {
-    MatchManager matchManager = PracticePlugin.INSTANCE.getMatchManager();
+public class SpectateMenu implements InventoryBuilder {
+
     final static String TITLE = CC.BLUE + "Spectate";
 
     public SpectateMenu() {
         super(TITLE);
-        setClickCancelled(true);
+        setItemDragging(true);
     }
 
     @Override
-    public boolean update() {
+    public MineralInventory build(Profile profile) {
         clear();
-        for (Match m : matchManager.getMatchs()) {
+        for (Match m : MatchManager.list()) {
             QueueEntry queueEntry = m.getData().getQueueEntry();
             ItemStack item = queueEntry == null ? new ItemStack(Material.WOOD_AXE)
                     : m.getData().getQueueEntry().getGametype().getDisplayItem();

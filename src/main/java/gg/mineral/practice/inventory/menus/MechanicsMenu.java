@@ -1,31 +1,33 @@
 package gg.mineral.practice.inventory.menus;
 
+import java.sql.SQLException;
+
 import org.bukkit.Material;
 import org.bukkit.inventory.ItemStack;
 
-import gg.mineral.core.utils.item.ItemBuilder;
-import gg.mineral.core.utils.message.CC;
-import gg.mineral.practice.inventory.PracticeMenu;
+import gg.mineral.practice.util.items.ItemBuilder;
+import gg.mineral.practice.util.messages.CC;
+import gg.mineral.api.inventory.InventoryBuilder;
 import gg.mineral.practice.inventory.SubmitAction;
 import gg.mineral.practice.match.MatchData;
 import gg.mineral.practice.match.PartyMatch;
 import gg.mineral.practice.party.Party;
-import gg.mineral.practice.tasks.MenuTask;
-import gg.mineral.practice.tournaments.Tournament;
-import gg.mineral.practice.util.messages.ErrorMessages;
 
-public class MechanicsMenu extends PracticeMenu {
+import gg.mineral.practice.tournaments.Tournament;
+import gg.mineral.practice.util.messages.impl.ErrorMessages;
+
+public class MechanicsMenu implements InventoryBuilder {
 	SubmitAction action;
 	final static String TITLE = CC.BLUE + "Game Mechanics";
 
 	public MechanicsMenu(SubmitAction action) {
 		super(TITLE);
-		setClickCancelled(true);
+		setItemDragging(true);
 		this.action = action;
 	}
 
 	@Override
-	public boolean update() {
+	public MineralInventory build(Profile profile) {
 		MatchData match = viewer.getMatchData();
 		ItemStack kit = new ItemBuilder(Material.DIAMOND_CHESTPLATE)
 				.lore(CC.ACCENT + match.getKitName())
@@ -67,47 +69,47 @@ public class MechanicsMenu extends PracticeMenu {
 				.name("Submit").build();
 		ItemStack resetMeta = new ItemBuilder(Material.PAPER)
 				.name("Reset Settings").build();
-		setSlot(10, kit, new MenuTask(new SelectKitMenu(this)));
-		setSlot(11, kb, new MenuTask(new SelectKnockbackMenu(this)));
-		setSlot(12, hitDelay, new MenuTask(new HitDelayMenu(this)));
+		set(10, kit, new MenuTask(new SelectKitMenu(this)));
+		set(11, kb, new MenuTask(new SelectKnockbackMenu(this)));
+		set(12, hitDelay, new MenuTask(new HitDelayMenu(this)));
 		MechanicsMenu menu = this;
 		Runnable hungerTask = () -> {
 			match.setHunger(!match.getHunger());
 			viewer.openMenu(menu);
 		};
-		setSlot(13, hunger, hungerTask);
+		set(13, hunger, hungerTask);
 		Runnable buildTask = () -> {
 			match.setBuild(!match.getBuild());
 			viewer.openMenu(menu);
 		};
-		setSlot(14, build, buildTask);
+		set(14, build, buildTask);
 		Runnable damageTask = () -> {
 			match.setDamage(!match.getDamage());
 			viewer.openMenu(menu);
 		};
-		setSlot(15, damage, damageTask);
+		set(15, damage, damageTask);
 		Runnable griefingTask = () -> {
 			match.setGriefing(!match.getGriefing());
 			viewer.openMenu(menu);
 		};
-		setSlot(16, griefing, griefingTask);
-		setSlot(19, pearlcd, new MenuTask(new PearlCooldownMenu(this)));
-		setSlot(20, arena, new MenuTask(new SelectArenaMenu(this, action)));
+		set(16, griefing, griefingTask);
+		set(19, pearlcd, new MenuTask(new PearlCooldownMenu(this)));
+		set(20, arena, new MenuTask(new SelectArenaMenu(this, action)));
 		Runnable deadlyWaterTask = () -> {
 			match.setDeadlyWater(!match.getDeadlyWater());
 			viewer.openMenu(menu);
 		};
-		setSlot(21, deadlyWater, deadlyWaterTask);
+		set(21, deadlyWater, deadlyWaterTask);
 		Runnable regenTask = () -> {
 			match.setRegeneration(!match.getRegeneration());
 			viewer.openMenu(menu);
 		};
-		setSlot(22, regen, regenTask);
+		set(22, regen, regenTask);
 		Runnable boxingTask = () -> {
 			match.setBoxing(!match.getBoxing());
 			viewer.openMenu(menu);
 		};
-		setSlot(23, boxing, boxingTask);
+		set(23, boxing, boxingTask);
 		Runnable submitTask = () -> {
 			viewer.sendDuelRequest(viewer.getDuelReciever());
 		};
@@ -128,7 +130,11 @@ public class MechanicsMenu extends PracticeMenu {
 				}
 
 				PartyMatch m = new PartyMatch(p, viewer.getMatchData());
-				m.start();
+				try {
+					m.start();
+				} catch (SQLException e) {
+					e.printStackTrace();
+				}
 			};
 		} else if (action == SubmitAction.TOURNAMENT) {
 			submitTask = () -> {
@@ -138,12 +144,12 @@ public class MechanicsMenu extends PracticeMenu {
 			};
 		}
 
-		setSlot(31, sendDuel, submitTask);
+		set(31, sendDuel, submitTask);
 		Runnable resetTask = () -> {
 			viewer.resetMatchData();
 			viewer.openMenu(menu);
 		};
-		setSlot(27, resetMeta, resetTask);
+		set(27, resetMeta, resetTask);
 		return true;
 	}
 

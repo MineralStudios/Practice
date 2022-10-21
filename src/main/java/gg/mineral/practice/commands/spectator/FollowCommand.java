@@ -1,16 +1,14 @@
 package gg.mineral.practice.commands.spectator;
 
-import gg.mineral.core.commands.PlayerCommand;
-import gg.mineral.practice.PracticePlugin;
+import gg.mineral.practice.commands.PlayerCommand;
 import gg.mineral.practice.entity.PlayerStatus;
 import gg.mineral.practice.entity.Profile;
 import gg.mineral.practice.managers.PlayerManager;
-import gg.mineral.practice.util.messages.ChatMessages;
-import gg.mineral.practice.util.messages.ErrorMessages;
-import gg.mineral.practice.util.messages.UsageMessages;
+import gg.mineral.practice.util.messages.impl.ChatMessages;
+import gg.mineral.practice.util.messages.impl.ErrorMessages;
+import gg.mineral.practice.util.messages.impl.UsageMessages;
 
 public class FollowCommand extends PlayerCommand {
-	final PlayerManager playerManager = PracticePlugin.INSTANCE.getPlayerManager();
 
 	public FollowCommand() {
 		super("follow");
@@ -18,31 +16,30 @@ public class FollowCommand extends PlayerCommand {
 
 	@Override
 	public void execute(org.bukkit.entity.Player pl, String[] args) {
-		Profile player = playerManager.getProfile(pl);
+		Profile profile = PlayerManager.get(p -> p.getUUID().equals(pl.getUniqueId()));
 		if (args.length < 1) {
-			player.message(UsageMessages.FOLLOW);
+			profile.message(UsageMessages.FOLLOW);
 			return;
 		}
 
-		if (player.getName().equalsIgnoreCase(args[0])) {
-			player.message(ErrorMessages.NOT_FOLLOW_SELF);
+		if (profile.getName().equalsIgnoreCase(args[0])) {
+			profile.message(ErrorMessages.NOT_FOLLOW_SELF);
 			return;
 		}
 
 		String playerName = args[0];
-		Profile playerarg = playerManager.getProfile(playerName);
+		Profile playerarg = PlayerManager.get(p -> p.getName().equalsIgnoreCase(playerName));
 
 		if (playerarg == null) {
-			player.message(ErrorMessages.PLAYER_NOT_ONLINE);
+			profile.message(ErrorMessages.PLAYER_NOT_ONLINE);
 			return;
 		}
 
-		player.follow(playerarg);
+		profile.follow(playerarg);
 		ChatMessages.FOLLOWING.clone().replace("%player%", playerName).send(pl);
-		;
 
 		if (playerarg.getPlayerStatus() == PlayerStatus.FIGHTING) {
-			player.spectate(playerarg);
+			profile.spectate(playerarg);
 		}
 	}
 }

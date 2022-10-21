@@ -1,5 +1,7 @@
 package gg.mineral.practice.listeners;
 
+import java.sql.SQLException;
+
 import org.bukkit.GameMode;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
@@ -8,23 +10,17 @@ import org.bukkit.event.player.PlayerJoinEvent;
 import org.bukkit.event.player.PlayerLoginEvent;
 import org.bukkit.event.player.PlayerQuitEvent;
 
-import gg.mineral.core.utils.message.ChatMessage;
-import gg.mineral.practice.PracticePlugin;
 import gg.mineral.practice.entity.Profile;
-import gg.mineral.practice.managers.PartyManager;
 import gg.mineral.practice.managers.PlayerManager;
 import gg.mineral.practice.party.Party;
 import gg.mineral.practice.scoreboard.Scoreboard;
-import gg.mineral.practice.util.messages.ChatMessages;
 
 public class EntryListener implements Listener {
-	final PlayerManager playerManager = PracticePlugin.INSTANCE.getPlayerManager();
-	final PartyManager partyManager = PracticePlugin.INSTANCE.getPartyManager();
 
 	@EventHandler
 	public void onPlayerJoin(PlayerJoinEvent event) {
 		event.setJoinMessage(null);
-		Profile player = playerManager.getProfile(event.getPlayer());
+		Profile player = PlayerManager.getOrCreate(event.getPlayer());
 		player.bukkit().setGameMode(GameMode.SURVIVAL);
 		player.heal();
 		player.setInventoryForLobby();
@@ -34,37 +30,20 @@ public class EntryListener implements Listener {
 	}
 
 	@EventHandler
-	public void onPlayerQuit(PlayerQuitEvent e) {
+	public void onPlayerQuit(PlayerQuitEvent e) throws SQLException {
 		e.setQuitMessage(null);
 
-		Profile victim = playerManager.getProfile(e.getPlayer());
+		Profile victim = PlayerManager.get(p -> p.getUUID().equals(e.getPlayer().getUniqueId()));
 
 		victim.removeScoreboard();
 
 		if (victim.isInParty()) {
 			Party p = victim.getParty();
 
-			if (p == null) {
-				return;
-			}
-
-			ChatMessage leftMessage = ChatMessages.LEFT_PARTY.clone().replace("%player%", victim.getName());
-
 			if (p.getPartyLeader().equals(victim)) {
-				while (!p.getPartyMembers().isEmpty()) {
-					Profile plr = p.getPartyMembers().removeFirst();
-					plr.removeFromParty();
-					plr.message(leftMessage);
-				}
-
-				partyManager.remove(p);
+				p.disband();
 			} else {
-
-				victim.removeFromParty();
-
-				for (Profile plr : p.getPartyMembers()) {
-					plr.message(leftMessage);
-				}
+				p.leave(victim);
 			}
 		}
 
@@ -81,16 +60,16 @@ public class EntryListener implements Listener {
 			default:
 		}
 
-		playerManager.remove(victim);
+		PlayerManager.remove(victim);
 	}
 
 	@EventHandler
 	public void onPlayerInitialSpawn(PlayerInitialSpawnEvent e) {
-		e.setSpawnLocation(playerManager.getSpawnLocation());
+		e.setSpawnLocation(PlayerManager.getSpawnLocation());
 	}
 
 	@EventHandler
 	public void onPlayerLogin(PlayerLoginEvent e) {
-		playerManager.getProfile(e.getPlayer());
+		PlayerManager.getOrCreate(e.getPlayer());
 	}
 }

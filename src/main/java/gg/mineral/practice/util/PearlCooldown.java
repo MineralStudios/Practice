@@ -15,13 +15,8 @@ public class PearlCooldown {
 
 	public void start() {
 		Bukkit.getServer().getScheduler().scheduleSyncRepeatingTask(PracticePlugin.INSTANCE, () -> {
-			if (time > 0) {
-				time--;
-				profile.bukkit().setLevel(time);
-
-				if (time <= 0) {
-					profile.bukkit().setLevel(0);
-				}
+			if (isActive()) {
+				profile.bukkit().setLevel(--time);
 			}
 		}, 0L, 20L);
 	}

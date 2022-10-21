@@ -1,5 +1,7 @@
 package gg.mineral.practice.listeners;
 
+import java.sql.SQLException;
+
 import org.bukkit.Bukkit;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
@@ -13,13 +15,12 @@ import net.minecraft.server.v1_8_R3.PacketPlayInClientCommand;
 import net.minecraft.server.v1_8_R3.PacketPlayInClientCommand.EnumClientCommand;
 
 public class DeathListener implements Listener {
-    final PlayerManager playerManager = PracticePlugin.INSTANCE.getPlayerManager();
 
     @EventHandler
-    public void onPlayerDeath(PlayerDeathEvent e) {
+    public void onPlayerDeath(PlayerDeathEvent e) throws SQLException {
         e.setDropItems(false);
         e.setDeathMessage(null);
-        Profile victim = playerManager.getProfile(e.getEntity());
+        Profile victim = PlayerManager.get(p -> p.getUUID().equals(e.getEntity().getUniqueId()));
 
         if (victim.getPlayerStatus() != PlayerStatus.FIGHTING) {
             Bukkit.getServer().getScheduler().runTaskLater(PracticePlugin.INSTANCE, () -> {

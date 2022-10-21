@@ -11,26 +11,27 @@ import org.bukkit.event.block.BlockIgniteEvent.IgniteCause;
 import org.bukkit.event.block.BlockPlaceEvent;
 import org.bukkit.event.player.PlayerBucketEmptyEvent;
 
-import gg.mineral.practice.PracticePlugin;
+import gg.mineral.practice.entity.PlayerStatus;
 import gg.mineral.practice.entity.Profile;
 import gg.mineral.practice.managers.PlayerManager;
 import gg.mineral.practice.match.Match;
-import gg.mineral.practice.util.messages.ErrorMessages;
+import gg.mineral.practice.util.messages.impl.ErrorMessages;
 
 public class BuildListener implements Listener {
-	final PlayerManager playerManager = PracticePlugin.INSTANCE.getPlayerManager();;
 
 	@EventHandler
 	public void onBlockBreak(BlockBreakEvent e) {
 
-		Profile player = playerManager.getProfileFromMatch(e.getPlayer());
+		Profile profile = PlayerManager
+				.get(p -> p.getUUID().equals(e.getPlayer().getUniqueId())
+						&& p.getPlayerStatus() == PlayerStatus.FIGHTING);
 
-		if (player == null) {
+		if (profile == null) {
 			e.setCancelled(!(e.getPlayer().isOp() && e.getPlayer().getGameMode().equals(GameMode.CREATIVE)));
 			return;
 		}
 
-		Match match = player.getMatch();
+		Match match = profile.getMatch();
 
 		if (match.getBuildLog().contains(e.getBlock().getLocation())) {
 			e.setCancelled(!match.getData().getBuild());
@@ -53,21 +54,23 @@ public class BuildListener implements Listener {
 
 	@EventHandler
 	public void onBlockPlace(BlockPlaceEvent e) {
-		Profile player = playerManager.getProfileFromMatch(e.getPlayer());
+		Profile profile = PlayerManager
+				.get(p -> p.getUUID().equals(e.getPlayer().getUniqueId())
+						&& p.getPlayerStatus() == PlayerStatus.FIGHTING);
 		boolean canPlace = e.getPlayer().isOp() && e.getPlayer().getGameMode().equals(GameMode.CREATIVE);
 
-		if (player == null) {
+		if (profile == null) {
 			e.setCancelled(!canPlace);
 			return;
 		}
 
-		Match match = player.getMatch();
+		Match match = profile.getMatch();
 		e.setCancelled(!match.getData().getBuild());
 
 		if (e.getBlockPlaced().getType() == Material.TNT) {
 
 			if (match.getPlacedTnt() > 128) {
-				player.message(ErrorMessages.MAX_TNT);
+				profile.message(ErrorMessages.MAX_TNT);
 				e.setCancelled(true);
 				return;
 			}
@@ -80,15 +83,17 @@ public class BuildListener implements Listener {
 
 	@EventHandler
 	public void onPlayerBucketEmpty(PlayerBucketEmptyEvent e) {
-		Profile player = playerManager.getProfileFromMatch(e.getPlayer());
+		Profile profile = PlayerManager
+				.get(p -> p.getUUID().equals(e.getPlayer().getUniqueId())
+						&& p.getPlayerStatus() == PlayerStatus.FIGHTING);
 		boolean canPlace = e.getPlayer().isOp() && e.getPlayer().getGameMode().equals(GameMode.CREATIVE);
 
-		if (player == null) {
+		if (profile == null) {
 			e.setCancelled(!canPlace);
 			return;
 		}
 
-		e.setCancelled(!player.getMatch().getData().getBuild());
+		e.setCancelled(!profile.getMatch().getData().getBuild());
 	}
 
 	@EventHandler

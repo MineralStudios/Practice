@@ -1,65 +1,59 @@
 package gg.mineral.practice.managers;
 
+import java.util.List;
+
 import org.bukkit.configuration.ConfigurationSection;
 
-import gg.mineral.api.collection.GlueList;
-import gg.mineral.api.config.FileConfiguration;
+import gg.mineral.practice.util.GlueList;
+import gg.mineral.practice.util.FileConfiguration;
 import gg.mineral.practice.queue.Queuetype;
-import gg.mineral.practice.util.SaveableData;
 
-public class QueuetypeManager implements SaveableData {
-	final FileConfiguration config = new FileConfiguration("queues.yml", "plugins/Practice");
-	final GlueList<Queuetype> list = new GlueList<>();
+public class QueuetypeManager {
+	final static FileConfiguration config = new FileConfiguration("queues.yml", "plugins/Practice");
+	final static GlueList<Queuetype> list = new GlueList<>();
 
-	public void registerQueuetype(Queuetype queuetype) {
+	static {
+		load();
+	}
+
+	public static void register(Queuetype queuetype) {
 		list.add(queuetype);
 	}
 
-	public void remove(Queuetype queuetype) {
+	public static void remove(Queuetype queuetype) {
 		list.remove(queuetype);
 	}
 
-	public boolean contains(Queuetype queuetype) {
-		for (int i = 0; i < list.size(); i++) {
-			Queuetype q = list.get(i);
-			if (q.equals(queuetype)) {
-				return true;
-			}
-		}
-		return false;
-	}
-
-	public FileConfiguration getConfig() {
+	public static FileConfiguration getConfig() {
 		return config;
 	}
 
-	public GlueList<Queuetype> getQueuetypes() {
+	public static List<Queuetype> list() {
 		return list;
 	}
 
-	public Queuetype getQueuetypeByName(String string) {
-		for (int i = 0; i < list.size(); i++) {
-			Queuetype q = list.get(i);
-			if (q.getName().equalsIgnoreCase(string)) {
-				return q;
+	public static Queuetype getByName(String string) {
+		for (Queuetype queuetype : list()) {
+			if (!queuetype.getName().equalsIgnoreCase(string)) {
+				continue;
 			}
+
+			return queuetype;
 		}
 
 		return null;
 	}
 
-	@Override
-	public void save() {
+	public static void save() {
 
-		for (Queuetype queuetype : getQueuetypes()) {
+		for (Queuetype queuetype : list()) {
 			queuetype.save();
 		}
 
 		config.save();
 	}
 
-	@Override
-	public void load() {
+	public static void load() {
 		ConfigurationSection configSection = getConfig().getConfigurationSection("Queue.");
 
 		if (configSection == null) {
@@ -77,14 +71,13 @@ public class QueuetypeManager implements SaveableData {
 
 			queuetype.load();
 
-			registerQueuetype(queuetype);
+			register(queuetype);
 		}
 	}
 
-	@Override
-	public void setDefaults() {
+	public static void setDefaults() {
 		Queuetype queuetype = new Queuetype("Default");
 		queuetype.setDefaults();
-		registerQueuetype(queuetype);
+		register(queuetype);
 	}
 }

@@ -3,13 +3,12 @@ package gg.mineral.practice.inventory.menus;
 import org.bukkit.Material;
 import org.bukkit.inventory.ItemStack;
 
-import gg.mineral.core.tasks.CommandTask;
-import gg.mineral.core.utils.item.ItemBuilder;
-import gg.mineral.core.utils.message.CC;
+import gg.mineral.practice.util.items.ItemBuilder;
+import gg.mineral.practice.util.messages.CC;
 import gg.mineral.practice.entity.Profile;
-import gg.mineral.practice.inventory.PracticeMenu;
+import gg.mineral.api.inventory.InventoryBuilder;
 
-public class InventoryStatsMenu extends PracticeMenu {
+public class InventoryStatsMenu implements InventoryBuilder {
     String opponent;
 
     public InventoryStatsMenu(InventoryStatsMenu m) {
@@ -24,14 +23,14 @@ public class InventoryStatsMenu extends PracticeMenu {
     public InventoryStatsMenu(Profile p, String opponent) {
         super(CC.BLUE + p.getName());
         this.opponent = opponent;
-        setClickCancelled(true);
+        setItemDragging(true);
     }
 
     @Override
-    public boolean update() {
+    public MineralInventory build(Profile profile) {
         ItemStack lever = new ItemBuilder(Material.LEVER)
                 .name("View Opponent Inventory").build();
-        setSlot(53, lever, new CommandTask("viewinventory " + opponent));
+        set(53, lever, new CommandTask("viewinventory " + opponent));
         return true;
     }
 }

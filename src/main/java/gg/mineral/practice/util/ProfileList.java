@@ -2,20 +2,14 @@ package gg.mineral.practice.util;
 
 import java.util.Collection;
 
-import gg.mineral.api.collection.GlueList;
 import gg.mineral.practice.entity.Profile;
 
 public class ProfileList extends GlueList<Profile> {
 
-    /**
-     *
-     */
-    String name;
     private static final long serialVersionUID = 1L;
 
     public ProfileList(String name) {
         super();
-        this.name = name;
     }
 
     public ProfileList() {
@@ -24,32 +18,28 @@ public class ProfileList extends GlueList<Profile> {
 
     public ProfileList(int initialCapacity, String name) {
         super(initialCapacity);
-        this.name = name;
     }
 
     public ProfileList(Collection<? extends Profile> c, String name) {
         super(c);
-        this.name = name;
     }
 
     public ProfileList(Collection<? extends Profile> c) {
         super(c);
     }
 
-    public String getName() {
-        return name;
-    }
+    public boolean contains(Profile profile) {
 
-    public boolean contains(Profile p) {
-
-        if (p == null) {
+        if (profile == null) {
             return false;
         }
 
-        for (Profile pl : this) {
-            if (p.equals(pl)) {
-                return true;
+        for (Profile profile2 : this) {
+            if (!profile.equals(profile2)) {
+                continue;
             }
+
+            return true;
         }
 
         return false;

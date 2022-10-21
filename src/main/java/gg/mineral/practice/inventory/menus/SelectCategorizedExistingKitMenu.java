@@ -2,12 +2,12 @@ package gg.mineral.practice.inventory.menus;
 
 import org.bukkit.inventory.ItemStack;
 
-import gg.mineral.core.utils.item.ItemBuilder;
-import gg.mineral.core.utils.message.CC;
+import gg.mineral.practice.util.items.ItemBuilder;
+import gg.mineral.practice.util.messages.CC;
 import gg.mineral.practice.entity.PlayerStatus;
 import gg.mineral.practice.gametype.Catagory;
 import gg.mineral.practice.gametype.Gametype;
-import gg.mineral.practice.inventory.PracticeMenu;
+import gg.mineral.api.inventory.InventoryBuilder;
 
 public class SelectCategorizedExistingKitMenu extends SelectExistingKitMenu {
 	Catagory c;
@@ -19,8 +19,8 @@ public class SelectCategorizedExistingKitMenu extends SelectExistingKitMenu {
 	}
 
 	@Override
-	public boolean update() {
-		for (Gametype g : c.getGametypes()) {
+	public MineralInventory build(Profile profile) {
+		for (Gametype g : c.getGametypeMap()) {
 			ItemStack item = new ItemBuilder(g.getDisplayItem())
 					.name(g.getDisplayName()).build();
 			Runnable selectGametypeTask = () -> {

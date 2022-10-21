@@ -1,29 +1,29 @@
 package gg.mineral.practice.queue;
 
+import java.util.Collection;
 import java.util.Iterator;
 
 import org.bukkit.Material;
 import org.bukkit.inventory.ItemStack;
 
-import gg.mineral.practice.PracticePlugin;
 import gg.mineral.practice.arena.Arena;
 import gg.mineral.practice.gametype.Catagory;
 import gg.mineral.practice.gametype.Gametype;
+import gg.mineral.practice.gametype.QueuetypeElement;
 import gg.mineral.practice.managers.ArenaManager;
+import gg.mineral.practice.managers.QueuetypeManager;
+import gg.mineral.practice.util.FileConfiguration;
 import gg.mineral.practice.util.SaveableData;
+import gg.mineral.server.combat.KnockbackProfile;
+import gg.mineral.server.combat.KnockbackProfileList;
 import it.unimi.dsi.fastutil.objects.Object2BooleanMap.Entry;
 import it.unimi.dsi.fastutil.objects.Object2BooleanOpenHashMap;
 import it.unimi.dsi.fastutil.objects.Object2IntOpenHashMap;
-import gg.mineral.api.config.FileConfiguration;
-import gg.mineral.server.combat.KnockbackProfile;
-import gg.mineral.server.combat.KnockbackProfileList;
 
 public class Queuetype implements SaveableData {
-	final FileConfiguration config = PracticePlugin.INSTANCE.getQueuetypeManager().getConfig();
-	final ArenaManager arenaManager = PracticePlugin.INSTANCE.getArenaManager();
+
 	ItemStack displayItem;
-	String name;
-	String displayName;
+	String name, displayName;
 	Integer slotNumber;
 	Boolean ranked;
 	final String path;
@@ -146,7 +146,7 @@ public class Queuetype implements SaveableData {
 		return q.getName().equalsIgnoreCase(getName());
 	}
 
-	public Object2IntOpenHashMap<Gametype> getGametypes() {
+	public Object2IntOpenHashMap<Gametype> getGametypeMap() {
 		return gametypes;
 	}
 
@@ -170,6 +170,7 @@ public class Queuetype implements SaveableData {
 
 	@Override
 	public void save() {
+		FileConfiguration config = QueuetypeManager.getConfig();
 		config.set("Queuetype." + getName() + ".DisplayName", displayName);
 		config.set("Queue." + getName() + ".Elo", ranked);
 		config.set("Queue." + getName() + ".Slot", slotNumber);
@@ -188,6 +189,7 @@ public class Queuetype implements SaveableData {
 
 	@Override
 	public void load() {
+		FileConfiguration config = QueuetypeManager.getConfig();
 		this.displayItem = config.getItemstack(path + "DisplayItem",
 				new ItemStack(Material.DIAMOND_SWORD));
 		this.displayName = config.getString(path + "DisplayName", getName());
@@ -199,8 +201,8 @@ public class Queuetype implements SaveableData {
 			this.knockback = KnockbackProfileList.getKnockbackProfileByName(kbprofile);
 		}
 
-		for (int i = 0; i < arenaManager.getArenas().size(); i++) {
-			Arena a = arenaManager.getArenas().get(i);
+		for (int i = 0; i < ArenaManager.list().size(); i++) {
+			Arena a = ArenaManager.list().get(i);
 
 			if (config.getBoolean(path + "Arenas." + a.getName(), false)) {
 				arenas.put(a, true);

@@ -7,13 +7,11 @@ import gg.mineral.practice.PracticePlugin;
 import gg.mineral.practice.entity.Profile;
 import gg.mineral.practice.managers.PlayerManager;
 import gg.mineral.practice.match.Match;
-import gg.mineral.practice.util.messages.ChatMessages;
+import gg.mineral.practice.util.messages.impl.ChatMessages;
 
 public class Countdown {
-	int time;
-	int taskID;
+	int time, taskID;
 	Match match;
-	final PlayerManager playerManager = PracticePlugin.INSTANCE.getPlayerManager();
 
 	public Countdown(int seconds, Match match) {
 		this.time = seconds;
@@ -36,7 +34,7 @@ public class Countdown {
 				return;
 			}
 
-			playerManager.broadcast(match.getParticipants(),
+			PlayerManager.broadcast(match.getParticipants(),
 					ChatMessages.BEGINS_IN.clone().replace("%time%", "" + time));
 
 			time--;

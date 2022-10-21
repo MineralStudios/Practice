@@ -1,61 +1,57 @@
 package gg.mineral.practice.managers;
 
+import java.util.List;
+
 import org.bukkit.configuration.ConfigurationSection;
 
-import gg.mineral.practice.PracticePlugin;
+import gg.mineral.practice.util.GlueList;
+import gg.mineral.practice.util.FileConfiguration;
 import gg.mineral.practice.gametype.Catagory;
 import gg.mineral.practice.queue.Queuetype;
-import gg.mineral.practice.util.SaveableData;
-import gg.mineral.api.collection.GlueList;
-import gg.mineral.api.config.FileConfiguration;
 
-public class CatagoryManager implements SaveableData {
-	final FileConfiguration config = new FileConfiguration("catagory.yml", "plugins/Practice");
-	final QueuetypeManager queuetypeManager = PracticePlugin.INSTANCE.getQueuetypeManager();
-	GlueList<Catagory> list = new GlueList<>();
+public class CatagoryManager {
+	final static FileConfiguration config = new FileConfiguration("catagory.yml", "plugins/Practice");
+	final static GlueList<Catagory> list = new GlueList<>();
 
-	public void registerCatagory(Catagory catagory) {
+	static {
+		load();
+	}
+
+	public static void register(Catagory catagory) {
 		list.add(catagory);
 	}
 
-	public void remove(Catagory catagory) {
+	public static void remove(Catagory catagory) {
 		list.remove(catagory);
 
-		for (Queuetype queuetype : queuetypeManager.getQueuetypes()) {
-			queuetype.getCatagories().remove(catagory);
+		for (Queuetype queuetype : QueuetypeManager.list()) {
+			queuetype.getCatagories().removeInt(catagory);
 		}
 	}
 
-	public boolean contains(Catagory catagory) {
-		for (Catagory g : list) {
-			if (g.equals(catagory)) {
-				return true;
-			}
-		}
-		return false;
-	}
-
-	public FileConfiguration getConfig() {
+	public static FileConfiguration getConfig() {
 		return config;
 	}
 
-	public GlueList<Catagory> getCatagorys() {
+	public static List<Catagory> list() {
 		return list;
 	}
 
-	public Catagory getCatagoryByName(String string) {
-		for (Catagory g : list) {
-			if (g.getName().equalsIgnoreCase(string)) {
-				return g;
+	public static Catagory getByName(String string) {
+		for (Catagory catagory : list) {
+			if (!catagory.getName().equalsIgnoreCase(string)) {
+				continue;
 			}
+
+			return catagory;
 		}
+
 		return null;
 	}
 
-	@Override
-	public void save() {
+	public static void save() {
 
-		for (Catagory catagory : getCatagorys()) {
+		for (Catagory catagory : list()) {
 			catagory.save();
 		}
 
@@ -63,8 +59,7 @@ public class CatagoryManager implements SaveableData {
 
 	}
 
-	@Override
-	public void load() {
+	public static void load() {
 		ConfigurationSection configSection = getConfig().getConfigurationSection("Catagory.");
 
 		if (configSection == null) {
@@ -82,14 +77,13 @@ public class CatagoryManager implements SaveableData {
 
 			catagory.load();
 
-			registerCatagory(catagory);
+			register(catagory);
 		}
 	}
 
-	@Override
-	public void setDefaults() {
+	public static void setDefaults() {
 		Catagory catagory = new Catagory("Defualt");
 		catagory.setDefaults();
-		registerCatagory(catagory);
+		register(catagory);
 	}
 }

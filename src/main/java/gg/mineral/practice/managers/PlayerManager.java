@@ -1,156 +1,117 @@
 package gg.mineral.practice.managers;
 
+import java.sql.SQLException;
 import java.util.Collection;
-import java.util.UUID;
+import java.util.List;
+import java.util.function.Predicate;
 
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
+import org.bukkit.entity.Player;
 import org.bukkit.util.Vector;
 
-import gg.mineral.core.utils.message.Message;
-import gg.mineral.practice.PracticePlugin;
+import gg.mineral.practice.util.GlueList;
+import gg.mineral.practice.util.FileConfiguration;
+import gg.mineral.practice.util.messages.Message;
 import gg.mineral.practice.entity.Profile;
 import gg.mineral.practice.gametype.Gametype;
 import gg.mineral.practice.inventory.menus.InventoryStatsMenu;
 import gg.mineral.practice.util.ProfileList;
-import gg.mineral.practice.util.SaveableData;
 import it.unimi.dsi.fastutil.objects.Object2ObjectOpenHashMap;
-import gg.mineral.api.config.FileConfiguration;
 
-public class PlayerManager implements SaveableData {
-	final FileConfiguration lobbyConfig = new FileConfiguration("lobby.yml", "plugins/Practice");
-	final FileConfiguration playerConfig = new FileConfiguration("PlayerData.yml", "plugins/Practice/PlayerData");
-	Location spawnLocation;
-	ProfileList profileList = new ProfileList();
-	ProfileList profilesInMatch = new ProfileList();
-	Object2ObjectOpenHashMap<String, InventoryStatsMenu> inventoryStats = new Object2ObjectOpenHashMap<>();
-	Object2ObjectOpenHashMap<String, InventoryStatsMenu> partyInventoryStats = new Object2ObjectOpenHashMap<>();
-	final EloManager eloManager = PracticePlugin.INSTANCE.getEloManager();
+public class PlayerManager {
+	final static FileConfiguration lobbyConfig = new FileConfiguration("lobby.yml", "plugins/Practice"),
+			playerConfig = new FileConfiguration("PlayerData.yml", "plugins/Practice/PlayerData");
+	static Location spawnLocation;
+	static ProfileList profileList = new ProfileList();
+	static Object2ObjectOpenHashMap<String, InventoryStatsMenu> inventoryStats = new Object2ObjectOpenHashMap<>(),
+			partyInventoryStats = new Object2ObjectOpenHashMap<>();
 
-	public void add(Profile player) {
+	static {
+		load();
+	}
+
+	public static void register(Profile player) {
 		profileList.add(player);
 	}
 
-	public void remove(Profile player) {
+	public static void remove(Profile player) {
 		profileList.remove(player);
-		profilesInMatch.remove(player);
 	}
 
-	public ProfileList getProfiles() {
+	public static ProfileList list() {
 		return profileList;
 	}
 
-	public int getOfflinePlayerElo(Gametype g, String name) {
-		return eloManager.getEloEntry(name, g.getName());
+	public static int getOfflinePlayerElo(String name, Gametype gametype) throws SQLException {
+		return EloManager.getByName(name, gametype);
 	}
 
-	public Profile getProfile(String string) {
-		for (int i = 0; i < profileList.size(); i++) {
-			Profile p = profileList.get(i);
-			if (p.getName().equalsIgnoreCase(string)) {
-				return p;
+	public static InventoryStatsMenu getInventoryStats(String name) {
+		return inventoryStats.get(name);
+	}
+
+	public static Profile get(Predicate<Profile> predicate) {
+		for (Profile profile : list()) {
+			if (!predicate.test(profile)) {
+				continue;
 			}
+
+			return profile;
 		}
 
 		return null;
 	}
 
-	public InventoryStatsMenu getInventoryStats(String s) {
-		return inventoryStats.get(s);
-	}
+	public static List<Profile> getList(Predicate<Profile> predicate) {
+		GlueList<Profile> profileList = new GlueList<>();
 
-	public Profile getProfile(UUID u) {
-		for (int i = 0; i < profileList.size(); i++) {
-			Profile p = profileList.get(i);
-			if (p.getUUID().equals(u)) {
-				return p;
+		for (Profile profile : list()) {
+			if (!predicate.test(profile)) {
+				continue;
 			}
+
+			profileList.add(profile);
 		}
-		return null;
+
+		return profileList;
 	}
 
-	public Profile getProfile(org.bukkit.entity.Player pl) {
-		if (pl == null) {
-			return null;
-		}
-
-		Profile val = getProfile(pl.getUniqueId());
+	public static Profile getOrCreate(Player bukkitPlayer) {
+		Profile val = get(profile -> profile.getUUID().equals(bukkitPlayer.getUniqueId()));
 
 		if (val == null) {
-			val = new Profile(pl);
-			add(val);
+			register(val = new Profile(bukkitPlayer));
 		}
 
 		return val;
 	}
 
-	public Profile getProfileFromMatch(UUID u) {
-		for (int i = 0; i < profilesInMatch.size(); i++) {
-			Profile p = profilesInMatch.get(i);
-			if (p.getUUID().equals(u)) {
-				return p;
-			}
-		}
-
-		return null;
+	public static void setSpawnLocation(Location spawnLocation) {
+		PlayerManager.spawnLocation = spawnLocation;
 	}
 
-	public Profile getProfileFromMatch(String s) {
-		for (int i = 0; i < profilesInMatch.size(); i++) {
-			Profile p = profilesInMatch.get(i);
-			if (p.getName().equalsIgnoreCase(s)) {
-				return p;
-			}
-		}
-		return null;
-	}
-
-	public Profile getProfileFromMatch(org.bukkit.entity.Player pl) {
-		return getProfileFromMatch(pl.getUniqueId());
-	}
-
-	public boolean contains(Profile pl) {
-		return profileList.contains(pl);
-	}
-
-	public void setSpawnLocation(Location loc) {
-		spawnLocation = loc;
-	}
-
-	public FileConfiguration getConfig() {
+	public static FileConfiguration getConfig() {
 		return playerConfig;
 	}
 
-	public Location getSpawnLocation() {
+	public static Location getSpawnLocation() {
 		return spawnLocation;
 	}
 
-	public void setInMatch(Profile p) {
-		profilesInMatch.add(p);
-	}
-
-	public void removeFromMatch(Profile p) {
-		profilesInMatch.remove(p);
-	}
-
-	public ProfileList getProfilesInMatch() {
-		return profilesInMatch;
-	}
-
-	public void setInventoryStats(Profile p, InventoryStatsMenu menu) {
+	public static void setInventoryStats(Profile p, InventoryStatsMenu menu) {
 		inventoryStats.put(p.getName(), menu);
 	}
 
-	public void setPartyInventoryStats(Profile p, InventoryStatsMenu menu) {
+	public static void setPartyInventoryStats(Profile p, InventoryStatsMenu menu) {
 		partyInventoryStats.put(p.getName(), menu);
 	}
 
-	public void broadcast(Collection<Profile> c, Message message) {
-		c.parallelStream().forEach(p -> p.message(message));
+	public static void broadcast(Collection<Profile> profiles, Message message) {
+		profiles.forEach(profile -> profile.message(message));
 	}
 
-	@Override
-	public void save() {
+	public static void save() {
 		lobbyConfig.set("Lobby.World", spawnLocation.getWorld().getName());
 		lobbyConfig.set("Lobby.x", spawnLocation.getBlockX());
 		lobbyConfig.set("Lobby.y", spawnLocation.getBlockY());
@@ -159,8 +120,7 @@ public class PlayerManager implements SaveableData {
 		lobbyConfig.save();
 	}
 
-	@Override
-	public void load() {
+	public static void load() {
 		Vector spawnDirection = lobbyConfig.getVector("Lobby.Direction", new Vector());
 		spawnLocation = new Location(
 				Bukkit.getWorld(lobbyConfig.getString("Lobby.World", Bukkit.getWorlds().get(0).getName())),
@@ -168,8 +128,7 @@ public class PlayerManager implements SaveableData {
 		spawnLocation.setDirection(spawnDirection);
 	}
 
-	@Override
-	public void setDefaults() {
+	public static void setDefaults() {
 		spawnLocation = new Location(Bukkit.getWorlds().get(0),
 				0, 70, 0);
 	}
