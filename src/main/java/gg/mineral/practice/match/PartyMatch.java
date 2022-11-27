@@ -18,12 +18,12 @@ import gg.mineral.practice.party.Party;
 import gg.mineral.practice.scoreboard.Scoreboard;
 import gg.mineral.practice.util.Countdown;
 import gg.mineral.practice.util.ProfileList;
-import gg.mineral.practice.util.WorldUtil;
 import gg.mineral.practice.util.messages.ErrorMessages;
 import net.minecraft.server.v1_8_R3.EntityHuman;
 import net.minecraft.server.v1_8_R3.EntityItem;
 import net.minecraft.server.v1_8_R3.PacketPlayInClientCommand;
 import net.minecraft.server.v1_8_R3.PacketPlayInClientCommand.EnumClientCommand;
+import net.minecraft.server.v1_8_R3.World;
 
 public class PartyMatch extends Match {
 	public ProfileList team1RemainingPlayers;
@@ -64,7 +64,9 @@ public class PartyMatch extends Match {
 		location1.setDirection(m.getArena().getLocation1EyeVector());
 		location2.setDirection(m.getArena().getLocation2EyeVector());
 
-		setWorldParameters(((CraftWorld) location1.getWorld()).getHandle());
+		World world = ((CraftWorld) location1.getWorld()).getHandle();
+		world.getWorldData().f(false);
+		world.getWorldData().setStorm(false);
 
 		org.bukkit.scoreboard.Scoreboard team1sb = getDisplayNameBoard(team1RemainingPlayers, team2RemainingPlayers);
 		org.bukkit.scoreboard.Scoreboard team2sb = getDisplayNameBoard(team2RemainingPlayers, team1RemainingPlayers);
@@ -144,12 +146,14 @@ public class PartyMatch extends Match {
 				a.setPearlCooldown(0);
 				new Scoreboard(a).setBoard();
 				a.removeFromMatch();
-				Bukkit.getServer().getScheduler().runTaskLater(PracticePlugin.INSTANCE, () -> {
-					a.teleportToLobby();
-					if (a.isInParty()) {
-						a.setInventoryForParty();
-					} else {
-						a.setInventoryForLobby();
+				Bukkit.getServer().getScheduler().runTaskLater(PracticePlugin.INSTANCE, new Runnable() {
+					public void run() {
+						a.teleportToLobby();
+						if (a.isInParty()) {
+							a.setInventoryForParty();
+						} else {
+							a.setInventoryForLobby();
+						}
 					}
 				}, 40);
 
@@ -159,19 +163,21 @@ public class PartyMatch extends Match {
 			victim.bukkit().sendMessage(CC.RED + "You lost");
 			new Scoreboard(victim).setBoard();
 
-			Bukkit.getServer().getScheduler().runTaskLater(PracticePlugin.INSTANCE, () -> {
-				if (victim.bukkit().isDead()) {
-					victim.bukkit().getHandle().playerConnection
-							.a(new PacketPlayInClientCommand(EnumClientCommand.PERFORM_RESPAWN));
-				}
+			Bukkit.getServer().getScheduler().runTaskLater(PracticePlugin.INSTANCE, new Runnable() {
+				public void run() {
+					if (victim.bukkit().isDead()) {
+						victim.bukkit().getHandle().playerConnection
+								.a(new PacketPlayInClientCommand(EnumClientCommand.PERFORM_RESPAWN));
+					}
 
-				victim.removePotionEffects();
-				victim.teleportToLobby();
+					victim.removePotionEffects();
+					victim.teleportToLobby();
 
-				if (victim.isInParty()) {
-					victim.setInventoryForParty();
-				} else {
-					victim.setInventoryForLobby();
+					if (victim.isInParty()) {
+						victim.setInventoryForParty();
+					} else {
+						victim.setInventoryForLobby();
+					}
 				}
 			}, 1);
 
@@ -181,11 +187,6 @@ public class PartyMatch extends Match {
 					Profile p = it.next();
 					p.stopSpectating();
 				}
-			}
-
-			if (world != null) {
-				WorldUtil.deleteWorld(world);
-				return;
 			}
 
 			for (Item item : m.getArena().getLocation1().getWorld().getEntitiesByClass(Item.class)) {
@@ -204,15 +205,19 @@ public class PartyMatch extends Match {
 		remaining.remove(victim);
 		participants.remove(victim);
 
-		Bukkit.getServer().getScheduler().runTaskLater(PracticePlugin.INSTANCE, () -> {
-			if (victim.bukkit().isDead()) {
-				victim.bukkit().getHandle().playerConnection
-						.a(new PacketPlayInClientCommand(EnumClientCommand.PERFORM_RESPAWN));
+		Bukkit.getServer().getScheduler().runTaskLater(PracticePlugin.INSTANCE, new Runnable() {
+
+			public void run() {
+				if (victim.bukkit().isDead()) {
+					victim.bukkit().getHandle().playerConnection
+							.a(new PacketPlayInClientCommand(EnumClientCommand.PERFORM_RESPAWN));
+				}
+
+				victim.removePotionEffects();
+				victim.spectate(remaining.get(0));
+				new Scoreboard(victim).setBoard();
 			}
 
-			victim.removePotionEffects();
-			victim.spectate(participants.get(0));
-			new Scoreboard(victim).setBoard();
 		}, 1);
 	}
 

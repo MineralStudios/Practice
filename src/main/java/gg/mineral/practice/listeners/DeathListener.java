@@ -22,16 +22,18 @@ public class DeathListener implements Listener {
         Profile victim = playerManager.getProfile(e.getEntity());
 
         if (victim.getPlayerStatus() != PlayerStatus.FIGHTING) {
-            Bukkit.getServer().getScheduler().runTaskLater(PracticePlugin.INSTANCE, () -> {
-                victim.bukkit().getHandle().playerConnection
-                        .a(new PacketPlayInClientCommand(EnumClientCommand.PERFORM_RESPAWN));
-                victim.heal();
-                victim.removePotionEffects();
-                victim.teleportToLobby();
-                if (victim.isInParty()) {
-                    victim.setInventoryForParty();
-                } else {
-                    victim.setInventoryForLobby();
+            Bukkit.getServer().getScheduler().runTaskLater(PracticePlugin.INSTANCE, new Runnable() {
+                public void run() {
+                    victim.bukkit().getHandle().playerConnection
+                            .a(new PacketPlayInClientCommand(EnumClientCommand.PERFORM_RESPAWN));
+                    victim.heal();
+                    victim.removePotionEffects();
+                    victim.teleportToLobby();
+                    if (victim.isInParty()) {
+                        victim.setInventoryForParty();
+                    } else {
+                        victim.setInventoryForLobby();
+                    }
                 }
             }, 1);
             return;

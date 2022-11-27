@@ -1,10 +1,6 @@
 package gg.mineral.practice.arena;
 
-import java.util.Arrays;
-import java.util.List;
-
 import org.bukkit.Bukkit;
-import org.bukkit.ChatColor;
 import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.World;
@@ -12,21 +8,14 @@ import org.bukkit.WorldCreator;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.util.Vector;
 
-import gg.mineral.api.collection.GlueList;
 import gg.mineral.api.config.FileConfiguration;
 import gg.mineral.practice.PracticePlugin;
 import gg.mineral.practice.util.SaveableData;
 import gg.mineral.practice.util.VoidWorldGenerator;
 import gg.mineral.practice.util.WorldUtil;
-import it.unimi.dsi.fastutil.objects.Object2ObjectOpenHashMap;
 
 public class Arena implements SaveableData {
 	final FileConfiguration config = PracticePlugin.INSTANCE.getArenaManager().getConfig();
-	public static final List<ChatColor> INCLUDED_COLORS = new GlueList<>(
-			Arrays.asList(ChatColor.RED, ChatColor.BLUE, ChatColor.GREEN, ChatColor.YELLOW, ChatColor.AQUA,
-					ChatColor.WHITE, ChatColor.LIGHT_PURPLE, ChatColor.GRAY));
-	Object2ObjectOpenHashMap<ChatColor, Location> bedWarsSpawnLocations = new Object2ObjectOpenHashMap<>();
-	boolean bedWarsArena;
 	final String name;
 	final String path;
 	Location location1;
@@ -66,27 +55,6 @@ public class Arena implements SaveableData {
 
 	public String getDisplayName() {
 		return displayName;
-	}
-
-	public void setBedWarsArena(boolean bedWarsArena) {
-		this.bedWarsArena = bedWarsArena;
-	}
-
-	public boolean isBedWarsArena() {
-		return bedWarsArena;
-	}
-
-	public void setBedWarsLocation(String color, Location location) {
-		for (ChatColor chatColor : INCLUDED_COLORS) {
-			if (chatColor.name().contains(color)) {
-				bedWarsSpawnLocations.put(chatColor, location);
-				return;
-			}
-		}
-	}
-
-	public Location getBedWarsLocation(ChatColor chatColor) {
-		return bedWarsSpawnLocations.get(chatColor);
 	}
 
 	public String getName() {
@@ -159,6 +127,7 @@ public class Arena implements SaveableData {
 		config.set(path + "Spawn.2.x", location2.getBlockX());
 		config.set(path + "Spawn.2.y", location2.getBlockY());
 		config.set(path + "Spawn.2.z", location2.getBlockZ());
+		config.set(path + "Spawn.World", location2.getWorld().getName());
 		config.set(path + "Spawn.1.Direction", location1EyeVector);
 		config.set(path + "Spawn.2.Direction", location2EyeVector);
 		config.save();

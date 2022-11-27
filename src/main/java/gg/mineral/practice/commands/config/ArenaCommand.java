@@ -34,14 +34,12 @@ public class ArenaCommand extends PlayerCommand {
 		Arena arena;
 		String arenaName;
 		StringBuilder sb;
-		Location loc;
 
 		switch (arg.toLowerCase()) {
 			default:
 				ChatMessages.ARENA_COMMANDS.send(player);
 				ChatMessages.ARENA_CREATE.send(player);
 				ChatMessages.ARENA_SPAWN.send(player);
-				ChatMessages.BEDWARS_ARENA_SPAWN.send(player);
 				ChatMessages.ARENA_DISPLAY.send(player);
 				ChatMessages.ARENA_LIST.send(player);
 				ChatMessages.ARENA_TP.send(player);
@@ -79,7 +77,7 @@ public class ArenaCommand extends PlayerCommand {
 					return;
 				}
 
-				loc = player.getLocation();
+				Location loc = player.getLocation();
 
 				switch (args[2].toLowerCase()) {
 					case "1":
@@ -99,24 +97,6 @@ public class ArenaCommand extends PlayerCommand {
 				}
 
 				ChatMessages.ARENA_SPAWN_SET.clone().replace("%arena%", arenaName).send(player);
-				return;
-			case "bedwarsspawn":
-				if (args.length < 3) {
-					UsageMessages.BEDWARS_ARENA_SPAWN.send(player);
-					return;
-				}
-
-				arenaName = args[1];
-				arena = arenaManager.getArenaByName(arenaName);
-
-				if (arena == null) {
-					ErrorMessages.ARENA_DOES_NOT_EXIST.send(player);
-					return;
-				}
-
-				arena.setBedWarsLocation(args[2].toLowerCase(), player.getLocation());
-
-				ChatMessages.BEDWARS_ARENA_SPAWN_SET.clone().replace("%arena%", arenaName).send(player);
 				return;
 			case "setdisplay":
 				if (args.length < 2) {

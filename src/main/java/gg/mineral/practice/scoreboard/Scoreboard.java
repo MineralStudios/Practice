@@ -46,12 +46,15 @@ public class Scoreboard {
 		instance = this;
 		p.setScoreboard(this);
 		BukkitScheduler scheduler = Bukkit.getServer().getScheduler();
-		taskID = scheduler.scheduleSyncRepeatingTask(PracticePlugin.INSTANCE, () -> {
-			if (p.getBoard() != null)
-				if (p.getBoard().equals(instance))
-					updateBoard(b);
-				else
-					remove();
+		taskID = scheduler.scheduleSyncRepeatingTask(PracticePlugin.INSTANCE, new Runnable() {
+			@Override
+			public void run() {
+				if (p.getBoard() != null)
+					if (p.getBoard().equals(instance))
+						updateBoard(b);
+					else
+						remove();
+			}
 		}, 0, getUpdateFrequency());
 	}
 

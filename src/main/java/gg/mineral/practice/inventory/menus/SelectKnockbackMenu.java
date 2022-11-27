@@ -26,9 +26,12 @@ public class SelectKnockbackMenu extends PracticeMenu {
                 ItemStack item = new ItemBuilder(Material.GOLD_SWORD)
                         .name(k.getName()).build();
 
-                Runnable runnable = () -> {
-                    viewer.getMatchData().setKnockback(k);
-                    viewer.openMenu(menu);
+                Runnable runnable = new Runnable() {
+                    @Override
+                    public void run() {
+                        viewer.getMatchData().setKnockback(k);
+                        viewer.openMenu(menu);
+                    }
                 };
 
                 add(item, runnable);

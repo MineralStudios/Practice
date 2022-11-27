@@ -6,7 +6,6 @@ public class UsageMessages {
 	// Arena Command
 	public static final UsageMessage ARENA_CREATE = new UsageMessage("/arena create <Name>");
 	public static final UsageMessage ARENA_SPAWN = new UsageMessage("/arena spawn <Arena> <1/2/Waiting>");
-	public static final UsageMessage BEDWARS_ARENA_SPAWN = new UsageMessage("/bedwarsarena spawn <Arena> <Color>");
 	public static final UsageMessage ARENA_DISPLAY = new UsageMessage("/arena setdisplay <Arena> <DisplayName>");
 	public static final UsageMessage ARENA_TP = new UsageMessage("/arena tp <Arena>");
 	public static final UsageMessage ARENA_WAITING_LOC = new UsageMessage("/arena waitinglocation <Arena>");

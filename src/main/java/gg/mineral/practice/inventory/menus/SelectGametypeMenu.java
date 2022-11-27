@@ -69,15 +69,18 @@ public class SelectGametypeMenu extends PracticeMenu {
 			}
 			ItemStack item = itemBuild.build();
 
-			Runnable runnable = () -> {
-				QueueEntry qe = queueEntryManager.newEntry(q, g);
+			Runnable runnable = new Runnable() {
+				@Override
+				public void run() {
+					QueueEntry qe = queueEntryManager.newEntry(q, g);
 
-				if (kitEditor) {
-					viewer.sendPlayerToKitEditor(qe);
-					return;
+					if (kitEditor) {
+						viewer.sendPlayerToKitEditor(qe);
+						return;
+					}
+
+					viewer.addPlayerToQueue(qe);
 				}
-
-				viewer.addPlayerToQueue(qe);
 			};
 
 			setSlot(entry.getValue(), item, runnable);

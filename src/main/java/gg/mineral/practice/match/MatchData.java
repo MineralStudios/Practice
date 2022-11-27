@@ -187,10 +187,6 @@ public class MatchData {
 		return boxing;
 	}
 
-	public void setBoxing(boolean boxing) {
-		this.boxing = boxing;
-	}
-
 	public String toString() {
 		StringBuilder sb = new StringBuilder();
 		String newLine = CC.R + "\n";
@@ -206,8 +202,6 @@ public class MatchData {
 		sb.append(CC.GREEN + "Build: " + build);
 		sb.append(newLine);
 		sb.append(CC.GREEN + "Damage: " + damage);
-		sb.append(newLine);
-		sb.append(CC.GREEN + "Boxing: " + boxing);
 		sb.append(newLine);
 		sb.append(CC.GREEN + "Griefing: " + griefing);
 		sb.append(newLine);
