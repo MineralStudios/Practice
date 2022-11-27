@@ -1,34 +1,29 @@
 package gg.mineral.practice.managers;
 
-import java.util.List;
-
-import gg.mineral.practice.util.GlueList;
 import gg.mineral.practice.tournaments.Tournament;
+import gg.mineral.api.collection.GlueList;
 
 public class TournamentManager {
-	final static GlueList<Tournament> list = new GlueList<>();
+	GlueList<Tournament> list = new GlueList<>();
 
-	public static void register(Tournament tournament) {
+	public void registerTournament(Tournament tournament) {
 		list.add(tournament);
 	}
 
-	public static void remove(Tournament tournament) {
+	public void remove(Tournament tournament) {
 		list.remove(tournament);
 	}
 
-	public static List<Tournament> list() {
+	public GlueList<Tournament> getTournaments() {
 		return list;
 	}
 
-	public static Tournament getByName(String s) {
-		for (Tournament tournament : list()) {
-			if (!tournament.getHost().equalsIgnoreCase(s)) {
-				continue;
+	public Tournament getTournamentByName(String s) {
+		for (Tournament t : list) {
+			if (t.getHost().equalsIgnoreCase(s)) {
+				return t;
 			}
-
-			return tournament;
 		}
-
 		return null;
 	}
 }

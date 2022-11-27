@@ -1,10 +1,12 @@
 package gg.mineral.practice.commands.stats;
 
-import gg.mineral.practice.commands.PlayerCommand;
+import gg.mineral.core.commands.PlayerCommand;
+import gg.mineral.practice.PracticePlugin;
 import gg.mineral.practice.inventory.menus.LeaderboardMenu;
 import gg.mineral.practice.managers.PlayerManager;
 
 public class LeaderboardsCommand extends PlayerCommand {
+	final PlayerManager playerManager = PracticePlugin.INSTANCE.getPlayerManager();
 
 	public LeaderboardsCommand() {
 		super("leaderboards");
@@ -13,6 +15,6 @@ public class LeaderboardsCommand extends PlayerCommand {
 
 	@Override
 	public void execute(org.bukkit.entity.Player pl, String[] args) {
-		PlayerManager.get(profile -> profile.getUUID().equals(pl.getUniqueId())).openMenu(new LeaderboardMenu());
+		playerManager.getProfile(pl).openMenu(new LeaderboardMenu());
 	}
 }

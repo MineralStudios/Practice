@@ -1,18 +1,21 @@
 package gg.mineral.practice.gametype;
 
-import java.util.List;
-
 import org.bukkit.Material;
 import org.bukkit.inventory.ItemStack;
 
-import gg.mineral.practice.managers.CatagoryManager;
+import gg.mineral.api.collection.GlueList;
+import gg.mineral.api.config.FileConfiguration;
+import gg.mineral.practice.PracticePlugin;
+import gg.mineral.practice.managers.GametypeManager;
 import gg.mineral.practice.managers.QueuetypeManager;
 import gg.mineral.practice.queue.Queuetype;
-import gg.mineral.practice.util.FileConfiguration;
-import gg.mineral.practice.util.GlueList;
 import gg.mineral.practice.util.SaveableData;
 
-public class Catagory implements SaveableData, QueuetypeElement {
+public class Catagory implements SaveableData {
+
+	final FileConfiguration config = PracticePlugin.INSTANCE.getCatagoryManager().getConfig();
+	final QueuetypeManager queuetypeManager = PracticePlugin.INSTANCE.getQueuetypeManager();
+	final GametypeManager gametypeManager = PracticePlugin.INSTANCE.getGametypeManager();
 	ItemStack displayItem;
 	String displayName;
 	final String name;
@@ -24,12 +27,10 @@ public class Catagory implements SaveableData, QueuetypeElement {
 		this.path = "Catagory." + getName() + ".";
 	}
 
-	@Override
 	public ItemStack getDisplayItem() {
 		return displayItem;
 	}
 
-	@Override
 	public String getDisplayName() {
 		return displayName;
 	}
@@ -69,7 +70,7 @@ public class Catagory implements SaveableData, QueuetypeElement {
 	}
 
 	public void removeFromQueuetype(Queuetype queuetype) {
-		queuetype.getCatagories().removeInt(this);
+		queuetype.getCatagories().remove(this);
 		save();
 	}
 
@@ -77,15 +78,13 @@ public class Catagory implements SaveableData, QueuetypeElement {
 		return c.getName().equalsIgnoreCase(getName());
 	}
 
-	public List<Gametype> getGametypes() {
+	public GlueList<Gametype> getGametypes() {
 		return gametypes;
 	}
 
 	@Override
 	public void save() {
-		FileConfiguration config = CatagoryManager.getConfig();
-
-		for (Queuetype q : QueuetypeManager.list()) {
+		for (Queuetype q : queuetypeManager.getQueuetypes()) {
 
 			if (!q.getCatagories().containsKey(this)) {
 				config.set(path + q.getName() + ".Enabled", false);
@@ -106,13 +105,11 @@ public class Catagory implements SaveableData, QueuetypeElement {
 
 	@Override
 	public void load() {
-		FileConfiguration config = CatagoryManager.getConfig();
-
 		this.displayItem = config.getItemstack(path + "DisplayItem",
 				new ItemStack(Material.DIAMOND_SWORD));
 		this.displayName = config.getString(path + "DisplayName", getName());
 
-		for (Queuetype q : QueuetypeManager.list()) {
+		for (Queuetype q : queuetypeManager.getQueuetypes()) {
 			if (config.getBoolean("Catagory." + getName() + "." + q.getName() + ".Enabled", false)) {
 				q.getCatagories().put(this, config.getInt(path + q.getName() + ".Slot", 0));
 			}
@@ -123,10 +120,11 @@ public class Catagory implements SaveableData, QueuetypeElement {
 	public void setDefaults() {
 		this.displayItem = new ItemStack(Material.DIAMOND_SWORD);
 		this.displayName = getName();
-	}
 
-	@Override
-	public List<String> getLeaderboardLore() {
-		return null;
+		for (Queuetype q : queuetypeManager.getQueuetypes()) {
+			if (config.getBoolean("Catagory." + getName() + "." + q.getName() + ".Enabled", false)) {
+				q.getCatagories().put(this, 0);
+			}
+		}
 	}
 }

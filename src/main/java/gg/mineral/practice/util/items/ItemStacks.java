@@ -1,10 +1,10 @@
 package gg.mineral.practice.util.items;
 
-import org.bukkit.DyeColor;
 import org.bukkit.Material;
 import org.bukkit.inventory.ItemStack;
 
-import gg.mineral.practice.util.messages.CC;
+import gg.mineral.core.utils.item.ItemBuilder;
+import gg.mineral.core.utils.message.CC;
 
 public class ItemStacks {
         // Item Stacks
@@ -30,13 +30,4 @@ public class ItemStacks {
                         .name(CC.SECONDARY + CC.B + "Open Party").build();
         public static final ItemStack NO_HEALTH = new ItemBuilder(Material.SKULL_ITEM)
                         .name("Health: 0").build();
-        public static final ItemStack TOGGLE_PLAYER_VISIBILITY = new ItemBuilder(Material.GOLDEN_CARROT)
-                        .name("Toggle Player Visibility").build();
-        public static final ItemStack TOGGLE_DUEL_REQUESTS = new ItemBuilder(Material.WOOD_SWORD)
-                        .name("Toggle Duel Requests").build();
-        public static final ItemStack SUBTRACT_1 = new ItemBuilder(
-                        new ItemStack(Material.WOOL, 1, DyeColor.RED.getData()))
-                        .name("SUBTRACT 1").build();
-        public static final ItemStack ADD_1 = new ItemBuilder(new ItemStack(Material.WOOL, 1, DyeColor.GREEN.getData()))
-                        .name("ADD 1").build();
 }

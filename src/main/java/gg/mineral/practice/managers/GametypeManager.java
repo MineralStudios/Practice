@@ -1,62 +1,68 @@
 package gg.mineral.practice.managers;
 
-import java.util.List;
-
 import org.bukkit.configuration.ConfigurationSection;
 
-import gg.mineral.practice.util.GlueList;
-import gg.mineral.practice.util.FileConfiguration;
+import gg.mineral.practice.PracticePlugin;
 import gg.mineral.practice.gametype.Catagory;
 import gg.mineral.practice.gametype.Gametype;
 import gg.mineral.practice.queue.Queuetype;
+import gg.mineral.practice.util.SaveableData;
+import gg.mineral.api.collection.GlueList;
+import gg.mineral.api.config.FileConfiguration;
 
-public class GametypeManager {
-	final static FileConfiguration config = new FileConfiguration("gametype.yml", "plugins/Practice");
-	final static GlueList<Gametype> list = new GlueList<>();
+public class GametypeManager implements SaveableData {
+	FileConfiguration config = new FileConfiguration("gametype.yml", "plugins/Practice");
+	final QueuetypeManager queuetypeManager = PracticePlugin.INSTANCE.getQueuetypeManager();
+	final CatagoryManager catagoryManager = PracticePlugin.INSTANCE.getCatagoryManager();
+	final PlayerManager playerManager = PracticePlugin.INSTANCE.getPlayerManager();
+	GlueList<Gametype> list = new GlueList<>();
 
-	static {
-		load();
-	}
-
-	public static void register(Gametype gametype) {
+	public void registerGametype(Gametype gametype) {
 		list.add(gametype);
 	}
 
-	public static void remove(Gametype gametype) {
+	public void remove(Gametype gametype) {
 		list.remove(gametype);
 
-		for (Catagory catagory : CatagoryManager.list()) {
-			catagory.getGametypeMap().remove(gametype);
+		for (Catagory catagory : catagoryManager.getCatagorys()) {
+			catagory.getGametypes().remove(gametype);
 		}
 
-		for (Queuetype queuetype : QueuetypeManager.list()) {
-			queuetype.getGametypeMap().removeInt(gametype);
+		for (Queuetype queuetype : queuetypeManager.getQueuetypes()) {
+			queuetype.getGametypes().remove(gametype);
 		}
 	}
 
-	public static FileConfiguration getConfig() {
+	public boolean contains(Gametype gametype) {
+		for (Gametype g : list) {
+			if (g.equals(gametype)) {
+				return true;
+			}
+		}
+		return false;
+	}
+
+	public FileConfiguration getConfig() {
 		return config;
 	}
 
-	public static List<Gametype> list() {
+	public GlueList<Gametype> getGametypes() {
 		return list;
 	}
 
-	public static Gametype getByName(String string) {
-		for (Gametype gametype : list()) {
-			if (!gametype.getName().equalsIgnoreCase(string)) {
-				continue;
+	public Gametype getGametypeByName(String string) {
+		for (Gametype g : list) {
+			if (g.getName().equalsIgnoreCase(string)) {
+				return g;
 			}
-
-			return gametype;
 		}
-
 		return null;
 	}
 
-	public static void save() {
+	@Override
+	public void save() {
 
-		for (Gametype gametype : list()) {
+		for (Gametype gametype : getGametypes()) {
 			gametype.save();
 		}
 
@@ -64,7 +70,8 @@ public class GametypeManager {
 
 	}
 
-	public static void load() {
+	@Override
+	public void load() {
 		ConfigurationSection configSection = getConfig().getConfigurationSection("Gametype.");
 
 		if (configSection == null) {
@@ -82,13 +89,14 @@ public class GametypeManager {
 
 			gametype.load();
 
-			register(gametype);
+			registerGametype(gametype);
 		}
 	}
 
-	public static void setDefaults() {
+	@Override
+	public void setDefaults() {
 		Gametype gametype = new Gametype("Default");
 		gametype.setDefaults();
-		register(gametype);
+		registerGametype(gametype);
 	}
 }

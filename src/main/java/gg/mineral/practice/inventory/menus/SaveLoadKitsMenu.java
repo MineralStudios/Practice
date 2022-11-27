@@ -2,25 +2,25 @@ package gg.mineral.practice.inventory.menus;
 
 import org.bukkit.inventory.ItemStack;
 
-import gg.mineral.practice.util.items.ItemBuilder;
-import gg.mineral.practice.util.messages.CC;
+import gg.mineral.core.utils.item.ItemBuilder;
+import gg.mineral.core.utils.message.CC;
 import gg.mineral.practice.entity.PlayerStatus;
-import gg.mineral.api.inventory.InventoryBuilder;
+import gg.mineral.practice.inventory.PracticeMenu;
 
-public class SaveLoadKitsMenu implements InventoryBuilder {
+public class SaveLoadKitsMenu extends PracticeMenu {
     final static String TITLE = CC.BLUE + "Save/Load Kits";
 
     public SaveLoadKitsMenu() {
         super(TITLE);
-        setItemDragging(true);
+        setClickCancelled(true);
     }
 
     @Override
-    public MineralInventory build(Profile profile) {
+    public boolean update() {
         ItemStack item = new ItemBuilder(new ItemStack(160, 1, (short) 13))
                 .name("Save Kit").build();
         Runnable r = viewer.getPlayerStatus() == PlayerStatus.KIT_CREATOR ? viewer::saveCreatedKit : viewer::saveKit;
-        set(4, item, r);
+        setSlot(4, item, r);
         return true;
     }
 }

@@ -1,16 +1,19 @@
 package gg.mineral.practice.commands.duel;
 
-import gg.mineral.practice.commands.PlayerCommand;
+import gg.mineral.core.commands.PlayerCommand;
+import gg.mineral.practice.PracticePlugin;
 import gg.mineral.practice.entity.PlayerStatus;
 import gg.mineral.practice.entity.Profile;
 import gg.mineral.practice.inventory.SubmitAction;
 import gg.mineral.practice.inventory.menus.OtherPartiesMenu;
 import gg.mineral.practice.inventory.menus.SelectModeMenu;
 import gg.mineral.practice.managers.PlayerManager;
-import gg.mineral.practice.util.messages.impl.ErrorMessages;
-import gg.mineral.practice.util.messages.impl.UsageMessages;
+import gg.mineral.practice.util.messages.ErrorMessages;
+import gg.mineral.practice.util.messages.UsageMessages;
 
 public class DuelCommand extends PlayerCommand {
+
+	final PlayerManager playerManager = PracticePlugin.INSTANCE.getPlayerManager();
 
 	public DuelCommand() {
 		super("duel");
@@ -18,44 +21,44 @@ public class DuelCommand extends PlayerCommand {
 
 	@Override
 	public void execute(org.bukkit.entity.Player pl, String[] args) {
-		Profile profile = PlayerManager.get(p -> p.getUUID().equals(pl.getUniqueId()));
+		Profile player = playerManager.getProfile(pl);
 
 		if (args.length == 0) {
-			if (!profile.isInParty()) {
-				profile.message(UsageMessages.DUEL);
+			if (!player.isInParty()) {
+				player.message(UsageMessages.DUEL);
 				return;
 			}
 
-			profile.openMenu(new OtherPartiesMenu());
+			player.openMenu(new OtherPartiesMenu());
 			return;
 		}
 
-		Profile playerarg = PlayerManager.get(p -> p.getName().equalsIgnoreCase(args[0]));
+		Profile playerarg = playerManager.getProfile(args[0]);
 
 		if (playerarg == null) {
-			profile.message(ErrorMessages.PLAYER_NOT_ONLINE);
+			player.message(ErrorMessages.PLAYER_NOT_ONLINE);
 			return;
 		}
 
-		if (profile.getPlayerStatus() != PlayerStatus.IN_LOBBY) {
-			profile.message(ErrorMessages.YOU_ARE_NOT_IN_LOBBY);
+		if (player.getPlayerStatus() != PlayerStatus.IN_LOBBY) {
+			player.message(ErrorMessages.YOU_ARE_NOT_IN_LOBBY);
 			return;
 		}
 
-		if (profile.equals(playerarg)) {
-			profile.message(ErrorMessages.YOU_CAN_NOT_DUEL_YOURSELF);
+		if (player.equals(playerarg)) {
+			player.message(ErrorMessages.YOU_CAN_NOT_DUEL_YOURSELF);
 			return;
 		}
 
-		if (profile.isInParty()) {
+		if (player.isInParty()) {
 			if (!(playerarg.isInParty() && playerarg.getParty().getPartyLeader().equals(playerarg)
-					&& profile.getParty().getPartyLeader().equals(profile))) {
-				profile.message(ErrorMessages.PLAYER_NOT_IN_PARTY_OR_PARTY_LEADER);
+					&& player.getParty().getPartyLeader().equals(player))) {
+				player.message(ErrorMessages.PLAYER_NOT_IN_PARTY_OR_PARTY_LEADER);
 				return;
 			}
 		}
 
-		profile.setDuelReciever(playerarg);
-		profile.openMenu(new SelectModeMenu(SubmitAction.DUEL));
+		player.setDuelReciever(playerarg);
+		player.openMenu(new SelectModeMenu(SubmitAction.DUEL));
 	}
 }

@@ -1,9 +1,10 @@
 package gg.mineral.practice.commands.duel;
 
-import java.sql.SQLException;
 import java.util.Iterator;
+import java.util.Map.Entry;
 
-import gg.mineral.practice.commands.PlayerCommand;
+import gg.mineral.core.commands.PlayerCommand;
+import gg.mineral.practice.PracticePlugin;
 import gg.mineral.practice.entity.PlayerStatus;
 import gg.mineral.practice.entity.Profile;
 import gg.mineral.practice.managers.PlayerManager;
@@ -11,10 +12,12 @@ import gg.mineral.practice.match.DuelRequest;
 import gg.mineral.practice.match.Match;
 import gg.mineral.practice.match.MatchData;
 import gg.mineral.practice.match.PartyMatch;
-import gg.mineral.practice.util.messages.impl.ErrorMessages;
-import gg.mineral.practice.util.messages.impl.UsageMessages;
+import gg.mineral.practice.util.messages.ErrorMessages;
+import gg.mineral.practice.util.messages.UsageMessages;
 
 public class AcceptCommand extends PlayerCommand {
+
+	final PlayerManager playerManager = PracticePlugin.INSTANCE.getPlayerManager();
 
 	public AcceptCommand() {
 		super("accept");
@@ -22,50 +25,45 @@ public class AcceptCommand extends PlayerCommand {
 
 	@Override
 	public void execute(org.bukkit.entity.Player pl, String[] args) {
-		Profile profile = PlayerManager.get(p -> p.getUUID().equals(pl.getUniqueId()));
+		Profile player = playerManager.getProfile(pl);
 
-		if (profile.getPlayerStatus() != PlayerStatus.IN_LOBBY) {
-			profile.message(ErrorMessages.YOU_ARE_NOT_IN_LOBBY);
+		if (player.getPlayerStatus() != PlayerStatus.IN_LOBBY) {
+			player.message(ErrorMessages.YOU_ARE_NOT_IN_LOBBY);
 			return;
 		}
 
 		if (args.length == 0) {
-			profile.message(UsageMessages.ACCEPT);
+			player.message(UsageMessages.ACCEPT);
 			return;
 		}
 
-		Profile profile1 = PlayerManager.get(p -> p.getName().equalsIgnoreCase(args[0]));
+		Profile player1 = playerManager.getProfile(args[0]);
 
-		if (profile1 == null) {
-			profile.message(ErrorMessages.DUEL_SENDER_NOT_ONLINE);
+		if (player1 == null) {
+			player.message(ErrorMessages.DUEL_SENDER_NOT_ONLINE);
 			return;
 		}
 
-		if (profile1.getPlayerStatus() != PlayerStatus.IN_LOBBY) {
-			profile.message(ErrorMessages.DUEL_SENDER_NOT_IN_LOBBY);
+		if (player1.getPlayerStatus() != PlayerStatus.IN_LOBBY) {
+			player.message(ErrorMessages.DUEL_SENDER_NOT_IN_LOBBY);
 			return;
 		}
 
-		Iterator<it.unimi.dsi.fastutil.objects.Object2LongMap.Entry<DuelRequest>> it = profile.getRecievedDuelRequests()
-				.entryIterator();
+		Iterator<Entry<DuelRequest, Long>> it = player.getRecievedDuelRequests().entryIterator();
 
 		while (it.hasNext()) {
 			DuelRequest duelRequest = it.next().getKey();
 
-			if (!duelRequest.getSender().equals(profile1)) {
+			if (!duelRequest.getSender().equals(player1)) {
 				continue;
 			}
 
 			it.remove();
 			MatchData m = duelRequest.getMatchData();
-			Match match = profile1.isInParty() && profile.isInParty()
-					? new PartyMatch(profile1.getParty(), profile.getParty(), m)
-					: new Match(profile1, profile, m);
-			try {
-				match.start();
-			} catch (SQLException e) {
-				e.printStackTrace();
-			}
+			Match match = player1.isInParty() && player.isInParty()
+					? new PartyMatch(player1.getParty(), player.getParty(), m)
+					: new Match(player1, player, m);
+			match.start();
 			return;
 		}
 	}

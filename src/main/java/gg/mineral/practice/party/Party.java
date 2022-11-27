@@ -1,21 +1,22 @@
 package gg.mineral.practice.party;
 
-import gg.mineral.practice.util.messages.ChatMessage;
+import gg.mineral.practice.PracticePlugin;
 import gg.mineral.practice.entity.Profile;
 import gg.mineral.practice.managers.PartyManager;
 import gg.mineral.practice.managers.PlayerManager;
 import gg.mineral.practice.util.ProfileList;
-import gg.mineral.practice.util.messages.impl.ChatMessages;
 
 public class Party {
 
 	Profile partyLeader;
 	Boolean partyOpen = false;
 	ProfileList partyMembers = new ProfileList();
+	final PartyManager partyManager = PracticePlugin.INSTANCE.getPartyManager();
+	final PlayerManager playerManager = PracticePlugin.INSTANCE.getPlayerManager();
 
 	public Party(Profile partyLeader) {
 		this.partyLeader = partyLeader;
-		PartyManager.register(this);
+		partyManager.registerParty(this);
 	}
 
 	public ProfileList getPartyMembers() {
@@ -49,23 +50,4 @@ public class Party {
 	public boolean contains(Profile p) {
 		return partyMembers.contains(p);
 	}
-
-	public void leave(Profile profile) {
-		ChatMessage leftMessage = ChatMessages.LEFT_PARTY.clone().replace("%player%", getPartyLeader().getName());
-		profile.removeFromParty();
-		PlayerManager.broadcast(partyMembers, leftMessage);
-	}
-
-	public void disband() {
-		ChatMessage leftMessage = ChatMessages.LEFT_PARTY.clone().replace("%player%", getPartyLeader().getName());
-
-		while (!getPartyMembers().isEmpty()) {
-			Profile plr = getPartyMembers().removeFirst();
-			plr.removeFromParty();
-			plr.message(leftMessage);
-		}
-
-		PartyManager.remove(this);
-	}
-
 }

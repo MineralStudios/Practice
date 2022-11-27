@@ -6,11 +6,10 @@ import org.bukkit.Material;
 import org.bukkit.craftbukkit.v1_8_R3.entity.CraftItem;
 import org.bukkit.entity.Item;
 
-import gg.mineral.practice.util.messages.CC;
+import gg.mineral.core.utils.message.CC;
 import gg.mineral.practice.PracticePlugin;
 import gg.mineral.practice.entity.PlayerStatus;
 import gg.mineral.practice.entity.Profile;
-import gg.mineral.practice.managers.MatchManager;
 import gg.mineral.practice.scoreboard.Scoreboard;
 import gg.mineral.practice.tournaments.Tournament;
 import net.md_5.bungee.api.chat.ClickEvent;
@@ -75,7 +74,7 @@ public class TournamentMatch extends Match {
         new Scoreboard(player1).setBoard();
         new Scoreboard(player2).setBoard();
         victim.removeFromMatch();
-        MatchManager.remove(this);
+        matchManager.remove(this);
 
         Bukkit.getServer().getScheduler().runTaskLater(PracticePlugin.INSTANCE, () -> {
             if (victim.bukkit().isDead()) {

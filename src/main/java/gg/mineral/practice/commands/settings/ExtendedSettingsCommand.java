@@ -1,6 +1,6 @@
 package gg.mineral.practice.commands.settings;
 
-import gg.mineral.practice.commands.PlayerCommand;
+import gg.mineral.core.commands.PlayerCommand;
 import gg.mineral.core.managers.ProfileManager;
 import gg.mineral.practice.inventory.menus.ExtendedSettingsMenu;
 

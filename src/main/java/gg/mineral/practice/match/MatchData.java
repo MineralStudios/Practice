@@ -1,13 +1,13 @@
 package gg.mineral.practice.match;
 
+import gg.mineral.core.utils.message.CC;
+import gg.mineral.practice.PracticePlugin;
 import gg.mineral.practice.arena.Arena;
-import gg.mineral.practice.entity.Profile;
 import gg.mineral.practice.gametype.Gametype;
 import gg.mineral.practice.kit.Kit;
 import gg.mineral.practice.managers.ArenaManager;
 import gg.mineral.practice.managers.GametypeManager;
 import gg.mineral.practice.queue.QueueEntry;
-import gg.mineral.practice.util.messages.CC;
 import gg.mineral.server.combat.KnockbackProfile;
 import gg.mineral.server.combat.KnockbackProfileList;
 
@@ -16,23 +16,32 @@ public class MatchData {
 	Kit kit;
 	KnockbackProfile kb;
 	Gametype gametype;
-	int noDamageTicks = 20, pearlCooldown = 15;
-	boolean hunger = true, boxing = false, build = false, damage = true, griefing = false, deadlyWater = false,
-			regeneration = true, ranked = false;
+	int noDamageTicks = 20;
+	boolean hunger = true;
+	boolean boxing = false;
+	boolean build = false;
+	boolean damage = true;
+	boolean griefing = false;
 	QueueEntry queueEntry;
+	boolean deadlyWater = false;
+	boolean regeneration = true;
+	boolean ranked = false;
 	String kitName = "Custom";
+	Integer pearlCooldown = 15;
+	final GametypeManager gametypeManager = PracticePlugin.INSTANCE.getGametypeManager();
+	final ArenaManager arenaManager = PracticePlugin.INSTANCE.getArenaManager();
 
 	public MatchData() {
 
-		if (!GametypeManager.list().isEmpty()) {
-			this.gametype = GametypeManager.list().get(0);
+		if (!gametypeManager.getGametypes().isEmpty()) {
+			this.gametype = gametypeManager.getGametypes().get(0);
 			this.kitName = gametype.getDisplayName();
 			this.kit = gametype.getKit();
 
 		}
 
-		if (!ArenaManager.list().isEmpty()) {
-			this.arena = ArenaManager.list().get(0);
+		if (!arenaManager.getArenas().isEmpty()) {
+			this.arena = arenaManager.getArenas().get(0);
 		}
 
 		this.kb = KnockbackProfileList.getDefaultKnockbackProfile();

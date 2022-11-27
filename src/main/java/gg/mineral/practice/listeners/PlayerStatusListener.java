@@ -5,6 +5,7 @@ import java.util.List;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 
+import gg.mineral.practice.PracticePlugin;
 import gg.mineral.practice.entity.PlayerStatus;
 import gg.mineral.practice.entity.Profile;
 import gg.mineral.practice.event.PlayerStatusChangeEvent;
@@ -12,6 +13,8 @@ import gg.mineral.practice.managers.MatchManager;
 import gg.mineral.practice.match.Match;
 
 public class PlayerStatusListener implements Listener {
+
+    final MatchManager matchManager = PracticePlugin.INSTANCE.getMatchManager();
 
     @EventHandler
     public void onPlayerStatusChange(PlayerStatusChangeEvent e) {
@@ -27,7 +30,7 @@ public class PlayerStatusListener implements Listener {
 
                 if (!p.getPlayersVisible()) {
                     for (i = 0; i < list.size(); i++) {
-                        b.hidePlayer(list.get(i));
+                        b.hidePlayer(list.get(i), false);
                     }
 
                     return;
@@ -54,7 +57,7 @@ public class PlayerStatusListener implements Listener {
                     p.bukkit().showPlayer(list2.get(i).bukkit());
                 }
 
-                for (Match match : MatchManager.list()) {
+                for (Match match : matchManager.getMatchs()) {
                     match.updateVisiblity(p.getSpectatingMatch(), p);
                 }
 

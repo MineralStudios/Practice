@@ -1,20 +1,26 @@
 package gg.mineral.practice.commands.party;
 
 import java.util.Iterator;
+import java.util.Map.Entry;
 
-import gg.mineral.practice.commands.PlayerCommand;
-import gg.mineral.practice.util.messages.CC;
-import gg.mineral.practice.util.messages.ChatMessage;
+import gg.mineral.core.commands.PlayerCommand;
+import gg.mineral.core.utils.message.CC;
+import gg.mineral.core.utils.message.ChatMessage;
+import gg.mineral.practice.PracticePlugin;
 import gg.mineral.practice.entity.PlayerStatus;
 import gg.mineral.practice.entity.Profile;
+import gg.mineral.practice.managers.PartyManager;
 import gg.mineral.practice.managers.PlayerManager;
 import gg.mineral.practice.party.Party;
-import gg.mineral.practice.util.messages.impl.ChatMessages;
-import gg.mineral.practice.util.messages.impl.ErrorMessages;
-import gg.mineral.practice.util.messages.impl.UsageMessages;
+import gg.mineral.practice.util.messages.ChatMessages;
+import gg.mineral.practice.util.messages.ErrorMessages;
+import gg.mineral.practice.util.messages.UsageMessages;
 import net.md_5.bungee.api.chat.ClickEvent;
 
 public class PartyCommand extends PlayerCommand {
+
+	final PlayerManager playerManager = PracticePlugin.INSTANCE.getPlayerManager();
+	final PartyManager partyManager = PracticePlugin.INSTANCE.getPartyManager();
 
 	public PartyCommand() {
 		super("party");
@@ -25,9 +31,9 @@ public class PartyCommand extends PlayerCommand {
 	public void execute(org.bukkit.entity.Player pl, String[] args) {
 
 		String arg = args.length > 0 ? args[0] : "";
-		Profile profile = PlayerManager.get(p -> p.getUUID().equals(pl.getUniqueId()));
+		Profile player = playerManager.getProfile(pl);
 		Party party;
-		Profile profilearg;
+		Profile playerarg;
 		StringBuilder sb;
 		ChatMessage joinedMessage;
 
@@ -46,78 +52,78 @@ public class PartyCommand extends PlayerCommand {
 
 				return;
 			case "create":
-				if (profile.getPlayerStatus() != PlayerStatus.IN_LOBBY) {
-					profile.message(ErrorMessages.YOU_ARE_NOT_IN_LOBBY);
+				if (player.getPlayerStatus() != PlayerStatus.IN_LOBBY) {
+					player.message(ErrorMessages.YOU_ARE_NOT_IN_LOBBY);
 					return;
 				}
 
-				if (profile.isInParty()) {
-					profile.message(ErrorMessages.YOU_ARE_ALREADY_IN_PARTY);
+				if (player.isInParty()) {
+					player.message(ErrorMessages.YOU_ARE_ALREADY_IN_PARTY);
 					return;
 				}
 
-				profile.addToParty(new Party(profile));
+				player.addToParty(new Party(player));
 				ChatMessages.PARTY_CREATED.send(pl);
 				return;
 			case "invite":
 
 				if (args.length < 3) {
-					profile.message(UsageMessages.PARTY_INVITE);
+					player.message(UsageMessages.PARTY_INVITE);
 					return;
 				}
 
-				profilearg = PlayerManager.get(p -> p.getName().equalsIgnoreCase(args[1]));
+				playerarg = playerManager.getProfile(args[1]);
 
-				if (profilearg == null) {
-					profile.message(ErrorMessages.PLAYER_NOT_ONLINE);
+				if (playerarg == null) {
+					player.message(ErrorMessages.PLAYER_NOT_ONLINE);
 					return;
 				}
 
-				if (!profile.isInParty()) {
-					profile.message(ErrorMessages.YOU_ARE_NOT_IN_PARTY);
+				if (!player.isInParty()) {
+					player.message(ErrorMessages.YOU_ARE_NOT_IN_PARTY);
 					return;
 				}
 
-				if (profilearg.isInParty()) {
-					profile.message(ErrorMessages.PLAYER_IN_PARTY);
+				if (playerarg.isInParty()) {
+					player.message(ErrorMessages.PLAYER_IN_PARTY);
 					return;
 				}
 
-				if (!profile.getParty().getPartyLeader().equals(profile)) {
-					profile.message(ErrorMessages.YOU_ARE_NOT_PARTY_LEADER);
+				if (!player.getParty().getPartyLeader().equals(player)) {
+					player.message(ErrorMessages.YOU_ARE_NOT_PARTY_LEADER);
 					return;
 				}
 
-				if (profile.equals(profilearg)) {
-					profile.message(ErrorMessages.YOU_CAN_NOT_INVITE_YOURSELF);
+				if (player.equals(playerarg)) {
+					player.message(ErrorMessages.YOU_CAN_NOT_INVITE_YOURSELF);
 					return;
 				}
 
-				if (profilearg.getRecievedPartyRequests().containsKey(profile.getParty())) {
+				if (playerarg.getRecievedPartyRequests().containsKey(player.getParty())) {
 					ErrorMessages.WAIT_TO_INVITE.send(pl);
 					return;
 				}
 
-				profilearg.getRecievedPartyRequests().add(profile.getParty());
+				playerarg.getRecievedPartyRequests().add(player.getParty());
 
-				ChatMessages.PARTY_REQUEST_RECIEVED.clone().replace("%player%", profile.getName()).setTextEvent(
-						new ClickEvent(ClickEvent.Action.RUN_COMMAND, "/party accept " + profile.getName()),
+				ChatMessages.PARTY_REQUEST_RECIEVED.clone().replace("%player%", player.getName()).setTextEvent(
+						new ClickEvent(ClickEvent.Action.RUN_COMMAND, "/party accept " + player.getName()),
 						ChatMessages.CLICK_TO_ACCEPT)
-						.send(profilearg.bukkit());
+						.send(playerarg.bukkit());
 
-				ChatMessages.PARTY_REQUEST_SENT.clone().replace("%player%", profilearg.getName()).send(pl);
+				ChatMessages.PARTY_REQUEST_SENT.clone().replace("%player%", playerarg.getName()).send(pl);
 
 				return;
 			case "open":
-				if (!profile.isInParty()) {
-					profile.message(ErrorMessages.YOU_ARE_NOT_IN_PARTY);
+				if (!player.isInParty()) {
+					player.message(ErrorMessages.YOU_ARE_NOT_IN_PARTY);
 					return;
 				}
 
-				party = profile.getParty();
+				party = player.getParty();
 
-				if (!party.getPartyLeader().equals(profile)) {
-					profile.message(ErrorMessages.YOU_ARE_NOT_PARTY_LEADER);
+				if (!party.getPartyLeader().equals(player)) {
+					player.message(ErrorMessages.YOU_ARE_NOT_PARTY_LEADER);
 					return;
 				}
 
@@ -126,17 +132,17 @@ public class PartyCommand extends PlayerCommand {
 						.send(pl);
 
 				if (party.getPartyOpen()) {
-					if (!profile.getPartyOpenCooldown()) {
+					if (!player.getPartyOpenCooldown()) {
 
-						profile.startPartyOpenCooldown();
+						player.startPartyOpenCooldown();
 
 						ChatMessage messageToBroadcast = ChatMessages.BROADCAST_PARTY_OPEN.clone()
-								.replace("%player%", profile.getName()).setTextEvent(
+								.replace("%player%", player.getName()).setTextEvent(
 										new ClickEvent(ClickEvent.Action.RUN_COMMAND,
-												"/party join " + profile.getName()),
+												"/party join " + player.getName()),
 										ChatMessages.CLICK_TO_JOIN);
 
-						PlayerManager.broadcast(PlayerManager.list(), messageToBroadcast);
+						playerManager.broadcast(playerManager.getProfiles(), messageToBroadcast);
 
 						return;
 					}
@@ -148,92 +154,91 @@ public class PartyCommand extends PlayerCommand {
 			case "join":
 
 				if (args.length < 2) {
-					profile.message(UsageMessages.PARTY_JOIN);
+					player.message(UsageMessages.PARTY_JOIN);
 					return;
 				}
 
-				if (profile.isInParty()) {
-					profile.message(ErrorMessages.YOU_ARE_ALREADY_IN_PARTY);
+				if (player.isInParty()) {
+					player.message(ErrorMessages.YOU_ARE_ALREADY_IN_PARTY);
 					return;
 				}
 
-				profilearg = PlayerManager.get(p -> p.getName().equalsIgnoreCase(args[1]));
+				playerarg = playerManager.getProfile(args[1]);
 
-				if (profilearg == null) {
-					profile.message(ErrorMessages.PLAYER_NOT_ONLINE);
+				if (playerarg == null) {
+					player.message(ErrorMessages.PLAYER_NOT_ONLINE);
 					return;
 				}
 
-				if (profile.getPlayerStatus() != PlayerStatus.IN_LOBBY) {
-					profile.message(ErrorMessages.YOU_ARE_NOT_IN_LOBBY);
+				if (player.getPlayerStatus() != PlayerStatus.IN_LOBBY) {
+					player.message(ErrorMessages.YOU_ARE_NOT_IN_LOBBY);
 					return;
 				}
 
-				party = profilearg.getParty();
+				party = playerarg.getParty();
 
 				if (party == null) {
-					profile.message(ErrorMessages.PARTY_DOES_NOT_EXIST);
+					player.message(ErrorMessages.PARTY_DOES_NOT_EXIST);
 					return;
 				}
 
 				if (!party.getPartyOpen()) {
-					profile.message(ErrorMessages.PARTY_NOT_OPEN);
+					player.message(ErrorMessages.PARTY_NOT_OPEN);
 					return;
 				}
 
-				profile.addToParty(profilearg.getParty());
-				joinedMessage = ChatMessages.JOINED_PARTY.clone().replace("%player%", profile.getName());
-				PlayerManager.broadcast(party.getPartyMembers(), joinedMessage);
+				player.addToParty(playerarg.getParty());
+				joinedMessage = ChatMessages.JOINED_PARTY.clone().replace("%player%", player.getName());
+				playerManager.broadcast(party.getPartyMembers(), joinedMessage);
 
 				return;
 			case "accept":
 
 				if (args.length < 3) {
-					profile.message(UsageMessages.PARTY_ACCEPT);
+					player.message(UsageMessages.PARTY_ACCEPT);
 					return;
 				}
 
-				if (profile.getPlayerStatus() != PlayerStatus.IN_LOBBY) {
-					profile.message(ErrorMessages.YOU_ARE_NOT_IN_LOBBY);
+				if (player.getPlayerStatus() != PlayerStatus.IN_LOBBY) {
+					player.message(ErrorMessages.YOU_ARE_NOT_IN_LOBBY);
 					return;
 				}
 
-				profilearg = PlayerManager.get(p -> p.getName().equalsIgnoreCase(args[1]));
+				playerarg = playerManager.getProfile(args[1]);
 
-				if (profilearg == null) {
-					profile.message(ErrorMessages.REQUEST_SENDER_NOT_ONLINE);
+				if (playerarg == null) {
+					player.message(ErrorMessages.REQUEST_SENDER_NOT_ONLINE);
 					return;
 				}
 
-				Iterator<it.unimi.dsi.fastutil.objects.Object2LongMap.Entry<Party>> it = profile
-						.getRecievedPartyRequests().entryIterator();
+				Iterator<Entry<Party, Long>> it = player.getRecievedPartyRequests().entryIterator();
 
 				while (it.hasNext()) {
 					party = it.next().getKey();
 
-					if (!party.getPartyLeader().equals(profilearg)) {
+					if (!party.getPartyLeader().equals(playerarg)) {
 						continue;
 					}
 
 					it.remove();
-					profile.addToParty(party);
-					joinedMessage = ChatMessages.JOINED_PARTY.clone().replace("%player%", profile.getName());
-					PlayerManager.broadcast(party.getPartyMembers(), joinedMessage);
+					player.addToParty(party);
+					joinedMessage = ChatMessages.JOINED_PARTY.clone().replace("%player%", player.getName());
+					playerManager.broadcast(party.getPartyMembers(), joinedMessage);
 					return;
 				}
 
-				profile.message(ErrorMessages.REQUEST_EXPIRED);
+				player.message(ErrorMessages.REQUEST_EXPIRED);
 
 				return;
 			case "list":
-				if (!profile.isInParty()) {
-					profile.message(ErrorMessages.YOU_ARE_NOT_IN_PARTY);
+				if (!player.isInParty()) {
+					player.message(ErrorMessages.YOU_ARE_NOT_IN_PARTY);
 					return;
 				}
 
 				sb = new StringBuilder(CC.GRAY + "[");
 
-				Iterator<Profile> profileIter = profile.getParty().getPartyMembers().iterator();
+				Iterator<Profile> profileIter = player.getParty().getPartyMembers().iterator();
 
 				while (profileIter.hasNext()) {
 					Profile p = profileIter.next();
@@ -246,23 +251,40 @@ public class PartyCommand extends PlayerCommand {
 
 				sb.append(CC.GRAY + "]");
 
-				profile.bukkit().sendMessage(sb.toString());
+				player.bukkit().sendMessage(sb.toString());
 
 				return;
 			case "leave":
 			case "disband":
 
-				if (!profile.isInParty()) {
-					profile.message(ErrorMessages.YOU_ARE_NOT_IN_PARTY);
+				if (!player.isInParty()) {
+					player.message(ErrorMessages.YOU_ARE_NOT_IN_PARTY);
 					return;
 				}
 
-				Party p = profile.getParty();
+				Party p = player.getParty();
 
-				if (p.getPartyLeader().equals(profile)) {
-					p.disband();
+				ChatMessage leftMessage = ChatMessages.LEFT_PARTY.clone().replace("%player%", player.getName());
+
+				Iterator<Profile> iter = p.getPartyMembers().iterator();
+
+				if (p.getPartyLeader().equals(player)) {
+					while (iter.hasNext()) {
+						Profile plr = iter.next();
+						iter.remove();
+						plr.removeFromParty();
+						plr.message(leftMessage);
+					}
+
+					partyManager.remove(p);
 				} else {
-					p.leave(profile);
+
+					player.removeFromParty();
+
+					while (iter.hasNext()) {
+						Profile plr = iter.next();
+						plr.message(leftMessage);
+					}
 				}
 
 				return;

@@ -12,27 +12,32 @@ import org.bukkit.WorldCreator;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.util.Vector;
 
-import gg.mineral.practice.managers.ArenaManager;
-import gg.mineral.practice.util.FileConfiguration;
-import gg.mineral.practice.util.GlueList;
+import gg.mineral.api.collection.GlueList;
+import gg.mineral.api.config.FileConfiguration;
+import gg.mineral.practice.PracticePlugin;
 import gg.mineral.practice.util.SaveableData;
 import gg.mineral.practice.util.VoidWorldGenerator;
 import gg.mineral.practice.util.WorldUtil;
 import it.unimi.dsi.fastutil.objects.Object2ObjectOpenHashMap;
 
 public class Arena implements SaveableData {
+	final FileConfiguration config = PracticePlugin.INSTANCE.getArenaManager().getConfig();
 	public static final List<ChatColor> INCLUDED_COLORS = new GlueList<>(
 			Arrays.asList(ChatColor.RED, ChatColor.BLUE, ChatColor.GREEN, ChatColor.YELLOW, ChatColor.AQUA,
 					ChatColor.WHITE, ChatColor.LIGHT_PURPLE, ChatColor.GRAY));
 	Object2ObjectOpenHashMap<ChatColor, Location> bedWarsSpawnLocations = new Object2ObjectOpenHashMap<>();
 	boolean bedWarsArena;
-	final String name, path;
-	Location location1, location2, waitingLocation;
-	Vector location1EyeVector, location2EyeVector;
+	final String name;
+	final String path;
+	Location location1;
+	Location location2;
+	Vector location1EyeVector;
+	Vector location2EyeVector;
 	ItemStack displayItem;
 	String displayName;
 	int currentNameID = 0;
 	World world;
+	Location waitingLocation;
 
 	public Arena(String name) {
 		this.name = name;
@@ -141,7 +146,6 @@ public class Arena implements SaveableData {
 
 	@Override
 	public void save() {
-		FileConfiguration config = ArenaManager.getConfig();
 		config.set(path + "Spawn.Waiting.x", waitingLocation.getBlockX());
 		config.set(path + "Spawn.Waiting.y", waitingLocation.getBlockY());
 		config.set(path + "Spawn.Waiting.z", waitingLocation.getBlockZ());
@@ -162,7 +166,6 @@ public class Arena implements SaveableData {
 
 	@Override
 	public void load() {
-		FileConfiguration config = ArenaManager.getConfig();
 		this.world = Bukkit.createWorld(new WorldCreator(config.getString(path + "Spawn.World", "PracticeSpawn")));
 		this.location1 = new Location(world, config.getInt(path + "Spawn.1.x", 0),
 				config.getInt(path + "Spawn.1.y", 70), config.getInt(path + "Spawn.1.z", 0));

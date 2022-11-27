@@ -2,23 +2,29 @@ package gg.mineral.practice.commands.config;
 
 import java.util.Iterator;
 
-import gg.mineral.practice.commands.PlayerCommand;
-
-import gg.mineral.practice.util.messages.CC;
+import gg.mineral.core.commands.PlayerCommand;
+import gg.mineral.core.rank.RankPower;
+import gg.mineral.core.utils.message.CC;
+import gg.mineral.practice.PracticePlugin;
 import gg.mineral.practice.arena.Arena;
 import gg.mineral.practice.managers.ArenaManager;
+import gg.mineral.practice.managers.PlayerManager;
 import gg.mineral.practice.managers.QueuetypeManager;
 import gg.mineral.practice.queue.Queuetype;
-import gg.mineral.practice.util.messages.impl.ChatMessages;
-import gg.mineral.practice.util.messages.impl.ErrorMessages;
-import gg.mineral.practice.util.messages.impl.UsageMessages;
+import gg.mineral.practice.util.messages.ChatMessages;
+import gg.mineral.practice.util.messages.ErrorMessages;
+import gg.mineral.practice.util.messages.UsageMessages;
 import gg.mineral.server.combat.KnockbackProfile;
 import gg.mineral.server.combat.KnockbackProfileList;
 
 public class QueuetypeCommand extends PlayerCommand {
 
+	final PlayerManager playerManager = PracticePlugin.INSTANCE.getPlayerManager();
+	final QueuetypeManager queuetypeManager = PracticePlugin.INSTANCE.getQueuetypeManager();
+	final ArenaManager arenaManager = PracticePlugin.INSTANCE.getArenaManager();
+
 	public QueuetypeCommand() {
-		super("queuetype", "practice.permission.admin");
+		super("queuetype", RankPower.MANAGER);
 	}
 
 	@Override
@@ -51,14 +57,14 @@ public class QueuetypeCommand extends PlayerCommand {
 
 				queuetypeName = args[1];
 
-				if (QueuetypeManager.getByName(queuetypeName) != null) {
+				if (queuetypeManager.getQueuetypeByName(queuetypeName) != null) {
 					ErrorMessages.QUEUETYPE_ALREADY_EXISTS.send(pl);
 					return;
 				}
 
 				queuetype = new Queuetype(queuetypeName);
 				queuetype.setDefaults();
-				QueuetypeManager.register(queuetype);
+				queuetypeManager.registerQueuetype(queuetype);
 				ChatMessages.QUEUETYPE_CREATED.clone().replace("%queuetype%", queuetypeName).send(pl);
 
 				return;
@@ -69,7 +75,7 @@ public class QueuetypeCommand extends PlayerCommand {
 				}
 
 				queuetypeName = args[1];
-				queuetype = QueuetypeManager.getByName(queuetypeName);
+				queuetype = queuetypeManager.getQueuetypeByName(queuetypeName);
 
 				if (queuetype == null) {
 					ErrorMessages.QUEUETYPE_DOES_NOT_EXIST.send(pl);
@@ -93,7 +99,7 @@ public class QueuetypeCommand extends PlayerCommand {
 				}
 
 				queuetypeName = args[1];
-				queuetype = QueuetypeManager.getByName(queuetypeName);
+				queuetype = queuetypeManager.getQueuetypeByName(queuetypeName);
 
 				if (queuetype == null) {
 					ErrorMessages.QUEUETYPE_DOES_NOT_EXIST.send(pl);
@@ -123,7 +129,7 @@ public class QueuetypeCommand extends PlayerCommand {
 				}
 
 				queuetypeName = args[1];
-				queuetype = QueuetypeManager.getByName(queuetypeName);
+				queuetype = queuetypeManager.getQueuetypeByName(queuetypeName);
 
 				if (queuetype == null) {
 					ErrorMessages.QUEUETYPE_DOES_NOT_EXIST.send(pl);
@@ -152,7 +158,7 @@ public class QueuetypeCommand extends PlayerCommand {
 				}
 
 				queuetypeName = args[1];
-				queuetype = QueuetypeManager.getByName(queuetypeName);
+				queuetype = queuetypeManager.getQueuetypeByName(queuetypeName);
 
 				if (queuetype == null) {
 					ErrorMessages.QUEUETYPE_DOES_NOT_EXIST.send(pl);
@@ -175,7 +181,7 @@ public class QueuetypeCommand extends PlayerCommand {
 			case "list":
 				sb = new StringBuilder(CC.GRAY + "[");
 
-				Iterator<Queuetype> queuetypeIter = QueuetypeManager.list().iterator();
+				Iterator<Queuetype> queuetypeIter = queuetypeManager.getQueuetypes().iterator();
 
 				while (queuetypeIter.hasNext()) {
 					Queuetype q = queuetypeIter.next();
@@ -198,7 +204,7 @@ public class QueuetypeCommand extends PlayerCommand {
 				}
 
 				queuetypeName = args[1];
-				queuetype = QueuetypeManager.getByName(queuetypeName);
+				queuetype = queuetypeManager.getQueuetypeByName(queuetypeName);
 
 				if (queuetype == null) {
 					ErrorMessages.QUEUETYPE_DOES_NOT_EXIST.send(pl);
@@ -206,7 +212,7 @@ public class QueuetypeCommand extends PlayerCommand {
 				}
 
 				String arenaName = args[2];
-				Arena arena = ArenaManager.getByName(arenaName);
+				Arena arena = arenaManager.getArenaByName(arenaName);
 
 				toggled = args[3].toLowerCase();
 
@@ -234,14 +240,14 @@ public class QueuetypeCommand extends PlayerCommand {
 				}
 
 				queuetypeName = args[1];
-				queuetype = QueuetypeManager.getByName(queuetypeName);
+				queuetype = queuetypeManager.getQueuetypeByName(queuetypeName);
 
 				if (queuetype == null) {
 					ErrorMessages.QUEUETYPE_DOES_NOT_EXIST.send(pl);
 					return;
 				}
 
-				QueuetypeManager.remove(queuetype);
+				queuetypeManager.remove(queuetype);
 				ChatMessages.QUEUETYPE_DELETED.clone().replace("%queuetype%", queuetypeName).send(pl);
 
 				return;

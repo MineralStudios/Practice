@@ -1,13 +1,15 @@
 package gg.mineral.practice.commands.stats;
 
-import gg.mineral.practice.commands.PlayerCommand;
+import gg.mineral.core.commands.PlayerCommand;
+import gg.mineral.practice.PracticePlugin;
 import gg.mineral.practice.entity.Profile;
 import gg.mineral.practice.inventory.menus.InventoryStatsMenu;
 import gg.mineral.practice.managers.PlayerManager;
-import gg.mineral.practice.util.messages.impl.ErrorMessages;
-import gg.mineral.practice.util.messages.impl.UsageMessages;
+import gg.mineral.practice.util.messages.ErrorMessages;
+import gg.mineral.practice.util.messages.UsageMessages;
 
 public class ViewInventoryCommand extends PlayerCommand {
+	final PlayerManager playerManager = PracticePlugin.INSTANCE.getPlayerManager();
 
 	public ViewInventoryCommand() {
 		super("viewinventory");
@@ -15,20 +17,20 @@ public class ViewInventoryCommand extends PlayerCommand {
 
 	@Override
 	public void execute(org.bukkit.entity.Player pl, String[] args) {
-		Profile profile = PlayerManager.get(p -> p.getUUID().equals(pl.getUniqueId()));
+		Profile player = playerManager.getProfile(pl);
 
 		if (args.length < 1) {
-			profile.message(UsageMessages.VIEW_INV);
+			player.message(UsageMessages.VIEW_INV);
 			return;
 		}
 
-		InventoryStatsMenu inventoryStats = PlayerManager.getInventoryStats(args[0]);
+		InventoryStatsMenu inventoryStats = playerManager.getInventoryStats(args[0]);
 
 		if (inventoryStats == null) {
-			profile.message(ErrorMessages.PLAYER_INVENTORY_NOT_FOUND);
+			player.message(ErrorMessages.PLAYER_INVENTORY_NOT_FOUND);
 			return;
 		}
 
-		profile.openMenu(new InventoryStatsMenu(inventoryStats));
+		player.openMenu(new InventoryStatsMenu(inventoryStats));
 	}
 }

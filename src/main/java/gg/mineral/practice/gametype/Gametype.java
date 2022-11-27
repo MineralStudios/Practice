@@ -1,31 +1,32 @@
 package gg.mineral.practice.gametype;
 
-import java.sql.SQLException;
 import java.util.List;
 import java.util.Map.Entry;
-import java.util.UUID;
 
 import org.bukkit.Material;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.inventory.ItemStack;
 
+import gg.mineral.api.collection.GlueList;
+import gg.mineral.api.config.FileConfiguration;
+import gg.mineral.practice.PracticePlugin;
 import gg.mineral.practice.arena.Arena;
 import gg.mineral.practice.entity.Profile;
 import gg.mineral.practice.kit.Kit;
 import gg.mineral.practice.managers.ArenaManager;
 import gg.mineral.practice.managers.CatagoryManager;
 import gg.mineral.practice.managers.EloManager;
-import gg.mineral.practice.managers.GametypeManager;
 import gg.mineral.practice.managers.QueuetypeManager;
 import gg.mineral.practice.queue.Queuetype;
-import gg.mineral.practice.util.FileConfiguration;
-import gg.mineral.practice.util.GlueList;
 import gg.mineral.practice.util.LeaderboardMap;
 import gg.mineral.practice.util.SaveableData;
 import it.unimi.dsi.fastutil.objects.Object2BooleanOpenHashMap;
 import it.unimi.dsi.fastutil.objects.Object2IntOpenHashMap;
 
-public class Gametype implements SaveableData, QueuetypeElement {
+public class Gametype implements SaveableData {
+	final FileConfiguration config = PracticePlugin.INSTANCE.getGametypeManager().getConfig();
+	final QueuetypeManager queuetypeManager = PracticePlugin.INSTANCE.getQueuetypeManager();
+	final ArenaManager arenaManager = PracticePlugin.INSTANCE.getArenaManager();
 	Boolean regeneration;
 	ItemStack displayItem;
 	String displayName;
@@ -46,27 +47,45 @@ public class Gametype implements SaveableData, QueuetypeElement {
 	Kit kit;
 	String path;
 	LeaderboardMap leaderboardMap;
-	Object2IntOpenHashMap<UUID> eloMap = new Object2IntOpenHashMap<>();
+	Object2IntOpenHashMap<Profile> eloMap = new Object2IntOpenHashMap<>();
 	Catagory catagory;
+	final CatagoryManager catagoryManager = PracticePlugin.INSTANCE.getCatagoryManager();
+	final EloManager eloManager = PracticePlugin.INSTANCE.getEloManager();
 
 	public Gametype(String name) {
 		this.name = name;
 		this.path = "Gametype." + getName() + ".";
 	}
 
-	public Integer getElo(Profile profile) throws SQLException {
-		Integer elo = this.eloMap.get(profile.getUUID());
+	public Integer getElo(Profile profile) {
+		Integer elo = eloMap.get(profile);
 
 		if (elo == null) {
-			elo = EloManager.get(profile.getUUID(), this);
-			return elo == 1000 ? elo : eloMap.put(profile.getUUID(), elo);
+			elo = eloManager.getEloEntry(getName(), profile.getUUID());
+			eloMap.put(profile, elo);
 		}
 
 		return elo;
 	}
 
-	public void setElo(Integer elo, Profile profile) throws SQLException {
-		EloManager.update(profile, this, this.eloMap.put(profile.getUUID(), elo));
+	public void saveElo(Profile profile) {
+		Integer elo = eloMap.get(profile);
+
+		if (elo == null) {
+			return;
+		}
+
+		eloManager.updateElo(profile, getName(), elo);
+	}
+
+	public void setElo(Integer elo, Profile profile) {
+		this.eloMap.put(profile, elo);
+
+		if (elo == null) {
+			return;
+		}
+
+		eloManager.updateElo(profile, getName(), elo);
 	}
 
 	public boolean getRegeneration() {
@@ -216,17 +235,17 @@ public class Gametype implements SaveableData, QueuetypeElement {
 	}
 
 	public void setSlot(Queuetype queuetype, int slot) {
-		queuetype.getGametypeMap().put(this, slot);
+		queuetype.getGametypes().put(this, slot);
 		save();
 	}
 
 	public void addToQueuetype(Queuetype queuetype, int slot) {
-		queuetype.getGametypeMap().put(this, slot);
+		queuetype.getGametypes().put(this, slot);
 		save();
 	}
 
 	public void removeFromQueuetype(Queuetype queuetype) {
-		queuetype.getGametypeMap().removeInt(this);
+		queuetype.getGametypes().remove(this);
 		save();
 	}
 
@@ -278,7 +297,6 @@ public class Gametype implements SaveableData, QueuetypeElement {
 
 	@Override
 	public void save() {
-		FileConfiguration config = GametypeManager.getConfig();
 		config.set(path + "Regen", regeneration);
 		config.set(path + "Event", event);
 		if (eventArena != null) {
@@ -301,12 +319,12 @@ public class Gametype implements SaveableData, QueuetypeElement {
 			config.set(path + "Catagory", catagory.getName());
 		}
 
-		for (Queuetype q : QueuetypeManager.list()) {
-			boolean containsGametype = q.getGametypeMap().containsKey(this);
+		for (Queuetype q : queuetypeManager.getQueuetypes()) {
+			boolean containsGametype = q.getGametypes().containsKey(this);
 			config.set(path + q.getName() + ".Enabled", containsGametype);
 
 			if (containsGametype) {
-				config.set(path + q.getName() + ".Slot", q.getGametypeMap().getInt(this));
+				config.set(path + q.getName() + ".Slot", q.getGametypes().getInt(this));
 			}
 		}
 
@@ -344,7 +362,6 @@ public class Gametype implements SaveableData, QueuetypeElement {
 
 	@Override
 	public void load() {
-		FileConfiguration config = GametypeManager.getConfig();
 		this.regeneration = config.getBoolean(path + "Regen", true);
 		this.displayItem = config.getItemstack(path + "DisplayItem", new ItemStack(Material.DIAMOND_SWORD));
 		this.displayName = config.getString(path + "DisplayName", getName());
@@ -358,10 +375,10 @@ public class Gametype implements SaveableData, QueuetypeElement {
 		this.boxing = config.getBoolean(path + "Boxing", false);
 		this.inCatagory = config.getBoolean(path + "InCatagory", false);
 		this.event = config.getBoolean(path + "Event", false);
-		this.eventArena = ArenaManager.getByName(config.getString(path + "EventArena", ""));
+		this.eventArena = arenaManager.getArenaByName(config.getString(path + "EventArena", ""));
 
 		if (inCatagory) {
-			this.catagory = CatagoryManager.getByName(config.getString(path + "Catagory", null));
+			this.catagory = catagoryManager.getCatagoryByName(config.getString(path + "Catagory", null));
 
 			if (catagory != null) {
 				catagory.addGametype(this);
@@ -370,7 +387,7 @@ public class Gametype implements SaveableData, QueuetypeElement {
 
 		this.pearlCooldown = config.getInt(path + "PearlCooldown", 10);
 
-		for (Queuetype q : QueuetypeManager.list()) {
+		for (Queuetype q : queuetypeManager.getQueuetypes()) {
 			if (!config.getBoolean(path + q.getName() + ".Enabled", false)) {
 				continue;
 			}
@@ -378,7 +395,7 @@ public class Gametype implements SaveableData, QueuetypeElement {
 			q.addGametype(this, config.getInt(path + q.getName() + ".Slot", 0));
 		}
 
-		for (Arena a : ArenaManager.list()) {
+		for (Arena a : arenaManager.getArenas()) {
 			if (config.getBoolean(path + "Arenas." + a.getName(), false)) {
 				arenas.put(a, true);
 			}
@@ -415,7 +432,7 @@ public class Gametype implements SaveableData, QueuetypeElement {
 		this.kit = new Kit(items.toArray(new ItemStack[0]), armour.toArray(new ItemStack[0]));
 
 		try {
-			leaderboardMap = EloManager.getLeaderboardMap(this);
+			leaderboardMap = eloManager.getLeaderboardMap(this.getName());
 		} catch (Exception e) {
 			e.printStackTrace();
 		}

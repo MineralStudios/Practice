@@ -1,7 +1,5 @@
 package gg.mineral.practice.listeners;
 
-import java.sql.SQLException;
-
 import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.block.Block;
@@ -10,13 +8,14 @@ import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.player.PlayerMoveEvent;
 import org.bukkit.event.player.PlayerTeleportEvent;
-import org.bukkit.event.vehicle.VehicleExitEvent;
+import org.spigotmc.event.entity.EntityDismountEvent;
 
-import gg.mineral.practice.entity.PlayerStatus;
+import gg.mineral.practice.PracticePlugin;
 import gg.mineral.practice.entity.Profile;
 import gg.mineral.practice.managers.PlayerManager;
 
 public class MovementListener implements Listener {
+    final PlayerManager playerManager = PracticePlugin.INSTANCE.getPlayerManager();
 
     @EventHandler
     public void onPearlTeleport(PlayerTeleportEvent event) {
@@ -47,34 +46,35 @@ public class MovementListener implements Listener {
     }
 
     @EventHandler
-    public void onPlayerMove(PlayerMoveEvent e) throws SQLException {
-        Profile profile = PlayerManager
-                .get(p -> p.getUUID().equals(e.getPlayer().getUniqueId())
-                        && p.getPlayerStatus() == PlayerStatus.FIGHTING);
+    public void onPlayerMove(PlayerMoveEvent e) {
+        Profile player = playerManager.getProfileFromMatch(e.getPlayer());
 
-        if (profile == null) {
+        if (player == null) {
             return;
         }
 
-        if (profile.getMatch().getData().getDeadlyWater()) {
-            Material type = profile.bukkit().getLocation().getBlock().getType();
+        if (player.getMatch().getData().getDeadlyWater()) {
+            Material type = player.bukkit().getLocation().getBlock().getType();
             if (type == Material.WATER || type == Material.STATIONARY_WATER) {
-                profile.getMatch().end(profile);
+                player.getMatch().end(player);
             }
         }
     }
 
     @EventHandler
-    public void onPlayerDismount(VehicleExitEvent e) {
-        Profile profile = PlayerManager
-                .get(p -> p.getUUID().equals(e.getExited().getUniqueId())
-                        && p.getPlayerStatus() == PlayerStatus.FIGHTING);
-
-        if (profile == null) {
+    public void onPlayerDismount(EntityDismountEvent e) {
+        if (!(e.getEntity() instanceof org.bukkit.entity.Player)) {
             return;
         }
 
-        if (profile.isInMatchCountdown()) {
+        org.bukkit.entity.Player bukkitPlayer = (org.bukkit.entity.Player) e.getEntity();
+        Profile player = playerManager.getProfileFromMatch(bukkitPlayer);
+
+        if (player == null) {
+            return;
+        }
+
+        if (player.isInMatchCountdown()) {
             e.setCancelled(true);
         }
     }

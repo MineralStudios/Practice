@@ -5,23 +5,31 @@ import java.util.Iterator;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 
+import gg.mineral.core.commands.PlayerCommand;
+import gg.mineral.core.rank.RankPower;
+import gg.mineral.core.utils.message.CC;
+import gg.mineral.practice.PracticePlugin;
 import gg.mineral.practice.arena.Arena;
-import gg.mineral.practice.commands.PlayerCommand;
 import gg.mineral.practice.gametype.Gametype;
 import gg.mineral.practice.kit.Kit;
 import gg.mineral.practice.managers.ArenaManager;
 import gg.mineral.practice.managers.GametypeManager;
+import gg.mineral.practice.managers.PlayerManager;
 import gg.mineral.practice.managers.QueuetypeManager;
 import gg.mineral.practice.queue.Queuetype;
-import gg.mineral.practice.util.messages.CC;
-import gg.mineral.practice.util.messages.impl.ChatMessages;
-import gg.mineral.practice.util.messages.impl.ErrorMessages;
-import gg.mineral.practice.util.messages.impl.UsageMessages;
+import gg.mineral.practice.util.messages.ChatMessages;
+import gg.mineral.practice.util.messages.ErrorMessages;
+import gg.mineral.practice.util.messages.UsageMessages;
 
 public class GametypeCommand extends PlayerCommand {
 
+	final PlayerManager playerManager = PracticePlugin.INSTANCE.getPlayerManager();
+	final GametypeManager gametypeManager = PracticePlugin.INSTANCE.getGametypeManager();
+	final QueuetypeManager queuetypeManager = PracticePlugin.INSTANCE.getQueuetypeManager();
+	final ArenaManager arenaManager = PracticePlugin.INSTANCE.getArenaManager();
+
 	public GametypeCommand() {
-		super("gametype", "practice.permission.admin");
+		super("gametype", RankPower.MANAGER);
 	}
 
 	@Override
@@ -31,7 +39,9 @@ public class GametypeCommand extends PlayerCommand {
 
 		Gametype gametype;
 		Arena arena;
-		String gametypeName, toggled, arenaName;
+		String gametypeName;
+		String toggled;
+		String arenaName;
 		StringBuilder sb;
 
 		switch (arg.toLowerCase()) {
@@ -67,14 +77,14 @@ public class GametypeCommand extends PlayerCommand {
 
 				gametypeName = args[1];
 
-				if (GametypeManager.getByName(gametypeName) != null) {
+				if (gametypeManager.getGametypeByName(gametypeName) != null) {
 					ErrorMessages.GAMETYPE_ALREADY_EXISTS.send(player);
 					return;
 				}
 
 				gametype = new Gametype(gametypeName);
 				gametype.setDefaults();
-				GametypeManager.register(gametype);
+				gametypeManager.registerGametype(gametype);
 				ChatMessages.GAMETYPE_CREATED.clone().replace("%gametype%", gametypeName).send(player);
 				return;
 			case "loadkit":
@@ -84,7 +94,7 @@ public class GametypeCommand extends PlayerCommand {
 				}
 
 				gametypeName = args[1];
-				gametype = GametypeManager.getByName(gametypeName);
+				gametype = gametypeManager.getGametypeByName(gametypeName);
 
 				if (gametype == null) {
 					ErrorMessages.GAMETYPE_DOES_NOT_EXIST.send(player);
@@ -103,7 +113,7 @@ public class GametypeCommand extends PlayerCommand {
 				}
 
 				gametypeName = args[1];
-				gametype = GametypeManager.getByName(gametypeName);
+				gametype = gametypeManager.getGametypeByName(gametypeName);
 
 				if (gametype == null) {
 					ErrorMessages.GAMETYPE_DOES_NOT_EXIST.send(player);
@@ -124,7 +134,7 @@ public class GametypeCommand extends PlayerCommand {
 				}
 
 				gametypeName = args[1];
-				gametype = GametypeManager.getByName(gametypeName);
+				gametype = gametypeManager.getGametypeByName(gametypeName);
 
 				if (gametype == null) {
 					ErrorMessages.GAMETYPE_DOES_NOT_EXIST.send(player);
@@ -147,7 +157,7 @@ public class GametypeCommand extends PlayerCommand {
 				}
 
 				gametypeName = args[1];
-				gametype = GametypeManager.getByName(gametypeName);
+				gametype = gametypeManager.getGametypeByName(gametypeName);
 
 				if (gametype == null) {
 					ErrorMessages.GAMETYPE_DOES_NOT_EXIST.send(player);
@@ -176,7 +186,7 @@ public class GametypeCommand extends PlayerCommand {
 				}
 
 				gametypeName = args[1];
-				gametype = GametypeManager.getByName(gametypeName);
+				gametype = gametypeManager.getGametypeByName(gametypeName);
 
 				if (gametype == null) {
 					ErrorMessages.GAMETYPE_DOES_NOT_EXIST.send(player);
@@ -207,7 +217,7 @@ public class GametypeCommand extends PlayerCommand {
 				}
 
 				gametypeName = args[1];
-				gametype = GametypeManager.getByName(gametypeName);
+				gametype = gametypeManager.getGametypeByName(gametypeName);
 
 				if (gametype == null) {
 					ErrorMessages.GAMETYPE_DOES_NOT_EXIST.send(player);
@@ -239,7 +249,7 @@ public class GametypeCommand extends PlayerCommand {
 				}
 
 				gametypeName = args[1];
-				gametype = GametypeManager.getByName(gametypeName);
+				gametype = gametypeManager.getGametypeByName(gametypeName);
 
 				if (gametype == null) {
 					ErrorMessages.GAMETYPE_DOES_NOT_EXIST.send(player);
@@ -247,7 +257,7 @@ public class GametypeCommand extends PlayerCommand {
 				}
 
 				String queuetypeName = args[2];
-				Queuetype queuetype = QueuetypeManager.getByName(queuetypeName);
+				Queuetype queuetype = queuetypeManager.getQueuetypeByName(queuetypeName);
 
 				if (queuetype == null) {
 					ErrorMessages.QUEUETYPE_DOES_NOT_EXIST.send(player);
@@ -281,7 +291,7 @@ public class GametypeCommand extends PlayerCommand {
 				}
 
 				gametypeName = args[1];
-				gametype = GametypeManager.getByName(gametypeName);
+				gametype = gametypeManager.getGametypeByName(gametypeName);
 
 				if (gametype == null) {
 					ErrorMessages.GAMETYPE_DOES_NOT_EXIST.send(player);
@@ -313,7 +323,7 @@ public class GametypeCommand extends PlayerCommand {
 				}
 
 				gametypeName = args[1];
-				gametype = GametypeManager.getByName(gametypeName);
+				gametype = gametypeManager.getGametypeByName(gametypeName);
 
 				if (gametype == null) {
 					ErrorMessages.GAMETYPE_DOES_NOT_EXIST.send(player);
@@ -345,7 +355,7 @@ public class GametypeCommand extends PlayerCommand {
 				}
 
 				gametypeName = args[1];
-				gametype = GametypeManager.getByName(gametypeName);
+				gametype = gametypeManager.getGametypeByName(gametypeName);
 
 				if (gametype == null) {
 					ErrorMessages.GAMETYPE_DOES_NOT_EXIST.send(player);
@@ -377,7 +387,7 @@ public class GametypeCommand extends PlayerCommand {
 				}
 
 				gametypeName = args[1];
-				gametype = GametypeManager.getByName(gametypeName);
+				gametype = gametypeManager.getGametypeByName(gametypeName);
 
 				if (gametype == null) {
 					ErrorMessages.GAMETYPE_DOES_NOT_EXIST.send(player);
@@ -409,7 +419,7 @@ public class GametypeCommand extends PlayerCommand {
 				}
 
 				gametypeName = args[1];
-				gametype = GametypeManager.getByName(gametypeName);
+				gametype = gametypeManager.getGametypeByName(gametypeName);
 
 				if (gametype == null) {
 					ErrorMessages.GAMETYPE_DOES_NOT_EXIST.send(player);
@@ -441,7 +451,7 @@ public class GametypeCommand extends PlayerCommand {
 				}
 
 				gametypeName = args[1];
-				gametype = GametypeManager.getByName(gametypeName);
+				gametype = gametypeManager.getGametypeByName(gametypeName);
 
 				if (gametype == null) {
 					ErrorMessages.GAMETYPE_DOES_NOT_EXIST.send(player);
@@ -473,7 +483,7 @@ public class GametypeCommand extends PlayerCommand {
 				}
 
 				gametypeName = args[1];
-				gametype = GametypeManager.getByName(gametypeName);
+				gametype = gametypeManager.getGametypeByName(gametypeName);
 
 				if (gametype == null) {
 					ErrorMessages.GAMETYPE_DOES_NOT_EXIST.send(player);
@@ -498,7 +508,7 @@ public class GametypeCommand extends PlayerCommand {
 			case "list":
 				sb = new StringBuilder(CC.GRAY + "[");
 
-				Iterator<Gametype> gametypeIter = GametypeManager.list().iterator();
+				Iterator<Gametype> gametypeIter = gametypeManager.getGametypes().iterator();
 
 				while (gametypeIter.hasNext()) {
 					Gametype g = gametypeIter.next();
@@ -520,7 +530,7 @@ public class GametypeCommand extends PlayerCommand {
 				}
 
 				gametypeName = args[1];
-				gametype = GametypeManager.getByName(gametypeName);
+				gametype = gametypeManager.getGametypeByName(gametypeName);
 
 				if (gametype == null) {
 					ErrorMessages.GAMETYPE_DOES_NOT_EXIST.send(player);
@@ -528,7 +538,7 @@ public class GametypeCommand extends PlayerCommand {
 				}
 
 				arenaName = args[2];
-				arena = ArenaManager.getByName(arenaName);
+				arena = arenaManager.getArenaByName(arenaName);
 
 				if (arena == null) {
 					ErrorMessages.ARENA_DOES_NOT_EXIST.send(player);
@@ -560,7 +570,7 @@ public class GametypeCommand extends PlayerCommand {
 				}
 
 				gametypeName = args[1];
-				gametype = GametypeManager.getByName(gametypeName);
+				gametype = gametypeManager.getGametypeByName(gametypeName);
 
 				if (gametype == null) {
 					ErrorMessages.GAMETYPE_DOES_NOT_EXIST.send(player);
@@ -592,7 +602,7 @@ public class GametypeCommand extends PlayerCommand {
 				}
 
 				gametypeName = args[1];
-				gametype = GametypeManager.getByName(gametypeName);
+				gametype = gametypeManager.getGametypeByName(gametypeName);
 
 				if (gametype == null) {
 					ErrorMessages.GAMETYPE_DOES_NOT_EXIST.send(player);
@@ -600,7 +610,7 @@ public class GametypeCommand extends PlayerCommand {
 				}
 
 				arenaName = args[2];
-				arena = ArenaManager.getByName(arenaName);
+				arena = arenaManager.getArenaByName(arenaName);
 
 				if (arena == null) {
 					ErrorMessages.ARENA_DOES_NOT_EXIST.send(player);
@@ -619,7 +629,7 @@ public class GametypeCommand extends PlayerCommand {
 				}
 
 				arenaName = args[1];
-				arena = ArenaManager.getByName(arenaName);
+				arena = arenaManager.getArenaByName(arenaName);
 
 				if (arena == null) {
 					ErrorMessages.ARENA_DOES_NOT_EXIST.send(player);
@@ -630,12 +640,12 @@ public class GametypeCommand extends PlayerCommand {
 
 				switch (toggled) {
 					case "false":
-						for (Gametype g : GametypeManager.list()) {
+						for (Gametype g : gametypeManager.getGametypes()) {
 							g.enableArena(arena, false);
 						}
 						break;
 					case "true":
-						for (Gametype g : GametypeManager.list()) {
+						for (Gametype g : gametypeManager.getGametypes()) {
 							g.enableArena(arena, true);
 						}
 						break;
@@ -654,14 +664,14 @@ public class GametypeCommand extends PlayerCommand {
 				}
 
 				gametypeName = args[1];
-				gametype = GametypeManager.getByName(gametypeName);
+				gametype = gametypeManager.getGametypeByName(gametypeName);
 
 				if (gametype == null) {
 					ErrorMessages.GAMETYPE_DOES_NOT_EXIST.send(player);
 					return;
 				}
 
-				GametypeManager.remove(gametype);
+				gametypeManager.remove(gametype);
 				ChatMessages.GAMETYPE_DELETED.clone().replace("%gametype%", gametypeName).send(player);
 
 				return;

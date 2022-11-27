@@ -1,16 +1,20 @@
 package gg.mineral.practice.commands.config;
 
-import gg.mineral.practice.commands.PlayerCommand;
-
+import gg.mineral.core.commands.PlayerCommand;
+import gg.mineral.core.rank.RankPower;
+import gg.mineral.practice.PracticePlugin;
 import gg.mineral.practice.managers.PartyManager;
-import gg.mineral.practice.util.messages.impl.ChatMessages;
-import gg.mineral.practice.util.messages.impl.ErrorMessages;
-import gg.mineral.practice.util.messages.impl.UsageMessages;
+import gg.mineral.practice.managers.PlayerManager;
+import gg.mineral.practice.util.messages.ChatMessages;
+import gg.mineral.practice.util.messages.ErrorMessages;
+import gg.mineral.practice.util.messages.UsageMessages;
 
 public class PartiesCommand extends PlayerCommand {
+	final PlayerManager playerManager = PracticePlugin.INSTANCE.getPlayerManager();
+	final PartyManager partyManager = PracticePlugin.INSTANCE.getPartyManager();
 
 	public PartiesCommand() {
-		super("parties", "practice.permission.admin");
+		super("parties", RankPower.MANAGER);
 	}
 
 	@Override
@@ -36,10 +40,10 @@ public class PartiesCommand extends PlayerCommand {
 
 				switch (toggled) {
 					case "false":
-						PartyManager.setEnabled(false);
+						partyManager.setEnabled(false);
 						break;
 					case "true":
-						PartyManager.setEnabled(true);
+						partyManager.setEnabled(true);
 						break;
 					default:
 						UsageMessages.PARTIES_ENABLE.send(pl);
@@ -54,10 +58,10 @@ public class PartiesCommand extends PlayerCommand {
 					return;
 				}
 
-				PartyManager.setDisplayItem(pl.getItemInHand());
+				partyManager.setDisplayItem(pl.getItemInHand());
 
 				if (args.length > 2) {
-					PartyManager.setDisplayName(args[1].replace("&", "§"));
+					partyManager.setDisplayName(args[1].replace("&", "§"));
 				}
 
 				ChatMessages.PARTIES_DISPLAY_SET.send(pl);
@@ -77,7 +81,7 @@ public class PartiesCommand extends PlayerCommand {
 					return;
 				}
 
-				PartyManager.setSlot(slot);
+				partyManager.setSlot(slot);
 
 				ChatMessages.PARTIES_SLOT_SET.clone().replace("%slot%", strSlot).send(pl);
 

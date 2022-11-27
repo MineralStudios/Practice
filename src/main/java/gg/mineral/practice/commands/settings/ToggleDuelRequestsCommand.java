@@ -1,11 +1,13 @@
 package gg.mineral.practice.commands.settings;
 
-import gg.mineral.practice.commands.PlayerCommand;
+import gg.mineral.core.commands.PlayerCommand;
+import gg.mineral.practice.PracticePlugin;
 import gg.mineral.practice.entity.Profile;
 import gg.mineral.practice.managers.PlayerManager;
-import gg.mineral.practice.util.messages.impl.ChatMessages;
+import gg.mineral.practice.util.messages.ChatMessages;
 
 public class ToggleDuelRequestsCommand extends PlayerCommand {
+	final PlayerManager playerManager = PracticePlugin.INSTANCE.getPlayerManager();
 
 	public ToggleDuelRequestsCommand() {
 		super("toggleduelrequests");
@@ -13,9 +15,10 @@ public class ToggleDuelRequestsCommand extends PlayerCommand {
 
 	@Override
 	public void execute(org.bukkit.entity.Player pl, String[] args) {
-		Profile profile = PlayerManager.get(p -> p.getUUID().equals(pl.getUniqueId()));
-		profile.setRequests(!profile.getRequests());
-		ChatMessages.DUEL_REQUESTS_TOGGLED.clone().replace("%toggled%", profile.getRequests() ? "enabled" : "disabled")
+		Profile player = playerManager.getProfile(pl);
+		player.setRequests(!player.getRequests());
+		ChatMessages.DUEL_REQUESTS_TOGGLED.clone().replace("%toggled%", player.getRequests() ? "enabled" : "disabled")
 				.send(pl);
+		;
 	}
 }

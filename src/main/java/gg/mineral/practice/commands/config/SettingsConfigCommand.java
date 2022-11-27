@@ -1,16 +1,21 @@
 package gg.mineral.practice.commands.config;
 
-import gg.mineral.practice.commands.PlayerCommand;
-
+import gg.mineral.core.commands.PlayerCommand;
+import gg.mineral.core.rank.RankPower;
+import gg.mineral.practice.PracticePlugin;
+import gg.mineral.practice.managers.PlayerManager;
 import gg.mineral.practice.managers.PlayerSettingsManager;
-import gg.mineral.practice.util.messages.impl.ChatMessages;
-import gg.mineral.practice.util.messages.impl.ErrorMessages;
-import gg.mineral.practice.util.messages.impl.UsageMessages;
+import gg.mineral.practice.util.messages.ChatMessages;
+import gg.mineral.practice.util.messages.ErrorMessages;
+import gg.mineral.practice.util.messages.UsageMessages;
 
 public class SettingsConfigCommand extends PlayerCommand {
 
+	final PlayerSettingsManager settingsConfig = PracticePlugin.INSTANCE.getSettingsManager();
+	final PlayerManager playerManager = PracticePlugin.INSTANCE.getPlayerManager();
+
 	public SettingsConfigCommand() {
-		super("settingsconfig", "practice.permission.admin");
+		super("settingsconfig", RankPower.MANAGER);
 	}
 
 	@Override
@@ -36,10 +41,10 @@ public class SettingsConfigCommand extends PlayerCommand {
 
 				switch (toggled) {
 					case "false":
-						PlayerSettingsManager.setEnabled(false);
+						settingsConfig.setEnabled(false);
 						break;
 					case "true":
-						PlayerSettingsManager.setEnabled(true);
+						settingsConfig.setEnabled(true);
 						break;
 					default:
 						UsageMessages.SETTINGS_ENABLE.send(pl);
@@ -55,10 +60,10 @@ public class SettingsConfigCommand extends PlayerCommand {
 					return;
 				}
 
-				PlayerSettingsManager.setDisplayItem(pl.getItemInHand());
+				settingsConfig.setDisplayItem(pl.getItemInHand());
 
 				if (args.length > 2) {
-					PlayerSettingsManager.setDisplayName(args[1].replace("&", "§"));
+					settingsConfig.setDisplayName(args[1].replace("&", "§"));
 				}
 
 				ChatMessages.SETTINGS_DISPLAY_SET.send(pl);
@@ -78,7 +83,7 @@ public class SettingsConfigCommand extends PlayerCommand {
 					return;
 				}
 
-				PlayerSettingsManager.setSlot(slot);
+				settingsConfig.setSlot(slot);
 
 				ChatMessages.SETTINGS_SLOT_SET.clone().replace("%slot%", strSlot).send(pl);
 				return;

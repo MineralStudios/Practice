@@ -1,57 +1,61 @@
 package gg.mineral.practice.managers;
 
-import java.util.List;
-
 import org.bukkit.configuration.ConfigurationSection;
 
-import gg.mineral.practice.util.GlueList;
-import gg.mineral.practice.util.FileConfiguration;
+import gg.mineral.practice.PracticePlugin;
 import gg.mineral.practice.gametype.Catagory;
 import gg.mineral.practice.queue.Queuetype;
+import gg.mineral.practice.util.SaveableData;
+import gg.mineral.api.collection.GlueList;
+import gg.mineral.api.config.FileConfiguration;
 
-public class CatagoryManager {
-	final static FileConfiguration config = new FileConfiguration("catagory.yml", "plugins/Practice");
-	final static GlueList<Catagory> list = new GlueList<>();
+public class CatagoryManager implements SaveableData {
+	final FileConfiguration config = new FileConfiguration("catagory.yml", "plugins/Practice");
+	final QueuetypeManager queuetypeManager = PracticePlugin.INSTANCE.getQueuetypeManager();
+	GlueList<Catagory> list = new GlueList<>();
 
-	static {
-		load();
-	}
-
-	public static void register(Catagory catagory) {
+	public void registerCatagory(Catagory catagory) {
 		list.add(catagory);
 	}
 
-	public static void remove(Catagory catagory) {
+	public void remove(Catagory catagory) {
 		list.remove(catagory);
 
-		for (Queuetype queuetype : QueuetypeManager.list()) {
-			queuetype.getCatagories().removeInt(catagory);
+		for (Queuetype queuetype : queuetypeManager.getQueuetypes()) {
+			queuetype.getCatagories().remove(catagory);
 		}
 	}
 
-	public static FileConfiguration getConfig() {
+	public boolean contains(Catagory catagory) {
+		for (Catagory g : list) {
+			if (g.equals(catagory)) {
+				return true;
+			}
+		}
+		return false;
+	}
+
+	public FileConfiguration getConfig() {
 		return config;
 	}
 
-	public static List<Catagory> list() {
+	public GlueList<Catagory> getCatagorys() {
 		return list;
 	}
 
-	public static Catagory getByName(String string) {
-		for (Catagory catagory : list) {
-			if (!catagory.getName().equalsIgnoreCase(string)) {
-				continue;
+	public Catagory getCatagoryByName(String string) {
+		for (Catagory g : list) {
+			if (g.getName().equalsIgnoreCase(string)) {
+				return g;
 			}
-
-			return catagory;
 		}
-
 		return null;
 	}
 
-	public static void save() {
+	@Override
+	public void save() {
 
-		for (Catagory catagory : list()) {
+		for (Catagory catagory : getCatagorys()) {
 			catagory.save();
 		}
 
@@ -59,7 +63,8 @@ public class CatagoryManager {
 
 	}
 
-	public static void load() {
+	@Override
+	public void load() {
 		ConfigurationSection configSection = getConfig().getConfigurationSection("Catagory.");
 
 		if (configSection == null) {
@@ -77,13 +82,14 @@ public class CatagoryManager {
 
 			catagory.load();
 
-			register(catagory);
+			registerCatagory(catagory);
 		}
 	}
 
-	public static void setDefaults() {
+	@Override
+	public void setDefaults() {
 		Catagory catagory = new Catagory("Defualt");
 		catagory.setDefaults();
-		register(catagory);
+		registerCatagory(catagory);
 	}
 }

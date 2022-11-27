@@ -1,13 +1,15 @@
 package gg.mineral.practice.commands.spectator;
 
-import gg.mineral.practice.commands.PlayerCommand;
+import gg.mineral.core.commands.PlayerCommand;
+import gg.mineral.practice.PracticePlugin;
 import gg.mineral.practice.entity.PlayerStatus;
 import gg.mineral.practice.entity.Profile;
 import gg.mineral.practice.inventory.menus.SpectateMenu;
 import gg.mineral.practice.managers.PlayerManager;
-import gg.mineral.practice.util.messages.impl.ErrorMessages;
+import gg.mineral.practice.util.messages.ErrorMessages;
 
 public class SpectateCommand extends PlayerCommand {
+	final PlayerManager playerManager = PracticePlugin.INSTANCE.getPlayerManager();
 
 	public SpectateCommand() {
 		super("spectate");
@@ -16,29 +18,27 @@ public class SpectateCommand extends PlayerCommand {
 
 	@Override
 	public void execute(org.bukkit.entity.Player pl, String[] args) {
-		Profile profile = PlayerManager.get(p -> p.getUUID().equals(pl.getUniqueId()));
+		Profile player = playerManager.getProfile(pl);
 
-		if (profile.getPlayerStatus() != PlayerStatus.IN_LOBBY) {
-			profile.message(ErrorMessages.YOU_ARE_NOT_IN_LOBBY);
+		if (player.getPlayerStatus() != PlayerStatus.IN_LOBBY) {
+			player.message(ErrorMessages.YOU_ARE_NOT_IN_LOBBY);
 			return;
 		}
 
 		if (args.length < 1) {
 
-			profile.openMenu(new SpectateMenu());
+			player.openMenu(new SpectateMenu());
 
 			return;
 		}
 
-		Profile playerarg = PlayerManager
-				.get(p -> p.getName().equals(args[0])
-						&& p.getPlayerStatus() == PlayerStatus.FIGHTING);
+		Profile playerarg = playerManager.getProfileFromMatch(args[0]);
 
 		if (playerarg == null) {
-			profile.message(ErrorMessages.PLAYER_NOT_IN_MATCH);
+			player.message(ErrorMessages.PLAYER_NOT_IN_MATCH);
 			return;
 		}
 
-		profile.spectate(playerarg);
+		player.spectate(playerarg);
 	}
 }

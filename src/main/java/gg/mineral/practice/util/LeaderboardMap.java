@@ -3,6 +3,8 @@ package gg.mineral.practice.util;
 import java.util.Iterator;
 import java.util.List;
 
+import gg.mineral.api.collection.GlueList;
+
 public class LeaderboardMap {
 
     final static Entry DEFAULT_ENTRY = new Entry("Empty", 1000);

@@ -15,6 +15,7 @@ gg/mineral/practice/match/PartyMatch.class
 gg/mineral/practice/listeners/MovementListener.class
 gg/mineral/practice/util/PlayerUtil.class
 gg/mineral/practice/inventory/menus/LeaderboardMenu.class
+gg/mineral/practice/kit/KitEditorManager.class
 gg/mineral/practice/managers/TournamentManager.class
 gg/mineral/practice/commands/config/ArenaCommand.class
 gg/mineral/practice/commands/stats/EloCommand.class
@@ -47,7 +48,6 @@ gg/mineral/practice/inventory/menus/AddItemsMenu.class
 gg/mineral/practice/inventory/menus/MechanicsMenu.class
 gg/mineral/practice/commands/spectator/SpectateCommand.class
 gg/mineral/practice/managers/EloManager.class
-gg/mineral/practice/managers/KitEditorManager.class
 gg/mineral/practice/util/Countdown.class
 gg/mineral/practice/inventory/menus/SaveLoadKitsMenu.class
 gg/mineral/practice/commands/config/GametypeCommand.class
@@ -110,7 +110,6 @@ gg/mineral/practice/inventory/menus/SelectModeMenu.class
 gg/mineral/practice/listeners/HealthListener.class
 gg/mineral/practice/commands/duel/AcceptCommand.class
 gg/mineral/practice/commands/settings/TogglePlayerVisibilityCommand.class
-gg/mineral/practice/util/AutoExpireList$2.class
 gg/mineral/practice/inventory/menus/SelectExistingKitMenu.class
 gg/mineral/practice/inventory/menus/SelectArenaMenu.class
 gg/mineral/practice/managers/ArenaManager.class

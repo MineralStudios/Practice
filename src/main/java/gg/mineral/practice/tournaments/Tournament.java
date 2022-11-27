@@ -1,13 +1,12 @@
 package gg.mineral.practice.tournaments;
 
-import java.sql.SQLException;
 import java.util.Iterator;
 import java.util.concurrent.ConcurrentLinkedDeque;
 
 import org.bukkit.Location;
 import org.bukkit.scheduler.BukkitRunnable;
 
-import gg.mineral.practice.util.messages.ChatMessage;
+import gg.mineral.core.utils.message.ChatMessage;
 import gg.mineral.practice.PracticePlugin;
 import gg.mineral.practice.arena.Arena;
 import gg.mineral.practice.entity.Profile;
@@ -17,39 +16,43 @@ import gg.mineral.practice.match.Match;
 import gg.mineral.practice.match.MatchData;
 import gg.mineral.practice.match.TournamentMatch;
 import gg.mineral.practice.util.ProfileList;
-import gg.mineral.practice.util.messages.impl.ChatMessages;
-import gg.mineral.practice.util.messages.impl.ErrorMessages;
-import gg.mineral.practice.util.GlueList;
+import gg.mineral.practice.util.messages.ChatMessages;
+import gg.mineral.practice.util.messages.ErrorMessages;
+import gg.mineral.api.collection.GlueList;
 import net.md_5.bungee.api.chat.ClickEvent;
 
 public class Tournament {
     GlueList<Match> matches = new GlueList<>();
     ProfileList players = new ProfileList();
     ConcurrentLinkedDeque<Profile> spectators = new ConcurrentLinkedDeque<>();
-    boolean started = false, ended = false, event;
-    MatchData matchData;
+    final PlayerManager playerManager = PracticePlugin.INSTANCE.getPlayerManager();
+    final TournamentManager tournamentManager = PracticePlugin.INSTANCE.getTournamentManager();
+    boolean started = false;
+    boolean ended = false;
+    MatchData m;
     int round = 1;
+    boolean event;
     Arena eventArena;
     String host;
     Location loc;
 
     public Tournament(Profile p) {
-        this.matchData = p.getMatchData();
+        this.m = p.getMatchData();
         this.host = p.getName();
         this.event = false;
         addPlayer(p);
-        TournamentManager.register(this);
+        tournamentManager.registerTournament(this);
     }
 
-    public Tournament(Profile profile, Arena eventArena) {
-        this.matchData = profile.getMatchData();
-        this.host = profile.getName();
+    public Tournament(Profile p, Arena eventArena) {
+        this.m = p.getMatchData();
+        this.host = p.getName();
         this.event = true;
         this.eventArena = eventArena;
-        matchData.setArena(eventArena);
+        m.setArena(eventArena);
         loc = eventArena.getWaitingLocation();
-        addPlayer(profile);
-        TournamentManager.register(this);
+        addPlayer(p);
+        tournamentManager.registerTournament(this);
     }
 
     public void addPlayer(Profile p) {
@@ -67,17 +70,17 @@ public class Tournament {
         players.add(p);
 
         ChatMessage joinedMessage = ChatMessages.JOINED_TOURNAMENT.clone().replace("%player%", p.getName());
-        PlayerManager.broadcast(players, joinedMessage);
+        playerManager.broadcast(players, joinedMessage);
     }
 
     public void removePlayer(Profile p) {
         players.remove(p);
 
         ChatMessage leftMessage = ChatMessages.LEFT_TOURNAMENT.clone().replace("%player%", p.getName());
-        PlayerManager.broadcast(players, leftMessage);
+        playerManager.broadcast(players, leftMessage);
 
         if (players.size() == 0) {
-            TournamentManager.remove(this);
+            tournamentManager.remove(this);
             ended = true;
             return;
         }
@@ -92,12 +95,12 @@ public class Tournament {
                 }
             }
 
-            TournamentManager.remove(this);
+            tournamentManager.remove(this);
             ended = true;
 
             ChatMessage wonMessage = ChatMessages.WON_TOURNAMENT.clone().replace("%player%", winner.getName());
 
-            PlayerManager.broadcast(PlayerManager.list(),
+            playerManager.broadcast(playerManager.getProfiles(),
                     wonMessage);
 
             return;
@@ -114,7 +117,7 @@ public class Tournament {
                 .replace("%player%", host).setTextEvent(new ClickEvent(ClickEvent.Action.RUN_COMMAND, "/join " + host),
                         ChatMessages.CLICK_TO_JOIN);
 
-        PlayerManager.broadcast(PlayerManager.list(), messageToBroadcast);
+        playerManager.broadcast(playerManager.getProfiles(), messageToBroadcast);
 
         Tournament t = this;
         new BukkitRunnable() {
@@ -131,21 +134,17 @@ public class Tournament {
                         }
                     }
                     ErrorMessages.TOURNAMENT_NOT_ENOUGH_PLAYERS.send(winner.bukkit());
-                    TournamentManager.remove(t);
+                    tournamentManager.remove(t);
                     ended = true;
                     return;
                 }
 
-                try {
-                    startRound();
-                } catch (SQLException e) {
-                    e.printStackTrace();
-                }
+                startRound();
             }
         }.runTaskLater(PracticePlugin.INSTANCE, 600);
     }
 
-    public void startRound() throws SQLException {
+    public void startRound() {
 
         if (players.size() == 1) {
             Profile winner = players.get(0);
@@ -158,7 +157,7 @@ public class Tournament {
             }
 
             ended = true;
-            TournamentManager.remove(this);
+            tournamentManager.remove(this);
             return;
         }
 
@@ -174,7 +173,7 @@ public class Tournament {
 
             Profile p2 = iter.next();
 
-            TournamentMatch match = new TournamentMatch(p1, p2, matchData, this);
+            TournamentMatch match = new TournamentMatch(p1, p2, m, this);
             match.start();
             matches.add(match);
 
@@ -194,16 +193,12 @@ public class Tournament {
         if (matches.isEmpty()) {
             ChatMessage broadcastedMessage = ChatMessages.ROUND_OVER.clone().replace("%round%", "" + round);
 
-            PlayerManager.broadcast(players, broadcastedMessage);
+            playerManager.broadcast(players, broadcastedMessage);
 
             new BukkitRunnable() {
                 @Override
                 public void run() {
-                    try {
-                        startRound();
-                    } catch (SQLException e) {
-                        e.printStackTrace();
-                    }
+                    startRound();
                     round++;
                 }
             }.runTaskLater(PracticePlugin.INSTANCE, 100);

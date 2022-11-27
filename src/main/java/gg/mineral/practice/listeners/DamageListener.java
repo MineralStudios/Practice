@@ -1,11 +1,8 @@
 package gg.mineral.practice.listeners;
 
-import java.sql.SQLException;
-
 import org.bukkit.Instrument;
 import org.bukkit.Note;
 import org.bukkit.entity.Arrow;
-import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.entity.EntityCombustByEntityEvent;
@@ -13,15 +10,16 @@ import org.bukkit.event.entity.EntityDamageByEntityEvent;
 import org.bukkit.event.entity.EntityDamageEvent;
 import org.bukkit.event.entity.EntityDamageEvent.DamageCause;
 
-import gg.mineral.practice.entity.PlayerStatus;
+import gg.mineral.practice.PracticePlugin;
 import gg.mineral.practice.entity.Profile;
 import gg.mineral.practice.managers.PlayerManager;
-import gg.mineral.practice.util.messages.impl.ChatMessages;
+import gg.mineral.practice.util.messages.ChatMessages;
 
 public class DamageListener implements Listener {
+	PlayerManager playerManager = PracticePlugin.INSTANCE.getPlayerManager();
 
 	@EventHandler
-	public void onEntityDamage(EntityDamageEvent e) throws SQLException {
+	public void onEntityDamage(EntityDamageEvent e) {
 		if (!(e.getEntity() instanceof org.bukkit.entity.Player)) {
 			e.setCancelled(true);
 			return;
@@ -29,13 +27,12 @@ public class DamageListener implements Listener {
 
 		org.bukkit.entity.Player player = (org.bukkit.entity.Player) e.getEntity();
 
-		Profile victim = PlayerManager
-				.get(p -> p.getUUID().equals(player.getUniqueId()) && p.getPlayerStatus() == PlayerStatus.FIGHTING);
+		Profile victim = playerManager.getProfileFromMatch(player);
 
 		if (victim == null) {
 
 			if (e.getCause() == DamageCause.VOID) {
-				player.teleport(PlayerManager.getSpawnLocation());
+				player.teleport(playerManager.getSpawnLocation());
 			}
 
 			e.setCancelled(true);
@@ -61,13 +58,13 @@ public class DamageListener implements Listener {
 	}
 
 	@EventHandler
-	public void onEntityDamageByEntity(EntityDamageByEntityEvent e) throws SQLException {
+	public void onEntityDamageByEntity(EntityDamageByEntityEvent e) {
 		if (!(e.getEntity() instanceof org.bukkit.entity.Player)) {
 			e.setCancelled(true);
 			return;
 		}
 
-		Player bukkitVictim = (org.bukkit.entity.Player) e.getEntity();
+		org.bukkit.entity.Player bukkitVictim = (org.bukkit.entity.Player) e.getEntity();
 
 		if (e.getDamager() instanceof Arrow) {
 			Arrow arrow = (Arrow) e.getDamager();
@@ -89,14 +86,14 @@ public class DamageListener implements Listener {
 			return;
 		}
 
-		Profile attacker = PlayerManager.get(p -> p.getUUID().equals(e.getDamager().getUniqueId()));
+		Profile attacker = playerManager.getProfileFromMatch((org.bukkit.entity.Player) e.getDamager());
 
 		if (attacker == null) {
 			e.setCancelled(true);
 			return;
 		}
 
-		Profile victim = PlayerManager.get(p -> p.getUUID().equals(bukkitVictim.getUniqueId()));
+		Profile victim = playerManager.getProfileFromMatch(bukkitVictim);
 
 		if (victim == null) {
 			e.setCancelled(true);
@@ -104,7 +101,6 @@ public class DamageListener implements Listener {
 		}
 
 		attacker.increaseHitCount();
-		victim.resetLongestCombo();
 
 		if (victim.getMatch().getData().getBoxing() && attacker.getHitCount() >= 100) {
 			victim.getMatch().end(victim);
@@ -127,16 +123,15 @@ public class DamageListener implements Listener {
 			e.setCancelled(true);
 			return;
 		}
-		;
-		Profile attacker = PlayerManager.get(p -> p.getUUID().equals(e.getCombuster().getUniqueId()));
+
+		Profile attacker = playerManager.getProfileFromMatch((org.bukkit.entity.Player) e.getCombuster());
 
 		if (attacker == null) {
 			e.setCancelled(true);
 			return;
 		}
 
-		Player bukkitVictim = (org.bukkit.entity.Player) e.getEntity();
-		Profile victim = PlayerManager.get(p -> p.getUUID().equals(bukkitVictim.getUniqueId()));
+		Profile victim = playerManager.getProfileFromMatch((org.bukkit.entity.Player) e.getEntity());
 
 		if (victim == null) {
 			e.setCancelled(true);

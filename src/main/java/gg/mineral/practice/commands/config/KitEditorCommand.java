@@ -1,16 +1,24 @@
 package gg.mineral.practice.commands.config;
 
-import gg.mineral.practice.commands.PlayerCommand;
-
-import gg.mineral.practice.managers.KitEditorManager;
-import gg.mineral.practice.util.messages.impl.ChatMessages;
-import gg.mineral.practice.util.messages.impl.ErrorMessages;
-import gg.mineral.practice.util.messages.impl.UsageMessages;
+import gg.mineral.core.commands.PlayerCommand;
+import gg.mineral.core.rank.RankPower;
+import gg.mineral.practice.PracticePlugin;
+import gg.mineral.practice.kit.KitEditorManager;
+import gg.mineral.practice.managers.GametypeManager;
+import gg.mineral.practice.managers.PlayerManager;
+import gg.mineral.practice.managers.QueuetypeManager;
+import gg.mineral.practice.util.messages.ChatMessages;
+import gg.mineral.practice.util.messages.ErrorMessages;
+import gg.mineral.practice.util.messages.UsageMessages;
 
 public class KitEditorCommand extends PlayerCommand {
+	final KitEditorManager kitEditorManager = PracticePlugin.INSTANCE.getKitEditorManager();;
+	final PlayerManager playerManager = PracticePlugin.INSTANCE.getPlayerManager();
+	final GametypeManager gametypeManager = PracticePlugin.INSTANCE.getGametypeManager();
+	final QueuetypeManager queuetypeManager = PracticePlugin.INSTANCE.getQueuetypeManager();
 
 	public KitEditorCommand() {
-		super("kiteditor", "practice.permission.admin");
+		super("kiteditor", RankPower.MANAGER);
 	}
 
 	@Override
@@ -37,10 +45,10 @@ public class KitEditorCommand extends PlayerCommand {
 
 				switch (toggled) {
 					case "false":
-						KitEditorManager.setEnabled(false);
+						kitEditorManager.setEnabled(false);
 						break;
 					case "true":
-						KitEditorManager.setEnabled(true);
+						kitEditorManager.setEnabled(true);
 						break;
 					default:
 						UsageMessages.KIT_EDITOR_ENABLE.send(player);
@@ -57,11 +65,11 @@ public class KitEditorCommand extends PlayerCommand {
 					return;
 				}
 
-				KitEditorManager.setDisplayItem(player.getItemInHand());
+				kitEditorManager.setDisplayItem(player.getItemInHand());
 
 				if (args.length > 1) {
 					String name = args[1].replace("&", "§");
-					KitEditorManager.setDisplayName(name);
+					kitEditorManager.setDisplayName(name);
 				}
 
 				ChatMessages.KIT_EDITOR_DISPLAY_SET.send(player);
@@ -82,14 +90,14 @@ public class KitEditorCommand extends PlayerCommand {
 					return;
 				}
 
-				KitEditorManager.setSlot(slot);
+				kitEditorManager.setSlot(slot);
 
 				ChatMessages.KIT_EDITOR_SLOT_SET.clone().replace("%slot%", strSlot).send(player);
 				;
 
 				return;
 			case "setlocation":
-				KitEditorManager.setLocation(player.getLocation());
+				kitEditorManager.setLocation(player.getLocation());
 				ChatMessages.KIT_EDITOR_LOCATION_SET.send(player);
 
 				return;

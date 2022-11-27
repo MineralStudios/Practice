@@ -2,15 +2,17 @@ package gg.mineral.practice.inventory.menus;
 
 import org.bukkit.inventory.ItemStack;
 
-import gg.mineral.practice.util.items.ItemBuilder;
-import gg.mineral.practice.util.messages.CC;
+import gg.mineral.core.utils.item.ItemBuilder;
+import gg.mineral.core.utils.message.CC;
+import gg.mineral.practice.PracticePlugin;
 import gg.mineral.practice.gametype.Gametype;
-import gg.mineral.api.inventory.InventoryBuilder;
+import gg.mineral.practice.inventory.PracticeMenu;
 import gg.mineral.practice.managers.GametypeManager;
 import gg.mineral.practice.tournaments.Tournament;
 
-public class SelectTournamentMenu implements InventoryBuilder {
+public class SelectTournamentMenu extends PracticeMenu {
 
+    final GametypeManager gametypeManager = PracticePlugin.INSTANCE.getGametypeManager();
     final static String TITLE = CC.BLUE + "Select Tournament";
 
     public SelectTournamentMenu() {
@@ -18,8 +20,8 @@ public class SelectTournamentMenu implements InventoryBuilder {
     }
 
     @Override
-    public MineralInventory build(Profile profile) {
-        for (Gametype g : GametypeManager.list()) {
+    public boolean update() {
+        for (Gametype g : gametypeManager.getGametypes()) {
             if (!g.getEvent()) {
                 continue;
             }

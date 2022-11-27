@@ -1,69 +1,79 @@
 package gg.mineral.practice.managers;
 
-import java.util.List;
-
 import org.bukkit.configuration.ConfigurationSection;
 
-import gg.mineral.practice.util.GlueList;
-import gg.mineral.practice.util.FileConfiguration;
+import gg.mineral.practice.PracticePlugin;
 import gg.mineral.practice.arena.Arena;
 import gg.mineral.practice.gametype.Gametype;
 import gg.mineral.practice.queue.Queuetype;
+import gg.mineral.practice.util.SaveableData;
+import gg.mineral.api.collection.GlueList;
+import gg.mineral.api.config.FileConfiguration;
 
-public class ArenaManager {
-	final static FileConfiguration config = new FileConfiguration("arenas.yml", "plugins/Practice");
-	final static GlueList<Arena> list = new GlueList<>();
+public class ArenaManager implements SaveableData {
+	final FileConfiguration config = new FileConfiguration("arenas.yml", "plugins/Practice");
+	final GametypeManager gametypeManager = PracticePlugin.INSTANCE.getGametypeManager();
+	final QueuetypeManager queuetypeManager = PracticePlugin.INSTANCE.getQueuetypeManager();
+	final GlueList<Arena> list = new GlueList<>();
 
-	static {
-		load();
-	}
-
-	public static void register(Arena arena) {
+	public void registerArena(Arena arena) {
 		list.add(arena);
 	}
 
-	public static void remove(Arena arena) {
+	public void remove(Arena arena) {
 		list.remove(arena);
 
-		for (Gametype gametype : GametypeManager.list()) {
-			gametype.getArenas().removeBoolean(arena);
+		for (Gametype gametype : gametypeManager.getGametypes()) {
+			gametype.getArenas().remove(arena);
 		}
 
-		for (Queuetype queuetype : QueuetypeManager.list()) {
-			queuetype.getArenas().removeBoolean(arena);
+		for (Queuetype queuetype : queuetypeManager.getQueuetypes()) {
+			queuetype.getArenas().remove(arena);
 		}
 	}
 
-	public static FileConfiguration getConfig() {
+	public boolean contains(Arena arena) {
+		for (int i = 0; i < list.size(); i++) {
+			Arena a = list.get(i);
+			if (a.equals(arena)) {
+				return true;
+			}
+		}
+
+		return false;
+	}
+
+	public FileConfiguration getConfig() {
 		return config;
 	}
 
-	public static List<Arena> list() {
+	public GlueList<Arena> getArenas() {
 		return list;
 	}
 
-	public static Arena getByName(String string) {
-		for (Arena arena : list()) {
-			if (!arena.getName().equalsIgnoreCase(string)) {
-				continue;
+	public Arena getArenaByName(String string) {
+		for (int i = 0; i < list.size(); i++) {
+			Arena a = list.get(i);
+			if (a.getName().equalsIgnoreCase(string)) {
+				return a;
 			}
-
-			return arena;
 		}
 
 		return null;
 	}
 
+	@Override
 	public void save() {
 
-		for (Arena arena : list()) {
+		for (Arena arena : getArenas()) {
 			arena.save();
 		}
 
 		config.save();
 	}
 
-	public static void load() {
+	@Override
+	public void load() {
 		ConfigurationSection configSection = getConfig().getConfigurationSection("Arena.");
 
 		if (configSection == null) {
@@ -81,13 +91,14 @@ public class ArenaManager {
 
 			arena.load();
 
-			register(arena);
+			registerArena(arena);
 		}
 	}
 
-	public static void setDefaults() {
+	@Override
+	public void setDefaults() {
 		Arena arena = new Arena("Default");
 		arena.setDefaults();
-		register(arena);
+		registerArena(arena);
 	}
 }

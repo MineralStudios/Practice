@@ -1,6 +1,5 @@
 package gg.mineral.practice.match;
 
-import java.sql.SQLException;
 import java.util.Arrays;
 import java.util.concurrent.ConcurrentLinkedDeque;
 import java.util.concurrent.ExecutorService;
@@ -18,16 +17,18 @@ import org.bukkit.potion.PotionEffect;
 import org.bukkit.potion.PotionEffectType;
 import org.bukkit.scoreboard.Team;
 
-import gg.mineral.practice.util.items.ItemBuilder;
-import gg.mineral.practice.util.messages.CC;
-import gg.mineral.practice.util.messages.ChatMessage;
+import gg.mineral.core.utils.item.ItemBuilder;
+import gg.mineral.core.utils.message.CC;
+import gg.mineral.core.utils.message.ChatMessage;
 import gg.mineral.practice.PracticePlugin;
 import gg.mineral.practice.entity.Profile;
 import gg.mineral.practice.gametype.Gametype;
 import gg.mineral.practice.inventory.menus.InventoryStatsMenu;
 import gg.mineral.practice.kit.Kit;
+import gg.mineral.practice.managers.ArenaManager;
 import gg.mineral.practice.managers.MatchManager;
 import gg.mineral.practice.managers.PlayerManager;
+import gg.mineral.practice.managers.QueueEntryManager;
 import gg.mineral.practice.scoreboard.BoxingScoreboard;
 import gg.mineral.practice.scoreboard.InMatchScoreboard;
 import gg.mineral.practice.scoreboard.PartyMatchScoreboard;
@@ -37,9 +38,9 @@ import gg.mineral.practice.util.MathUtil;
 import gg.mineral.practice.util.ProfileList;
 import gg.mineral.practice.util.WorldUtil;
 import gg.mineral.practice.util.items.ItemStacks;
-import gg.mineral.practice.util.messages.impl.ChatMessages;
-import gg.mineral.practice.util.messages.impl.ErrorMessages;
-import gg.mineral.practice.util.GlueList;
+import gg.mineral.practice.util.messages.ChatMessages;
+import gg.mineral.practice.util.messages.ErrorMessages;
+import gg.mineral.api.collection.GlueList;
 import net.md_5.bungee.api.chat.ClickEvent;
 import net.md_5.bungee.api.chat.ComponentBuilder;
 import net.md_5.bungee.api.chat.HoverEvent;
@@ -59,7 +60,10 @@ public class Match {
 	ConcurrentLinkedDeque<Profile> spectators = new ConcurrentLinkedDeque<>();
 	MatchData m;
 	GlueList<Location> buildLog = new GlueList<>();
-
+	final MatchManager matchManager = PracticePlugin.INSTANCE.getMatchManager();
+	final PlayerManager playerManager = PracticePlugin.INSTANCE.getPlayerManager();
+	final ArenaManager arenaManager = PracticePlugin.INSTANCE.getArenaManager();
+	final QueueEntryManager queueEntryManager = PracticePlugin.INSTANCE.getQueueEntryManager();
 	static final ExecutorService executor = Executors.newCachedThreadPool();
 	org.bukkit.World world = null;
 
@@ -74,13 +78,13 @@ public class Match {
 		this.m = m;
 	}
 
-	public void prepareForMatch(Profile... profiles) throws SQLException {
+	public void prepareForMatch(Profile... profiles) {
 		for (Profile profile : profiles) {
 			prepareForMatch(profile);
 		}
 	}
 
-	public void prepareForMatch(Profile p) throws SQLException {
+	public void prepareForMatch(Profile p) {
 
 		if (!p.bukkit().isOnline()) {
 			end(p);
@@ -117,7 +121,7 @@ public class Match {
 			p.bukkit().showPlayer(participants.get(i).bukkit());
 		}
 
-		for (Match match : MatchManager.list()) {
+		for (Match match : matchManager.getMatchs()) {
 			match.updateVisiblity(this, p);
 		}
 
@@ -197,7 +201,7 @@ public class Match {
 		}
 	}
 
-	public void handleOpponentMessages() throws SQLException {
+	public void handleOpponentMessages() {
 		String s1 = "Opponent: " + player2.getName();
 		String s2 = "Opponent: " + player1.getName();
 
@@ -217,15 +221,15 @@ public class Match {
 		world.allowMonsters = false;
 	}
 
-	public void start() throws SQLException {
+	public void start() {
 
 		if (m.getArena() == null) {
-			PlayerManager.broadcast(participants, ErrorMessages.ARENA_NOT_FOUND);
+			playerManager.broadcast(participants, ErrorMessages.ARENA_NOT_FOUND);
 			end(player1);
 			return;
 		}
 
-		MatchManager.register(this);
+		matchManager.registerMatch(this);
 		Location location1 = m.getArena().getLocation1();
 		Location location2 = m.getArena().getLocation2();
 		location1.setDirection(m.getArena().getLocation1EyeVector());
@@ -247,7 +251,7 @@ public class Match {
 		countdown.start();
 	}
 
-	public void end(Profile victim) throws SQLException {
+	public void end(Profile victim) {
 		if (ended) {
 			return;
 		}
@@ -261,7 +265,7 @@ public class Match {
 		return p1.equals(p) ? getPlayer2() : p1;
 	}
 
-	public void end(Profile attacker, Profile victim) throws SQLException {
+	public void end(Profile attacker, Profile victim) {
 		int attackerHealth = (int) attacker.bukkit().getHealth();
 		attacker.heal();
 		attacker.removePotionEffects();
@@ -278,13 +282,8 @@ public class Match {
 			rankedMessage = CC.GREEN + attacker.getName() + " (+" + (newAttackerElo - attackerElo) + ") " + CC.RED
 					+ victim.getName() + " (" + (newVictimElo - victimElo) + ")";
 			executor.execute(() -> {
-				try {
-					g.setElo(newAttackerElo, attacker);
-					g.setElo(newVictimElo, victim);
-				} catch (SQLException e) {
-					e.printStackTrace();
-				}
-
+				g.setElo(newAttackerElo, attacker);
+				g.setElo(newVictimElo, victim);
 				g.updatePlayerLeaderboard(victim, newVictimElo);
 				g.updatePlayerLeaderboard(attacker, newAttackerElo);
 			});
@@ -333,7 +332,7 @@ public class Match {
 		new Scoreboard(player1).setBoard();
 		new Scoreboard(player2).setBoard();
 		victim.removeFromMatch();
-		MatchManager.remove(this);
+		matchManager.remove(this);
 
 		Bukkit.getServer().getScheduler().runTaskLater(PracticePlugin.INSTANCE, () -> {
 			if (victim.bukkit().isDead()) {
@@ -411,10 +410,10 @@ public class Match {
 		menu.setSlot(46, potItem);
 
 		if (this instanceof PartyMatch) {
-			PlayerManager.setPartyInventoryStats(p, menu);
+			playerManager.setPartyInventoryStats(p, menu);
 		}
 
-		PlayerManager.setInventoryStats(p, menu);
+		playerManager.setInventoryStats(p, menu);
 		p.clearInventory();
 	}
 

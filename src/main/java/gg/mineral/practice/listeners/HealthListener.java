@@ -1,17 +1,17 @@
 package gg.mineral.practice.listeners;
 
-import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.entity.EntityRegainHealthEvent;
 import org.bukkit.event.entity.EntityRegainHealthEvent.RegainReason;
 import org.bukkit.event.entity.FoodLevelChangeEvent;
 
-import gg.mineral.practice.entity.PlayerStatus;
+import gg.mineral.practice.PracticePlugin;
 import gg.mineral.practice.entity.Profile;
 import gg.mineral.practice.managers.PlayerManager;
 
 public class HealthListener implements Listener {
+	final PlayerManager playerManager = PracticePlugin.INSTANCE.getPlayerManager();
 
 	@EventHandler
 	public void onEntityRegainHealth(EntityRegainHealthEvent e) {
@@ -19,15 +19,13 @@ public class HealthListener implements Listener {
 			return;
 		}
 
-		Player bukkit = (org.bukkit.entity.Player) e.getEntity();
-		Profile profile = PlayerManager
-				.get(p -> p.getUUID().equals(bukkit.getUniqueId()) && p.getPlayerStatus() == PlayerStatus.FIGHTING);
+		Profile player = playerManager.getProfileFromMatch((org.bukkit.entity.Player) e.getEntity());
 
-		if (profile == null) {
+		if (player == null) {
 			return;
 		}
 
-		if (!profile.getMatch().getData().getRegeneration()) {
+		if (!player.getMatch().getData().getRegeneration()) {
 			if (e.getRegainReason() == RegainReason.SATIATED || e.getRegainReason() == RegainReason.REGEN) {
 				e.setCancelled(true);
 			}
@@ -36,20 +34,18 @@ public class HealthListener implements Listener {
 
 	@EventHandler
 	public void onFoodLevelChange(FoodLevelChangeEvent e) {
-		Player bukkit = (org.bukkit.entity.Player) e.getEntity();
-		Profile profile = PlayerManager
-				.get(p -> p.getUUID().equals(bukkit.getUniqueId()) && p.getPlayerStatus() == PlayerStatus.FIGHTING);
+		Profile player = playerManager.getProfileFromMatch((org.bukkit.entity.Player) e.getEntity());
 
-		if (profile == null) {
+		if (player == null) {
 			e.setCancelled(true);
 			return;
 		}
 
-		if (profile.isInMatchCountdown()) {
+		if (player.isInMatchCountdown()) {
 			e.setCancelled(true);
 			return;
 		}
 
-		e.setCancelled(!profile.getMatch().getData().getHunger());
+		e.setCancelled(!player.getMatch().getData().getHunger());
 	}
 }

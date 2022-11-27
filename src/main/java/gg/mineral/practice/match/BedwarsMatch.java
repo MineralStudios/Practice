@@ -1,6 +1,5 @@
 package gg.mineral.practice.match;
 
-import java.sql.SQLException;
 import java.util.Arrays;
 import java.util.Iterator;
 
@@ -12,17 +11,15 @@ import org.bukkit.craftbukkit.v1_8_R3.entity.CraftItem;
 import org.bukkit.entity.Item;
 import org.bukkit.scoreboard.Team;
 
-import gg.mineral.practice.util.messages.CC;
+import gg.mineral.core.utils.message.CC;
 import gg.mineral.practice.PracticePlugin;
 import gg.mineral.practice.arena.Arena;
 import gg.mineral.practice.entity.Profile;
-import gg.mineral.practice.managers.MatchManager;
-import gg.mineral.practice.managers.PlayerManager;
 import gg.mineral.practice.scoreboard.Scoreboard;
 import gg.mineral.practice.util.Countdown;
 import gg.mineral.practice.util.ProfileList;
 import gg.mineral.practice.util.WorldUtil;
-import gg.mineral.practice.util.messages.impl.ErrorMessages;
+import gg.mineral.practice.util.messages.ErrorMessages;
 import net.minecraft.server.v1_8_R3.EntityHuman;
 import net.minecraft.server.v1_8_R3.EntityItem;
 import net.minecraft.server.v1_8_R3.PacketPlayInClientCommand;
@@ -58,15 +55,15 @@ public class BedwarsMatch extends Match {
     }
 
     @Override
-    public void start() throws SQLException {
+    public void start() {
 
         if (m.getArena() == null) {
-            PlayerManager.broadcast(participants, ErrorMessages.ARENA_NOT_FOUND);
+            playerManager.broadcast(participants, ErrorMessages.ARENA_NOT_FOUND);
             end(participants.get(0));
             return;
         }
 
-        MatchManager.register(this);
+        matchManager.registerMatch(this);
 
         setWorldParameters(((CraftWorld) m.getArena().getBedWarsLocation(ChatColor.AQUA).getWorld()).getHandle());
 
@@ -153,7 +150,7 @@ public class BedwarsMatch extends Match {
 
             }
 
-            MatchManager.remove(this);
+            matchManager.remove(this);
             victim.bukkit().sendMessage(CC.RED + "You lost");
             new Scoreboard(victim).setBoard();
 
