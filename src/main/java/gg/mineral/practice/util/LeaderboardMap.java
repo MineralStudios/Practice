@@ -16,17 +16,17 @@ public class LeaderboardMap {
     }
 
     public static void main(String[] args) throws Exception {
-        int size = 10;
+        int size = 1000;
         LeaderboardMap map = new LeaderboardMap(size);
 
-        long startTime = System.currentTimeMillis();
+        long startTime = System.nanoTime();
         for (int i = 0; i < size; i++) {
             map.put(i + "", (int) (Math.random() * 100000));
         }
-        long timeTaken = System.currentTimeMillis() - startTime;
+        double timeTaken = (System.nanoTime() - startTime) / 1000000D;
 
         System.out.println("Time taken: " + timeTaken + "ms");
-        System.out.println("Time taken per element: " + (timeTaken / (double) size) + "ms");
+        System.out.println("Time taken per element: " + (timeTaken / size) + "ms");
 
     }
 

@@ -3,4 +3,3 @@ version: .dev1
 author: OpaqueEclipse
 main: gg.mineral.PracticePlugin
 description: Mineral Practice Plugin!
-depend: [MineralCore]
