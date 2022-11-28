@@ -1,8 +1,5 @@
 package gg.mineral.practice.util.messages;
 
-import gg.mineral.core.utils.message.ErrorMessage;
-import gg.mineral.core.utils.message.Message;
-
 public class ErrorMessages {
 	// Arena
 	public static final Message ARENA_ALREADY_EXISTS = new ErrorMessage("That arena already exists.");

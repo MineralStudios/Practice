@@ -2,7 +2,7 @@ package gg.mineral.practice.commands.settings;
 
 import java.util.List;
 
-import gg.mineral.core.commands.PlayerCommand;
+import gg.mineral.practice.commands.PlayerCommand;
 import gg.mineral.practice.PracticePlugin;
 import gg.mineral.practice.entity.Profile;
 import gg.mineral.practice.managers.PlayerManager;

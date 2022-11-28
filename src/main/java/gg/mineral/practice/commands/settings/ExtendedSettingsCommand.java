@@ -1,7 +1,7 @@
 package gg.mineral.practice.commands.settings;
 
-import gg.mineral.core.commands.PlayerCommand;
-import gg.mineral.core.managers.ProfileManager;
+import gg.mineral.practice.PracticePlugin;
+import gg.mineral.practice.commands.PlayerCommand;
 import gg.mineral.practice.inventory.menus.ExtendedSettingsMenu;
 
 public class ExtendedSettingsCommand extends PlayerCommand {
@@ -12,6 +12,6 @@ public class ExtendedSettingsCommand extends PlayerCommand {
 
 	@Override
 	public void execute(org.bukkit.entity.Player player, String[] args) {
-		ProfileManager.getProfile(player).openMenu(new ExtendedSettingsMenu());
+		PracticePlugin.INSTANCE.getPlayerManager().getProfile(player).openMenu(new ExtendedSettingsMenu());
 	}
 }

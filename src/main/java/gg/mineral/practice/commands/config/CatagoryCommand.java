@@ -2,9 +2,9 @@ package gg.mineral.practice.commands.config;
 
 import java.util.Iterator;
 
-import gg.mineral.core.commands.PlayerCommand;
-import gg.mineral.core.rank.RankPower;
-import gg.mineral.core.utils.message.CC;
+import gg.mineral.practice.commands.PlayerCommand;
+
+import gg.mineral.practice.util.messages.CC;
 import gg.mineral.practice.PracticePlugin;
 import gg.mineral.practice.gametype.Catagory;
 import gg.mineral.practice.gametype.Gametype;
@@ -27,7 +27,7 @@ public class CatagoryCommand extends PlayerCommand {
 	final GametypeManager gametypeManager = PracticePlugin.INSTANCE.getGametypeManager();
 
 	public CatagoryCommand() {
-		super("catagory", RankPower.MANAGER);
+		super("catagory", "practice.config");
 	}
 
 	@Override

@@ -3,11 +3,10 @@ package gg.mineral.practice.inventory.menus;
 import org.bukkit.Material;
 import org.bukkit.inventory.ItemStack;
 
-import gg.mineral.core.utils.item.ItemBuilder;
-import gg.mineral.core.utils.message.CC;
+import gg.mineral.practice.util.items.ItemBuilder;
+import gg.mineral.practice.util.messages.CC;
 import gg.mineral.practice.inventory.PracticeMenu;
 import gg.mineral.practice.inventory.SubmitAction;
-import gg.mineral.practice.tasks.MenuTask;
 
 public class SelectModeMenu extends PracticeMenu {
 	SubmitAction action;
@@ -31,11 +30,20 @@ public class SelectModeMenu extends PracticeMenu {
 			ItemStack item3 = new ItemBuilder(Material.RECORD_4)
 					.name("Tournament Mode").lore()
 					.build();
-			setSlot(4, item3, new MenuTask(new SelectTournamentMenu()));
+			setSlot(4, item3, p -> {
+				p.openMenu(new SelectTournamentMenu());
+				return true;
+			});
 		}
 
-		setSlot(2, item, new MenuTask(new SelectExistingKitMenu(new SelectArenaMenu(action), true)));
-		setSlot(6, item2, new MenuTask(new MechanicsMenu(action)));
+		setSlot(2, item, p -> {
+			p.openMenu(new SelectExistingKitMenu(new SelectArenaMenu(action), true));
+			return true;
+		});
+		setSlot(6, item2, p -> {
+			p.openMenu(new MechanicsMenu(action));
+			return true;
+		});
 		return true;
 	}
 }

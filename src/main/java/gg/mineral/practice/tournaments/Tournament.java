@@ -6,7 +6,7 @@ import java.util.concurrent.ConcurrentLinkedDeque;
 import org.bukkit.Location;
 import org.bukkit.scheduler.BukkitRunnable;
 
-import gg.mineral.core.utils.message.ChatMessage;
+import gg.mineral.practice.util.messages.ChatMessage;
 import gg.mineral.practice.PracticePlugin;
 import gg.mineral.practice.arena.Arena;
 import gg.mineral.practice.entity.Profile;

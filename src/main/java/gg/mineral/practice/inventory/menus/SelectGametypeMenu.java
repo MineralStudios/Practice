@@ -4,8 +4,8 @@ import java.util.Map.Entry;
 
 import org.bukkit.inventory.ItemStack;
 
-import gg.mineral.core.utils.item.ItemBuilder;
-import gg.mineral.core.utils.message.CC;
+import gg.mineral.practice.util.items.ItemBuilder;
+import gg.mineral.practice.util.messages.CC;
 import gg.mineral.practice.PracticePlugin;
 import gg.mineral.practice.gametype.Catagory;
 import gg.mineral.practice.gametype.Gametype;
@@ -17,7 +17,6 @@ import gg.mineral.practice.match.Match;
 import gg.mineral.practice.queue.QueueEntry;
 import gg.mineral.practice.queue.QueueSearchTask;
 import gg.mineral.practice.queue.Queuetype;
-import gg.mineral.practice.tasks.MenuTask;
 
 public class SelectGametypeMenu extends PracticeMenu {
 	MatchManager matchManager = PracticePlugin.INSTANCE.getMatchManager();
@@ -92,7 +91,10 @@ public class SelectGametypeMenu extends PracticeMenu {
 					.name(c.getDisplayName());
 			itemBuild.lore();
 			ItemStack item = itemBuild.build();
-			setSlot(entry.getValue(), item, new MenuTask(new SelectCategorizedGametypeMenu(q, c, true, kitEditor)));
+			setSlot(entry.getValue(), item, p -> {
+				p.openMenu(new SelectCategorizedGametypeMenu(q, c, true, kitEditor));
+				return true;
+			});
 		}
 
 		return true;

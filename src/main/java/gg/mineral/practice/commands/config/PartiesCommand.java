@@ -1,7 +1,7 @@
 package gg.mineral.practice.commands.config;
 
-import gg.mineral.core.commands.PlayerCommand;
-import gg.mineral.core.rank.RankPower;
+import gg.mineral.practice.commands.PlayerCommand;
+
 import gg.mineral.practice.PracticePlugin;
 import gg.mineral.practice.managers.PartyManager;
 import gg.mineral.practice.managers.PlayerManager;
@@ -14,7 +14,7 @@ public class PartiesCommand extends PlayerCommand {
 	final PartyManager partyManager = PracticePlugin.INSTANCE.getPartyManager();
 
 	public PartiesCommand() {
-		super("parties", RankPower.MANAGER);
+		super("parties", "practice.config");
 	}
 
 	@Override

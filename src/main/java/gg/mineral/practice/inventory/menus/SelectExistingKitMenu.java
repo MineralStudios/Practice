@@ -2,15 +2,14 @@ package gg.mineral.practice.inventory.menus;
 
 import org.bukkit.inventory.ItemStack;
 
-import gg.mineral.core.utils.item.ItemBuilder;
-import gg.mineral.core.utils.message.CC;
+import gg.mineral.practice.util.items.ItemBuilder;
+import gg.mineral.practice.util.messages.CC;
 import gg.mineral.practice.PracticePlugin;
 import gg.mineral.practice.gametype.Catagory;
 import gg.mineral.practice.gametype.Gametype;
 import gg.mineral.practice.inventory.PracticeMenu;
 import gg.mineral.practice.managers.CatagoryManager;
 import gg.mineral.practice.managers.GametypeManager;
-import gg.mineral.practice.tasks.MenuTask;
 
 public class SelectExistingKitMenu extends PracticeMenu {
     final GametypeManager gametypeManager = PracticePlugin.INSTANCE.getGametypeManager();
@@ -56,7 +55,10 @@ public class SelectExistingKitMenu extends PracticeMenu {
         for (Catagory c : catagoryManager.getCatagorys()) {
             ItemStack item = new ItemBuilder(c.getDisplayItem())
                     .name(c.getDisplayName()).build();
-            add(item, new MenuTask(new SelectCategorizedExistingKitMenu(c, menu, simple)));
+            add(item, p -> {
+                p.openMenu(new SelectCategorizedExistingKitMenu(c, menu, simple));
+                return true;
+            });
         }
 
         return true;

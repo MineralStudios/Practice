@@ -3,9 +3,8 @@ package gg.mineral.practice.inventory.menus;
 import org.bukkit.Material;
 import org.bukkit.inventory.ItemStack;
 
-import gg.mineral.core.tasks.CommandTask;
-import gg.mineral.core.utils.item.ItemBuilder;
-import gg.mineral.core.utils.message.CC;
+import gg.mineral.practice.util.items.ItemBuilder;
+import gg.mineral.practice.util.messages.CC;
 import gg.mineral.practice.PracticePlugin;
 import gg.mineral.practice.entity.PlayerStatus;
 import gg.mineral.practice.entity.Profile;
@@ -31,7 +30,7 @@ public class OtherPartiesMenu extends PracticeMenu {
                 Profile partyLeader = p.getPartyLeader();
                 ItemStack skull = new ItemBuilder(Material.SKULL_ITEM)
                         .name(partyLeader.getName()).build();
-                add(skull, new CommandTask("duel " + partyLeader.getName()));
+                add(skull, pr -> pr.bukkit().performCommand("duel " + partyLeader.getName()));
             }
         }
 

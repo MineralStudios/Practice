@@ -1,6 +1,6 @@
 package gg.mineral.practice.commands.stats;
 
-import gg.mineral.core.commands.PlayerCommand;
+import gg.mineral.practice.commands.PlayerCommand;
 import gg.mineral.practice.PracticePlugin;
 import gg.mineral.practice.inventory.menus.LeaderboardMenu;
 import gg.mineral.practice.managers.PlayerManager;

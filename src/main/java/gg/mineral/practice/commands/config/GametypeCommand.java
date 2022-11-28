@@ -5,9 +5,9 @@ import java.util.Iterator;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 
-import gg.mineral.core.commands.PlayerCommand;
-import gg.mineral.core.rank.RankPower;
-import gg.mineral.core.utils.message.CC;
+import gg.mineral.practice.commands.PlayerCommand;
+
+import gg.mineral.practice.util.messages.CC;
 import gg.mineral.practice.PracticePlugin;
 import gg.mineral.practice.arena.Arena;
 import gg.mineral.practice.gametype.Gametype;
@@ -29,7 +29,7 @@ public class GametypeCommand extends PlayerCommand {
 	final ArenaManager arenaManager = PracticePlugin.INSTANCE.getArenaManager();
 
 	public GametypeCommand() {
-		super("gametype", RankPower.MANAGER);
+		super("gametype", "practice.config");
 	}
 
 	@Override

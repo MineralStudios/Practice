@@ -2,23 +2,26 @@ package gg.mineral.practice.inventory.menus;
 
 import org.bukkit.Material;
 
-import gg.mineral.core.inventory.menus.SettingsMenu;
-import gg.mineral.core.tasks.CommandTask;
-import gg.mineral.core.utils.item.ItemBuilder;
+import gg.mineral.practice.inventory.PracticeMenu;
+import gg.mineral.practice.util.items.ItemBuilder;
+import gg.mineral.practice.util.messages.CC;
 
-public class ExtendedSettingsMenu extends SettingsMenu {
+public class ExtendedSettingsMenu extends PracticeMenu {
+
+	public ExtendedSettingsMenu() {
+		super(CC.BLUE + "Settings");
+	}
 
 	@Override
 	public boolean update() {
-		boolean returnVal = super.update();
 		setSlot(4,
 				new ItemBuilder(Material.GOLDEN_CARROT)
 						.name("Toggle Player Visibility").build(),
-				new CommandTask("toggleplayervisibility"));
+				p -> p.bukkit().performCommand("toggleplayervisibility"));
 		setSlot(5,
 				new ItemBuilder(Material.WOOD_SWORD)
 						.name("Toggle Duel Requests").build(),
-				new CommandTask("toggleduelrequests"));
-		return returnVal;
+				p -> p.bukkit().performCommand("toggleduelrequests"));
+		return true;
 	}
 }

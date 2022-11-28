@@ -1,5 +1,7 @@
 package gg.mineral.practice.listeners;
 
+import java.util.function.Predicate;
+
 import org.bukkit.Material;
 import org.bukkit.block.Block;
 import org.bukkit.block.BlockFace;
@@ -12,14 +14,12 @@ import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.scheduler.BukkitRunnable;
 
-import gg.mineral.core.tasks.CommandTask;
 import gg.mineral.practice.PracticePlugin;
 import gg.mineral.practice.entity.PlayerStatus;
 import gg.mineral.practice.entity.Profile;
 import gg.mineral.practice.inventory.menus.AddItemsMenu;
 import gg.mineral.practice.inventory.menus.SaveLoadKitsMenu;
 import gg.mineral.practice.managers.PlayerManager;
-import gg.mineral.practice.tasks.MenuTask;
 import gg.mineral.practice.util.messages.ChatMessages;
 
 public class InteractListener implements Listener {
@@ -153,26 +153,13 @@ public class InteractListener implements Listener {
 			}
 		}
 
-		Object object = player.getInventory().getTask(player.getInventory().getHeldItemSlot());
+		Predicate<Profile> predicate = player.getInventory().getTask(player.getInventory().getHeldItemSlot());
 
-		if (object == null) {
+		if (predicate == null) {
 			return;
 		}
 
-		if (object instanceof CommandTask) {
-			player.bukkit().performCommand(((CommandTask) object).getCommand());
-			return;
-		}
-
-		if (object instanceof MenuTask) {
-			player.openMenu(((MenuTask) object).getMenu());
-			return;
-		}
-
-		if (object instanceof Runnable) {
-			((Runnable) object).run();
-			return;
-		}
+		predicate.test(player);
 
 		return;
 	}

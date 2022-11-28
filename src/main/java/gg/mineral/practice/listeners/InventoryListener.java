@@ -1,5 +1,7 @@
 package gg.mineral.practice.listeners;
 
+import java.util.function.Predicate;
+
 import org.bukkit.GameMode;
 import org.bukkit.Material;
 import org.bukkit.event.EventHandler;
@@ -9,13 +11,11 @@ import org.bukkit.event.inventory.InventoryCloseEvent;
 import org.bukkit.event.player.PlayerDropItemEvent;
 import org.bukkit.event.player.PlayerPickupItemEvent;
 
-import gg.mineral.core.tasks.CommandTask;
 import gg.mineral.practice.PracticePlugin;
 import gg.mineral.practice.entity.PlayerStatus;
 import gg.mineral.practice.entity.Profile;
 import gg.mineral.practice.inventory.PracticeMenu;
 import gg.mineral.practice.managers.PlayerManager;
-import gg.mineral.practice.tasks.MenuTask;
 
 public class InventoryListener implements Listener {
 	final PlayerManager playerManager = PracticePlugin.INSTANCE.getPlayerManager();
@@ -41,26 +41,13 @@ public class InventoryListener implements Listener {
 			e.setCancelled(menu.getClickCancelled());
 		}
 
-		Object object = menu.getTask(e.getSlot());
+		Predicate<Profile> predicate = menu.getTask(e.getSlot());
 
-		if (object == null) {
+		if (predicate == null) {
 			return;
 		}
 
-		if (object instanceof CommandTask) {
-			player.bukkit().performCommand(((CommandTask) object).getCommand());
-			return;
-		}
-
-		if (object instanceof MenuTask) {
-			player.openMenu(((MenuTask) object).getMenu());
-			return;
-		}
-
-		if (object instanceof Runnable) {
-			((Runnable) object).run();
-			return;
-		}
+		predicate.test(player);
 	}
 
 	@EventHandler

@@ -14,13 +14,11 @@ import org.bukkit.potion.PotionEffect;
 import org.bukkit.scheduler.BukkitRunnable;
 
 import gg.mineral.api.collection.GlueList;
-import gg.mineral.core.inventory.PlayerInventory;
-import gg.mineral.core.tasks.CommandTask;
-import gg.mineral.core.tasks.RunnableTask;
-import gg.mineral.core.utils.item.ItemBuilder;
-import gg.mineral.core.utils.message.CC;
-import gg.mineral.core.utils.message.ChatMessage;
-import gg.mineral.core.utils.message.Message;
+import gg.mineral.practice.inventory.PlayerInventory;
+import gg.mineral.practice.util.items.ItemBuilder;
+import gg.mineral.practice.util.messages.CC;
+import gg.mineral.practice.util.messages.ChatMessage;
+import gg.mineral.practice.util.messages.Message;
 import gg.mineral.practice.PracticePlugin;
 import gg.mineral.practice.event.PlayerStatusChangeEvent;
 import gg.mineral.practice.inventory.PracticeMenu;
@@ -40,7 +38,6 @@ import gg.mineral.practice.queue.QueueEntry;
 import gg.mineral.practice.queue.QueueSearchTask;
 import gg.mineral.practice.queue.Queuetype;
 import gg.mineral.practice.scoreboard.Scoreboard;
-import gg.mineral.practice.tasks.MenuTask;
 import gg.mineral.practice.tournaments.Tournament;
 import gg.mineral.practice.util.AutoExpireList;
 import gg.mineral.practice.util.PearlCooldown;
@@ -317,14 +314,17 @@ public class Profile {
 		new BukkitRunnable() {
 			@Override
 			public void run() {
-				inventory.setItem(0, ItemStacks.LEAVE_PARTY, new CommandTask("p leave"));
+				inventory.setItem(0, ItemStacks.LEAVE_PARTY, p -> p.bukkit().performCommand("p leave"));
 			}
 		}.runTaskLater(PracticePlugin.INSTANCE, 20);
 
-		inventory.setItem(1, ItemStacks.LIST_PLAYERS, new CommandTask("p list"));
-		inventory.setItem(4, ItemStacks.DUEL, new CommandTask("duel"));
-		inventory.setItem(5, ItemStacks.PARTY_SPLIT, new MenuTask(new SelectModeMenu(SubmitAction.P_SPLIT)));
-		inventory.setItem(3, ItemStacks.OPEN_PARTY, new CommandTask("p open"));
+		inventory.setItem(1, ItemStacks.LIST_PLAYERS, p -> p.bukkit().performCommand("p list"));
+		inventory.setItem(4, ItemStacks.DUEL, p -> p.bukkit().performCommand("duel"));
+		inventory.setItem(5, ItemStacks.PARTY_SPLIT, p -> {
+			p.openMenu(new SelectModeMenu(SubmitAction.P_SPLIT));
+			return true;
+		});
+		inventory.setItem(3, ItemStacks.OPEN_PARTY, p -> p.bukkit().performCommand("p open"));
 		bukkit().updateInventory();
 	}
 
@@ -340,7 +340,10 @@ public class Profile {
 				ItemStack item = new ItemBuilder(q.getDisplayItem())
 						.name(CC.SECONDARY + CC.B + q.getDisplayName()).build();
 				inventory.setItem(q.getSlotNumber(), item,
-						new MenuTask(new SelectGametypeMenu(q, true, false)));
+						p -> {
+							p.openMenu(new SelectGametypeMenu(q, true, false));
+							return true;
+						});
 			} catch (NullPointerException e) {
 				continue;
 			}
@@ -351,21 +354,26 @@ public class Profile {
 					.name(CC.SECONDARY + CC.B + instance.getKitEditorManager().getDisplayName())
 					.build();
 			inventory.setItem(instance.getKitEditorManager().getSlot(), editor,
-					new MenuTask(new SelectQueuetypeMenu()));
+					p -> {
+						p.openMenu(new SelectQueuetypeMenu());
+						return true;
+					});
 		}
 
 		if (instance.getPartyManager().getEnabled()) {
 			ItemStack parties = new ItemBuilder(instance.getPartyManager().getDisplayItem())
 					.name(CC.SECONDARY + CC.B + instance.getPartyManager().getDisplayName())
 					.build();
-			inventory.setItem(instance.getPartyManager().getSlot(), parties, new CommandTask("p create"));
+			inventory.setItem(instance.getPartyManager().getSlot(), parties,
+					p -> p.bukkit().performCommand("p create"));
 		}
 
 		if (instance.getSettingsManager().getEnabled()) {
 			ItemStack settings = new ItemBuilder(instance.getSettingsManager().getDisplayItem())
 					.name(CC.SECONDARY + CC.B + instance.getSettingsManager().getDisplayName())
 					.build();
-			inventory.setItem(instance.getSettingsManager().getSlot(), settings, new CommandTask("settings"));
+			inventory.setItem(instance.getSettingsManager().getSlot(), settings,
+					p -> p.bukkit().performCommand("settings"));
 		}
 		bukkit().updateInventory();
 	}
@@ -375,7 +383,10 @@ public class Profile {
 		inventory.clear();
 
 		getInventory().setItem(0, ItemStacks.LEAVE_QUEUE,
-				new RunnableTask(this::removeFromQueue, this::setInventoryForLobby));
+				() -> {
+					this.removeFromQueue();
+					this.setInventoryForLobby();
+				});
 		bukkit().updateInventory();
 	}
 

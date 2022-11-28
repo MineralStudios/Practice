@@ -2,9 +2,9 @@ package gg.mineral.practice.commands.config;
 
 import java.util.Iterator;
 
-import gg.mineral.core.commands.PlayerCommand;
-import gg.mineral.core.rank.RankPower;
-import gg.mineral.core.utils.message.CC;
+import gg.mineral.practice.commands.PlayerCommand;
+
+import gg.mineral.practice.util.messages.CC;
 import gg.mineral.practice.PracticePlugin;
 import gg.mineral.practice.arena.Arena;
 import gg.mineral.practice.managers.ArenaManager;
@@ -24,7 +24,7 @@ public class QueuetypeCommand extends PlayerCommand {
 	final ArenaManager arenaManager = PracticePlugin.INSTANCE.getArenaManager();
 
 	public QueuetypeCommand() {
-		super("queuetype", RankPower.MANAGER);
+		super("queuetype", "practice.config");
 	}
 
 	@Override

@@ -1,7 +1,7 @@
 package gg.mineral.practice.commands.config;
 
-import gg.mineral.core.commands.PlayerCommand;
-import gg.mineral.core.rank.RankPower;
+import gg.mineral.practice.commands.PlayerCommand;
+
 import gg.mineral.practice.PracticePlugin;
 import gg.mineral.practice.managers.PlayerManager;
 import gg.mineral.practice.util.messages.ChatMessages;
@@ -10,7 +10,7 @@ public class ListConfigCommands extends PlayerCommand {
 	final PlayerManager playerManager = PracticePlugin.INSTANCE.getPlayerManager();
 
 	public ListConfigCommands() {
-		super("practice", RankPower.MANAGER);
+		super("practice", "practice.config");
 		setAliases("practiceconfig", "practicecommandslist");
 	}
 

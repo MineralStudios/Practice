@@ -1,7 +1,7 @@
 package gg.mineral.practice.commands.config;
 
-import gg.mineral.core.commands.PlayerCommand;
-import gg.mineral.core.rank.RankPower;
+import gg.mineral.practice.commands.PlayerCommand;
+
 import gg.mineral.practice.PracticePlugin;
 import gg.mineral.practice.kit.KitEditorManager;
 import gg.mineral.practice.managers.GametypeManager;
@@ -18,7 +18,7 @@ public class KitEditorCommand extends PlayerCommand {
 	final QueuetypeManager queuetypeManager = PracticePlugin.INSTANCE.getQueuetypeManager();
 
 	public KitEditorCommand() {
-		super("kiteditor", RankPower.MANAGER);
+		super("kiteditor", "practice.config");
 	}
 
 	@Override

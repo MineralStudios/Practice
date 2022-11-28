@@ -7,7 +7,7 @@ import org.bukkit.Material;
 import org.bukkit.inventory.ItemStack;
 
 import gg.mineral.api.collection.GlueList;
-import gg.mineral.core.utils.message.CC;
+import gg.mineral.practice.util.messages.CC;
 import gg.mineral.practice.inventory.PracticeMenu;
 
 public class AddItemsMenu extends PracticeMenu {

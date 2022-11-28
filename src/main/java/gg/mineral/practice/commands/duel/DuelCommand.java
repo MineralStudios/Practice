@@ -1,6 +1,6 @@
 package gg.mineral.practice.commands.duel;
 
-import gg.mineral.core.commands.PlayerCommand;
+import gg.mineral.practice.commands.PlayerCommand;
 import gg.mineral.practice.PracticePlugin;
 import gg.mineral.practice.entity.PlayerStatus;
 import gg.mineral.practice.entity.Profile;

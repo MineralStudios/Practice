@@ -3,7 +3,7 @@ package gg.mineral.practice.commands.duel;
 import java.util.Iterator;
 import java.util.Map.Entry;
 
-import gg.mineral.core.commands.PlayerCommand;
+import gg.mineral.practice.commands.PlayerCommand;
 import gg.mineral.practice.PracticePlugin;
 import gg.mineral.practice.entity.PlayerStatus;
 import gg.mineral.practice.entity.Profile;

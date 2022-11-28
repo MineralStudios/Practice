@@ -1,7 +1,5 @@
 package gg.mineral.practice.util.messages;
 
-import gg.mineral.core.utils.message.UsageMessage;
-
 public class UsageMessages {
 	// Arena Command
 	public static final UsageMessage ARENA_CREATE = new UsageMessage("/arena create <Name>");

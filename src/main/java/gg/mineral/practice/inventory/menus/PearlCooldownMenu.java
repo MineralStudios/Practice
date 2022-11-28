@@ -4,10 +4,9 @@ import org.bukkit.DyeColor;
 import org.bukkit.Material;
 import org.bukkit.inventory.ItemStack;
 
-import gg.mineral.core.utils.item.ItemBuilder;
-import gg.mineral.core.utils.message.CC;
+import gg.mineral.practice.util.items.ItemBuilder;
+import gg.mineral.practice.util.messages.CC;
 import gg.mineral.practice.inventory.PracticeMenu;
-import gg.mineral.practice.tasks.MenuTask;
 
 public class PearlCooldownMenu extends PracticeMenu {
     MechanicsMenu menu;
@@ -43,7 +42,10 @@ public class PearlCooldownMenu extends PracticeMenu {
             viewer.openMenu(pMenu);
         };
         setSlot(6, item2, addTask);
-        setSlot(4, item3, new MenuTask(menu));
+        setSlot(4, item3, p -> {
+            p.openMenu(menu);
+            return true;
+        });
         return true;
     }
 }

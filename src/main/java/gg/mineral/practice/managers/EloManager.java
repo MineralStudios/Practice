@@ -4,7 +4,7 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.util.UUID;
 
-import gg.mineral.core.sql.SQLManager;
+import gg.mineral.practice.sql.SQLManager;
 import gg.mineral.practice.PracticePlugin;
 import gg.mineral.practice.entity.Profile;
 import gg.mineral.practice.util.LeaderboardMap;

@@ -6,7 +6,7 @@ import org.bukkit.Material;
 import org.bukkit.craftbukkit.v1_8_R3.entity.CraftItem;
 import org.bukkit.entity.Item;
 
-import gg.mineral.core.utils.message.CC;
+import gg.mineral.practice.util.messages.CC;
 import gg.mineral.practice.PracticePlugin;
 import gg.mineral.practice.entity.PlayerStatus;
 import gg.mineral.practice.entity.Profile;
@@ -55,7 +55,7 @@ public class TournamentMatch extends Match {
                         new HoverEvent(HoverEvent.Action.SHOW_TEXT,
                                 new ComponentBuilder(CC.RED + "Health Potions Remaining: " + victimAmountOfPots + "\n"
                                         + CC.RED + "Hits: " + victim.getHitCount() + "\n" + CC.RED + "Health: 0")
-                                                .create()));
+                                        .create()));
         winmessage.setHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT,
                 new ComponentBuilder(CC.GREEN + "Health Potions Remaining: " + attackerAmountOfPots + "\n" + CC.GREEN
                         + "Hits: " + attacker.getHitCount() + "\n" + CC.GREEN + "Health: " + attackerHealth).create()));

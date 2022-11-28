@@ -3,9 +3,8 @@ package gg.mineral.practice.inventory.menus;
 import org.bukkit.Material;
 import org.bukkit.inventory.ItemStack;
 
-import gg.mineral.core.tasks.CommandTask;
-import gg.mineral.core.utils.item.ItemBuilder;
-import gg.mineral.core.utils.message.CC;
+import gg.mineral.practice.util.items.ItemBuilder;
+import gg.mineral.practice.util.messages.CC;
 import gg.mineral.practice.PracticePlugin;
 import gg.mineral.practice.inventory.PracticeMenu;
 import gg.mineral.practice.managers.MatchManager;
@@ -31,7 +30,7 @@ public class SpectateMenu extends PracticeMenu {
             ItemStack skull = new ItemBuilder(item)
                     .name(CC.SECONDARY + m.getPlayer1().getName() + " vs " + m.getPlayer2().getName())
                     .build();
-            add(skull, new CommandTask("spec " + m.getParticipants().get(0).getName()));
+            add(skull, p -> p.bukkit().performCommand("spec " + m.getParticipants().get(0).getName()));
         }
 
         return true;

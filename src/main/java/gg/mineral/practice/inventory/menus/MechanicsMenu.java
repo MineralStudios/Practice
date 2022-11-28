@@ -3,14 +3,13 @@ package gg.mineral.practice.inventory.menus;
 import org.bukkit.Material;
 import org.bukkit.inventory.ItemStack;
 
-import gg.mineral.core.utils.item.ItemBuilder;
-import gg.mineral.core.utils.message.CC;
+import gg.mineral.practice.util.items.ItemBuilder;
+import gg.mineral.practice.util.messages.CC;
 import gg.mineral.practice.inventory.PracticeMenu;
 import gg.mineral.practice.inventory.SubmitAction;
 import gg.mineral.practice.match.MatchData;
 import gg.mineral.practice.match.PartyMatch;
 import gg.mineral.practice.party.Party;
-import gg.mineral.practice.tasks.MenuTask;
 import gg.mineral.practice.tournaments.Tournament;
 import gg.mineral.practice.util.messages.ErrorMessages;
 
@@ -64,9 +63,18 @@ public class MechanicsMenu extends PracticeMenu {
 				.name("Submit").build();
 		ItemStack resetMeta = new ItemBuilder(Material.PAPER)
 				.name("Reset Settings").build();
-		setSlot(10, kit, new MenuTask(new SelectKitMenu(this)));
-		setSlot(11, kb, new MenuTask(new SelectKnockbackMenu(this)));
-		setSlot(12, hitDelay, new MenuTask(new HitDelayMenu(this)));
+		setSlot(10, kit, p -> {
+			p.openMenu(new SelectKitMenu(this));
+			return true;
+		});
+		setSlot(11, kb, p -> {
+			p.openMenu(new SelectKnockbackMenu(this));
+			return true;
+		});
+		setSlot(12, hitDelay, p -> {
+			p.openMenu(new HitDelayMenu(this));
+			return true;
+		});
 		MechanicsMenu menu = this;
 		Runnable hungerTask = () -> {
 			match.setHunger(!match.getHunger());
@@ -88,8 +96,14 @@ public class MechanicsMenu extends PracticeMenu {
 			viewer.openMenu(menu);
 		};
 		setSlot(16, griefing, griefingTask);
-		setSlot(19, pearlcd, new MenuTask(new PearlCooldownMenu(this)));
-		setSlot(20, arena, new MenuTask(new SelectArenaMenu(this, action)));
+		setSlot(19, pearlcd, p -> {
+			p.openMenu(new PearlCooldownMenu(this));
+			return true;
+		});
+		setSlot(20, arena, p -> {
+			p.openMenu(new SelectArenaMenu(this, action));
+			return true;
+		});
 		Runnable deadlyWaterTask = () -> {
 			match.setDeadlyWater(!match.getDeadlyWater());
 			viewer.openMenu(menu);

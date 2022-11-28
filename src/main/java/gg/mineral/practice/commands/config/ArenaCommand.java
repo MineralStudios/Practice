@@ -6,9 +6,9 @@ import org.bukkit.Location;
 import org.bukkit.craftbukkit.v1_8_R3.entity.CraftPlayer;
 import org.bukkit.entity.Player;
 
-import gg.mineral.core.commands.PlayerCommand;
-import gg.mineral.core.rank.RankPower;
-import gg.mineral.core.utils.message.CC;
+import gg.mineral.practice.commands.PlayerCommand;
+
+import gg.mineral.practice.util.messages.CC;
 import gg.mineral.practice.PracticePlugin;
 import gg.mineral.practice.arena.Arena;
 import gg.mineral.practice.managers.ArenaManager;
@@ -24,7 +24,7 @@ public class ArenaCommand extends PlayerCommand {
 	final ArenaManager arenaManager = PracticePlugin.INSTANCE.getArenaManager();
 
 	public ArenaCommand() {
-		super("arena", RankPower.MANAGER);
+		super("arena", "practice.config");
 	}
 
 	@Override
