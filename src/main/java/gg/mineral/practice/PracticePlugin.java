@@ -5,6 +5,7 @@ import org.bukkit.command.Command;
 import org.bukkit.event.Listener;
 import org.bukkit.plugin.java.JavaPlugin;
 
+import gg.mineral.api.config.FileConfiguration;
 import gg.mineral.practice.commands.config.ArenaCommand;
 import gg.mineral.practice.commands.config.CatagoryCommand;
 import gg.mineral.practice.commands.config.GametypeCommand;
@@ -52,11 +53,13 @@ import gg.mineral.practice.managers.PvPBotsManager;
 import gg.mineral.practice.managers.QueueEntryManager;
 import gg.mineral.practice.managers.QueuetypeManager;
 import gg.mineral.practice.managers.TournamentManager;
+import gg.mineral.practice.sql.SQLManager;
 import net.minecraft.server.v1_8_R3.MinecraftServer;
 
 public class PracticePlugin extends JavaPlugin {
 
 	public static PracticePlugin INSTANCE;
+	FileConfiguration databaseDetails;
 	ArenaManager arenaManager;
 	GametypeManager gametypeManager;
 	QueuetypeManager queuetypeManager;
@@ -73,6 +76,20 @@ public class PracticePlugin extends JavaPlugin {
 
 	@Override
 	public void onEnable() {
+		databaseDetails = new FileConfiguration("database.yml", "plugins/Core");
+
+		String host = databaseDetails.getString("host", "host");
+		String port = databaseDetails.getString("port", "3306");
+		String database = databaseDetails.getString("database", "database");
+		String username = databaseDetails.getString("username", "username");
+		String password = databaseDetails.getString("password", "password");
+
+		try {
+			SQLManager.initialize(host, port, database, username, password);
+		} catch (Exception e) {
+			System.out.println("FAILED TO CONNECT TO DATABASE");
+		}
+
 		INSTANCE = this;
 
 		eloManager = new EloManager();

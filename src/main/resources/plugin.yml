@@ -1,5 +1,5 @@
 name: MineralPractice
 version: .dev1
 author: OpaqueEclipse
-main: gg.mineral.PracticePlugin
+main: gg.mineral.practice.PracticePlugin
 description: Mineral Practice Plugin!
