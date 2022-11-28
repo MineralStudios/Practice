@@ -6,7 +6,7 @@ import java.util.concurrent.ConcurrentLinkedDeque;
 import org.bukkit.Location;
 import org.bukkit.scheduler.BukkitRunnable;
 
-import gg.mineral.practice.util.messages.ChatMessage;
+import gg.mineral.api.collection.GlueList;
 import gg.mineral.practice.PracticePlugin;
 import gg.mineral.practice.arena.Arena;
 import gg.mineral.practice.entity.Profile;
@@ -16,9 +16,9 @@ import gg.mineral.practice.match.Match;
 import gg.mineral.practice.match.MatchData;
 import gg.mineral.practice.match.TournamentMatch;
 import gg.mineral.practice.util.ProfileList;
-import gg.mineral.practice.util.messages.ChatMessages;
-import gg.mineral.practice.util.messages.ErrorMessages;
-import gg.mineral.api.collection.GlueList;
+import gg.mineral.practice.util.messages.ChatMessage;
+import gg.mineral.practice.util.messages.impl.ChatMessages;
+import gg.mineral.practice.util.messages.impl.ErrorMessages;
 import net.md_5.bungee.api.chat.ClickEvent;
 
 public class Tournament {

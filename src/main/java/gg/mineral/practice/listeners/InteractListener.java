@@ -20,7 +20,7 @@ import gg.mineral.practice.entity.Profile;
 import gg.mineral.practice.inventory.menus.AddItemsMenu;
 import gg.mineral.practice.inventory.menus.SaveLoadKitsMenu;
 import gg.mineral.practice.managers.PlayerManager;
-import gg.mineral.practice.util.messages.ChatMessages;
+import gg.mineral.practice.util.messages.impl.ChatMessages;
 
 public class InteractListener implements Listener {
 	final PlayerManager playerManager = PracticePlugin.INSTANCE.getPlayerManager();

@@ -1,4 +1,7 @@
-package gg.mineral.practice.util.messages;
+package gg.mineral.practice.util.messages.impl;
+
+import gg.mineral.practice.util.messages.ErrorMessage;
+import gg.mineral.practice.util.messages.Message;
 
 public class ErrorMessages {
 	// Arena

@@ -281,8 +281,8 @@ public class Gametype implements SaveableData {
 		return g.getName().equalsIgnoreCase(getName());
 	}
 
-	public void updatePlayerLeaderboard(Profile p, int elo) {
-		leaderboardMap.put(p.getName(), elo);
+	public void updatePlayerLeaderboard(Profile p, int elo, int oldElo) {
+		leaderboardMap.put(p.getName(), elo, oldElo);
 	}
 
 	public List<String> getLeaderboardLore() {

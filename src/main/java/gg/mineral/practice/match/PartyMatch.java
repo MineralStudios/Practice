@@ -12,13 +12,13 @@ import org.bukkit.inventory.ItemStack;
 import org.bukkit.scoreboard.Team;
 
 import gg.mineral.practice.util.messages.CC;
+import gg.mineral.practice.util.messages.impl.ErrorMessages;
 import gg.mineral.practice.PracticePlugin;
 import gg.mineral.practice.entity.Profile;
 import gg.mineral.practice.party.Party;
 import gg.mineral.practice.scoreboard.Scoreboard;
 import gg.mineral.practice.util.Countdown;
 import gg.mineral.practice.util.ProfileList;
-import gg.mineral.practice.util.messages.ErrorMessages;
 import net.minecraft.server.v1_8_R3.EntityHuman;
 import net.minecraft.server.v1_8_R3.EntityItem;
 import net.minecraft.server.v1_8_R3.PacketPlayInClientCommand;

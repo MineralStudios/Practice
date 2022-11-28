@@ -3,18 +3,18 @@ package gg.mineral.practice.commands.party;
 import java.util.Iterator;
 import java.util.Map.Entry;
 
-import gg.mineral.practice.commands.PlayerCommand;
-import gg.mineral.practice.util.messages.CC;
-import gg.mineral.practice.util.messages.ChatMessage;
 import gg.mineral.practice.PracticePlugin;
+import gg.mineral.practice.commands.PlayerCommand;
 import gg.mineral.practice.entity.PlayerStatus;
 import gg.mineral.practice.entity.Profile;
 import gg.mineral.practice.managers.PartyManager;
 import gg.mineral.practice.managers.PlayerManager;
 import gg.mineral.practice.party.Party;
-import gg.mineral.practice.util.messages.ChatMessages;
-import gg.mineral.practice.util.messages.ErrorMessages;
-import gg.mineral.practice.util.messages.UsageMessages;
+import gg.mineral.practice.util.messages.CC;
+import gg.mineral.practice.util.messages.ChatMessage;
+import gg.mineral.practice.util.messages.impl.ChatMessages;
+import gg.mineral.practice.util.messages.impl.ErrorMessages;
+import gg.mineral.practice.util.messages.impl.UsageMessages;
 import net.md_5.bungee.api.chat.ClickEvent;
 
 public class PartyCommand extends PlayerCommand {

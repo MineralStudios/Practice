@@ -6,6 +6,7 @@ import org.bukkit.inventory.ItemStack;
 
 import gg.mineral.practice.util.items.ItemBuilder;
 import gg.mineral.practice.util.messages.CC;
+import gg.mineral.practice.util.messages.impl.ErrorMessages;
 import gg.mineral.practice.PracticePlugin;
 import gg.mineral.practice.arena.Arena;
 import gg.mineral.practice.inventory.PracticeMenu;
@@ -14,7 +15,6 @@ import gg.mineral.practice.managers.ArenaManager;
 import gg.mineral.practice.match.PartyMatch;
 import gg.mineral.practice.party.Party;
 import gg.mineral.practice.tournaments.Tournament;
-import gg.mineral.practice.util.messages.ErrorMessages;
 
 public class SelectArenaMenu extends PracticeMenu {
     MechanicsMenu menu;

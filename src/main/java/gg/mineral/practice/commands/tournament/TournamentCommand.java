@@ -7,7 +7,7 @@ import gg.mineral.practice.entity.Profile;
 import gg.mineral.practice.inventory.SubmitAction;
 import gg.mineral.practice.inventory.menus.SelectModeMenu;
 import gg.mineral.practice.managers.PlayerManager;
-import gg.mineral.practice.util.messages.ErrorMessages;
+import gg.mineral.practice.util.messages.impl.ErrorMessages;
 
 public class TournamentCommand extends PlayerCommand {
     final PlayerManager playerManager = PracticePlugin.INSTANCE.getPlayerManager();

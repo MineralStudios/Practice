@@ -15,7 +15,7 @@ import gg.mineral.practice.PracticePlugin;
 import gg.mineral.practice.entity.Profile;
 import gg.mineral.practice.managers.PlayerManager;
 import gg.mineral.practice.match.Match;
-import gg.mineral.practice.util.messages.ErrorMessages;
+import gg.mineral.practice.util.messages.impl.ErrorMessages;
 
 public class BuildListener implements Listener {
 	final PlayerManager playerManager = PracticePlugin.INSTANCE.getPlayerManager();;

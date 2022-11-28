@@ -8,8 +8,8 @@ import gg.mineral.practice.inventory.SubmitAction;
 import gg.mineral.practice.inventory.menus.OtherPartiesMenu;
 import gg.mineral.practice.inventory.menus.SelectModeMenu;
 import gg.mineral.practice.managers.PlayerManager;
-import gg.mineral.practice.util.messages.ErrorMessages;
-import gg.mineral.practice.util.messages.UsageMessages;
+import gg.mineral.practice.util.messages.impl.ErrorMessages;
+import gg.mineral.practice.util.messages.impl.UsageMessages;
 
 public class DuelCommand extends PlayerCommand {
 

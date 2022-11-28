@@ -8,14 +8,14 @@ import org.bukkit.event.player.PlayerJoinEvent;
 import org.bukkit.event.player.PlayerLoginEvent;
 import org.bukkit.event.player.PlayerQuitEvent;
 
-import gg.mineral.practice.util.messages.ChatMessage;
 import gg.mineral.practice.PracticePlugin;
 import gg.mineral.practice.entity.Profile;
 import gg.mineral.practice.managers.PartyManager;
 import gg.mineral.practice.managers.PlayerManager;
 import gg.mineral.practice.party.Party;
 import gg.mineral.practice.scoreboard.Scoreboard;
-import gg.mineral.practice.util.messages.ChatMessages;
+import gg.mineral.practice.util.messages.ChatMessage;
+import gg.mineral.practice.util.messages.impl.ChatMessages;
 
 public class EntryListener implements Listener {
 	final PlayerManager playerManager = PracticePlugin.INSTANCE.getPlayerManager();

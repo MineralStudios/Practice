@@ -17,9 +17,7 @@ import org.bukkit.potion.PotionEffect;
 import org.bukkit.potion.PotionEffectType;
 import org.bukkit.scoreboard.Team;
 
-import gg.mineral.practice.util.items.ItemBuilder;
-import gg.mineral.practice.util.messages.CC;
-import gg.mineral.practice.util.messages.ChatMessage;
+import gg.mineral.api.collection.GlueList;
 import gg.mineral.practice.PracticePlugin;
 import gg.mineral.practice.entity.Profile;
 import gg.mineral.practice.gametype.Gametype;
@@ -37,10 +35,12 @@ import gg.mineral.practice.util.Countdown;
 import gg.mineral.practice.util.MathUtil;
 import gg.mineral.practice.util.ProfileList;
 import gg.mineral.practice.util.WorldUtil;
+import gg.mineral.practice.util.items.ItemBuilder;
 import gg.mineral.practice.util.items.ItemStacks;
-import gg.mineral.practice.util.messages.ChatMessages;
-import gg.mineral.practice.util.messages.ErrorMessages;
-import gg.mineral.api.collection.GlueList;
+import gg.mineral.practice.util.messages.CC;
+import gg.mineral.practice.util.messages.ChatMessage;
+import gg.mineral.practice.util.messages.impl.ChatMessages;
+import gg.mineral.practice.util.messages.impl.ErrorMessages;
 import net.md_5.bungee.api.chat.ClickEvent;
 import net.md_5.bungee.api.chat.ComponentBuilder;
 import net.md_5.bungee.api.chat.HoverEvent;
@@ -284,8 +284,8 @@ public class Match {
 			executor.execute(() -> {
 				g.setElo(newAttackerElo, attacker);
 				g.setElo(newVictimElo, victim);
-				g.updatePlayerLeaderboard(victim, newVictimElo);
-				g.updatePlayerLeaderboard(attacker, newAttackerElo);
+				g.updatePlayerLeaderboard(victim, newVictimElo, victimElo);
+				g.updatePlayerLeaderboard(attacker, newAttackerElo, attackerElo);
 			});
 		}
 

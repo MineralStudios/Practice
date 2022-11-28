@@ -2,11 +2,11 @@ package gg.mineral.practice.commands.settings;
 
 import java.util.List;
 
-import gg.mineral.practice.commands.PlayerCommand;
 import gg.mineral.practice.PracticePlugin;
+import gg.mineral.practice.commands.PlayerCommand;
 import gg.mineral.practice.entity.Profile;
 import gg.mineral.practice.managers.PlayerManager;
-import gg.mineral.practice.util.messages.ChatMessages;
+import gg.mineral.practice.util.messages.impl.ChatMessages;
 
 public class TogglePlayerVisibilityCommand extends PlayerCommand {
 	final PlayerManager playerManager = PracticePlugin.INSTANCE.getPlayerManager();

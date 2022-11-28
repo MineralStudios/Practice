@@ -7,9 +7,9 @@ import gg.mineral.practice.kit.KitEditorManager;
 import gg.mineral.practice.managers.GametypeManager;
 import gg.mineral.practice.managers.PlayerManager;
 import gg.mineral.practice.managers.QueuetypeManager;
-import gg.mineral.practice.util.messages.ChatMessages;
-import gg.mineral.practice.util.messages.ErrorMessages;
-import gg.mineral.practice.util.messages.UsageMessages;
+import gg.mineral.practice.util.messages.impl.ChatMessages;
+import gg.mineral.practice.util.messages.impl.ErrorMessages;
+import gg.mineral.practice.util.messages.impl.UsageMessages;
 
 public class KitEditorCommand extends PlayerCommand {
 	final KitEditorManager kitEditorManager = PracticePlugin.INSTANCE.getKitEditorManager();;

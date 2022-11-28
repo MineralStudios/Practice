@@ -7,8 +7,8 @@ import gg.mineral.practice.entity.Profile;
 import gg.mineral.practice.managers.PlayerManager;
 import gg.mineral.practice.managers.TournamentManager;
 import gg.mineral.practice.tournaments.Tournament;
-import gg.mineral.practice.util.messages.ErrorMessages;
-import gg.mineral.practice.util.messages.UsageMessages;
+import gg.mineral.practice.util.messages.impl.ErrorMessages;
+import gg.mineral.practice.util.messages.impl.UsageMessages;
 
 public class JoinCommand extends PlayerCommand {
 

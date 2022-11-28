@@ -143,7 +143,7 @@ public class EloManager {
 			while (r.next()) {
 				String value = r.getString("PLAYER");
 				int elo = getEloEntry(value, g);
-				map.put(value, elo, false);
+				map.put(value, elo);
 			}
 
 			SQLManager.close(statement);

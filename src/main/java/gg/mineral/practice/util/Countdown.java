@@ -3,12 +3,12 @@ package gg.mineral.practice.util;
 import org.bukkit.Bukkit;
 import org.bukkit.scheduler.BukkitScheduler;
 
-import gg.mineral.practice.util.messages.ChatMessage;
 import gg.mineral.practice.PracticePlugin;
 import gg.mineral.practice.entity.Profile;
 import gg.mineral.practice.managers.PlayerManager;
 import gg.mineral.practice.match.Match;
-import gg.mineral.practice.util.messages.ChatMessages;
+import gg.mineral.practice.util.messages.ChatMessage;
+import gg.mineral.practice.util.messages.impl.ChatMessages;
 
 public class Countdown {
 	int time;

@@ -2,18 +2,17 @@ package gg.mineral.practice.commands.config;
 
 import java.util.Iterator;
 
-import gg.mineral.practice.commands.PlayerCommand;
-
-import gg.mineral.practice.util.messages.CC;
 import gg.mineral.practice.PracticePlugin;
 import gg.mineral.practice.arena.Arena;
+import gg.mineral.practice.commands.PlayerCommand;
 import gg.mineral.practice.managers.ArenaManager;
 import gg.mineral.practice.managers.PlayerManager;
 import gg.mineral.practice.managers.QueuetypeManager;
 import gg.mineral.practice.queue.Queuetype;
-import gg.mineral.practice.util.messages.ChatMessages;
-import gg.mineral.practice.util.messages.ErrorMessages;
-import gg.mineral.practice.util.messages.UsageMessages;
+import gg.mineral.practice.util.messages.CC;
+import gg.mineral.practice.util.messages.impl.ChatMessages;
+import gg.mineral.practice.util.messages.impl.ErrorMessages;
+import gg.mineral.practice.util.messages.impl.UsageMessages;
 import gg.mineral.server.combat.KnockbackProfile;
 import gg.mineral.server.combat.KnockbackProfileList;
 

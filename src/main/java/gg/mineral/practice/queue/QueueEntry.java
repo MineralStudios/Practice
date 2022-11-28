@@ -5,14 +5,14 @@ import java.util.UUID;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.inventory.ItemStack;
 
+import gg.mineral.api.collection.GlueList;
+import gg.mineral.api.config.FileConfiguration;
 import gg.mineral.practice.PracticePlugin;
 import gg.mineral.practice.entity.Profile;
 import gg.mineral.practice.gametype.Gametype;
 import gg.mineral.practice.managers.PlayerManager;
-import gg.mineral.practice.util.messages.ChatMessages;
+import gg.mineral.practice.util.messages.impl.ChatMessages;
 import it.unimi.dsi.fastutil.objects.Object2ObjectOpenHashMap;
-import gg.mineral.api.collection.GlueList;
-import gg.mineral.api.config.FileConfiguration;
 
 public class QueueEntry {
 	Queuetype q;

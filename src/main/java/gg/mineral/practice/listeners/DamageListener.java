@@ -13,7 +13,7 @@ import org.bukkit.event.entity.EntityDamageEvent.DamageCause;
 import gg.mineral.practice.PracticePlugin;
 import gg.mineral.practice.entity.Profile;
 import gg.mineral.practice.managers.PlayerManager;
-import gg.mineral.practice.util.messages.ChatMessages;
+import gg.mineral.practice.util.messages.impl.ChatMessages;
 
 public class DamageListener implements Listener {
 	PlayerManager playerManager = PracticePlugin.INSTANCE.getPlayerManager();

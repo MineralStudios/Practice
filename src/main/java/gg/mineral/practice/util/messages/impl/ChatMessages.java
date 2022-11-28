@@ -1,5 +1,9 @@
-package gg.mineral.practice.util.messages;
+package gg.mineral.practice.util.messages.impl;
 
+import gg.mineral.practice.util.messages.CC;
+import gg.mineral.practice.util.messages.ChatMessage;
+import gg.mineral.practice.util.messages.ClickableChatMessage;
+import gg.mineral.practice.util.messages.ListElementMessage;
 import net.md_5.bungee.api.chat.ComponentBuilder;
 import net.md_5.bungee.api.chat.HoverEvent;
 

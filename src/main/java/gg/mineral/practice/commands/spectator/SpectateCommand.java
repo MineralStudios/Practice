@@ -6,7 +6,7 @@ import gg.mineral.practice.entity.PlayerStatus;
 import gg.mineral.practice.entity.Profile;
 import gg.mineral.practice.inventory.menus.SpectateMenu;
 import gg.mineral.practice.managers.PlayerManager;
-import gg.mineral.practice.util.messages.ErrorMessages;
+import gg.mineral.practice.util.messages.impl.ErrorMessages;
 
 public class SpectateCommand extends PlayerCommand {
 	final PlayerManager playerManager = PracticePlugin.INSTANCE.getPlayerManager();

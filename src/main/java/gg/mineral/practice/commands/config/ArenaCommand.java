@@ -14,9 +14,9 @@ import gg.mineral.practice.arena.Arena;
 import gg.mineral.practice.managers.ArenaManager;
 import gg.mineral.practice.managers.PlayerManager;
 import gg.mineral.practice.util.PlayerUtil;
-import gg.mineral.practice.util.messages.ChatMessages;
-import gg.mineral.practice.util.messages.ErrorMessages;
-import gg.mineral.practice.util.messages.UsageMessages;
+import gg.mineral.practice.util.messages.impl.ChatMessages;
+import gg.mineral.practice.util.messages.impl.ErrorMessages;
+import gg.mineral.practice.util.messages.impl.UsageMessages;
 
 public class ArenaCommand extends PlayerCommand {
 

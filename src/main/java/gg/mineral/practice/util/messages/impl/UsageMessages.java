@@ -1,4 +1,6 @@
-package gg.mineral.practice.util.messages;
+package gg.mineral.practice.util.messages.impl;
+
+import gg.mineral.practice.util.messages.UsageMessage;
 
 public class UsageMessages {
 	// Arena Command

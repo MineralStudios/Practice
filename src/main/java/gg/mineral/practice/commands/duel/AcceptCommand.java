@@ -12,8 +12,8 @@ import gg.mineral.practice.match.DuelRequest;
 import gg.mineral.practice.match.Match;
 import gg.mineral.practice.match.MatchData;
 import gg.mineral.practice.match.PartyMatch;
-import gg.mineral.practice.util.messages.ErrorMessages;
-import gg.mineral.practice.util.messages.UsageMessages;
+import gg.mineral.practice.util.messages.impl.ErrorMessages;
+import gg.mineral.practice.util.messages.impl.UsageMessages;
 
 public class AcceptCommand extends PlayerCommand {
 

@@ -1,13 +1,10 @@
 package gg.mineral.practice.util;
 
-import java.util.Iterator;
 import java.util.List;
 
 import gg.mineral.api.collection.GlueList;
 
 public class LeaderboardMap {
-
-    final static Entry DEFAULT_ENTRY = new Entry("Empty", 1000);
     int size;
 
     public LeaderboardMap(int size) {
@@ -16,6 +13,21 @@ public class LeaderboardMap {
 
     public LeaderboardMap() {
         this(10);
+    }
+
+    public static void main(String[] args) throws Exception {
+        int size = 10;
+        LeaderboardMap map = new LeaderboardMap(size);
+
+        long startTime = System.currentTimeMillis();
+        for (int i = 0; i < size; i++) {
+            map.put(i + "", (int) (Math.random() * 100000));
+        }
+        long timeTaken = System.currentTimeMillis() - startTime;
+
+        System.out.println("Time taken: " + timeTaken + "ms");
+        System.out.println("Time taken per element: " + (timeTaken / (double) size) + "ms");
+
     }
 
     public static class Entry {
@@ -46,118 +58,56 @@ public class LeaderboardMap {
 
     GlueList<Entry> entryList = new GlueList<>();
 
-    private int binaryLinearSearch(int value) {
-        int lastIndex = entryList.size() - 1;
+    private int binarySearch(int value) {
+        int lastIndex = entryList.size();
         int firstIndex = 0;
-        int mid = lastIndex / 2;
-        int midValue = get(mid).getValue();
+        int midIndex = lastIndex / 2;
 
-        if (midValue > value) {
-            firstIndex = mid + 1;
+        while (firstIndex != lastIndex) {
+            int midValue = get(midIndex).getValue();
 
-            for (int i = firstIndex; i <= lastIndex; i++) {
-                midValue = get(i).getValue();
-
-                if (midValue > value) {
-                    continue;
-                }
-
-                return i;
+            if (midValue > value) {
+                // below on leaderboard
+                firstIndex = midIndex + 1;
+            } else if (midValue < value) {
+                // above on leaderboard
+                lastIndex = midIndex;
+            } else {
+                return midIndex;
             }
-        } else if (midValue < value) {
-            lastIndex = mid;
 
-            for (int i = firstIndex; i <= lastIndex; i++) {
-                midValue = get(i).getValue();
-
-                if (midValue > value) {
-                    continue;
-                }
-
-                return i;
-            }
-        } else {
-            return mid;
+            midIndex = (firstIndex + lastIndex) / 2;
         }
 
-        return -1;
+        return firstIndex;
     }
 
     private int findPosition(int elo) {
-        if (entryList.size() == 0) {
-            return 0;
-        }
-
-        boolean full = entryList.size() >= size;
-        int lastValue = get(entryList.size() - 1).getValue();
-        boolean lastPosition = elo <= lastValue;
-
-        if (lastPosition) {
-            if (full) {
-                return -1;
-            }
-
-            return entryList.size();
-        }
-
-        return binaryLinearSearch(elo);
+        return entryList.isEmpty() ? 0
+                : elo <= get(entryList.size() - 1).getValue() ? entryList.size() : binarySearch(elo);
     }
 
     public Entry get(int index) {
-        Entry value = entryList.get(index);
-
-        if (value == null) {
-            return DEFAULT_ENTRY;
-        }
-
-        return value;
+        return entryList.get(index);
     }
 
     public void put(String key, int value) {
-        Iterator<Entry> iterator = entryList.iterator();
-
-        while (iterator.hasNext()) {
-            Entry entry = iterator.next();
-
-            if (entry.getKey().equalsIgnoreCase(key)) {
-                iterator.remove();
-                break;
-            }
-        }
-
-        int position = findPosition(value);
-
-        if (position == -1) {
-            return;
-        }
-
-        entryList.add(position, new Entry(key, value));
+        entryList.add(findPosition(value), new Entry(key, value));
 
         if (entryList.size() > size) {
-            for (int i = size; i < entryList.size(); i++) {
-                entryList.remove(i);
-            }
+            entryList.remove(size - 1);
         }
     }
 
-    public void put(String key, int value, boolean checkForDuplicates) {
-        if (checkForDuplicates) {
-            put(key, value);
-            return;
-        }
+    public void put(String key, int value, int oldValue) {
 
-        int position = findPosition(value);
+        Entry oldEntry = entryList.remove(findPosition(oldValue));
+        oldEntry.setValue(value);
 
-        if (position == -1) {
-            return;
-        }
-
-        entryList.add(position, new Entry(key, value));
+        entryList.add(findPosition(value), oldEntry);
 
         if (entryList.size() > size) {
-            for (int i = size; i < entryList.size(); i++) {
-                entryList.remove(i);
-            }
+            entryList.remove(size - 1);
         }
     }
 
