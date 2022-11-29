@@ -29,7 +29,7 @@
       </plugin>
       <plugin>
         <artifactId>maven-shade-plugin</artifactId>
-        <version>2.3</version>
+        <version>2.4.3</version>
         <executions>
           <execution>
             <phase>package</phase>
@@ -75,7 +75,7 @@
       <artifactId>spigot</artifactId>
       <version>1.8.8</version>
       <scope>system</scope>
-      <systemPath>/home/jaiden/Documents/Practice/lib/spigot.jar</systemPath>
+      <systemPath>${basedir}/lib/spigot.jar</systemPath>
     </dependency>
   </dependencies>
   <reporting>

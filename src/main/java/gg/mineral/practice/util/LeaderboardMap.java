@@ -16,7 +16,7 @@ public class LeaderboardMap {
     }
 
     public static void main(String[] args) throws Exception {
-        int size = 1000;
+        int size = 20000;
         LeaderboardMap map = new LeaderboardMap(size);
 
         long startTime = System.nanoTime();
@@ -95,7 +95,7 @@ public class LeaderboardMap {
         entryList.add(findPosition(value), new Entry(key, value));
 
         if (entryList.size() > size) {
-            entryList.remove(size - 1);
+            entryList.remove(entryList.size() - 1);
         }
     }
 
@@ -107,11 +107,19 @@ public class LeaderboardMap {
         entryList.add(findPosition(value), oldEntry);
 
         if (entryList.size() > size) {
-            entryList.remove(size - 1);
+            entryList.remove(entryList.size() - 1);
         }
     }
 
     public List<Entry> getEntries() {
         return entryList;
+    }
+
+    public void merge(LeaderboardMap map) {
+        entryList.addAll(findPosition(map.get(0).getValue()), map.getEntries());
+
+        while (entryList.size() > size) {
+            entryList.remove(entryList.size() - 1);
+        }
     }
 }
