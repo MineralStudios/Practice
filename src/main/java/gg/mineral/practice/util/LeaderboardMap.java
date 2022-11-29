@@ -16,7 +16,7 @@ public class LeaderboardMap {
     }
 
     public static void main(String[] args) throws Exception {
-        int size = 20000;
+        int size = 10000;
         LeaderboardMap map = new LeaderboardMap(size);
 
         long startTime = System.nanoTime();
@@ -80,6 +80,21 @@ public class LeaderboardMap {
         }
 
         return firstIndex;
+    }
+
+    private int linearSearch(int value) {
+
+        for (int i = 0; i < entryList.size(); i++) {
+            int iterValue = get(i).getValue();
+
+            if (value < iterValue) {
+                continue;
+            }
+
+            return i;
+        }
+
+        return -1;
     }
 
     private int findPosition(int elo) {

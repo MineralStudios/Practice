@@ -59,7 +59,7 @@ public class Profile {
 	Scoreboard b;
 	Match spectatingMatch;
 	MatchData matchData;
-	Integer hits = 0;
+	Integer hits = 0, currentCombo, longestCombo;
 	Boolean playersVisible = true;
 	PracticeMenu openMenu;
 	Profile following;
@@ -96,6 +96,10 @@ public class Profile {
 
 	public Integer getHitCount() {
 		return hits;
+	}
+
+	public Integer getLongestCombo() {
+		return longestCombo;
 	}
 
 	public PracticeMenu getOpenMenu() {
@@ -148,6 +152,12 @@ public class Profile {
 
 	public void increaseHitCount() {
 		hits++;
+		currentCombo++;
+		longestCombo = Math.max(currentCombo, longestCombo);
+	}
+
+	public void resetCombo() {
+		currentCombo = 0;
 	}
 
 	public void clearHitCount() {

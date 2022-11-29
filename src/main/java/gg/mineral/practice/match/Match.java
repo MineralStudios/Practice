@@ -409,7 +409,7 @@ public class Match {
 						.name("Health: " + health).build();
 
 		ItemStack hits = new ItemBuilder(Material.BLAZE_ROD)
-				.name(p.getHitCount() + " Hits").build();
+				.name(p.getHitCount() + " Hits").lore("Longest Combo:" + p.getLongestCombo()).build();
 		menu.setSlot(47, hits);
 		menu.setSlot(45, healthItem);
 		menu.setSlot(46, potItem);
