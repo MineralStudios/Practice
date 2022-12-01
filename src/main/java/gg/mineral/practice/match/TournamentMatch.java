@@ -99,17 +99,12 @@ public class TournamentMatch extends Match {
                 tournament.removePlayer(victim);
                 tournament.removeMatch(match);
 
-                if (!tournament.isEnded()) {
-                    if (tournament.isEvent()) {
-                        attacker.teleport(tournament.getWaitingLocation());
-                    } else {
-                        attacker.teleportToLobby();
-                    }
+                attacker.teleportToLobby();
 
+                if (!tournament.isEnded()) {
                     attacker.setPlayerStatus(PlayerStatus.IN_TOURAMENT);
                     attacker.setInventoryForTournament();
                 } else {
-                    attacker.teleportToLobby();
                     attacker.setInventoryForLobby();
                 }
 

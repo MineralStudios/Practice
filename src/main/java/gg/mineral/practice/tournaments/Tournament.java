@@ -8,7 +8,6 @@ import org.bukkit.scheduler.BukkitRunnable;
 
 import gg.mineral.api.collection.GlueList;
 import gg.mineral.practice.PracticePlugin;
-import gg.mineral.practice.arena.Arena;
 import gg.mineral.practice.entity.Profile;
 import gg.mineral.practice.managers.PlayerManager;
 import gg.mineral.practice.managers.TournamentManager;
@@ -31,26 +30,12 @@ public class Tournament {
     boolean ended = false;
     MatchData m;
     int round = 1;
-    boolean event;
-    Arena eventArena;
     String host;
     Location loc;
 
     public Tournament(Profile p) {
         this.m = p.getMatchData();
         this.host = p.getName();
-        this.event = false;
-        addPlayer(p);
-        tournamentManager.registerTournament(this);
-    }
-
-    public Tournament(Profile p, Arena eventArena) {
-        this.m = p.getMatchData();
-        this.host = p.getName();
-        this.event = true;
-        this.eventArena = eventArena;
-        m.setArena(eventArena);
-        loc = eventArena.getWaitingLocation();
         addPlayer(p);
         tournamentManager.registerTournament(this);
     }
@@ -60,10 +45,6 @@ public class Tournament {
         if (started) {
             p.message(ErrorMessages.TOURNAMENT_STARTED);
             return;
-        }
-
-        if (event) {
-            p.teleport(loc);
         }
 
         p.setTournament(this);
@@ -176,10 +157,6 @@ public class Tournament {
             TournamentMatch match = new TournamentMatch(p1, p2, m, this);
             match.start();
             matches.add(match);
-
-            if (event) {
-                break;
-            }
         }
     }
 
@@ -211,14 +188,6 @@ public class Tournament {
 
     public boolean isEnded() {
         return ended;
-    }
-
-    public boolean isEvent() {
-        return event;
-    }
-
-    public Arena getEventArena() {
-        return eventArena;
     }
 
     public Location getWaitingLocation() {
