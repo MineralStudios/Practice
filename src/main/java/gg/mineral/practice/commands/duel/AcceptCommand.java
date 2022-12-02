@@ -3,15 +3,15 @@ package gg.mineral.practice.commands.duel;
 import java.util.Iterator;
 import java.util.Map.Entry;
 
-import gg.mineral.practice.commands.PlayerCommand;
 import gg.mineral.practice.PracticePlugin;
+import gg.mineral.practice.commands.PlayerCommand;
 import gg.mineral.practice.entity.PlayerStatus;
 import gg.mineral.practice.entity.Profile;
 import gg.mineral.practice.managers.PlayerManager;
-import gg.mineral.practice.match.DuelRequest;
 import gg.mineral.practice.match.Match;
-import gg.mineral.practice.match.MatchData;
 import gg.mineral.practice.match.PartyMatch;
+import gg.mineral.practice.match.data.MatchData;
+import gg.mineral.practice.request.DuelRequest;
 import gg.mineral.practice.util.messages.impl.ErrorMessages;
 import gg.mineral.practice.util.messages.impl.UsageMessages;
 

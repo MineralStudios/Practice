@@ -5,9 +5,9 @@ import java.sql.ResultSet;
 import java.util.UUID;
 
 import gg.mineral.practice.sql.SQLManager;
+import gg.mineral.practice.util.collection.LeaderboardMap;
 import gg.mineral.practice.PracticePlugin;
 import gg.mineral.practice.entity.Profile;
-import gg.mineral.practice.util.LeaderboardMap;
 
 public class EloManager {
 	public String table = "Elo";

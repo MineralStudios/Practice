@@ -11,8 +11,8 @@ import org.bukkit.util.Vector;
 import gg.mineral.api.config.FileConfiguration;
 import gg.mineral.practice.PracticePlugin;
 import gg.mineral.practice.util.SaveableData;
-import gg.mineral.practice.util.VoidWorldGenerator;
-import gg.mineral.practice.util.WorldUtil;
+import gg.mineral.practice.util.world.VoidWorldGenerator;
+import gg.mineral.practice.util.world.WorldUtil;
 
 public class Arena implements SaveableData {
 	final FileConfiguration config = PracticePlugin.INSTANCE.getArenaManager().getConfig();

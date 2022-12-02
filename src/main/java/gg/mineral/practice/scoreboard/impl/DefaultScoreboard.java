@@ -1,18 +1,18 @@
-package gg.mineral.practice.scoreboard;
+package gg.mineral.practice.scoreboard.impl;
 
 import org.bukkit.Bukkit;
 import org.bukkit.scheduler.BukkitScheduler;
 
-import gg.mineral.practice.board.Board;
 import gg.mineral.practice.util.messages.CC;
 import gg.mineral.practice.PracticePlugin;
 import gg.mineral.practice.entity.Profile;
 import gg.mineral.practice.managers.PlayerManager;
+import gg.mineral.practice.scoreboard.Board;
 
-public class Scoreboard {
+public class DefaultScoreboard {
 	Profile p;
 	Board b;
-	Scoreboard instance;
+	DefaultScoreboard instance;
 	PlayerManager playerManager = PracticePlugin.INSTANCE.getPlayerManager();
 	int updateFrequency = 20;
 
@@ -24,7 +24,7 @@ public class Scoreboard {
 		return updateFrequency;
 	}
 
-	public Scoreboard(Profile p) {
+	public DefaultScoreboard(Profile p) {
 		this.p = p;
 	}
 

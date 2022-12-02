@@ -5,7 +5,7 @@ import java.util.Map.Entry;
 import gg.mineral.practice.entity.Profile;
 import gg.mineral.practice.gametype.Gametype;
 import gg.mineral.practice.match.Match;
-import gg.mineral.practice.match.MatchData;
+import gg.mineral.practice.match.data.MatchData;
 import it.unimi.dsi.fastutil.objects.Object2ObjectOpenHashMap;
 
 public class QueueSearchTask {

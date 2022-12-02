@@ -27,20 +27,20 @@ import gg.mineral.practice.inventory.menus.SelectQueuetypeMenu;
 import gg.mineral.practice.kit.Kit;
 import gg.mineral.practice.managers.PlayerManager;
 import gg.mineral.practice.managers.QueuetypeManager;
-import gg.mineral.practice.match.DuelRequest;
 import gg.mineral.practice.match.Match;
-import gg.mineral.practice.match.MatchData;
+import gg.mineral.practice.match.data.MatchData;
 import gg.mineral.practice.party.Party;
 import gg.mineral.practice.queue.QueueEntry;
 import gg.mineral.practice.queue.QueueSearchTask;
 import gg.mineral.practice.queue.Queuetype;
-import gg.mineral.practice.scoreboard.Scoreboard;
+import gg.mineral.practice.request.DuelRequest;
+import gg.mineral.practice.scoreboard.impl.DefaultScoreboard;
 import gg.mineral.practice.tournaments.Tournament;
-import gg.mineral.practice.util.PearlCooldown;
-import gg.mineral.practice.util.ProfileList;
 import gg.mineral.practice.util.collection.AutoExpireList;
+import gg.mineral.practice.util.collection.ProfileList;
 import gg.mineral.practice.util.items.ItemBuilder;
 import gg.mineral.practice.util.items.ItemStacks;
+import gg.mineral.practice.util.math.PearlCooldown;
 import gg.mineral.practice.util.messages.CC;
 import gg.mineral.practice.util.messages.ChatMessage;
 import gg.mineral.practice.util.messages.Message;
@@ -57,7 +57,7 @@ public class Profile {
 	final QueuetypeManager queuetypeManager = instance.getQueuetypeManager();
 	final PlayerManager playerManager = instance.getPlayerManager();
 	Match match;
-	Scoreboard b;
+	DefaultScoreboard b;
 	Match spectatingMatch;
 	MatchData matchData;
 	Integer hits = 0, currentCombo, longestCombo;
@@ -144,7 +144,7 @@ public class Profile {
 		this.requests = duelRequests;
 	}
 
-	public Scoreboard getBoard() {
+	public DefaultScoreboard getBoard() {
 		return b;
 	}
 
@@ -790,7 +790,7 @@ public class Profile {
 		pearlCooldown.setTimeRemaining(i);
 	}
 
-	public void setScoreboard(Scoreboard scoreboard) {
+	public void setScoreboard(DefaultScoreboard scoreboard) {
 		b = scoreboard;
 	}
 

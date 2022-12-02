@@ -13,7 +13,7 @@ import gg.mineral.practice.entity.Profile;
 import gg.mineral.practice.managers.PartyManager;
 import gg.mineral.practice.managers.PlayerManager;
 import gg.mineral.practice.party.Party;
-import gg.mineral.practice.scoreboard.Scoreboard;
+import gg.mineral.practice.scoreboard.impl.DefaultScoreboard;
 import gg.mineral.practice.util.messages.ChatMessage;
 import gg.mineral.practice.util.messages.impl.ChatMessages;
 
@@ -30,7 +30,7 @@ public class EntryListener implements Listener {
 		player.setInventoryForLobby();
 		player.removePotionEffects();
 
-		new Scoreboard(player).setBoard();
+		new DefaultScoreboard(player).setBoard();
 	}
 
 	@EventHandler

@@ -1,14 +1,14 @@
-package gg.mineral.practice.scoreboard;
+package gg.mineral.practice.scoreboard.impl;
 
-import gg.mineral.practice.board.Board;
+import gg.mineral.practice.util.collection.ProfileList;
 import gg.mineral.practice.util.messages.CC;
 import gg.mineral.practice.PracticePlugin;
 import gg.mineral.practice.entity.Profile;
 import gg.mineral.practice.managers.PlayerManager;
 import gg.mineral.practice.match.Match;
-import gg.mineral.practice.util.ProfileList;
+import gg.mineral.practice.scoreboard.Board;
 
-public class PartyMatchScoreboard extends Scoreboard {
+public class PartyMatchScoreboard extends DefaultScoreboard {
     PlayerManager playerManager = PracticePlugin.INSTANCE.getPlayerManager();
 
     public PartyMatchScoreboard(Profile p) {

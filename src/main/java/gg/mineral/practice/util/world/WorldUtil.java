@@ -1,4 +1,4 @@
-package gg.mineral.practice.util;
+package gg.mineral.practice.util.world;
 
 import java.io.File;
 import java.io.FileInputStream;

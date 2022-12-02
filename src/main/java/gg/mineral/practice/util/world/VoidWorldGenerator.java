@@ -1,4 +1,4 @@
-package gg.mineral.practice.util;
+package gg.mineral.practice.util.world;
 
 import java.util.List;
 import java.util.Random;

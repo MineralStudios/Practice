@@ -12,8 +12,8 @@ import gg.mineral.practice.PracticePlugin;
 import gg.mineral.practice.entity.Profile;
 import gg.mineral.practice.gametype.Gametype;
 import gg.mineral.practice.inventory.menus.InventoryStatsMenu;
-import gg.mineral.practice.util.ProfileList;
 import gg.mineral.practice.util.SaveableData;
+import gg.mineral.practice.util.collection.ProfileList;
 import it.unimi.dsi.fastutil.objects.Object2ObjectOpenHashMap;
 import gg.mineral.api.config.FileConfiguration;
 

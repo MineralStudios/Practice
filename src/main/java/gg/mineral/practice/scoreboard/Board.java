@@ -1,4 +1,4 @@
-package gg.mineral.practice.board;
+package gg.mineral.practice.scoreboard;
 
 import java.lang.reflect.Field;
 import java.util.Arrays;

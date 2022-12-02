@@ -4,7 +4,7 @@ import gg.mineral.practice.PracticePlugin;
 import gg.mineral.practice.entity.Profile;
 import gg.mineral.practice.managers.PartyManager;
 import gg.mineral.practice.managers.PlayerManager;
-import gg.mineral.practice.util.ProfileList;
+import gg.mineral.practice.util.collection.ProfileList;
 
 public class Party {
 

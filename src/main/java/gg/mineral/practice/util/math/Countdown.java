@@ -1,4 +1,4 @@
-package gg.mineral.practice.util;
+package gg.mineral.practice.util.math;
 
 import org.bukkit.Bukkit;
 import org.bukkit.scheduler.BukkitScheduler;

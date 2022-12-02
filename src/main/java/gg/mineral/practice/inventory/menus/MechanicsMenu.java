@@ -8,8 +8,8 @@ import gg.mineral.practice.util.messages.CC;
 import gg.mineral.practice.util.messages.impl.ErrorMessages;
 import gg.mineral.practice.inventory.PracticeMenu;
 import gg.mineral.practice.inventory.SubmitAction;
-import gg.mineral.practice.match.MatchData;
 import gg.mineral.practice.match.PartyMatch;
+import gg.mineral.practice.match.data.MatchData;
 import gg.mineral.practice.party.Party;
 import gg.mineral.practice.tournaments.Tournament;
 

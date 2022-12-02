@@ -1,4 +1,4 @@
-package gg.mineral.practice.util;
+package gg.mineral.practice.util.collection;
 
 import java.util.List;
 

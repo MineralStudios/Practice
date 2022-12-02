@@ -1,4 +1,4 @@
-package gg.mineral.practice.match;
+package gg.mineral.practice.match.data;
 
 import gg.mineral.practice.util.messages.CC;
 import gg.mineral.practice.PracticePlugin;

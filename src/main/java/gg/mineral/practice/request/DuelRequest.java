@@ -1,6 +1,7 @@
-package gg.mineral.practice.match;
+package gg.mineral.practice.request;
 
 import gg.mineral.practice.entity.Profile;
+import gg.mineral.practice.match.data.MatchData;
 
 public class DuelRequest {
 	final MatchData m;

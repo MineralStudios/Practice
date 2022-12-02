@@ -1,4 +1,4 @@
-package gg.mineral.practice.util;
+package gg.mineral.practice.util.math;
 
 public class MathUtil {
 	private static final int DEFAULT_K_FACTOR = 25;

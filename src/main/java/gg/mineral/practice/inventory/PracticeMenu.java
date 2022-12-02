@@ -10,7 +10,7 @@ import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
 
 import gg.mineral.practice.entity.Profile;
-import gg.mineral.practice.util.MathUtil;
+import gg.mineral.practice.util.math.MathUtil;
 import it.unimi.dsi.fastutil.ints.Int2ObjectOpenHashMap;
 
 public class PracticeMenu {

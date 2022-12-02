@@ -10,10 +10,11 @@ import org.bukkit.scoreboard.Team;
 
 import gg.mineral.practice.PracticePlugin;
 import gg.mineral.practice.entity.Profile;
+import gg.mineral.practice.match.data.MatchData;
 import gg.mineral.practice.party.Party;
-import gg.mineral.practice.scoreboard.PartyMatchScoreboard;
-import gg.mineral.practice.scoreboard.Scoreboard;
-import gg.mineral.practice.util.ProfileList;
+import gg.mineral.practice.scoreboard.impl.DefaultScoreboard;
+import gg.mineral.practice.scoreboard.impl.PartyMatchScoreboard;
+import gg.mineral.practice.util.collection.ProfileList;
 import gg.mineral.practice.util.messages.CC;
 import net.minecraft.server.v1_8_R3.EntityHuman;
 import net.minecraft.server.v1_8_R3.EntityItem;
@@ -129,7 +130,7 @@ public class PartyMatch extends Match {
 				setInventoryStats(a, attackerHealth, attackerAmountOfPots);
 				a.bukkit().sendMessage(CC.GOLD + "You won");
 				a.setPearlCooldown(0);
-				new Scoreboard(a).setBoard();
+				new DefaultScoreboard(a).setBoard();
 				a.removeFromMatch();
 				Bukkit.getServer().getScheduler().runTaskLater(PracticePlugin.INSTANCE, new Runnable() {
 					public void run() {
@@ -146,7 +147,7 @@ public class PartyMatch extends Match {
 
 			matchManager.remove(this);
 			victim.bukkit().sendMessage(CC.RED + "You lost");
-			new Scoreboard(victim).setBoard();
+			new DefaultScoreboard(victim).setBoard();
 
 			Bukkit.getServer().getScheduler().runTaskLater(PracticePlugin.INSTANCE, new Runnable() {
 				public void run() {
@@ -196,7 +197,7 @@ public class PartyMatch extends Match {
 
 				victim.removePotionEffects();
 				victim.spectate(remaining.get(0));
-				new Scoreboard(victim).setBoard();
+				new DefaultScoreboard(victim).setBoard();
 			}
 
 		}, 1);

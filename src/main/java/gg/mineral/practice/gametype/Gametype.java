@@ -18,8 +18,8 @@ import gg.mineral.practice.managers.CatagoryManager;
 import gg.mineral.practice.managers.EloManager;
 import gg.mineral.practice.managers.QueuetypeManager;
 import gg.mineral.practice.queue.Queuetype;
-import gg.mineral.practice.util.LeaderboardMap;
 import gg.mineral.practice.util.SaveableData;
+import gg.mineral.practice.util.collection.LeaderboardMap;
 import it.unimi.dsi.fastutil.objects.Object2BooleanOpenHashMap;
 import it.unimi.dsi.fastutil.objects.Object2IntOpenHashMap;
 
@@ -288,7 +288,7 @@ public class Gametype implements SaveableData {
 	public List<String> getLeaderboardLore() {
 		List<String> lore = new GlueList<>();
 
-		for (gg.mineral.practice.util.LeaderboardMap.Entry entry : leaderboardMap.getEntries()) {
+		for (gg.mineral.practice.util.collection.LeaderboardMap.Entry entry : leaderboardMap.getEntries()) {
 			lore.add(entry.getKey() + ": " + entry.getValue());
 		}
 
