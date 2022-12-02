@@ -10,13 +10,11 @@ import org.bukkit.event.entity.EntityDamageByEntityEvent;
 import org.bukkit.event.entity.EntityDamageEvent;
 import org.bukkit.event.entity.EntityDamageEvent.DamageCause;
 
-import gg.mineral.practice.PracticePlugin;
 import gg.mineral.practice.entity.Profile;
 import gg.mineral.practice.managers.PlayerManager;
 import gg.mineral.practice.util.messages.impl.ChatMessages;
 
 public class DamageListener implements Listener {
-	PlayerManager playerManager = PracticePlugin.INSTANCE.getPlayerManager();
 
 	@EventHandler
 	public void onEntityDamage(EntityDamageEvent e) {
@@ -27,12 +25,12 @@ public class DamageListener implements Listener {
 
 		org.bukkit.entity.Player player = (org.bukkit.entity.Player) e.getEntity();
 
-		Profile victim = playerManager.getProfileFromMatch(player);
+		Profile victim = PlayerManager.getProfileFromMatch(player);
 
 		if (victim == null) {
 
 			if (e.getCause() == DamageCause.VOID) {
-				player.teleport(playerManager.getSpawnLocation());
+				player.teleport(PlayerManager.getSpawnLocation());
 			}
 
 			e.setCancelled(true);
@@ -86,14 +84,14 @@ public class DamageListener implements Listener {
 			return;
 		}
 
-		Profile attacker = playerManager.getProfileFromMatch((org.bukkit.entity.Player) e.getDamager());
+		Profile attacker = PlayerManager.getProfileFromMatch((org.bukkit.entity.Player) e.getDamager());
 
 		if (attacker == null) {
 			e.setCancelled(true);
 			return;
 		}
 
-		Profile victim = playerManager.getProfileFromMatch(bukkitVictim);
+		Profile victim = PlayerManager.getProfileFromMatch(bukkitVictim);
 
 		if (victim == null) {
 			e.setCancelled(true);
@@ -125,14 +123,14 @@ public class DamageListener implements Listener {
 			return;
 		}
 
-		Profile attacker = playerManager.getProfileFromMatch((org.bukkit.entity.Player) e.getCombuster());
+		Profile attacker = PlayerManager.getProfileFromMatch((org.bukkit.entity.Player) e.getCombuster());
 
 		if (attacker == null) {
 			e.setCancelled(true);
 			return;
 		}
 
-		Profile victim = playerManager.getProfileFromMatch((org.bukkit.entity.Player) e.getEntity());
+		Profile victim = PlayerManager.getProfileFromMatch((org.bukkit.entity.Player) e.getEntity());
 
 		if (victim == null) {
 			e.setCancelled(true);

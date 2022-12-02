@@ -10,6 +10,7 @@ import gg.mineral.practice.PracticePlugin;
 import gg.mineral.practice.entity.PlayerStatus;
 import gg.mineral.practice.entity.Profile;
 import gg.mineral.practice.events.Event;
+import gg.mineral.practice.managers.MatchManager;
 import gg.mineral.practice.match.data.MatchData;
 import gg.mineral.practice.scoreboard.impl.DefaultScoreboard;
 import gg.mineral.practice.util.messages.CC;
@@ -75,7 +76,7 @@ public class EventMatch extends Match {
         new DefaultScoreboard(player1).setBoard();
         new DefaultScoreboard(player2).setBoard();
         victim.removeFromMatch();
-        matchManager.remove(this);
+        MatchManager.remove(this);
 
         Bukkit.getServer().getScheduler().runTaskLater(PracticePlugin.INSTANCE, new Runnable() {
             public void run() {

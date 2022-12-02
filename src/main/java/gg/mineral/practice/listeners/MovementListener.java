@@ -10,12 +10,10 @@ import org.bukkit.event.player.PlayerMoveEvent;
 import org.bukkit.event.player.PlayerTeleportEvent;
 import org.spigotmc.event.entity.EntityDismountEvent;
 
-import gg.mineral.practice.PracticePlugin;
 import gg.mineral.practice.entity.Profile;
 import gg.mineral.practice.managers.PlayerManager;
 
 public class MovementListener implements Listener {
-    final PlayerManager playerManager = PracticePlugin.INSTANCE.getPlayerManager();
 
     @EventHandler
     public void onPearlTeleport(PlayerTeleportEvent event) {
@@ -47,7 +45,7 @@ public class MovementListener implements Listener {
 
     @EventHandler
     public void onPlayerMove(PlayerMoveEvent e) {
-        Profile player = playerManager.getProfileFromMatch(e.getPlayer());
+        Profile player = PlayerManager.getProfileFromMatch(e.getPlayer());
 
         if (player == null) {
             return;
@@ -68,7 +66,7 @@ public class MovementListener implements Listener {
         }
 
         org.bukkit.entity.Player bukkitPlayer = (org.bukkit.entity.Player) e.getEntity();
-        Profile player = playerManager.getProfileFromMatch(bukkitPlayer);
+        Profile player = PlayerManager.getProfileFromMatch(bukkitPlayer);
 
         if (player == null) {
             return;

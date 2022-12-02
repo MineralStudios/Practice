@@ -3,49 +3,47 @@ package gg.mineral.practice.managers;
 import org.bukkit.Material;
 import org.bukkit.inventory.ItemStack;
 
-import gg.mineral.practice.util.SaveableData;
 import gg.mineral.api.config.FileConfiguration;
 
-public class PlayerSettingsManager implements SaveableData {
-	final FileConfiguration config = new FileConfiguration("playeroptions.yml", "plugins/Practice");
-	int slot;
-	ItemStack displayItem;
-	String displayName;
-	Boolean enabled;
+public class PlayerSettingsManager {
+	final static FileConfiguration config = new FileConfiguration("playeroptions.yml", "plugins/Practice");
+	static int slot;
+	static ItemStack displayItem;
+	static String displayName;
+	static Boolean enabled;
 
-	public void setEnabled(boolean enabled) {
-		this.enabled = enabled;
+	public static void setEnabled(boolean enabled) {
+		PlayerSettingsManager.enabled = enabled;
 	}
 
-	public void setDisplayItem(ItemStack display) {
+	public static void setDisplayItem(ItemStack display) {
 		displayItem = display;
 	}
 
-	public void setDisplayName(String name) {
+	public static void setDisplayName(String name) {
 		displayName = name;
 	}
 
-	public void setSlot(Integer slot) {
-		this.slot = slot;
+	public static void setSlot(Integer slot) {
+		PlayerSettingsManager.slot = slot;
 	}
 
-	public Boolean getEnabled() {
+	public static Boolean getEnabled() {
 		return enabled;
 	}
 
-	public ItemStack getDisplayItem() {
+	public static ItemStack getDisplayItem() {
 		return displayItem;
 	}
 
-	public String getDisplayName() {
+	public static String getDisplayName() {
 		return displayName;
 	}
 
-	public int getSlot() {
+	public static int getSlot() {
 		return slot;
 	}
 
-	@Override
 	public void save() {
 		config.set("Options.Enable", enabled);
 		config.set("Options.DisplayItem", displayItem);
@@ -54,15 +52,13 @@ public class PlayerSettingsManager implements SaveableData {
 		config.save();
 	}
 
-	@Override
-	public void load() {
+	public static void load() {
 		slot = config.getInt("Options.Slot", 3);
 		displayItem = config.getItemstack("Options.DisplayItem", new ItemStack(Material.COMPASS));
 		displayName = config.getString("Options.DisplayName", "Settings");
 		enabled = config.getBoolean("Options.Enable", true);
 	}
 
-	@Override
 	public void setDefaults() {
 		slot = 3;
 		displayItem = new ItemStack(Material.COMPASS);

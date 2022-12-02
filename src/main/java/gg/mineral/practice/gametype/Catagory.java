@@ -5,17 +5,15 @@ import org.bukkit.inventory.ItemStack;
 
 import gg.mineral.api.collection.GlueList;
 import gg.mineral.api.config.FileConfiguration;
-import gg.mineral.practice.PracticePlugin;
-import gg.mineral.practice.managers.GametypeManager;
+import gg.mineral.practice.managers.CatagoryManager;
 import gg.mineral.practice.managers.QueuetypeManager;
 import gg.mineral.practice.queue.Queuetype;
 import gg.mineral.practice.util.SaveableData;
 
 public class Catagory implements SaveableData {
 
-	final FileConfiguration config = PracticePlugin.INSTANCE.getCatagoryManager().getConfig();
-	final QueuetypeManager queuetypeManager = PracticePlugin.INSTANCE.getQueuetypeManager();
-	final GametypeManager gametypeManager = PracticePlugin.INSTANCE.getGametypeManager();
+	final FileConfiguration config = CatagoryManager.getConfig();
+
 	ItemStack displayItem;
 	String displayName;
 	final String name;
@@ -84,7 +82,7 @@ public class Catagory implements SaveableData {
 
 	@Override
 	public void save() {
-		for (Queuetype q : queuetypeManager.getQueuetypes()) {
+		for (Queuetype q : QueuetypeManager.getQueuetypes()) {
 
 			if (!q.getCatagories().containsKey(this)) {
 				config.set(path + q.getName() + ".Enabled", false);
@@ -109,7 +107,7 @@ public class Catagory implements SaveableData {
 				new ItemStack(Material.DIAMOND_SWORD));
 		this.displayName = config.getString(path + "DisplayName", getName());
 
-		for (Queuetype q : queuetypeManager.getQueuetypes()) {
+		for (Queuetype q : QueuetypeManager.getQueuetypes()) {
 			if (config.getBoolean("Catagory." + getName() + "." + q.getName() + ".Enabled", false)) {
 				q.getCatagories().put(this, config.getInt(path + q.getName() + ".Slot", 0));
 			}
@@ -121,7 +119,7 @@ public class Catagory implements SaveableData {
 		this.displayItem = new ItemStack(Material.DIAMOND_SWORD);
 		this.displayName = getName();
 
-		for (Queuetype q : queuetypeManager.getQueuetypes()) {
+		for (Queuetype q : QueuetypeManager.getQueuetypes()) {
 			if (config.getBoolean("Catagory." + getName() + "." + q.getName() + ".Enabled", false)) {
 				q.getCatagories().put(this, 0);
 			}

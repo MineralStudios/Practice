@@ -9,13 +9,13 @@ import org.bukkit.inventory.ItemStack;
 import org.bukkit.util.Vector;
 
 import gg.mineral.api.config.FileConfiguration;
-import gg.mineral.practice.PracticePlugin;
+import gg.mineral.practice.managers.ArenaManager;
 import gg.mineral.practice.util.SaveableData;
 import gg.mineral.practice.util.world.VoidWorldGenerator;
 import gg.mineral.practice.util.world.WorldUtil;
 
 public class Arena implements SaveableData {
-	final FileConfiguration config = PracticePlugin.INSTANCE.getArenaManager().getConfig();
+	final FileConfiguration config = ArenaManager.getConfig();
 	final String name;
 	final String path;
 	Location location1;

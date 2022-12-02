@@ -1,7 +1,6 @@
 package gg.mineral.practice.match.data;
 
 import gg.mineral.practice.util.messages.CC;
-import gg.mineral.practice.PracticePlugin;
 import gg.mineral.practice.arena.Arena;
 import gg.mineral.practice.gametype.Gametype;
 import gg.mineral.practice.kit.Kit;
@@ -28,20 +27,18 @@ public class MatchData {
 	boolean ranked = false;
 	String kitName = "Custom";
 	Integer pearlCooldown = 15;
-	final GametypeManager gametypeManager = PracticePlugin.INSTANCE.getGametypeManager();
-	final ArenaManager arenaManager = PracticePlugin.INSTANCE.getArenaManager();
 
 	public MatchData() {
 
-		if (!gametypeManager.getGametypes().isEmpty()) {
-			this.gametype = gametypeManager.getGametypes().get(0);
+		if (!GametypeManager.getGametypes().isEmpty()) {
+			this.gametype = GametypeManager.getGametypes().get(0);
 			this.kitName = gametype.getDisplayName();
 			this.kit = gametype.getKit();
 
 		}
 
-		if (!arenaManager.getArenas().isEmpty()) {
-			this.arena = arenaManager.getArenas().get(0);
+		if (!ArenaManager.getArenas().isEmpty()) {
+			this.arena = ArenaManager.getArenas().get(0);
 		}
 
 		this.kb = KnockbackProfileList.getDefaultKnockbackProfile();

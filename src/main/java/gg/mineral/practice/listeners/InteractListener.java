@@ -23,12 +23,11 @@ import gg.mineral.practice.managers.PlayerManager;
 import gg.mineral.practice.util.messages.impl.ChatMessages;
 
 public class InteractListener implements Listener {
-	final PlayerManager playerManager = PracticePlugin.INSTANCE.getPlayerManager();
 
 	@EventHandler(priority = EventPriority.HIGHEST)
 	public void onPlayerInteract(PlayerInteractEvent e) {
 
-		Profile player = playerManager.getProfile(e.getPlayer());
+		Profile player = PlayerManager.getProfile(e.getPlayer());
 
 		if (player.isInMatchCountdown()) {
 			e.setCancelled(true);

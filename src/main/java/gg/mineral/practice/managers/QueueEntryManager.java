@@ -6,13 +6,13 @@ import gg.mineral.practice.queue.Queuetype;
 import gg.mineral.api.collection.GlueList;
 
 public class QueueEntryManager {
-    GlueList<QueueEntry> list = new GlueList<>();
+    static GlueList<QueueEntry> list = new GlueList<>();
 
-    public void register(QueueEntry qe) {
+    public static void register(QueueEntry qe) {
         list.add(qe);
     }
 
-    public QueueEntry newEntry(Queuetype q, Gametype g) {
+    public static QueueEntry newEntry(Queuetype q, Gametype g) {
         QueueEntry entry = null;
 
         for (QueueEntry qe : list) {

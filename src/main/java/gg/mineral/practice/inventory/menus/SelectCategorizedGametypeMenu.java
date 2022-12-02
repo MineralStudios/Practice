@@ -2,14 +2,16 @@ package gg.mineral.practice.inventory.menus;
 
 import org.bukkit.inventory.ItemStack;
 
-import gg.mineral.practice.util.items.ItemBuilder;
-import gg.mineral.practice.util.messages.CC;
 import gg.mineral.practice.gametype.Catagory;
 import gg.mineral.practice.gametype.Gametype;
+import gg.mineral.practice.managers.MatchManager;
+import gg.mineral.practice.managers.QueueEntryManager;
 import gg.mineral.practice.match.Match;
 import gg.mineral.practice.queue.QueueEntry;
 import gg.mineral.practice.queue.QueueSearchTask;
 import gg.mineral.practice.queue.Queuetype;
+import gg.mineral.practice.util.items.ItemBuilder;
+import gg.mineral.practice.util.messages.CC;
 
 public class SelectCategorizedGametypeMenu extends SelectGametypeMenu {
 	Catagory c;
@@ -27,7 +29,7 @@ public class SelectCategorizedGametypeMenu extends SelectGametypeMenu {
 					.name(g.getDisplayName());
 			if (lore) {
 				int InGame = 0;
-				for (Match match : matchManager.getMatchs()) {
+				for (Match match : MatchManager.getMatchs()) {
 					QueueEntry queueEntry = match.getData().getQueueEntry();
 
 					if (queueEntry == null) {
@@ -48,7 +50,7 @@ public class SelectCategorizedGametypeMenu extends SelectGametypeMenu {
 			Runnable runnable = new Runnable() {
 				@Override
 				public void run() {
-					QueueEntry qe = queueEntryManager.newEntry(q, g);
+					QueueEntry qe = QueueEntryManager.newEntry(q, g);
 
 					if (kitEditor) {
 						viewer.sendPlayerToKitEditor(qe);

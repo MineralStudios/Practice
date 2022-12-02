@@ -13,13 +13,12 @@ import net.minecraft.server.v1_8_R3.PacketPlayInClientCommand;
 import net.minecraft.server.v1_8_R3.PacketPlayInClientCommand.EnumClientCommand;
 
 public class DeathListener implements Listener {
-    final PlayerManager playerManager = PracticePlugin.INSTANCE.getPlayerManager();
 
     @EventHandler
     public void onPlayerDeath(PlayerDeathEvent e) {
         e.setDropItems(false);
         e.setDeathMessage(null);
-        Profile victim = playerManager.getProfile(e.getEntity());
+        Profile victim = PlayerManager.getProfile(e.getEntity());
 
         if (victim.getPlayerStatus() != PlayerStatus.FIGHTING) {
             Bukkit.getServer().getScheduler().runTaskLater(PracticePlugin.INSTANCE, new Runnable() {

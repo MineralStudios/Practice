@@ -5,13 +5,10 @@ import java.util.Iterator;
 import gg.mineral.practice.commands.PlayerCommand;
 
 import gg.mineral.practice.util.messages.CC;
-import gg.mineral.practice.PracticePlugin;
 import gg.mineral.practice.gametype.Catagory;
 import gg.mineral.practice.gametype.Gametype;
-import gg.mineral.practice.managers.ArenaManager;
 import gg.mineral.practice.managers.CatagoryManager;
 import gg.mineral.practice.managers.GametypeManager;
-import gg.mineral.practice.managers.PlayerManager;
 import gg.mineral.practice.managers.QueuetypeManager;
 import gg.mineral.practice.queue.Queuetype;
 import gg.mineral.practice.util.messages.impl.ChatMessages;
@@ -19,12 +16,6 @@ import gg.mineral.practice.util.messages.impl.ErrorMessages;
 import gg.mineral.practice.util.messages.impl.UsageMessages;
 
 public class CatagoryCommand extends PlayerCommand {
-
-	final PlayerManager playerManager = PracticePlugin.INSTANCE.getPlayerManager();
-	final CatagoryManager catagoryManager = PracticePlugin.INSTANCE.getCatagoryManager();
-	final QueuetypeManager queuetypeManager = PracticePlugin.INSTANCE.getQueuetypeManager();
-	final ArenaManager arenaManager = PracticePlugin.INSTANCE.getArenaManager();
-	final GametypeManager gametypeManager = PracticePlugin.INSTANCE.getGametypeManager();
 
 	public CatagoryCommand() {
 		super("catagory", "practice.config");
@@ -60,14 +51,14 @@ public class CatagoryCommand extends PlayerCommand {
 
 				catagoryName = args[1];
 
-				if (catagoryManager.getCatagoryByName(catagoryName) != null) {
+				if (CatagoryManager.getCatagoryByName(catagoryName) != null) {
 					ErrorMessages.ARENA_ALREADY_EXISTS.send(player);
 					return;
 				}
 
 				catagory = new Catagory(catagoryName);
 				catagory.setDefaults();
-				catagoryManager.registerCatagory(catagory);
+				CatagoryManager.registerCatagory(catagory);
 				ChatMessages.CATAGORY_CREATED.clone().replace("%catagory%", catagoryName).send(player);
 				return;
 			case "setdisplay":
@@ -77,7 +68,7 @@ public class CatagoryCommand extends PlayerCommand {
 				}
 
 				catagoryName = args[1];
-				catagory = catagoryManager.getCatagoryByName(catagoryName);
+				catagory = CatagoryManager.getCatagoryByName(catagoryName);
 
 				if (catagory == null) {
 					ErrorMessages.CATAGORY_DOES_NOT_EXIST.send(player);
@@ -100,9 +91,9 @@ public class CatagoryCommand extends PlayerCommand {
 				}
 
 				catagoryName = args[1];
-				catagory = catagoryManager.getCatagoryByName(catagoryName);
+				catagory = CatagoryManager.getCatagoryByName(catagoryName);
 
-				Queuetype queuetype = queuetypeManager.getQueuetypeByName(args[2]);
+				Queuetype queuetype = QueuetypeManager.getQueuetypeByName(args[2]);
 
 				if (catagory == null) {
 					ErrorMessages.CATAGORY_DOES_NOT_EXIST.send(player);
@@ -142,7 +133,7 @@ public class CatagoryCommand extends PlayerCommand {
 				}
 
 				catagoryName = args[1];
-				catagory = catagoryManager.getCatagoryByName(catagoryName);
+				catagory = CatagoryManager.getCatagoryByName(catagoryName);
 
 				if (catagory == null) {
 					ErrorMessages.CATAGORY_DOES_NOT_EXIST.send(player);
@@ -150,7 +141,7 @@ public class CatagoryCommand extends PlayerCommand {
 				}
 
 				gametypeName = args[2];
-				gametype = gametypeManager.getGametypeByName(gametypeName);
+				gametype = GametypeManager.getGametypeByName(gametypeName);
 
 				if (gametype == null) {
 					ErrorMessages.GAMETYPE_DOES_NOT_EXIST.send(player);
@@ -169,7 +160,7 @@ public class CatagoryCommand extends PlayerCommand {
 				}
 
 				catagoryName = args[1];
-				catagory = catagoryManager.getCatagoryByName(catagoryName);
+				catagory = CatagoryManager.getCatagoryByName(catagoryName);
 
 				if (catagory == null) {
 					ErrorMessages.CATAGORY_DOES_NOT_EXIST.send(player);
@@ -177,7 +168,7 @@ public class CatagoryCommand extends PlayerCommand {
 				}
 
 				gametypeName = args[2];
-				gametype = gametypeManager.getGametypeByName(gametypeName);
+				gametype = GametypeManager.getGametypeByName(gametypeName);
 
 				if (gametype == null) {
 					ErrorMessages.GAMETYPE_DOES_NOT_EXIST.send(player);
@@ -192,13 +183,13 @@ public class CatagoryCommand extends PlayerCommand {
 			case "list":
 				sb = new StringBuilder(CC.GRAY + "[");
 
-				Iterator<Catagory> arenaIter = catagoryManager.getCatagorys().iterator();
+				Iterator<Catagory> catagoryIter = CatagoryManager.getCatagorys().iterator();
 
-				while (arenaIter.hasNext()) {
-					Catagory c = arenaIter.next();
+				while (catagoryIter.hasNext()) {
+					Catagory c = catagoryIter.next();
 					sb.append(CC.GREEN + c.getName());
 
-					if (arenaIter.hasNext()) {
+					if (catagoryIter.hasNext()) {
 						sb.append(CC.GRAY + ", ");
 					}
 				}
@@ -215,14 +206,14 @@ public class CatagoryCommand extends PlayerCommand {
 				}
 
 				catagoryName = args[1];
-				catagory = catagoryManager.getCatagoryByName(catagoryName);
+				catagory = CatagoryManager.getCatagoryByName(catagoryName);
 
 				if (catagory == null) {
 					ErrorMessages.CATAGORY_DOES_NOT_EXIST.send(player);
 					return;
 				}
 
-				catagoryManager.remove(catagory);
+				CatagoryManager.remove(catagory);
 				ChatMessages.CATAGORY_DELETED.clone().replace("%catagory%", catagoryName).send(player);
 
 				return;

@@ -3,7 +3,6 @@ package gg.mineral.practice.commands.party;
 import java.util.Iterator;
 import java.util.Map.Entry;
 
-import gg.mineral.practice.PracticePlugin;
 import gg.mineral.practice.commands.PlayerCommand;
 import gg.mineral.practice.entity.PlayerStatus;
 import gg.mineral.practice.entity.Profile;
@@ -19,9 +18,6 @@ import net.md_5.bungee.api.chat.ClickEvent;
 
 public class PartyCommand extends PlayerCommand {
 
-	final PlayerManager playerManager = PracticePlugin.INSTANCE.getPlayerManager();
-	final PartyManager partyManager = PracticePlugin.INSTANCE.getPartyManager();
-
 	public PartyCommand() {
 		super("party");
 		setAliases("p");
@@ -31,7 +27,7 @@ public class PartyCommand extends PlayerCommand {
 	public void execute(org.bukkit.entity.Player pl, String[] args) {
 
 		String arg = args.length > 0 ? args[0] : "";
-		Profile player = playerManager.getProfile(pl);
+		Profile player = PlayerManager.getProfile(pl);
 		Party party;
 		Profile playerarg;
 		StringBuilder sb;
@@ -72,7 +68,7 @@ public class PartyCommand extends PlayerCommand {
 					return;
 				}
 
-				playerarg = playerManager.getProfile(args[1]);
+				playerarg = PlayerManager.getProfile(args[1]);
 
 				if (playerarg == null) {
 					player.message(ErrorMessages.PLAYER_NOT_ONLINE);
@@ -142,7 +138,7 @@ public class PartyCommand extends PlayerCommand {
 												"/party join " + player.getName()),
 										ChatMessages.CLICK_TO_JOIN);
 
-						playerManager.broadcast(playerManager.getProfiles(), messageToBroadcast);
+						PlayerManager.broadcast(PlayerManager.getProfiles(), messageToBroadcast);
 
 						return;
 					}
@@ -163,7 +159,7 @@ public class PartyCommand extends PlayerCommand {
 					return;
 				}
 
-				playerarg = playerManager.getProfile(args[1]);
+				playerarg = PlayerManager.getProfile(args[1]);
 
 				if (playerarg == null) {
 					player.message(ErrorMessages.PLAYER_NOT_ONLINE);
@@ -189,7 +185,7 @@ public class PartyCommand extends PlayerCommand {
 
 				player.addToParty(playerarg.getParty());
 				joinedMessage = ChatMessages.JOINED_PARTY.clone().replace("%player%", player.getName());
-				playerManager.broadcast(party.getPartyMembers(), joinedMessage);
+				PlayerManager.broadcast(party.getPartyMembers(), joinedMessage);
 
 				return;
 			case "accept":
@@ -204,7 +200,7 @@ public class PartyCommand extends PlayerCommand {
 					return;
 				}
 
-				playerarg = playerManager.getProfile(args[1]);
+				playerarg = PlayerManager.getProfile(args[1]);
 
 				if (playerarg == null) {
 					player.message(ErrorMessages.REQUEST_SENDER_NOT_ONLINE);
@@ -223,7 +219,7 @@ public class PartyCommand extends PlayerCommand {
 					it.remove();
 					player.addToParty(party);
 					joinedMessage = ChatMessages.JOINED_PARTY.clone().replace("%player%", player.getName());
-					playerManager.broadcast(party.getPartyMembers(), joinedMessage);
+					PlayerManager.broadcast(party.getPartyMembers(), joinedMessage);
 					return;
 				}
 
@@ -276,7 +272,7 @@ public class PartyCommand extends PlayerCommand {
 						plr.message(leftMessage);
 					}
 
-					partyManager.remove(p);
+					PartyManager.remove(p);
 				} else {
 
 					player.removeFromParty();

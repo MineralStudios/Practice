@@ -24,14 +24,14 @@ import net.md_5.bungee.api.chat.ClickEvent;
 public class Event implements Spectatable {
 
     GlueList<Match> matches = new GlueList<>();
-    final EventManager eventManager = PracticePlugin.INSTANCE.getEventManager();
+
     MatchData m;
     int round = 1;
     String host;
     boolean started = false;
     boolean ended = false;
     ProfileList players = new ProfileList();
-    final PlayerManager playerManager = PracticePlugin.INSTANCE.getPlayerManager();
+
     Arena eventArena;
     Location loc;
 
@@ -39,7 +39,7 @@ public class Event implements Spectatable {
         this.m = p.getMatchData();
         this.host = p.getName();
         addPlayer(p);
-        eventManager.registerEvent(this);
+        EventManager.registerEvent(this);
         this.eventArena = eventArena;
         m.setArena(eventArena);
         loc = eventArena.getWaitingLocation();
@@ -57,7 +57,7 @@ public class Event implements Spectatable {
         players.add(p);
 
         ChatMessage joinedMessage = ChatMessages.JOINED_EVENT.clone().replace("%player%", p.getName());
-        playerManager.broadcast(players, joinedMessage);
+        PlayerManager.broadcast(players, joinedMessage);
     }
 
     public void startRound() {
@@ -71,7 +71,7 @@ public class Event implements Spectatable {
             }
 
             ended = true;
-            eventManager.remove(this);
+            EventManager.remove(this);
             return;
         }
 
@@ -95,10 +95,10 @@ public class Event implements Spectatable {
         players.remove(p);
 
         ChatMessage leftMessage = ChatMessages.LEFT_EVENT.clone().replace("%player%", p.getName());
-        playerManager.broadcast(players, leftMessage);
+        PlayerManager.broadcast(players, leftMessage);
 
         if (players.size() == 0) {
-            eventManager.remove(this);
+            EventManager.remove(this);
             ended = true;
             return;
         }
@@ -111,12 +111,12 @@ public class Event implements Spectatable {
                 pl.stopSpectating();
             }
 
-            eventManager.remove(this);
+            EventManager.remove(this);
             ended = true;
 
             ChatMessage wonMessage = ChatMessages.WON_EVENT.clone().replace("%player%", winner.getName());
 
-            playerManager.broadcast(playerManager.getProfiles(),
+            PlayerManager.broadcast(PlayerManager.getProfiles(),
                     wonMessage);
 
             return;
@@ -133,7 +133,7 @@ public class Event implements Spectatable {
                 .replace("%player%", host).setTextEvent(new ClickEvent(ClickEvent.Action.RUN_COMMAND, "/join " + host),
                         ChatMessages.CLICK_TO_JOIN);
 
-        playerManager.broadcast(playerManager.getProfiles(), messageToBroadcast);
+        PlayerManager.broadcast(PlayerManager.getProfiles(), messageToBroadcast);
 
         Event t = this;
         new BukkitRunnable() {
@@ -150,7 +150,7 @@ public class Event implements Spectatable {
                     }
 
                     ErrorMessages.EVENT_NOT_ENOUGH_PLAYERS.send(winner.bukkit());
-                    eventManager.remove(t);
+                    EventManager.remove(t);
                     ended = true;
                     return;
                 }
@@ -182,7 +182,7 @@ public class Event implements Spectatable {
         if (matches.isEmpty()) {
             ChatMessage broadcastedMessage = ChatMessages.ROUND_OVER.clone().replace("%round%", "" + round);
 
-            playerManager.broadcast(players, broadcastedMessage);
+            PlayerManager.broadcast(players, broadcastedMessage);
 
             new BukkitRunnable() {
                 @Override

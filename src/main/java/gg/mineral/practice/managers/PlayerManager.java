@@ -8,43 +8,41 @@ import org.bukkit.Location;
 import org.bukkit.util.Vector;
 
 import gg.mineral.practice.util.messages.Message;
-import gg.mineral.practice.PracticePlugin;
 import gg.mineral.practice.entity.Profile;
 import gg.mineral.practice.gametype.Gametype;
 import gg.mineral.practice.inventory.menus.InventoryStatsMenu;
-import gg.mineral.practice.util.SaveableData;
 import gg.mineral.practice.util.collection.ProfileList;
 import it.unimi.dsi.fastutil.objects.Object2ObjectOpenHashMap;
 import gg.mineral.api.config.FileConfiguration;
 
-public class PlayerManager implements SaveableData {
-	final FileConfiguration lobbyConfig = new FileConfiguration("lobby.yml", "plugins/Practice");
-	final FileConfiguration playerConfig = new FileConfiguration("PlayerData.yml", "plugins/Practice/PlayerData");
-	Location spawnLocation;
-	ProfileList profileList = new ProfileList();
-	ProfileList profilesInMatch = new ProfileList();
-	Object2ObjectOpenHashMap<String, InventoryStatsMenu> inventoryStats = new Object2ObjectOpenHashMap<>();
-	Object2ObjectOpenHashMap<String, InventoryStatsMenu> partyInventoryStats = new Object2ObjectOpenHashMap<>();
-	final EloManager eloManager = PracticePlugin.INSTANCE.getEloManager();
+public class PlayerManager {
+	final static FileConfiguration lobbyConfig = new FileConfiguration("lobby.yml", "plugins/Practice");
+	final static FileConfiguration playerConfig = new FileConfiguration("PlayerData.yml",
+			"plugins/Practice/PlayerData");
+	static Location spawnLocation;
+	static ProfileList profileList = new ProfileList();
+	static ProfileList profilesInMatch = new ProfileList();
+	static Object2ObjectOpenHashMap<String, InventoryStatsMenu> inventoryStats = new Object2ObjectOpenHashMap<>();
+	static Object2ObjectOpenHashMap<String, InventoryStatsMenu> partyInventoryStats = new Object2ObjectOpenHashMap<>();
 
-	public void add(Profile player) {
+	public static void add(Profile player) {
 		profileList.add(player);
 	}
 
-	public void remove(Profile player) {
+	public static void remove(Profile player) {
 		profileList.remove(player);
 		profilesInMatch.remove(player);
 	}
 
-	public ProfileList getProfiles() {
+	public static ProfileList getProfiles() {
 		return profileList;
 	}
 
-	public int getOfflinePlayerElo(Gametype g, String name) {
-		return eloManager.getEloEntry(name, g.getName());
+	public static int getOfflinePlayerElo(Gametype g, String name) {
+		return EloManager.getEloEntry(name, g.getName());
 	}
 
-	public Profile getProfile(String string) {
+	public static Profile getProfile(String string) {
 		for (int i = 0; i < profileList.size(); i++) {
 			Profile p = profileList.get(i);
 			if (p.getName().equalsIgnoreCase(string)) {
@@ -55,11 +53,11 @@ public class PlayerManager implements SaveableData {
 		return null;
 	}
 
-	public InventoryStatsMenu getInventoryStats(String s) {
+	public static InventoryStatsMenu getInventoryStats(String s) {
 		return inventoryStats.get(s);
 	}
 
-	public Profile getProfile(UUID u) {
+	public static Profile getProfile(UUID u) {
 		for (int i = 0; i < profileList.size(); i++) {
 			Profile p = profileList.get(i);
 			if (p.getUUID().equals(u)) {
@@ -69,7 +67,7 @@ public class PlayerManager implements SaveableData {
 		return null;
 	}
 
-	public Profile getProfile(org.bukkit.entity.Player pl) {
+	public static Profile getProfile(org.bukkit.entity.Player pl) {
 		if (pl == null) {
 			return null;
 		}
@@ -84,7 +82,7 @@ public class PlayerManager implements SaveableData {
 		return val;
 	}
 
-	public Profile getProfileFromMatch(UUID u) {
+	public static Profile getProfileFromMatch(UUID u) {
 		for (int i = 0; i < profilesInMatch.size(); i++) {
 			Profile p = profilesInMatch.get(i);
 			if (p.getUUID().equals(u)) {
@@ -95,7 +93,7 @@ public class PlayerManager implements SaveableData {
 		return null;
 	}
 
-	public Profile getProfileFromMatch(String s) {
+	public static Profile getProfileFromMatch(String s) {
 		for (int i = 0; i < profilesInMatch.size(); i++) {
 			Profile p = profilesInMatch.get(i);
 			if (p.getName().equalsIgnoreCase(s)) {
@@ -105,7 +103,7 @@ public class PlayerManager implements SaveableData {
 		return null;
 	}
 
-	public Profile getProfileFromMatch(org.bukkit.entity.Player pl) {
+	public static Profile getProfileFromMatch(org.bukkit.entity.Player pl) {
 		return getProfileFromMatch(pl.getUniqueId());
 	}
 
@@ -113,43 +111,42 @@ public class PlayerManager implements SaveableData {
 		return profileList.contains(pl);
 	}
 
-	public void setSpawnLocation(Location loc) {
+	public static void setSpawnLocation(Location loc) {
 		spawnLocation = loc;
 	}
 
-	public FileConfiguration getConfig() {
+	public static FileConfiguration getConfig() {
 		return playerConfig;
 	}
 
-	public Location getSpawnLocation() {
+	public static Location getSpawnLocation() {
 		return spawnLocation;
 	}
 
-	public void setInMatch(Profile p) {
+	public static void setInMatch(Profile p) {
 		profilesInMatch.add(p);
 	}
 
-	public void removeFromMatch(Profile p) {
+	public static void removeFromMatch(Profile p) {
 		profilesInMatch.remove(p);
 	}
 
-	public ProfileList getProfilesInMatch() {
+	public static ProfileList getProfilesInMatch() {
 		return profilesInMatch;
 	}
 
-	public void setInventoryStats(Profile p, InventoryStatsMenu menu) {
+	public static void setInventoryStats(Profile p, InventoryStatsMenu menu) {
 		inventoryStats.put(p.getName(), menu);
 	}
 
-	public void setPartyInventoryStats(Profile p, InventoryStatsMenu menu) {
+	public static void setPartyInventoryStats(Profile p, InventoryStatsMenu menu) {
 		partyInventoryStats.put(p.getName(), menu);
 	}
 
-	public void broadcast(Collection<Profile> c, Message message) {
+	public static void broadcast(Collection<Profile> c, Message message) {
 		c.parallelStream().forEach(p -> p.message(message));
 	}
 
-	@Override
 	public void save() {
 		lobbyConfig.set("Lobby.World", spawnLocation.getWorld().getName());
 		lobbyConfig.set("Lobby.x", spawnLocation.getBlockX());
@@ -159,8 +156,7 @@ public class PlayerManager implements SaveableData {
 		lobbyConfig.save();
 	}
 
-	@Override
-	public void load() {
+	public static void load() {
 		Vector spawnDirection = lobbyConfig.getVector("Lobby.Direction", new Vector());
 		spawnLocation = new Location(
 				Bukkit.getWorld(lobbyConfig.getString("Lobby.World", Bukkit.getWorlds().get(0).getName())),
@@ -168,7 +164,6 @@ public class PlayerManager implements SaveableData {
 		spawnLocation.setDirection(spawnDirection);
 	}
 
-	@Override
 	public void setDefaults() {
 		spawnLocation = new Location(Bukkit.getWorlds().get(0),
 				0, 70, 0);

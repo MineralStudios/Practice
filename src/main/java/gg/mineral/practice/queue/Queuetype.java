@@ -5,22 +5,22 @@ import java.util.Iterator;
 import org.bukkit.Material;
 import org.bukkit.inventory.ItemStack;
 
-import gg.mineral.practice.PracticePlugin;
+import gg.mineral.api.config.FileConfiguration;
 import gg.mineral.practice.arena.Arena;
 import gg.mineral.practice.gametype.Catagory;
 import gg.mineral.practice.gametype.Gametype;
 import gg.mineral.practice.managers.ArenaManager;
+import gg.mineral.practice.managers.QueuetypeManager;
 import gg.mineral.practice.util.SaveableData;
+import gg.mineral.server.combat.KnockbackProfile;
+import gg.mineral.server.combat.KnockbackProfileList;
 import it.unimi.dsi.fastutil.objects.Object2BooleanMap.Entry;
 import it.unimi.dsi.fastutil.objects.Object2BooleanOpenHashMap;
 import it.unimi.dsi.fastutil.objects.Object2IntOpenHashMap;
-import gg.mineral.api.config.FileConfiguration;
-import gg.mineral.server.combat.KnockbackProfile;
-import gg.mineral.server.combat.KnockbackProfileList;
 
 public class Queuetype implements SaveableData {
-	final FileConfiguration config = PracticePlugin.INSTANCE.getQueuetypeManager().getConfig();
-	final ArenaManager arenaManager = PracticePlugin.INSTANCE.getArenaManager();
+	final FileConfiguration config = QueuetypeManager.getConfig();
+
 	ItemStack displayItem;
 	String name;
 	String displayName;
@@ -199,8 +199,8 @@ public class Queuetype implements SaveableData {
 			this.knockback = KnockbackProfileList.getKnockbackProfileByName(kbprofile);
 		}
 
-		for (int i = 0; i < arenaManager.getArenas().size(); i++) {
-			Arena a = arenaManager.getArenas().get(i);
+		for (int i = 0; i < ArenaManager.getArenas().size(); i++) {
+			Arena a = ArenaManager.getArenas().get(i);
 
 			if (config.getBoolean(path + "Arenas." + a.getName(), false)) {
 				arenas.put(a, true);

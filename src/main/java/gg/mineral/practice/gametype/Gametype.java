@@ -9,13 +9,13 @@ import org.bukkit.inventory.ItemStack;
 
 import gg.mineral.api.collection.GlueList;
 import gg.mineral.api.config.FileConfiguration;
-import gg.mineral.practice.PracticePlugin;
 import gg.mineral.practice.arena.Arena;
 import gg.mineral.practice.entity.Profile;
 import gg.mineral.practice.kit.Kit;
 import gg.mineral.practice.managers.ArenaManager;
 import gg.mineral.practice.managers.CatagoryManager;
 import gg.mineral.practice.managers.EloManager;
+import gg.mineral.practice.managers.GametypeManager;
 import gg.mineral.practice.managers.QueuetypeManager;
 import gg.mineral.practice.queue.Queuetype;
 import gg.mineral.practice.util.SaveableData;
@@ -24,9 +24,8 @@ import it.unimi.dsi.fastutil.objects.Object2BooleanOpenHashMap;
 import it.unimi.dsi.fastutil.objects.Object2IntOpenHashMap;
 
 public class Gametype implements SaveableData {
-	final FileConfiguration config = PracticePlugin.INSTANCE.getGametypeManager().getConfig();
-	final QueuetypeManager queuetypeManager = PracticePlugin.INSTANCE.getQueuetypeManager();
-	final ArenaManager arenaManager = PracticePlugin.INSTANCE.getArenaManager();
+	final FileConfiguration config = GametypeManager.getConfig();
+
 	Boolean regeneration;
 	ItemStack displayItem;
 	String displayName;
@@ -49,8 +48,6 @@ public class Gametype implements SaveableData {
 	LeaderboardMap leaderboardMap;
 	Object2IntOpenHashMap<Profile> eloMap = new Object2IntOpenHashMap<>();
 	Catagory catagory;
-	final CatagoryManager catagoryManager = PracticePlugin.INSTANCE.getCatagoryManager();
-	final EloManager eloManager = PracticePlugin.INSTANCE.getEloManager();
 
 	public Gametype(String name) {
 		this.name = name;
@@ -61,7 +58,7 @@ public class Gametype implements SaveableData {
 		Integer elo = eloMap.get(profile);
 
 		if (elo == null) {
-			elo = eloManager.getEloEntry(getName(), profile.getUUID());
+			elo = EloManager.getEloEntry(getName(), profile.getUUID());
 			eloMap.put(profile, elo);
 		}
 
@@ -75,7 +72,7 @@ public class Gametype implements SaveableData {
 			return;
 		}
 
-		eloManager.updateElo(profile, getName(), elo);
+		EloManager.updateElo(profile, getName(), elo);
 	}
 
 	public void setElo(Integer elo, Profile profile) {
@@ -85,7 +82,7 @@ public class Gametype implements SaveableData {
 			return;
 		}
 
-		eloManager.updateElo(profile, getName(), elo);
+		EloManager.updateElo(profile, getName(), elo);
 	}
 
 	public boolean getRegeneration() {
@@ -319,7 +316,7 @@ public class Gametype implements SaveableData {
 			config.set(path + "Catagory", catagory);
 		}
 
-		for (Queuetype q : queuetypeManager.getQueuetypes()) {
+		for (Queuetype q : QueuetypeManager.getQueuetypes()) {
 			boolean containsGametype = q.getGametypes().containsKey(this);
 			config.set(path + q.getName() + ".Enabled", containsGametype);
 
@@ -375,10 +372,10 @@ public class Gametype implements SaveableData {
 		this.boxing = config.getBoolean(path + "Boxing", false);
 		this.inCatagory = config.getBoolean(path + "InCatagory", false);
 		this.event = config.getBoolean(path + "Event", false);
-		this.eventArena = arenaManager.getArenaByName(config.getString(path + "EventArena", ""));
+		this.eventArena = ArenaManager.getArenaByName(config.getString(path + "EventArena", ""));
 
 		if (inCatagory) {
-			this.catagory = catagoryManager.getCatagoryByName(config.getString(path + "Catagory", null));
+			this.catagory = CatagoryManager.getCatagoryByName(config.getString(path + "Catagory", null));
 
 			if (catagory != null) {
 				catagory.addGametype(this);
@@ -387,7 +384,7 @@ public class Gametype implements SaveableData {
 
 		this.pearlCooldown = config.getInt(path + "PearlCooldown", 10);
 
-		for (Queuetype q : queuetypeManager.getQueuetypes()) {
+		for (Queuetype q : QueuetypeManager.getQueuetypes()) {
 			if (!config.getBoolean(path + q.getName() + ".Enabled", false)) {
 				continue;
 			}
@@ -395,7 +392,7 @@ public class Gametype implements SaveableData {
 			q.addGametype(this, config.getInt(path + q.getName() + ".Slot", 0));
 		}
 
-		for (Arena a : arenaManager.getArenas()) {
+		for (Arena a : ArenaManager.getArenas()) {
 			if (config.getBoolean(path + "Arenas." + a.getName(), false)) {
 				arenas.put(a, true);
 			}
@@ -432,7 +429,7 @@ public class Gametype implements SaveableData {
 		this.kit = new Kit(items.toArray(new ItemStack[0]), armour.toArray(new ItemStack[0]));
 
 		try {
-			leaderboardMap = eloManager.getLeaderboardMap(this.getName());
+			leaderboardMap = EloManager.getLeaderboardMap(this.getName());
 		} catch (Exception e) {
 			e.printStackTrace();
 		}

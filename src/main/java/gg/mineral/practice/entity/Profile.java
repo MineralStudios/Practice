@@ -25,7 +25,10 @@ import gg.mineral.practice.inventory.menus.SelectGametypeMenu;
 import gg.mineral.practice.inventory.menus.SelectModeMenu;
 import gg.mineral.practice.inventory.menus.SelectQueuetypeMenu;
 import gg.mineral.practice.kit.Kit;
+import gg.mineral.practice.kit.KitEditorManager;
+import gg.mineral.practice.managers.PartyManager;
 import gg.mineral.practice.managers.PlayerManager;
+import gg.mineral.practice.managers.PlayerSettingsManager;
 import gg.mineral.practice.managers.QueuetypeManager;
 import gg.mineral.practice.match.Match;
 import gg.mineral.practice.match.data.MatchData;
@@ -53,9 +56,6 @@ import net.md_5.bungee.api.chat.HoverEvent;
 public class Profile {
 	final CraftPlayer player;
 	final PlayerInventory inventory;
-	final PracticePlugin instance = PracticePlugin.INSTANCE;
-	final QueuetypeManager queuetypeManager = instance.getQueuetypeManager();
-	final PlayerManager playerManager = instance.getPlayerManager();
 	Match match;
 	DefaultScoreboard b;
 	Match spectatingMatch;
@@ -178,7 +178,7 @@ public class Profile {
 	}
 
 	public void setMatch(Match match) {
-		playerManager.setInMatch(this);
+		PlayerManager.setInMatch(this);
 		this.match = match;
 		setPlayerStatus(PlayerStatus.FIGHTING);
 	}
@@ -196,7 +196,7 @@ public class Profile {
 	}
 
 	public void removeFromMatch() {
-		playerManager.removeFromMatch(this);
+		PlayerManager.removeFromMatch(this);
 		setPlayerStatus(PlayerStatus.IN_LOBBY);
 		match = null;
 	}
@@ -361,7 +361,7 @@ public class Profile {
 		setInventoryClickCancelled(true);
 		inventory.clear();
 
-		GlueList<Queuetype> list = queuetypeManager.getQueuetypes();
+		GlueList<Queuetype> list = QueuetypeManager.getQueuetypes();
 
 		for (int i = 0; i < list.size(); i++) {
 			Queuetype q = list.get(i);
@@ -378,30 +378,30 @@ public class Profile {
 			}
 		}
 
-		if (instance.getKitEditorManager().getEnabled()) {
-			ItemStack editor = new ItemBuilder(instance.getKitEditorManager().getDisplayItem())
-					.name(CC.SECONDARY + CC.B + instance.getKitEditorManager().getDisplayName())
+		if (KitEditorManager.getEnabled()) {
+			ItemStack editor = new ItemBuilder(KitEditorManager.getDisplayItem())
+					.name(CC.SECONDARY + CC.B + KitEditorManager.getDisplayName())
 					.build();
-			inventory.setItem(instance.getKitEditorManager().getSlot(), editor,
+			inventory.setItem(KitEditorManager.getSlot(), editor,
 					p -> {
 						p.openMenu(new SelectQueuetypeMenu());
 						return true;
 					});
 		}
 
-		if (instance.getPartyManager().getEnabled()) {
-			ItemStack parties = new ItemBuilder(instance.getPartyManager().getDisplayItem())
-					.name(CC.SECONDARY + CC.B + instance.getPartyManager().getDisplayName())
+		if (PartyManager.getEnabled()) {
+			ItemStack parties = new ItemBuilder(PartyManager.getDisplayItem())
+					.name(CC.SECONDARY + CC.B + PartyManager.getDisplayName())
 					.build();
-			inventory.setItem(instance.getPartyManager().getSlot(), parties,
+			inventory.setItem(PartyManager.getSlot(), parties,
 					p -> p.bukkit().performCommand("p create"));
 		}
 
-		if (instance.getSettingsManager().getEnabled()) {
-			ItemStack settings = new ItemBuilder(instance.getSettingsManager().getDisplayItem())
-					.name(CC.SECONDARY + CC.B + instance.getSettingsManager().getDisplayName())
+		if (PlayerSettingsManager.getEnabled()) {
+			ItemStack settings = new ItemBuilder(PlayerSettingsManager.getDisplayItem())
+					.name(CC.SECONDARY + CC.B + PlayerSettingsManager.getDisplayName())
 					.build();
-			inventory.setItem(instance.getSettingsManager().getSlot(), settings,
+			inventory.setItem(PlayerSettingsManager.getSlot(), settings,
 					p -> p.bukkit().performCommand("settings"));
 		}
 		bukkit().updateInventory();
@@ -542,7 +542,7 @@ public class Profile {
 		ChatMessages.STOP_SPECTATING.send(bukkit());
 
 		ChatMessage broadcastedMessage = ChatMessages.SPECTATING_YOUR_MATCH.clone().replace("%player%", getName());
-		playerManager.broadcast(match.getParticipants(), broadcastedMessage);
+		PlayerManager.broadcast(match.getParticipants(), broadcastedMessage);
 
 		this.setInventoryForSpectating();
 
@@ -588,7 +588,7 @@ public class Profile {
 	}
 
 	public void teleportToLobby() {
-		teleport(playerManager.getSpawnLocation());
+		teleport(PlayerManager.getSpawnLocation());
 
 		if (status != PlayerStatus.FOLLOWING) {
 			setPlayerStatus(PlayerStatus.IN_LOBBY);
@@ -669,7 +669,7 @@ public class Profile {
 	public void sendPlayerToKitEditor(QueueEntry qe) {
 		bukkit().closeInventory();
 
-		Location location = PracticePlugin.INSTANCE.getKitEditorManager().getLocation();
+		Location location = KitEditorManager.getLocation();
 
 		if (location == null) {
 			message(ErrorMessages.KIT_EDITOR_LOCATION_NOT_SET);
@@ -696,7 +696,7 @@ public class Profile {
 	public void sendPlayerToKitCreator() {
 		bukkit().closeInventory();
 
-		Location location = PracticePlugin.INSTANCE.getKitEditorManager().getLocation();
+		Location location = KitEditorManager.getLocation();
 
 		if (location == null) {
 			message(ErrorMessages.KIT_EDITOR_LOCATION_NOT_SET);

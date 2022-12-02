@@ -5,7 +5,6 @@ import org.bukkit.inventory.meta.ItemMeta;
 
 import gg.mineral.practice.util.items.ItemBuilder;
 import gg.mineral.practice.util.messages.CC;
-import gg.mineral.practice.PracticePlugin;
 import gg.mineral.practice.gametype.Catagory;
 import gg.mineral.practice.gametype.Gametype;
 import gg.mineral.practice.inventory.PracticeMenu;
@@ -13,8 +12,7 @@ import gg.mineral.practice.managers.CatagoryManager;
 import gg.mineral.practice.managers.GametypeManager;
 
 public class LeaderboardMenu extends PracticeMenu {
-    final GametypeManager gametypeManager = PracticePlugin.INSTANCE.getGametypeManager();
-    final CatagoryManager catagoryManager = PracticePlugin.INSTANCE.getCatagoryManager();
+
     final static String TITLE = CC.BLUE + "Leaderboards";
 
     public LeaderboardMenu() {
@@ -24,7 +22,7 @@ public class LeaderboardMenu extends PracticeMenu {
 
     @Override
     public boolean update() {
-        for (Gametype g : gametypeManager.getGametypes()) {
+        for (Gametype g : GametypeManager.getGametypes()) {
 
             if (g.isInCatagory()) {
                 continue;
@@ -44,7 +42,7 @@ public class LeaderboardMenu extends PracticeMenu {
             add(item);
         }
 
-        for (Catagory c : catagoryManager.getCatagorys()) {
+        for (Catagory c : CatagoryManager.getCatagorys()) {
             ItemStack item = new ItemBuilder(c.getDisplayItem())
                     .name(c.getDisplayName()).build();
             ItemMeta meta = item.getItemMeta();

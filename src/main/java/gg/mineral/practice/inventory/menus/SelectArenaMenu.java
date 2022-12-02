@@ -7,7 +7,6 @@ import org.bukkit.inventory.ItemStack;
 import gg.mineral.practice.util.items.ItemBuilder;
 import gg.mineral.practice.util.messages.CC;
 import gg.mineral.practice.util.messages.impl.ErrorMessages;
-import gg.mineral.practice.PracticePlugin;
 import gg.mineral.practice.arena.Arena;
 import gg.mineral.practice.inventory.PracticeMenu;
 import gg.mineral.practice.inventory.SubmitAction;
@@ -20,7 +19,7 @@ public class SelectArenaMenu extends PracticeMenu {
     MechanicsMenu menu;
     boolean simpleMode = false;
     SubmitAction action;
-    final ArenaManager arenaManager = PracticePlugin.INSTANCE.getArenaManager();
+
     final static String TITLE = CC.BLUE + "Select Arena";
 
     public SelectArenaMenu(MechanicsMenu menu, SubmitAction action) {
@@ -40,7 +39,7 @@ public class SelectArenaMenu extends PracticeMenu {
     @Override
     public boolean update() {
         Iterator<Arena> arenas = simpleMode ? viewer.getMatchData().getGametype().getEnabledArenas().iterator()
-                : arenaManager.getArenas().iterator();
+                : ArenaManager.getArenas().iterator();
 
         while (arenas.hasNext()) {
             Arena a = arenas.next();

@@ -5,7 +5,6 @@ import org.bukkit.inventory.ItemStack;
 
 import gg.mineral.practice.util.items.ItemBuilder;
 import gg.mineral.practice.util.messages.CC;
-import gg.mineral.practice.PracticePlugin;
 import gg.mineral.practice.entity.PlayerStatus;
 import gg.mineral.practice.entity.Profile;
 import gg.mineral.practice.inventory.PracticeMenu;
@@ -13,7 +12,7 @@ import gg.mineral.practice.managers.PartyManager;
 import gg.mineral.practice.party.Party;
 
 public class OtherPartiesMenu extends PracticeMenu {
-    PartyManager partyManager = PracticePlugin.INSTANCE.getPartyManager();
+
     final static String TITLE = CC.BLUE + "Other Parties";
 
     public OtherPartiesMenu() {
@@ -25,7 +24,7 @@ public class OtherPartiesMenu extends PracticeMenu {
     public boolean update() {
         clear();
 
-        for (Party p : partyManager.getPartys()) {
+        for (Party p : PartyManager.getPartys()) {
             if (p.getPartyLeader().getPlayerStatus() == PlayerStatus.IN_LOBBY && !p.equals(viewer.getParty())) {
                 Profile partyLeader = p.getPartyLeader();
                 ItemStack skull = new ItemBuilder(Material.SKULL_ITEM)

@@ -4,7 +4,6 @@ import org.bukkit.inventory.ItemStack;
 
 import gg.mineral.practice.util.items.ItemBuilder;
 import gg.mineral.practice.util.messages.CC;
-import gg.mineral.practice.PracticePlugin;
 import gg.mineral.practice.gametype.Catagory;
 import gg.mineral.practice.gametype.Gametype;
 import gg.mineral.practice.inventory.PracticeMenu;
@@ -12,8 +11,7 @@ import gg.mineral.practice.managers.CatagoryManager;
 import gg.mineral.practice.managers.GametypeManager;
 
 public class SelectExistingKitMenu extends PracticeMenu {
-    final GametypeManager gametypeManager = PracticePlugin.INSTANCE.getGametypeManager();
-    final CatagoryManager catagoryManager = PracticePlugin.INSTANCE.getCatagoryManager();
+
     PracticeMenu menu;
     boolean simple = false;
     final static String TITLE = CC.BLUE + "Select Existing Kit";
@@ -29,7 +27,7 @@ public class SelectExistingKitMenu extends PracticeMenu {
     public boolean update() {
         clear();
 
-        for (Gametype g : gametypeManager.getGametypes()) {
+        for (Gametype g : GametypeManager.getGametypes()) {
             if (g.isInCatagory())
                 continue;
             ItemStack item = new ItemBuilder(g.getDisplayItem())
@@ -52,7 +50,7 @@ public class SelectExistingKitMenu extends PracticeMenu {
             add(item, runnable);
         }
 
-        for (Catagory c : catagoryManager.getCatagorys()) {
+        for (Catagory c : CatagoryManager.getCatagorys()) {
             ItemStack item = new ItemBuilder(c.getDisplayItem())
                     .name(c.getDisplayName()).build();
             add(item, p -> {

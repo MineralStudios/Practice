@@ -6,12 +6,10 @@ import org.bukkit.inventory.ItemStack;
 
 import gg.mineral.practice.util.items.ItemBuilder;
 import gg.mineral.practice.util.messages.CC;
-import gg.mineral.practice.PracticePlugin;
 import gg.mineral.practice.gametype.Catagory;
 import gg.mineral.practice.gametype.Gametype;
 import gg.mineral.practice.inventory.PracticeMenu;
 import gg.mineral.practice.managers.MatchManager;
-import gg.mineral.practice.managers.PlayerManager;
 import gg.mineral.practice.managers.QueueEntryManager;
 import gg.mineral.practice.match.Match;
 import gg.mineral.practice.queue.QueueEntry;
@@ -19,12 +17,10 @@ import gg.mineral.practice.queue.QueueSearchTask;
 import gg.mineral.practice.queue.Queuetype;
 
 public class SelectGametypeMenu extends PracticeMenu {
-	MatchManager matchManager = PracticePlugin.INSTANCE.getMatchManager();
+
 	Queuetype q;
 	boolean lore = false;
 	boolean kitEditor;
-	final PlayerManager playerManager = PracticePlugin.INSTANCE.getPlayerManager();
-	final QueueEntryManager queueEntryManager = PracticePlugin.INSTANCE.getQueueEntryManager();
 
 	public SelectGametypeMenu(Queuetype q, boolean lore, boolean kitEditor) {
 		super(CC.BLUE + q.getDisplayName());
@@ -50,7 +46,7 @@ public class SelectGametypeMenu extends PracticeMenu {
 
 			if (lore) {
 				int InGame = 0;
-				for (Match match : matchManager.getMatchs()) {
+				for (Match match : MatchManager.getMatchs()) {
 					QueueEntry queueEntry = match.getData().getQueueEntry();
 
 					if (queueEntry == null) {
@@ -71,7 +67,7 @@ public class SelectGametypeMenu extends PracticeMenu {
 			Runnable runnable = new Runnable() {
 				@Override
 				public void run() {
-					QueueEntry qe = queueEntryManager.newEntry(q, g);
+					QueueEntry qe = QueueEntryManager.newEntry(q, g);
 
 					if (kitEditor) {
 						viewer.sendPlayerToKitEditor(qe);

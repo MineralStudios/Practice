@@ -15,7 +15,6 @@ public class Countdown {
 	int taskID;
 	ChatMessage message;
 	Match match;
-	final PlayerManager playerManager = PracticePlugin.INSTANCE.getPlayerManager();
 
 	public Countdown(int seconds, Match match) {
 		this.time = seconds;
@@ -40,7 +39,7 @@ public class Countdown {
 
 			message = ChatMessages.BEGINS_IN.clone().replace("%time%", "" + time);
 
-			playerManager.broadcast(match.getParticipants(), message);
+			PlayerManager.broadcast(match.getParticipants(), message);
 
 			time = time - 1;
 		}, 0L, 20L);

@@ -23,10 +23,8 @@ import gg.mineral.practice.entity.Profile;
 import gg.mineral.practice.gametype.Gametype;
 import gg.mineral.practice.inventory.menus.InventoryStatsMenu;
 import gg.mineral.practice.kit.Kit;
-import gg.mineral.practice.managers.ArenaManager;
 import gg.mineral.practice.managers.MatchManager;
 import gg.mineral.practice.managers.PlayerManager;
-import gg.mineral.practice.managers.QueueEntryManager;
 import gg.mineral.practice.match.data.MatchData;
 import gg.mineral.practice.scoreboard.impl.BoxingScoreboard;
 import gg.mineral.practice.scoreboard.impl.DefaultScoreboard;
@@ -59,10 +57,6 @@ public class Match implements Spectatable {
 	int tntAmount;
 	MatchData m;
 	GlueList<Location> buildLog = new GlueList<>();
-	final MatchManager matchManager = PracticePlugin.INSTANCE.getMatchManager();
-	final PlayerManager playerManager = PracticePlugin.INSTANCE.getPlayerManager();
-	final ArenaManager arenaManager = PracticePlugin.INSTANCE.getArenaManager();
-	final QueueEntryManager queueEntryManager = PracticePlugin.INSTANCE.getQueueEntryManager();
 	static final ExecutorService executor = Executors.newCachedThreadPool();
 	org.bukkit.World world = null;
 
@@ -117,7 +111,7 @@ public class Match implements Spectatable {
 			p.bukkit().showPlayer(participants.get(i).bukkit());
 		}
 
-		for (Match match : matchManager.getMatchs()) {
+		for (Match match : MatchManager.getMatchs()) {
 			match.updateVisiblity(this, p);
 		}
 	}
@@ -218,7 +212,7 @@ public class Match implements Spectatable {
 		boolean arenaNull = m.getArena() == null;
 
 		if (arenaNull) {
-			playerManager.broadcast(participants, ErrorMessages.ARENA_NOT_FOUND);
+			PlayerManager.broadcast(participants, ErrorMessages.ARENA_NOT_FOUND);
 			end(player1);
 		}
 
@@ -253,7 +247,7 @@ public class Match implements Spectatable {
 		if (noArenas())
 			return;
 
-		matchManager.registerMatch(this);
+		MatchManager.registerMatch(this);
 		Location location1 = m.getArena().getLocation1().clone();
 		Location location2 = m.getArena().getLocation2().clone();
 		setupLocations(location1, location2);
@@ -345,7 +339,7 @@ public class Match implements Spectatable {
 		new DefaultScoreboard(player1).setBoard();
 		new DefaultScoreboard(player2).setBoard();
 		victim.removeFromMatch();
-		matchManager.remove(this);
+		MatchManager.remove(this);
 
 		Bukkit.getServer().getScheduler().runTaskLater(PracticePlugin.INSTANCE, new Runnable() {
 			public void run() {
@@ -426,10 +420,10 @@ public class Match implements Spectatable {
 		menu.setSlot(46, potItem);
 
 		if (this instanceof PartyMatch) {
-			playerManager.setPartyInventoryStats(p, menu);
+			PlayerManager.setPartyInventoryStats(p, menu);
 		}
 
-		playerManager.setInventoryStats(p, menu);
+		PlayerManager.setInventoryStats(p, menu);
 		p.clearInventory();
 	}
 

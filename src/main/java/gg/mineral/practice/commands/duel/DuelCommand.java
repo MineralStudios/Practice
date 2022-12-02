@@ -1,7 +1,6 @@
 package gg.mineral.practice.commands.duel;
 
 import gg.mineral.practice.commands.PlayerCommand;
-import gg.mineral.practice.PracticePlugin;
 import gg.mineral.practice.entity.PlayerStatus;
 import gg.mineral.practice.entity.Profile;
 import gg.mineral.practice.inventory.SubmitAction;
@@ -13,15 +12,13 @@ import gg.mineral.practice.util.messages.impl.UsageMessages;
 
 public class DuelCommand extends PlayerCommand {
 
-	final PlayerManager playerManager = PracticePlugin.INSTANCE.getPlayerManager();
-
 	public DuelCommand() {
 		super("duel");
 	}
 
 	@Override
 	public void execute(org.bukkit.entity.Player pl, String[] args) {
-		Profile player = playerManager.getProfile(pl);
+		Profile player = PlayerManager.getProfile(pl);
 
 		if (args.length == 0) {
 			if (!player.isInParty()) {
@@ -33,7 +30,7 @@ public class DuelCommand extends PlayerCommand {
 			return;
 		}
 
-		Profile playerarg = playerManager.getProfile(args[0]);
+		Profile playerarg = PlayerManager.getProfile(args[0]);
 
 		if (playerarg == null) {
 			player.message(ErrorMessages.PLAYER_NOT_ONLINE);

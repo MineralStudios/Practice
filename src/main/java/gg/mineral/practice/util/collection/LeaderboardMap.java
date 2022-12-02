@@ -82,21 +82,6 @@ public class LeaderboardMap {
         return firstIndex;
     }
 
-    private int linearSearch(int value) {
-
-        for (int i = 0; i < entryList.size(); i++) {
-            int iterValue = get(i).getValue();
-
-            if (value < iterValue) {
-                continue;
-            }
-
-            return i;
-        }
-
-        return -1;
-    }
-
     private int findPosition(int elo) {
         return entryList.isEmpty() ? 0
                 : elo <= get(entryList.size() - 1).getValue() ? entryList.size() : binarySearch(elo);

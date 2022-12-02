@@ -1,9 +1,7 @@
 package gg.mineral.practice.party;
 
-import gg.mineral.practice.PracticePlugin;
 import gg.mineral.practice.entity.Profile;
 import gg.mineral.practice.managers.PartyManager;
-import gg.mineral.practice.managers.PlayerManager;
 import gg.mineral.practice.util.collection.ProfileList;
 
 public class Party {
@@ -11,12 +9,10 @@ public class Party {
 	Profile partyLeader;
 	Boolean partyOpen = false;
 	ProfileList partyMembers = new ProfileList();
-	final PartyManager partyManager = PracticePlugin.INSTANCE.getPartyManager();
-	final PlayerManager playerManager = PracticePlugin.INSTANCE.getPlayerManager();
 
 	public Party(Profile partyLeader) {
 		this.partyLeader = partyLeader;
-		partyManager.registerParty(this);
+		PartyManager.registerParty(this);
 	}
 
 	public ProfileList getPartyMembers() {

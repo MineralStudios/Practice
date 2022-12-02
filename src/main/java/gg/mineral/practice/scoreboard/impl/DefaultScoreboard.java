@@ -13,7 +13,7 @@ public class DefaultScoreboard {
 	Profile p;
 	Board b;
 	DefaultScoreboard instance;
-	PlayerManager playerManager = PracticePlugin.INSTANCE.getPlayerManager();
+
 	int updateFrequency = 20;
 
 	public void setUpdateFrequency(int updateFrequency) {
@@ -60,7 +60,7 @@ public class DefaultScoreboard {
 
 	public void updateBoard(Board board) {
 		board.updateLines(CC.BOARD_SEPARATOR, CC.ACCENT + "Online: " + CC.SECONDARY + Bukkit.getOnlinePlayers().size(),
-				CC.ACCENT + "In Game: " + CC.SECONDARY + playerManager.getProfilesInMatch().size(), CC.BOARD_SEPARATOR);
+				CC.ACCENT + "In Game: " + CC.SECONDARY + PlayerManager.getProfilesInMatch().size(), CC.BOARD_SEPARATOR);
 	}
 
 	public void remove() {

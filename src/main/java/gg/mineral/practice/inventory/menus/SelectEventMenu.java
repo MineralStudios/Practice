@@ -2,7 +2,6 @@ package gg.mineral.practice.inventory.menus;
 
 import org.bukkit.inventory.ItemStack;
 
-import gg.mineral.practice.PracticePlugin;
 import gg.mineral.practice.events.Event;
 import gg.mineral.practice.gametype.Gametype;
 import gg.mineral.practice.inventory.PracticeMenu;
@@ -12,7 +11,6 @@ import gg.mineral.practice.util.messages.CC;
 
 public class SelectEventMenu extends PracticeMenu {
 
-    final GametypeManager gametypeManager = PracticePlugin.INSTANCE.getGametypeManager();
     final static String TITLE = CC.BLUE + "Select Event";
 
     public SelectEventMenu() {
@@ -21,7 +19,7 @@ public class SelectEventMenu extends PracticeMenu {
 
     @Override
     public boolean update() {
-        for (Gametype g : gametypeManager.getGametypes()) {
+        for (Gametype g : GametypeManager.getGametypes()) {
             if (!g.getEvent()) {
                 continue;
             }

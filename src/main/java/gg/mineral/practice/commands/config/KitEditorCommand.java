@@ -2,20 +2,12 @@ package gg.mineral.practice.commands.config;
 
 import gg.mineral.practice.commands.PlayerCommand;
 
-import gg.mineral.practice.PracticePlugin;
 import gg.mineral.practice.kit.KitEditorManager;
-import gg.mineral.practice.managers.GametypeManager;
-import gg.mineral.practice.managers.PlayerManager;
-import gg.mineral.practice.managers.QueuetypeManager;
 import gg.mineral.practice.util.messages.impl.ChatMessages;
 import gg.mineral.practice.util.messages.impl.ErrorMessages;
 import gg.mineral.practice.util.messages.impl.UsageMessages;
 
 public class KitEditorCommand extends PlayerCommand {
-	final KitEditorManager kitEditorManager = PracticePlugin.INSTANCE.getKitEditorManager();;
-	final PlayerManager playerManager = PracticePlugin.INSTANCE.getPlayerManager();
-	final GametypeManager gametypeManager = PracticePlugin.INSTANCE.getGametypeManager();
-	final QueuetypeManager queuetypeManager = PracticePlugin.INSTANCE.getQueuetypeManager();
 
 	public KitEditorCommand() {
 		super("kiteditor", "practice.config");
@@ -45,10 +37,10 @@ public class KitEditorCommand extends PlayerCommand {
 
 				switch (toggled) {
 					case "false":
-						kitEditorManager.setEnabled(false);
+						KitEditorManager.setEnabled(false);
 						break;
 					case "true":
-						kitEditorManager.setEnabled(true);
+						KitEditorManager.setEnabled(true);
 						break;
 					default:
 						UsageMessages.KIT_EDITOR_ENABLE.send(player);
@@ -65,11 +57,11 @@ public class KitEditorCommand extends PlayerCommand {
 					return;
 				}
 
-				kitEditorManager.setDisplayItem(player.getItemInHand());
+				KitEditorManager.setDisplayItem(player.getItemInHand());
 
 				if (args.length > 1) {
 					String name = args[1].replace("&", "§");
-					kitEditorManager.setDisplayName(name);
+					KitEditorManager.setDisplayName(name);
 				}
 
 				ChatMessages.KIT_EDITOR_DISPLAY_SET.send(player);
@@ -90,14 +82,14 @@ public class KitEditorCommand extends PlayerCommand {
 					return;
 				}
 
-				kitEditorManager.setSlot(slot);
+				KitEditorManager.setSlot(slot);
 
 				ChatMessages.KIT_EDITOR_SLOT_SET.clone().replace("%slot%", strSlot).send(player);
 				;
 
 				return;
 			case "setlocation":
-				kitEditorManager.setLocation(player.getLocation());
+				KitEditorManager.setLocation(player.getLocation());
 				ChatMessages.KIT_EDITOR_LOCATION_SET.send(player);
 
 				return;

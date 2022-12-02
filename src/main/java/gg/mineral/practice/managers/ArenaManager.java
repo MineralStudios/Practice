@@ -2,56 +2,42 @@ package gg.mineral.practice.managers;
 
 import org.bukkit.configuration.ConfigurationSection;
 
-import gg.mineral.practice.PracticePlugin;
 import gg.mineral.practice.arena.Arena;
 import gg.mineral.practice.gametype.Gametype;
 import gg.mineral.practice.queue.Queuetype;
-import gg.mineral.practice.util.SaveableData;
 import gg.mineral.api.collection.GlueList;
 import gg.mineral.api.config.FileConfiguration;
 
-public class ArenaManager implements SaveableData {
-	final FileConfiguration config = new FileConfiguration("arenas.yml", "plugins/Practice");
-	final GametypeManager gametypeManager = PracticePlugin.INSTANCE.getGametypeManager();
-	final QueuetypeManager queuetypeManager = PracticePlugin.INSTANCE.getQueuetypeManager();
-	final GlueList<Arena> list = new GlueList<>();
+public class ArenaManager {
+	final static FileConfiguration config = new FileConfiguration("arenas.yml", "plugins/Practice");
 
-	public void registerArena(Arena arena) {
+	final static GlueList<Arena> list = new GlueList<>();
+
+	public static void registerArena(Arena arena) {
 		list.add(arena);
 	}
 
-	public void remove(Arena arena) {
+	public static void remove(Arena arena) {
 		list.remove(arena);
 
-		for (Gametype gametype : gametypeManager.getGametypes()) {
-			gametype.getArenas().remove(arena);
+		for (Gametype gametype : GametypeManager.getGametypes()) {
+			gametype.getArenas().removeBoolean(arena);
 		}
 
-		for (Queuetype queuetype : queuetypeManager.getQueuetypes()) {
-			queuetype.getArenas().remove(arena);
+		for (Queuetype queuetype : QueuetypeManager.getQueuetypes()) {
+			queuetype.getArenas().removeBoolean(arena);
 		}
 	}
 
-	public boolean contains(Arena arena) {
-		for (int i = 0; i < list.size(); i++) {
-			Arena a = list.get(i);
-			if (a.equals(arena)) {
-				return true;
-			}
-		}
-
-		return false;
-	}
-
-	public FileConfiguration getConfig() {
+	public static FileConfiguration getConfig() {
 		return config;
 	}
 
-	public GlueList<Arena> getArenas() {
+	public static GlueList<Arena> getArenas() {
 		return list;
 	}
 
-	public Arena getArenaByName(String string) {
+	public static Arena getArenaByName(String string) {
 		for (int i = 0; i < list.size(); i++) {
 			Arena a = list.get(i);
 			if (a.getName().equalsIgnoreCase(string)) {
@@ -62,8 +48,7 @@ public class ArenaManager implements SaveableData {
 		return null;
 	}
 
-	@Override
-	public void save() {
+	public static void save() {
 
 		for (Arena arena : getArenas()) {
 			arena.save();
@@ -72,8 +57,7 @@ public class ArenaManager implements SaveableData {
 		config.save();
 	}
 
-	@Override
-	public void load() {
+	public static void load() {
 		ConfigurationSection configSection = getConfig().getConfigurationSection("Arena.");
 
 		if (configSection == null) {
@@ -95,8 +79,7 @@ public class ArenaManager implements SaveableData {
 		}
 	}
 
-	@Override
-	public void setDefaults() {
+	public static void setDefaults() {
 		Arena arena = new Arena("Default");
 		arena.setDefaults();
 		registerArena(arena);

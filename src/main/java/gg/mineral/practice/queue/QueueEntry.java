@@ -7,7 +7,6 @@ import org.bukkit.inventory.ItemStack;
 
 import gg.mineral.api.collection.GlueList;
 import gg.mineral.api.config.FileConfiguration;
-import gg.mineral.practice.PracticePlugin;
 import gg.mineral.practice.entity.Profile;
 import gg.mineral.practice.gametype.Gametype;
 import gg.mineral.practice.managers.PlayerManager;
@@ -17,7 +16,7 @@ import it.unimi.dsi.fastutil.objects.Object2ObjectOpenHashMap;
 public class QueueEntry {
 	Queuetype q;
 	Gametype g;
-	final PlayerManager playerManager = PracticePlugin.INSTANCE.getPlayerManager();
+
 	Object2ObjectOpenHashMap<UUID, ItemStack[]> customKits = new Object2ObjectOpenHashMap<>();
 
 	public QueueEntry(Queuetype q, Gametype g) {
@@ -41,7 +40,7 @@ public class QueueEntry {
 		ItemStack[] kit = customKits.get(profile.getUUID());
 
 		if (kit == null) {
-			ConfigurationSection cs = playerManager.getConfig().getConfigurationSection(profile.getName() + ".KitData."
+			ConfigurationSection cs = PlayerManager.getConfig().getConfigurationSection(profile.getName() + ".KitData."
 					+ getGametype().getName() + "." + getQueuetype().getName());
 
 			if (cs == null) {
@@ -77,7 +76,7 @@ public class QueueEntry {
 		ItemStack[] cont = profile.getInventory().getContents();
 
 		customKits.put(profile.getUUID(), cont);
-		FileConfiguration config = playerManager.getConfig();
+		FileConfiguration config = PlayerManager.getConfig();
 		String path = profile.getName() + ".KitData." + getGametype().getName() + "."
 				+ getQueuetype().getName() + ".";
 

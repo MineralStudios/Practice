@@ -11,18 +11,16 @@ import org.bukkit.event.inventory.InventoryCloseEvent;
 import org.bukkit.event.player.PlayerDropItemEvent;
 import org.bukkit.event.player.PlayerPickupItemEvent;
 
-import gg.mineral.practice.PracticePlugin;
 import gg.mineral.practice.entity.PlayerStatus;
 import gg.mineral.practice.entity.Profile;
 import gg.mineral.practice.inventory.PracticeMenu;
 import gg.mineral.practice.managers.PlayerManager;
 
 public class InventoryListener implements Listener {
-	final PlayerManager playerManager = PracticePlugin.INSTANCE.getPlayerManager();
 
 	@EventHandler
 	public void onInventoryClick(InventoryClickEvent e) {
-		Profile player = playerManager.getProfile((org.bukkit.entity.Player) e.getWhoClicked());
+		Profile player = PlayerManager.getProfile((org.bukkit.entity.Player) e.getWhoClicked());
 		PracticeMenu menu = player.getOpenMenu();
 
 		boolean canClick = player.bukkit().isOp() && player.bukkit().getGameMode().equals(GameMode.CREATIVE);
@@ -52,13 +50,13 @@ public class InventoryListener implements Listener {
 
 	@EventHandler
 	public void onInventoryClose(InventoryCloseEvent e) {
-		Profile player = playerManager.getProfile((org.bukkit.entity.Player) e.getPlayer());
+		Profile player = PlayerManager.getProfile((org.bukkit.entity.Player) e.getPlayer());
 		player.setOpenMenu(null);
 	}
 
 	@EventHandler
 	public void onPlayerDropItem(PlayerDropItemEvent e) {
-		Profile player = playerManager.getProfile(e.getPlayer());
+		Profile player = PlayerManager.getProfile(e.getPlayer());
 		boolean canDrop = player.bukkit().isOp() && player.bukkit().getGameMode().equals(GameMode.CREATIVE);
 
 		if (player.getPlayerStatus() == PlayerStatus.KIT_EDITOR) {
@@ -74,7 +72,7 @@ public class InventoryListener implements Listener {
 
 	@EventHandler
 	public void onPlayerPickupItem(PlayerPickupItemEvent e) {
-		Profile player = playerManager.getProfileFromMatch(e.getPlayer());
+		Profile player = PlayerManager.getProfileFromMatch(e.getPlayer());
 		e.setCancelled(player == null);
 	}
 }

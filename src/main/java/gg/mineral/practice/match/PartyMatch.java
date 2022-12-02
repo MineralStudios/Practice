@@ -10,6 +10,7 @@ import org.bukkit.scoreboard.Team;
 
 import gg.mineral.practice.PracticePlugin;
 import gg.mineral.practice.entity.Profile;
+import gg.mineral.practice.managers.MatchManager;
 import gg.mineral.practice.match.data.MatchData;
 import gg.mineral.practice.party.Party;
 import gg.mineral.practice.scoreboard.impl.DefaultScoreboard;
@@ -52,7 +53,7 @@ public class PartyMatch extends Match {
 			return;
 		}
 
-		matchManager.registerMatch(this);
+		MatchManager.registerMatch(this);
 		Location location1 = m.getArena().getLocation1().clone();
 		Location location2 = m.getArena().getLocation2().clone();
 		setupLocations(location1, location2);
@@ -145,7 +146,7 @@ public class PartyMatch extends Match {
 
 			}
 
-			matchManager.remove(this);
+			MatchManager.remove(this);
 			victim.bukkit().sendMessage(CC.RED + "You lost");
 			new DefaultScoreboard(victim).setBoard();
 

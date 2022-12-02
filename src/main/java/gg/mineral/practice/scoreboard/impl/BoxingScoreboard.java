@@ -2,14 +2,11 @@ package gg.mineral.practice.scoreboard.impl;
 
 import org.bukkit.craftbukkit.v1_8_R3.entity.CraftPlayer;
 
-import gg.mineral.practice.PracticePlugin;
 import gg.mineral.practice.entity.Profile;
-import gg.mineral.practice.managers.PlayerManager;
 import gg.mineral.practice.scoreboard.Board;
 import gg.mineral.practice.util.messages.CC;
 
 public class BoxingScoreboard extends DefaultScoreboard {
-    PlayerManager playerManager = PracticePlugin.INSTANCE.getPlayerManager();
 
     public BoxingScoreboard(Profile p) {
         super(p);

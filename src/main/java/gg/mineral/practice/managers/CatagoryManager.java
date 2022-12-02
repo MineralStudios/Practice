@@ -2,27 +2,25 @@ package gg.mineral.practice.managers;
 
 import org.bukkit.configuration.ConfigurationSection;
 
-import gg.mineral.practice.PracticePlugin;
 import gg.mineral.practice.gametype.Catagory;
 import gg.mineral.practice.queue.Queuetype;
-import gg.mineral.practice.util.SaveableData;
 import gg.mineral.api.collection.GlueList;
 import gg.mineral.api.config.FileConfiguration;
 
-public class CatagoryManager implements SaveableData {
-	final FileConfiguration config = new FileConfiguration("catagory.yml", "plugins/Practice");
-	final QueuetypeManager queuetypeManager = PracticePlugin.INSTANCE.getQueuetypeManager();
-	GlueList<Catagory> list = new GlueList<>();
+public class CatagoryManager {
+	final static FileConfiguration config = new FileConfiguration("catagory.yml", "plugins/Practice");
 
-	public void registerCatagory(Catagory catagory) {
+	static GlueList<Catagory> list = new GlueList<>();
+
+	public static void registerCatagory(Catagory catagory) {
 		list.add(catagory);
 	}
 
-	public void remove(Catagory catagory) {
+	public static void remove(Catagory catagory) {
 		list.remove(catagory);
 
-		for (Queuetype queuetype : queuetypeManager.getQueuetypes()) {
-			queuetype.getCatagories().remove(catagory);
+		for (Queuetype queuetype : QueuetypeManager.getQueuetypes()) {
+			queuetype.getCatagories().removeInt(catagory);
 		}
 	}
 
@@ -35,15 +33,15 @@ public class CatagoryManager implements SaveableData {
 		return false;
 	}
 
-	public FileConfiguration getConfig() {
+	public static FileConfiguration getConfig() {
 		return config;
 	}
 
-	public GlueList<Catagory> getCatagorys() {
+	public static GlueList<Catagory> getCatagorys() {
 		return list;
 	}
 
-	public Catagory getCatagoryByName(String string) {
+	public static Catagory getCatagoryByName(String string) {
 		for (Catagory g : list) {
 			if (g.getName().equalsIgnoreCase(string)) {
 				return g;
@@ -52,7 +50,6 @@ public class CatagoryManager implements SaveableData {
 		return null;
 	}
 
-	@Override
 	public void save() {
 
 		for (Catagory catagory : getCatagorys()) {
@@ -63,8 +60,7 @@ public class CatagoryManager implements SaveableData {
 
 	}
 
-	@Override
-	public void load() {
+	public static void load() {
 		ConfigurationSection configSection = getConfig().getConfigurationSection("Catagory.");
 
 		if (configSection == null) {
@@ -86,8 +82,7 @@ public class CatagoryManager implements SaveableData {
 		}
 	}
 
-	@Override
-	public void setDefaults() {
+	public static void setDefaults() {
 		Catagory catagory = new Catagory("Defualt");
 		catagory.setDefaults();
 		registerCatagory(catagory);

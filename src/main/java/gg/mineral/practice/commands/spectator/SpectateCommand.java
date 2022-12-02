@@ -1,7 +1,6 @@
 package gg.mineral.practice.commands.spectator;
 
 import gg.mineral.practice.commands.PlayerCommand;
-import gg.mineral.practice.PracticePlugin;
 import gg.mineral.practice.entity.PlayerStatus;
 import gg.mineral.practice.entity.Profile;
 import gg.mineral.practice.inventory.menus.SpectateMenu;
@@ -9,7 +8,6 @@ import gg.mineral.practice.managers.PlayerManager;
 import gg.mineral.practice.util.messages.impl.ErrorMessages;
 
 public class SpectateCommand extends PlayerCommand {
-	final PlayerManager playerManager = PracticePlugin.INSTANCE.getPlayerManager();
 
 	public SpectateCommand() {
 		super("spectate");
@@ -18,7 +16,7 @@ public class SpectateCommand extends PlayerCommand {
 
 	@Override
 	public void execute(org.bukkit.entity.Player pl, String[] args) {
-		Profile player = playerManager.getProfile(pl);
+		Profile player = PlayerManager.getProfile(pl);
 
 		if (player.getPlayerStatus() != PlayerStatus.IN_LOBBY) {
 			player.message(ErrorMessages.YOU_ARE_NOT_IN_LOBBY);
@@ -32,7 +30,7 @@ public class SpectateCommand extends PlayerCommand {
 			return;
 		}
 
-		Profile playerarg = playerManager.getProfileFromMatch(args[0]);
+		Profile playerarg = PlayerManager.getProfileFromMatch(args[0]);
 
 		if (playerarg == null) {
 			player.message(ErrorMessages.PLAYER_NOT_IN_MATCH);

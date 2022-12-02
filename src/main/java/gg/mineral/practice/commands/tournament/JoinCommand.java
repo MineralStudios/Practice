@@ -1,9 +1,10 @@
 package gg.mineral.practice.commands.tournament;
 
 import gg.mineral.practice.commands.PlayerCommand;
-import gg.mineral.practice.PracticePlugin;
 import gg.mineral.practice.entity.PlayerStatus;
 import gg.mineral.practice.entity.Profile;
+import gg.mineral.practice.events.Event;
+import gg.mineral.practice.managers.EventManager;
 import gg.mineral.practice.managers.PlayerManager;
 import gg.mineral.practice.managers.TournamentManager;
 import gg.mineral.practice.tournaments.Tournament;
@@ -12,16 +13,13 @@ import gg.mineral.practice.util.messages.impl.UsageMessages;
 
 public class JoinCommand extends PlayerCommand {
 
-    final PlayerManager playerManager = PracticePlugin.INSTANCE.getPlayerManager();
-    final TournamentManager tournamentManager = PracticePlugin.INSTANCE.getTournamentManager();
-
     public JoinCommand() {
         super("join");
     }
 
     @Override
     public void execute(org.bukkit.entity.Player player, String[] args) {
-        Profile p = playerManager.getProfile(player);
+        Profile p = PlayerManager.getProfile(player);
 
         if (args.length < 1) {
             p.message(UsageMessages.JOIN);
@@ -38,7 +36,13 @@ public class JoinCommand extends PlayerCommand {
             return;
         }
 
-        Tournament t = tournamentManager.getTournamentByName(args[0]);
+        Event e = EventManager.getEventByName(args[0]);
+
+        if (e != null) {
+            e.addPlayer(p);
+        }
+
+        Tournament t = TournamentManager.getTournamentByName(args[0]);
 
         if (t == null) {
             p.message(ErrorMessages.TOURNAMENT_NOT_EXIST);

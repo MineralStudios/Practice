@@ -7,23 +7,22 @@ import org.bukkit.Material;
 import org.bukkit.inventory.ItemStack;
 
 import gg.mineral.practice.party.Party;
-import gg.mineral.practice.util.SaveableData;
 import gg.mineral.api.collection.GlueList;
 import gg.mineral.api.config.FileConfiguration;
 
-public class PartyManager implements SaveableData {
-	GlueList<Party> list = new GlueList<>();
-	int slot;
-	ItemStack displayItem;
-	String displayName;
-	Boolean enabled;
-	FileConfiguration config = new FileConfiguration("parties.yml", "plugins/Practice");
+public class PartyManager {
+	static GlueList<Party> list = new GlueList<>();
+	static int slot;
+	static ItemStack displayItem;
+	static String displayName;
+	static Boolean enabled;
+	static FileConfiguration config = new FileConfiguration("parties.yml", "plugins/Practice");
 
-	public void registerParty(Party party) {
+	public static void registerParty(Party party) {
 		list.add(party);
 	}
 
-	public void remove(Party party) {
+	public static void remove(Party party) {
 		list.remove(party);
 	}
 
@@ -46,43 +45,42 @@ public class PartyManager implements SaveableData {
 		return null;
 	}
 
-	public Collection<Party> getPartys() {
+	public static Collection<Party> getPartys() {
 		return list;
 	}
 
-	public void setEnabled(boolean enabled) {
-		this.enabled = enabled;
+	public static void setEnabled(boolean enabled) {
+		PartyManager.enabled = enabled;
 	}
 
-	public void setDisplayItem(ItemStack item) {
+	public static void setDisplayItem(ItemStack item) {
 		displayItem = item;
 	}
 
-	public void setDisplayName(String name) {
+	public static void setDisplayName(String name) {
 		displayName = name;
 	}
 
-	public void setSlot(Integer slot) {
-		this.slot = slot;
+	public static void setSlot(Integer slot) {
+		PartyManager.slot = slot;
 	}
 
-	public boolean getEnabled() {
+	public static boolean getEnabled() {
 		return enabled;
 	}
 
-	public ItemStack getDisplayItem() {
+	public static ItemStack getDisplayItem() {
 		return displayItem;
 	}
 
-	public String getDisplayName() {
+	public static String getDisplayName() {
 		return displayName;
 	}
 
-	public Integer getSlot() {
+	public static Integer getSlot() {
 		return slot;
 	}
 
-	@Override
 	public void save() {
 		config.set("Parties.Slot", slot);
 		config.set("Parties.DisplayName", displayName);
@@ -92,15 +90,13 @@ public class PartyManager implements SaveableData {
 		config.save();
 	}
 
-	@Override
-	public void load() {
+	public static void load() {
 		slot = config.getInt("Parties.Slot", 4);
 		displayItem = config.getItemstack("Parties.DisplayItem", new ItemStack(Material.NETHER_STAR));
 		displayName = config.getString("Parties.DisplayName", "Parties");
 		enabled = config.getBoolean("Parties.Enable", true);
 	}
 
-	@Override
 	public void setDefaults() {
 		slot = 4;
 		displayItem = new ItemStack(Material.NETHER_STAR);

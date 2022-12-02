@@ -11,19 +11,18 @@ import org.bukkit.event.block.BlockIgniteEvent.IgniteCause;
 import org.bukkit.event.block.BlockPlaceEvent;
 import org.bukkit.event.player.PlayerBucketEmptyEvent;
 
-import gg.mineral.practice.PracticePlugin;
 import gg.mineral.practice.entity.Profile;
 import gg.mineral.practice.managers.PlayerManager;
 import gg.mineral.practice.match.Match;
 import gg.mineral.practice.util.messages.impl.ErrorMessages;
 
 public class BuildListener implements Listener {
-	final PlayerManager playerManager = PracticePlugin.INSTANCE.getPlayerManager();;
+	;
 
 	@EventHandler
 	public void onBlockBreak(BlockBreakEvent e) {
 
-		Profile player = playerManager.getProfileFromMatch(e.getPlayer());
+		Profile player = PlayerManager.getProfileFromMatch(e.getPlayer());
 
 		if (player == null) {
 			e.setCancelled(!(e.getPlayer().isOp() && e.getPlayer().getGameMode().equals(GameMode.CREATIVE)));
@@ -53,7 +52,7 @@ public class BuildListener implements Listener {
 
 	@EventHandler
 	public void onBlockPlace(BlockPlaceEvent e) {
-		Profile player = playerManager.getProfileFromMatch(e.getPlayer());
+		Profile player = PlayerManager.getProfileFromMatch(e.getPlayer());
 		boolean canPlace = e.getPlayer().isOp() && e.getPlayer().getGameMode().equals(GameMode.CREATIVE);
 
 		if (player == null) {
@@ -80,7 +79,7 @@ public class BuildListener implements Listener {
 
 	@EventHandler
 	public void onPlayerBucketEmpty(PlayerBucketEmptyEvent e) {
-		Profile player = playerManager.getProfileFromMatch(e.getPlayer());
+		Profile player = PlayerManager.getProfileFromMatch(e.getPlayer());
 		boolean canPlace = e.getPlayer().isOp() && e.getPlayer().getGameMode().equals(GameMode.CREATIVE);
 
 		if (player == null) {

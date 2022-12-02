@@ -1,17 +1,12 @@
 package gg.mineral.practice.commands.config;
 
-import gg.mineral.practice.PracticePlugin;
 import gg.mineral.practice.commands.PlayerCommand;
-import gg.mineral.practice.managers.PlayerManager;
 import gg.mineral.practice.managers.PlayerSettingsManager;
 import gg.mineral.practice.util.messages.impl.ChatMessages;
 import gg.mineral.practice.util.messages.impl.ErrorMessages;
 import gg.mineral.practice.util.messages.impl.UsageMessages;
 
 public class SettingsConfigCommand extends PlayerCommand {
-
-	final PlayerSettingsManager settingsConfig = PracticePlugin.INSTANCE.getSettingsManager();
-	final PlayerManager playerManager = PracticePlugin.INSTANCE.getPlayerManager();
 
 	public SettingsConfigCommand() {
 		super("settingsconfig", "practice.config");
@@ -40,10 +35,10 @@ public class SettingsConfigCommand extends PlayerCommand {
 
 				switch (toggled) {
 					case "false":
-						settingsConfig.setEnabled(false);
+						PlayerSettingsManager.setEnabled(false);
 						break;
 					case "true":
-						settingsConfig.setEnabled(true);
+						PlayerSettingsManager.setEnabled(true);
 						break;
 					default:
 						UsageMessages.SETTINGS_ENABLE.send(pl);
@@ -59,10 +54,10 @@ public class SettingsConfigCommand extends PlayerCommand {
 					return;
 				}
 
-				settingsConfig.setDisplayItem(pl.getItemInHand());
+				PlayerSettingsManager.setDisplayItem(pl.getItemInHand());
 
 				if (args.length > 2) {
-					settingsConfig.setDisplayName(args[1].replace("&", "§"));
+					PlayerSettingsManager.setDisplayName(args[1].replace("&", "§"));
 				}
 
 				ChatMessages.SETTINGS_DISPLAY_SET.send(pl);
@@ -82,7 +77,7 @@ public class SettingsConfigCommand extends PlayerCommand {
 					return;
 				}
 
-				settingsConfig.setSlot(slot);
+				PlayerSettingsManager.setSlot(slot);
 
 				ChatMessages.SETTINGS_SLOT_SET.clone().replace("%slot%", strSlot).send(pl);
 				return;

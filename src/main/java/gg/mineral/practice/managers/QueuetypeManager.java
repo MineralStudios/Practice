@@ -5,17 +5,16 @@ import org.bukkit.configuration.ConfigurationSection;
 import gg.mineral.api.collection.GlueList;
 import gg.mineral.api.config.FileConfiguration;
 import gg.mineral.practice.queue.Queuetype;
-import gg.mineral.practice.util.SaveableData;
 
-public class QueuetypeManager implements SaveableData {
-	final FileConfiguration config = new FileConfiguration("queues.yml", "plugins/Practice");
-	final GlueList<Queuetype> list = new GlueList<>();
+public class QueuetypeManager {
+	final static FileConfiguration config = new FileConfiguration("queues.yml", "plugins/Practice");
+	final static GlueList<Queuetype> list = new GlueList<>();
 
-	public void registerQueuetype(Queuetype queuetype) {
+	public static void registerQueuetype(Queuetype queuetype) {
 		list.add(queuetype);
 	}
 
-	public void remove(Queuetype queuetype) {
+	public static void remove(Queuetype queuetype) {
 		list.remove(queuetype);
 	}
 
@@ -29,15 +28,15 @@ public class QueuetypeManager implements SaveableData {
 		return false;
 	}
 
-	public FileConfiguration getConfig() {
+	public static FileConfiguration getConfig() {
 		return config;
 	}
 
-	public GlueList<Queuetype> getQueuetypes() {
+	public static GlueList<Queuetype> getQueuetypes() {
 		return list;
 	}
 
-	public Queuetype getQueuetypeByName(String string) {
+	public static Queuetype getQueuetypeByName(String string) {
 		for (int i = 0; i < list.size(); i++) {
 			Queuetype q = list.get(i);
 			if (q.getName().equalsIgnoreCase(string)) {
@@ -48,7 +47,6 @@ public class QueuetypeManager implements SaveableData {
 		return null;
 	}
 
-	@Override
 	public void save() {
 
 		for (Queuetype queuetype : getQueuetypes()) {
@@ -58,8 +56,7 @@ public class QueuetypeManager implements SaveableData {
 		config.save();
 	}
 
-	@Override
-	public void load() {
+	public static void load() {
 		ConfigurationSection configSection = getConfig().getConfigurationSection("Queue.");
 
 		if (configSection == null) {
@@ -81,8 +78,7 @@ public class QueuetypeManager implements SaveableData {
 		}
 	}
 
-	@Override
-	public void setDefaults() {
+	public static void setDefaults() {
 		Queuetype queuetype = new Queuetype("Default");
 		queuetype.setDefaults();
 		registerQueuetype(queuetype);

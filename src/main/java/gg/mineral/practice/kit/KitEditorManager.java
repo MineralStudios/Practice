@@ -8,78 +8,90 @@ import org.bukkit.util.Vector;
 
 import gg.mineral.api.config.FileConfiguration;
 
-public class KitEditorManager extends FileConfiguration {
-	String displayName;
-	ItemStack displayItem;
-	int slot;
-	Boolean enabled;
-	Location location;
-	Vector direction;
+public class KitEditorManager {
+	static FileConfiguration config = new FileConfiguration("kiteditor.yml", "plugins/Practice");
+	static String displayName;
+	static ItemStack displayItem;
+	static int slot;
+	static Boolean enabled;
+	static Location location;
+	static Vector direction;
 
-	public KitEditorManager() {
-		super("kiteditor.yml", "plugins/Practice");
-		displayName = getString("KitEditor.DisplayName", "Kit Editor");
-		displayItem = getItemstack("KitEditor.DisplayItem", new ItemStack(Material.BOOK));
-		slot = getInt("KitEditor.Slot", 0);
-		enabled = getBoolean("KitEditor.Enable", true);
-		location = new Location(Bukkit.getWorld(getString("KitEditor.Location.World", null)),
-				getInt("KitEditor.Location.x", 0), getInt("KitEditor.Location.y", 70),
-				getInt("KitEditor.Location.z", 0));
-		getVector("KitEditor.Location.Direction", null);
-	}
-
-	public void setDisplayName(String DisplayNameArg) {
-		displayName = DisplayNameArg;
-		set("KitEditor.DisplayName", DisplayNameArg);
+	public static void setDisplayName(String displayName) {
+		KitEditorManager.displayName = displayName;
 		save();
 	}
 
-	public void setDisplayItem(ItemStack DisplayItemArg) {
-		displayItem = DisplayItemArg;
-		set("KitEditor.DisplayItem", DisplayItemArg);
+	public static void setDisplayItem(ItemStack displayItem) {
+		KitEditorManager.displayItem = displayItem;
 		save();
 	}
 
-	public void setSlot(Integer SlotArg) {
-		slot = SlotArg;
-		set("KitEditor.Slot", SlotArg);
+	public static void setSlot(Integer slot) {
+		KitEditorManager.slot = slot;
 		save();
 	}
 
-	public void setEnabled(boolean EnabledArg) {
-		enabled = EnabledArg;
-		set("KitEditor.Enable", EnabledArg);
+	public static void setEnabled(boolean enabled) {
+		KitEditorManager.enabled = enabled;
 		save();
 	}
 
-	public void setLocation(Location loc) {
+	public static void setLocation(Location loc) {
 		location = loc;
 		direction = loc.getDirection();
-		set("KitEditor.Location.World", loc.getWorld().getName());
-		set("KitEditor.Location.x", loc.getBlockX());
-		set("KitEditor.Location.y", loc.getBlockY());
-		set("KitEditor.Location.z", loc.getBlockZ());
-		set("KitEditor.Location.Direction", loc.getDirection());
 		save();
 	}
 
-	public String getDisplayName() {
+	public static String getDisplayName() {
 		return displayName;
 	}
 
-	public ItemStack getDisplayItem() {
+	public static ItemStack getDisplayItem() {
 		return displayItem;
 	}
 
-	public int getSlot() {
+	public static int getSlot() {
 		return slot;
 	}
 
-	public Boolean getEnabled() {
+	public static Boolean getEnabled() {
 		return enabled;
 	}
 
-	public Location getLocation() {
+	public static Location getLocation() {
 		return location;
+	}
+
+	public static void save() {
+		config.set("KitEditor.DisplayName", displayName);
+		config.set("KitEditor.DisplayItem", displayItem);
+		config.set("KitEditor.Slot", slot);
+		config.set("KitEditor.Enable", enabled);
+		config.set("KitEditor.Location.World", location.getWorld().getName());
+		config.set("KitEditor.Location.x", location.getBlockX());
+		config.set("KitEditor.Location.y", location.getBlockY());
+		config.set("KitEditor.Location.z", location.getBlockZ());
+		config.set("KitEditor.Location.Direction", location.getDirection());
+
+		config.save();
+	}
+
+	public static void load() {
+		displayName = config.getString("KitEditor.DisplayName", "Kit Editor");
+		displayItem = config.getItemstack("KitEditor.DisplayItem", new ItemStack(Material.BOOK));
+		slot = config.getInt("KitEditor.Slot", 0);
+		enabled = config.getBoolean("KitEditor.Enable", true);
+		location = new Location(Bukkit.getWorld(config.getString("KitEditor.Location.World", null)),
+				config.getInt("KitEditor.Location.x", 0), config.getInt("KitEditor.Location.y", 70),
+				config.getInt("KitEditor.Location.z", 0));
+		config.getVector("KitEditor.Location.Direction", null);
+	}
+
+	public void setDefaults() {
+		slot = 0;
+		displayItem = new ItemStack(Material.BOOK);
+		displayName = "Kit Editor";
+		enabled = true;
 	}
 }

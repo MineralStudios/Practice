@@ -6,12 +6,10 @@ import java.util.UUID;
 
 import gg.mineral.practice.sql.SQLManager;
 import gg.mineral.practice.util.collection.LeaderboardMap;
-import gg.mineral.practice.PracticePlugin;
 import gg.mineral.practice.entity.Profile;
 
 public class EloManager {
-	public String table = "Elo";
-	GametypeManager gametypeManager = PracticePlugin.INSTANCE.getGametypeManager();
+	public static String table = "Elo";
 
 	public EloManager() {
 		try {
@@ -24,7 +22,7 @@ public class EloManager {
 		}
 	}
 
-	public void updateElo(Profile p, String g, int elo) {
+	public static void updateElo(Profile p, String g, int elo) {
 		try {
 			if (eloEntryExists(p.getUUID().toString(), g)) {
 				AutoCloseable[] statement = SQLManager
@@ -44,7 +42,7 @@ public class EloManager {
 		}
 	}
 
-	public boolean eloEntryExists(String uuid, String g) {
+	public static boolean eloEntryExists(String uuid, String g) {
 		try {
 			AutoCloseable[] statement = SQLManager.prepare("SELECT * FROM " + table + " WHERE GAMETYPE=? AND UUID=?");
 			PreparedStatement stmt = (PreparedStatement) statement[0];
@@ -66,7 +64,7 @@ public class EloManager {
 		return false;
 	}
 
-	public void setEloEntry(final Profile p, final String g, int elo) {
+	public static void setEloEntry(final Profile p, final String g, int elo) {
 		if (elo == 1000) {
 			return;
 		}
@@ -86,7 +84,7 @@ public class EloManager {
 		}
 	}
 
-	public int getEloEntry(String g, UUID uuid) {
+	public static int getEloEntry(String g, UUID uuid) {
 
 		try {
 			AutoCloseable[] statement = SQLManager.prepare("SELECT * FROM " + table + " WHERE GAMETYPE=? AND UUID=?");
@@ -108,7 +106,7 @@ public class EloManager {
 		return 1000;
 	}
 
-	public int getEloEntry(String g, String name) {
+	public static int getEloEntry(String g, String name) {
 
 		try {
 			AutoCloseable[] statement = SQLManager.prepare("SELECT * FROM " + table + " WHERE GAMETYPE=? AND PLAYER=?");
@@ -130,7 +128,7 @@ public class EloManager {
 		return 1000;
 	}
 
-	public LeaderboardMap getLeaderboardMap(String g) {
+	public static LeaderboardMap getLeaderboardMap(String g) {
 		LeaderboardMap map = new LeaderboardMap();
 
 		try {

@@ -8,7 +8,6 @@ import org.bukkit.event.player.PlayerJoinEvent;
 import org.bukkit.event.player.PlayerLoginEvent;
 import org.bukkit.event.player.PlayerQuitEvent;
 
-import gg.mineral.practice.PracticePlugin;
 import gg.mineral.practice.entity.Profile;
 import gg.mineral.practice.managers.PartyManager;
 import gg.mineral.practice.managers.PlayerManager;
@@ -18,13 +17,11 @@ import gg.mineral.practice.util.messages.ChatMessage;
 import gg.mineral.practice.util.messages.impl.ChatMessages;
 
 public class EntryListener implements Listener {
-	final PlayerManager playerManager = PracticePlugin.INSTANCE.getPlayerManager();
-	final PartyManager partyManager = PracticePlugin.INSTANCE.getPartyManager();
 
 	@EventHandler
 	public void onPlayerJoin(PlayerJoinEvent event) {
 		event.setJoinMessage(null);
-		Profile player = playerManager.getProfile(event.getPlayer());
+		Profile player = PlayerManager.getProfile(event.getPlayer());
 		player.bukkit().setGameMode(GameMode.SURVIVAL);
 		player.heal();
 		player.setInventoryForLobby();
@@ -37,7 +34,7 @@ public class EntryListener implements Listener {
 	public void onPlayerQuit(PlayerQuitEvent e) {
 		e.setQuitMessage(null);
 
-		Profile victim = playerManager.getProfile(e.getPlayer());
+		Profile victim = PlayerManager.getProfile(e.getPlayer());
 
 		victim.removeScoreboard();
 
@@ -57,7 +54,7 @@ public class EntryListener implements Listener {
 					plr.message(leftMessage);
 				}
 
-				partyManager.remove(p);
+				PartyManager.remove(p);
 			} else {
 
 				victim.removeFromParty();
@@ -82,16 +79,16 @@ public class EntryListener implements Listener {
 			default:
 		}
 
-		playerManager.remove(victim);
+		PlayerManager.remove(victim);
 	}
 
 	@EventHandler
 	public void onPlayerInitialSpawn(PlayerInitialSpawnEvent e) {
-		e.setSpawnLocation(playerManager.getSpawnLocation());
+		e.setSpawnLocation(PlayerManager.getSpawnLocation());
 	}
 
 	@EventHandler
 	public void onPlayerLogin(PlayerLoginEvent e) {
-		playerManager.getProfile(e.getPlayer());
+		PlayerManager.getProfile(e.getPlayer());
 	}
 }
