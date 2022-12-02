@@ -1,16 +1,10 @@
 package gg.mineral.practice.util.math;
 
 public class MathUtil {
-	private static final int DEFAULT_K_FACTOR = 25;
-	private static final int WIN = 1;
-	private static final int LOSS = 0;
+	private static final int DEFAULT_K_FACTOR = 25, WIN = 1, LOSS = 0;
 
 	public static int getNewRating(int rating, int opponentRating, boolean won) {
-		if (won) {
-			return MathUtil.getNewRating(rating, opponentRating, MathUtil.WIN);
-		}
-
-		return MathUtil.getNewRating(rating, opponentRating, MathUtil.LOSS);
+		return MathUtil.getNewRating(rating, opponentRating, won ? MathUtil.WIN : MathUtil.LOSS);
 	}
 
 	public static int getNewRating(int rating, int opponentRating, int score) {
@@ -18,12 +12,7 @@ public class MathUtil {
 		double expectedScore = MathUtil.getExpectedScore(rating, opponentRating);
 		int newRating = MathUtil.calculateNewRating(rating, score, expectedScore, kFactor);
 
-		if (score == 1) {
-			if (newRating == rating) {
-				newRating++;
-			}
-		}
-		return newRating;
+		return score == 1 && newRating == rating ? newRating++ : newRating;
 	}
 
 	private static int calculateNewRating(int oldRating, int score, double expectedScore, double kFactor) {
