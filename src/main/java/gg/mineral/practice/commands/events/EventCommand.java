@@ -1,4 +1,4 @@
-package gg.mineral.practice.commands.tournament;
+package gg.mineral.practice.commands.events;
 
 import gg.mineral.practice.commands.PlayerCommand;
 import gg.mineral.practice.entity.PlayerStatus;
