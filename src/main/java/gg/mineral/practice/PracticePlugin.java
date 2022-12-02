@@ -28,6 +28,7 @@ import gg.mineral.practice.commands.stats.EloCommand;
 import gg.mineral.practice.commands.stats.LeaderboardsCommand;
 import gg.mineral.practice.commands.stats.PotsCommand;
 import gg.mineral.practice.commands.stats.ViewInventoryCommand;
+import gg.mineral.practice.commands.tournament.EventCommand;
 import gg.mineral.practice.commands.tournament.JoinCommand;
 import gg.mineral.practice.commands.tournament.TournamentCommand;
 import gg.mineral.practice.listeners.BuildListener;
@@ -87,7 +88,7 @@ public class PracticePlugin extends JavaPlugin {
 				new PotsCommand(), new EloCommand(), new LeaderboardsCommand(), new PartyCommand(),
 				new SettingsConfigCommand(), new FollowCommand(), new TogglePlayerVisibilityCommand(),
 				new ToggleDuelRequestsCommand(), new CatagoryCommand(), new ExtendedSettingsCommand(),
-				new StopSpectatingCommand(), new TournamentCommand(), new JoinCommand());
+				new StopSpectatingCommand(), new TournamentCommand(), new JoinCommand(), new EventCommand());
 
 		registerListeners(new BuildListener(), new InteractListener(), new ComsumeListener(), new InventoryListener(),
 				new DeathListener(), new DamageListener(), new EntryListener(), new HealthListener(),

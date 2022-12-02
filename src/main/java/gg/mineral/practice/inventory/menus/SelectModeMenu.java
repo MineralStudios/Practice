@@ -26,16 +26,6 @@ public class SelectModeMenu extends PracticeMenu {
 		ItemStack item2 = new ItemBuilder(Material.GOLD_RECORD)
 				.name("Advanced Mode").lore().build();
 
-		if (action == SubmitAction.TOURNAMENT) {
-			ItemStack item3 = new ItemBuilder(Material.RECORD_4)
-					.name("Start Event").lore()
-					.build();
-			setSlot(4, item3, p -> {
-				p.openMenu(new SelectEventMenu());
-				return true;
-			});
-		}
-
 		setSlot(2, item, p -> {
 			p.openMenu(new SelectExistingKitMenu(new SelectArenaMenu(action), true));
 			return true;
