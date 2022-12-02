@@ -15,6 +15,8 @@ public class ItemStacks {
                         .name(CC.SECONDARY + CC.B + "Please Wait").build();
         public static final ItemStack LEAVE_TOURNAMENT = new ItemBuilder(new ItemStack(351, 1, (short) 1))
                         .name(CC.SECONDARY + CC.B + "Leave Tournament").build();
+        public static final ItemStack LEAVE_EVENT = new ItemBuilder(new ItemStack(351, 1, (short) 1))
+                        .name(CC.SECONDARY + CC.B + "Leave Event").build();
         public static final ItemStack LEAVE_PARTY = new ItemBuilder(new ItemStack(351, 1, (short) 1))
                         .name(CC.SECONDARY + CC.B + "Leave Party").build();
         public static final ItemStack LEAVE_QUEUE = new ItemBuilder(new ItemStack(351, 1, (short) 1))

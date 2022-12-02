@@ -68,6 +68,10 @@ public class ErrorMessages {
 	public static final Message TOURNAMENT_STARTED = new ErrorMessage("That tournament has already started.");
 	public static final Message TOURNAMENT_NOT_ENOUGH_PLAYERS = new ErrorMessage(
 			"There was not enough players to start the tournament.");
+	public static final Message EVENT_NOT_EXIST = new ErrorMessage("That event no longer exists.");
+	public static final Message EVENT_STARTED = new ErrorMessage("That event has already started.");
+	public static final Message EVENT_NOT_ENOUGH_PLAYERS = new ErrorMessage(
+			"There was not enough players to start the event.");
 	// Kit Editor
 	public static final Message KIT_EDITOR_LOCATION_NOT_SET = new ErrorMessage(
 			"A kit editor location has not been set, use /kiteditor setlocation to set the location.");

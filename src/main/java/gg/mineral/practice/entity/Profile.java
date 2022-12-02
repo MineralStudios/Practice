@@ -15,7 +15,8 @@ import org.bukkit.scheduler.BukkitRunnable;
 
 import gg.mineral.api.collection.GlueList;
 import gg.mineral.practice.PracticePlugin;
-import gg.mineral.practice.event.PlayerStatusChangeEvent;
+import gg.mineral.practice.bukkit.event.PlayerStatusChangeEvent;
+import gg.mineral.practice.events.Event;
 import gg.mineral.practice.inventory.PlayerInventory;
 import gg.mineral.practice.inventory.PracticeMenu;
 import gg.mineral.practice.inventory.SubmitAction;
@@ -76,8 +77,9 @@ public class Profile {
 	SubmitAction prevSubmitAction;
 	boolean inventoryClickCancelled = false;
 	Tournament tournament;
+	Event event;
 	PearlCooldown pearlCooldown = new PearlCooldown(this);
-	Tournament spectatingTournament;
+	Event spectatingTournament;
 
 	public Profile(org.bukkit.entity.Player player) {
 		this.player = (CraftPlayer) player;
@@ -316,6 +318,23 @@ public class Profile {
 		bukkit().updateInventory();
 	}
 
+	public void setInventoryForEvent() {
+		setInventoryClickCancelled(true);
+		inventory.clear();
+		inventory.setItem(0, ItemStacks.WAIT_TO_LEAVE,
+				(Runnable) () -> this.message(ErrorMessages.CAN_NOT_LEAVE_YET));
+
+		Profile pl = this;
+
+		new BukkitRunnable() {
+			@Override
+			public void run() {
+				inventory.setItem(0, ItemStacks.LEAVE_EVENT, (Runnable) pl::removeFromEvent);
+			}
+		}.runTaskLater(PracticePlugin.INSTANCE, 20);
+		bukkit().updateInventory();
+	}
+
 	public void setInventoryForParty() {
 		setInventoryClickCancelled(true);
 		inventory.clear();
@@ -497,8 +516,8 @@ public class Profile {
 			return;
 		}
 
-		if (p.getPlayerStatus() == PlayerStatus.IN_TOURAMENT) {
-			spectateTournament(p.getTournament());
+		if (p.getPlayerStatus() == PlayerStatus.IN_EVENT) {
+			spectateEvent(p.getEvent());
 			return;
 		}
 
@@ -512,7 +531,7 @@ public class Profile {
 		}
 
 		Match match = p.getMatch();
-		match.addSpectator(this);
+		match.getSpectators().add(this);
 		spectatingMatch = match;
 
 		this.player.setGameMode(GameMode.SPECTATOR);
@@ -534,9 +553,9 @@ public class Profile {
 		setPlayerStatus(PlayerStatus.SPECTATING);
 	}
 
-	public void spectateTournament(Tournament t) {
+	public void spectateEvent(Event t) {
 
-		if (t.isEnded() || !t.isEvent()) {
+		if (t.isEnded()) {
 			return;
 		}
 
@@ -546,12 +565,12 @@ public class Profile {
 		}
 
 		spectatingTournament = t;
-		t.addSpectator(this);
+		t.getSpectators().add(this);
 
 		this.player.setGameMode(GameMode.SPECTATOR);
 
 		teleport(t.getEventArena().getWaitingLocation());
-		ChatMessages.SPECTATING_TOURNAMENT.send(bukkit());
+		ChatMessages.SPECTATING_EVENT.send(bukkit());
 		ChatMessages.STOP_SPECTATING.send(bukkit());
 
 		this.setInventoryForSpectating();
@@ -825,6 +844,12 @@ public class Profile {
 		this.tournament = tournament;
 	}
 
+	public void setEvent(Event event) {
+		setPlayerStatus(PlayerStatus.IN_EVENT);
+		this.setInventoryForTournament();
+		this.event = event;
+	}
+
 	public void removeFromTournament() {
 
 		teleportToLobby();
@@ -839,7 +864,25 @@ public class Profile {
 		tournament = null;
 	}
 
+	public void removeFromEvent() {
+
+		teleportToLobby();
+		this.setInventoryForLobby();
+
+		if (tournament == null) {
+			return;
+		}
+
+		event.removePlayer(this);
+
+		event = null;
+	}
+
 	public Tournament getTournament() {
 		return tournament;
+	}
+
+	public Event getEvent() {
+		return event;
 	}
 }

@@ -107,15 +107,12 @@ public class TournamentMatch extends Match {
                 } else {
                     attacker.setInventoryForLobby();
                 }
-
-                if (getSpectators().size() > 0) {
-                    for (Profile p : getSpectators()) {
-                        p.bukkit().sendMessage(CC.SEPARATOR);
-                        p.bukkit().sendMessage(viewinv);
-                        p.bukkit().spigot().sendMessage(winmessage, splitter, losemessage);
-                        p.bukkit().sendMessage(CC.SEPARATOR);
-                        p.stopSpectating();
-                    }
+                for (Profile p : getSpectators()) {
+                    p.bukkit().sendMessage(CC.SEPARATOR);
+                    p.bukkit().sendMessage(viewinv);
+                    p.bukkit().spigot().sendMessage(winmessage, splitter, losemessage);
+                    p.bukkit().sendMessage(CC.SEPARATOR);
+                    p.stopSpectating();
                 }
             }
         }, 40);

@@ -1,29 +1,24 @@
 package gg.mineral.practice.match;
 
-import java.util.Iterator;
-
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.Material;
-import org.bukkit.craftbukkit.v1_8_R3.CraftWorld;
 import org.bukkit.craftbukkit.v1_8_R3.entity.CraftItem;
 import org.bukkit.entity.Item;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.scoreboard.Team;
 
-import gg.mineral.practice.util.messages.CC;
-import gg.mineral.practice.util.messages.impl.ErrorMessages;
 import gg.mineral.practice.PracticePlugin;
 import gg.mineral.practice.entity.Profile;
 import gg.mineral.practice.party.Party;
+import gg.mineral.practice.scoreboard.PartyMatchScoreboard;
 import gg.mineral.practice.scoreboard.Scoreboard;
-import gg.mineral.practice.util.Countdown;
 import gg.mineral.practice.util.ProfileList;
+import gg.mineral.practice.util.messages.CC;
 import net.minecraft.server.v1_8_R3.EntityHuman;
 import net.minecraft.server.v1_8_R3.EntityItem;
 import net.minecraft.server.v1_8_R3.PacketPlayInClientCommand;
 import net.minecraft.server.v1_8_R3.PacketPlayInClientCommand.EnumClientCommand;
-import net.minecraft.server.v1_8_R3.World;
 
 public class PartyMatch extends Match {
 	public ProfileList team1RemainingPlayers;
@@ -52,21 +47,14 @@ public class PartyMatch extends Match {
 	@Override
 	public void start() {
 
-		if (m.getArena() == null) {
-			playerManager.broadcast(participants, ErrorMessages.ARENA_NOT_FOUND);
-			end(player1);
+		if (noArenas()) {
 			return;
 		}
 
 		matchManager.registerMatch(this);
-		Location location1 = m.getArena().getLocation1();
-		Location location2 = m.getArena().getLocation2();
-		location1.setDirection(m.getArena().getLocation1EyeVector());
-		location2.setDirection(m.getArena().getLocation2EyeVector());
-
-		World world = ((CraftWorld) location1.getWorld()).getHandle();
-		world.getWorldData().f(false);
-		world.getWorldData().setStorm(false);
+		Location location1 = m.getArena().getLocation1().clone();
+		Location location2 = m.getArena().getLocation2().clone();
+		setupLocations(location1, location2);
 
 		org.bukkit.scoreboard.Scoreboard team1sb = getDisplayNameBoard(team1RemainingPlayers, team2RemainingPlayers);
 		org.bukkit.scoreboard.Scoreboard team2sb = getDisplayNameBoard(team2RemainingPlayers, team1RemainingPlayers);
@@ -74,35 +62,32 @@ public class PartyMatch extends Match {
 		int i;
 
 		for (i = 0; i < team1RemainingPlayers.size(); i++) {
-
 			Profile player1m = team1RemainingPlayers.get(i);
-
-			if (!player1m.bukkit().isOnline()) {
-				team1RemainingPlayers.remove(player1m);
-				return;
-			}
-
-			prepareForMatch(player1m);
+			prepareForMatch(player1m, team1sb);
 			player1m.teleport(location1);
-			player1m.bukkit().setScoreboard(team1sb);
 		}
 
 		for (i = 0; i < team2RemainingPlayers.size(); i++) {
-
 			Profile player2m = team2RemainingPlayers.get(i);
-
-			if (!player2m.bukkit().isOnline()) {
-				team2RemainingPlayers.remove(player2m);
-				return;
-			}
-
-			prepareForMatch(player2m);
+			prepareForMatch(player2m, team2sb);
 			player2m.teleport(location2);
-			player2m.bukkit().setScoreboard(team2sb);
 		}
 
-		Countdown countdown = new Countdown(5, this);
-		countdown.start();
+		startCountdown();
+	}
+
+	public void prepareForMatch(Profile profile, org.bukkit.scoreboard.Scoreboard teamSb) {
+		prepareForMatch(profile);
+		profile.bukkit().setScoreboard(teamSb);
+	}
+
+	@Override
+	public void setScoreboard(Profile p) {
+		new PartyMatchScoreboard(p).setBoard();
+	}
+
+	@Override
+	public void setDisplayNames(Profile player) {
 	}
 
 	@Override
@@ -181,12 +166,8 @@ public class PartyMatch extends Match {
 				}
 			}, 1);
 
-			if (getSpectators().size() > 0) {
-				Iterator<Profile> it = getSpectators().iterator();
-				while (it.hasNext()) {
-					Profile p = it.next();
-					p.stopSpectating();
-				}
+			for (Profile p : getSpectators()) {
+				p.stopSpectating();
 			}
 
 			for (Item item : m.getArena().getLocation1().getWorld().getEntitiesByClass(Item.class)) {
@@ -221,7 +202,6 @@ public class PartyMatch extends Match {
 		}, 1);
 	}
 
-	@Override
 	public ProfileList getTeam(Profile p) {
 		if (team1RemainingPlayers.contains(p)) {
 			return team1RemainingPlayers;

@@ -72,6 +72,7 @@ public class EntryListener implements Listener {
 			case FIGHTING:
 				victim.getMatch().end(victim);
 				break;
+			case IN_EVENT:
 			case IN_TOURAMENT:
 				victim.getTournament().removePlayer(victim);
 				break;

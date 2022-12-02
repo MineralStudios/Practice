@@ -44,6 +44,7 @@ import gg.mineral.practice.listeners.PlayerStatusListener;
 import gg.mineral.practice.managers.ArenaManager;
 import gg.mineral.practice.managers.CatagoryManager;
 import gg.mineral.practice.managers.EloManager;
+import gg.mineral.practice.managers.EventManager;
 import gg.mineral.practice.managers.GametypeManager;
 import gg.mineral.practice.managers.MatchManager;
 import gg.mineral.practice.managers.PartyManager;
@@ -72,6 +73,7 @@ public class PracticePlugin extends JavaPlugin {
 	PvPBotsManager pvPBotsManager;
 	EloManager eloManager;
 	TournamentManager tournamentManager;
+	EventManager eventManager;
 	QueueEntryManager queueEntryManager;
 
 	@Override
@@ -105,6 +107,7 @@ public class PracticePlugin extends JavaPlugin {
 		pvPBotsManager = new PvPBotsManager();
 		queueEntryManager = new QueueEntryManager();
 		tournamentManager = new TournamentManager();
+		eventManager = new EventManager();
 
 		playerManager.load();
 		playerSettingsManager.load();
@@ -190,5 +193,9 @@ public class PracticePlugin extends JavaPlugin {
 
 	public TournamentManager getTournamentManager() {
 		return tournamentManager;
+	}
+
+	public EventManager getEventManager() {
+		return eventManager;
 	}
 }

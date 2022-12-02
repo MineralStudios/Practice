@@ -1,13 +1,13 @@
 package gg.mineral.practice.match;
 
 import java.util.Arrays;
-import java.util.concurrent.ConcurrentLinkedDeque;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.Material;
+import org.bukkit.World;
 import org.bukkit.craftbukkit.v1_8_R3.CraftWorld;
 import org.bukkit.craftbukkit.v1_8_R3.entity.CraftItem;
 import org.bukkit.entity.Item;
@@ -29,8 +29,8 @@ import gg.mineral.practice.managers.PlayerManager;
 import gg.mineral.practice.managers.QueueEntryManager;
 import gg.mineral.practice.scoreboard.BoxingScoreboard;
 import gg.mineral.practice.scoreboard.InMatchScoreboard;
-import gg.mineral.practice.scoreboard.PartyMatchScoreboard;
 import gg.mineral.practice.scoreboard.Scoreboard;
+import gg.mineral.practice.traits.Spectatable;
 import gg.mineral.practice.util.Countdown;
 import gg.mineral.practice.util.MathUtil;
 import gg.mineral.practice.util.ProfileList;
@@ -49,15 +49,13 @@ import net.minecraft.server.v1_8_R3.EntityHuman;
 import net.minecraft.server.v1_8_R3.EntityItem;
 import net.minecraft.server.v1_8_R3.PacketPlayInClientCommand;
 import net.minecraft.server.v1_8_R3.PacketPlayInClientCommand.EnumClientCommand;
-import net.minecraft.server.v1_8_R3.World;
 
-public class Match {
+public class Match implements Spectatable {
 	ProfileList participants = new ProfileList();
 	Profile player1;
 	Profile player2;
 	boolean ended = false;
 	int tntAmount;
-	ConcurrentLinkedDeque<Profile> spectators = new ConcurrentLinkedDeque<>();
 	MatchData m;
 	GlueList<Location> buildLog = new GlueList<>();
 	final MatchManager matchManager = PracticePlugin.INSTANCE.getMatchManager();
@@ -68,7 +66,7 @@ public class Match {
 	org.bukkit.World world = null;
 
 	public Match(Profile player1, Profile player2, MatchData m) {
-		this.m = m;
+		this(m);
 		this.player1 = player1;
 		this.player2 = player2;
 		addParicipants(player1, player2);
@@ -78,37 +76,32 @@ public class Match {
 		this.m = m;
 	}
 
-	public void prepareForMatch(Profile... profiles) {
+	public void prepareForMatch(ProfileList profiles) {
 		for (Profile profile : profiles) {
 			prepareForMatch(profile);
 		}
 	}
 
-	public void prepareForMatch(Profile p) {
-
-		if (!p.bukkit().isOnline()) {
-			end(p);
-			return;
-		}
-
-		p.clearHitCount();
-
+	public Kit getKit(Profile p) {
 		Kit kit = new Kit(m.getKit());
+		ItemStack[] customKit = m.getQueueEntry() != null ? m.getQueueEntry().getCustomKit(p) : null;
 
-		if (m.getQueueEntry() != null) {
-			ItemStack[] customKit = m.getQueueEntry().getCustomKit(p);
-
-			if (customKit != null) {
-				kit.setContents(customKit);
-			}
+		if (customKit != null) {
+			kit.setContents(customKit);
 		}
 
-		p.giveKit(kit);
+		return kit;
+	}
 
-		p.setMatch(this);
+	public void setAttributes(Profile p) {
+		p.clearHitCount();
 		p.bukkit().setMaximumNoDamageTicks(m.getNoDamageTicks());
 		p.bukkit().setKnockback(m.getKnockback());
+		p.bukkit().setAllowFlight(false);
+		p.setInventoryClickCancelled(false);
+	}
 
+	public void setPotionEffects(Profile p) {
 		if (!m.getDamage()) {
 			p.bukkit().addPotionEffect(new PotionEffect(PotionEffectType.DAMAGE_RESISTANCE, 999999999, 255));
 		}
@@ -116,7 +109,9 @@ public class Match {
 		if (m.getBoxing()) {
 			p.bukkit().addPotionEffect(new PotionEffect(PotionEffectType.SPEED, 999999999, 1));
 		}
+	}
 
+	public void setVisibility(Profile p) {
 		for (int i = 0; i < participants.size(); i++) {
 			p.bukkit().showPlayer(participants.get(i).bukkit());
 		}
@@ -124,17 +119,21 @@ public class Match {
 		for (Match match : matchManager.getMatchs()) {
 			match.updateVisiblity(this, p);
 		}
+	}
 
-		p.bukkit().setAllowFlight(false);
-		p.setInventoryClickCancelled(false);
+	public void prepareForMatch(Profile p) {
 
-		if (this instanceof PartyMatch) {
-			new PartyMatchScoreboard(p).setBoard();
-			return;
-		}
+		p.setMatch(this);
+		p.giveKit(getKit(p));
 
+		setAttributes(p);
+		setPotionEffects(p);
+		setVisibility(p);
 		setDisplayNames(p);
+		setScoreboard(p);
+	}
 
+	public void setScoreboard(Profile p) {
 		if (m.getGametype().getBoxing()) {
 			new BoxingScoreboard(p).setBoard();
 			return;
@@ -157,10 +156,6 @@ public class Match {
 		}
 	}
 
-	public ConcurrentLinkedDeque<Profile> getSpectators() {
-		return spectators;
-	}
-
 	public void increasePlacedTnt() {
 		tntAmount++;
 	}
@@ -171,10 +166,6 @@ public class Match {
 
 	public void decreasePlacedTnt() {
 		tntAmount--;
-	}
-
-	public void addSpectator(Profile player) {
-		spectators.add(player);
 	}
 
 	public void handleFollowers() {
@@ -215,23 +206,25 @@ public class Match {
 	}
 
 	public void setWorldParameters(World world) {
-		world.getWorldData().f(false);
-		world.getWorldData().setThundering(false);
-		world.getWorldData().setStorm(false);
-		world.allowMonsters = false;
+		net.minecraft.server.v1_8_R3.World nmsWorld = ((CraftWorld) world).getHandle();
+		nmsWorld.getWorldData().f(false);
+		nmsWorld.getWorldData().setThundering(false);
+		nmsWorld.getWorldData().setStorm(false);
+		nmsWorld.allowMonsters = false;
 	}
 
-	public void start() {
+	public boolean noArenas() {
+		boolean arenaNull = m.getArena() == null;
 
-		if (m.getArena() == null) {
+		if (arenaNull) {
 			playerManager.broadcast(participants, ErrorMessages.ARENA_NOT_FOUND);
 			end(player1);
-			return;
 		}
 
-		matchManager.registerMatch(this);
-		Location location1 = m.getArena().getLocation1();
-		Location location2 = m.getArena().getLocation2();
+		return arenaNull;
+	}
+
+	public void setupLocations(Location location1, Location location2) {
 		location1.setDirection(m.getArena().getLocation1EyeVector());
 		location2.setDirection(m.getArena().getLocation2EyeVector());
 
@@ -241,14 +234,33 @@ public class Match {
 			location2.setWorld(world);
 		}
 
-		setWorldParameters(((CraftWorld) location1.getWorld()).getHandle());
-		handleFollowers();
-		prepareForMatch(player1, player2);
+		setWorldParameters(location1.getWorld());
+
+	}
+
+	public void teleportPlayers(Location location1, Location location2) {
 		player1.teleport(location1);
 		player2.teleport(location2);
-		handleOpponentMessages();
+	}
+
+	public void startCountdown() {
 		Countdown countdown = new Countdown(5, this);
 		countdown.start();
+	}
+
+	public void start() {
+		if (noArenas())
+			return;
+
+		matchManager.registerMatch(this);
+		Location location1 = m.getArena().getLocation1().clone();
+		Location location2 = m.getArena().getLocation2().clone();
+		setupLocations(location1, location2);
+		teleportPlayers(location1, location2);
+		handleFollowers();
+		prepareForMatch(participants);
+		handleOpponentMessages();
+		startCountdown();
 	}
 
 	public void end(Profile victim) {
@@ -355,14 +367,12 @@ public class Match {
 				attacker.teleportToLobby();
 				attacker.setInventoryForLobby();
 
-				if (getSpectators().size() > 0) {
-					for (Profile p : getSpectators()) {
-						p.bukkit().sendMessage(CC.SEPARATOR);
-						p.bukkit().sendMessage(viewinv);
-						p.bukkit().spigot().sendMessage(winmessage, splitter, losemessage);
-						p.bukkit().sendMessage(CC.SEPARATOR);
-						p.stopSpectating();
-					}
+				for (Profile p : getSpectators()) {
+					p.bukkit().sendMessage(CC.SEPARATOR);
+					p.bukkit().sendMessage(viewinv);
+					p.bukkit().spigot().sendMessage(winmessage, splitter, losemessage);
+					p.bukkit().sendMessage(CC.SEPARATOR);
+					p.stopSpectating();
 				}
 			}
 		}, 40);

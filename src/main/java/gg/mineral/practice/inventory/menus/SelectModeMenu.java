@@ -28,10 +28,10 @@ public class SelectModeMenu extends PracticeMenu {
 
 		if (action == SubmitAction.TOURNAMENT) {
 			ItemStack item3 = new ItemBuilder(Material.RECORD_4)
-					.name("Tournament Mode").lore()
+					.name("Start Event").lore()
 					.build();
 			setSlot(4, item3, p -> {
-				p.openMenu(new SelectTournamentMenu());
+				p.openMenu(new SelectEventMenu());
 				return true;
 			});
 		}

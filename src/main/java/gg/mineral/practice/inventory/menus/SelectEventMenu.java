@@ -2,20 +2,20 @@ package gg.mineral.practice.inventory.menus;
 
 import org.bukkit.inventory.ItemStack;
 
-import gg.mineral.practice.util.items.ItemBuilder;
-import gg.mineral.practice.util.messages.CC;
 import gg.mineral.practice.PracticePlugin;
+import gg.mineral.practice.events.Event;
 import gg.mineral.practice.gametype.Gametype;
 import gg.mineral.practice.inventory.PracticeMenu;
 import gg.mineral.practice.managers.GametypeManager;
-import gg.mineral.practice.tournaments.Tournament;
+import gg.mineral.practice.util.items.ItemBuilder;
+import gg.mineral.practice.util.messages.CC;
 
-public class SelectTournamentMenu extends PracticeMenu {
+public class SelectEventMenu extends PracticeMenu {
 
     final GametypeManager gametypeManager = PracticePlugin.INSTANCE.getGametypeManager();
-    final static String TITLE = CC.BLUE + "Select Tournament";
+    final static String TITLE = CC.BLUE + "Select Event";
 
-    public SelectTournamentMenu() {
+    public SelectEventMenu() {
         super(TITLE);
     }
 
@@ -40,7 +40,7 @@ public class SelectTournamentMenu extends PracticeMenu {
                         return;
                     }
 
-                    Tournament t = new Tournament(viewer, g.getEventArena());
+                    Event t = new Event(viewer, g.getEventArena());
                     t.start();
                 }
             };

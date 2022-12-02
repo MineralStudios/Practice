@@ -205,6 +205,13 @@ public class ChatMessages {
 			"%player% has won the tournament.",
 			CC.AQUA)
 			.highlightText(CC.D_AQUA, "%player%");
+	public static final ChatMessage SPECTATING_EVENT = new ChatMessage(
+			"You are now spectating the event.",
+			CC.AQUA).highlightText(CC.D_AQUA, "the event");
+	public static final ChatMessage WON_EVENT = new ChatMessage(
+			"%player% has won the event.",
+			CC.AQUA)
+			.highlightText(CC.D_AQUA, "%player%");
 	public static final ChatMessage ROUND_OVER = new ChatMessage(
 			"Round %round% his over. The next round will start in 5 seconds.",
 			CC.AQUA)
@@ -236,6 +243,10 @@ public class ChatMessages {
 			"%player% has started a tournament. [Click To Join]",
 			CC.AQUA)
 			.highlightText(CC.D_AQUA, "%player%").highlightText(CC.GREEN, "[Click To Join]");
+	public static final ClickableChatMessage BROADCAST_EVENT = new ClickableChatMessage(
+			"%player% has started an event. [Click To Join]",
+			CC.AQUA)
+			.highlightText(CC.D_AQUA, "%player%").highlightText(CC.GREEN, "[Click To Join]");
 	public static final ChatMessage SPECTATING = new ChatMessage(
 			"You are now spectating %player%.",
 			CC.AQUA).highlightText(CC.D_AQUA, "%player%");
@@ -257,6 +268,15 @@ public class ChatMessages {
 			.highlightText(CC.D_GREEN, "%player%");
 	public static final ChatMessage LEFT_TOURNAMENT = new ChatMessage(
 			"%player% has left the tournament.",
+			CC.RED)
+			.highlightText(CC.D_RED, "%player%");
+
+	public static final ChatMessage JOINED_EVENT = new ChatMessage(
+			"%player% has joined the event.",
+			CC.GREEN)
+			.highlightText(CC.D_GREEN, "%player%");
+	public static final ChatMessage LEFT_EVENT = new ChatMessage(
+			"%player% has left the event.",
 			CC.RED)
 			.highlightText(CC.D_RED, "%player%");
 	public static final ClickableChatMessage PARTY_REQUEST_RECIEVED = new ClickableChatMessage(

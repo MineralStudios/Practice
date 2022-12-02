@@ -1,4 +1,4 @@
-package gg.mineral.practice.event;
+package gg.mineral.practice.bukkit.event;
 
 import org.bukkit.event.Event;
 import org.bukkit.event.HandlerList;

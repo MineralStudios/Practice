@@ -9,8 +9,8 @@ import org.bukkit.entity.Item;
 import gg.mineral.practice.PracticePlugin;
 import gg.mineral.practice.entity.PlayerStatus;
 import gg.mineral.practice.entity.Profile;
+import gg.mineral.practice.events.Event;
 import gg.mineral.practice.scoreboard.Scoreboard;
-import gg.mineral.practice.tournaments.Event;
 import gg.mineral.practice.util.messages.CC;
 import net.md_5.bungee.api.chat.ClickEvent;
 import net.md_5.bungee.api.chat.ComponentBuilder;
@@ -21,10 +21,13 @@ import net.minecraft.server.v1_8_R3.EntityItem;
 import net.minecraft.server.v1_8_R3.PacketPlayInClientCommand;
 import net.minecraft.server.v1_8_R3.PacketPlayInClientCommand.EnumClientCommand;
 
-public class EventMatch extends TournamentMatch {
+public class EventMatch extends Match {
+
+    Event event;
 
     public EventMatch(Profile player1, Profile player2, MatchData m, Event t) {
-        super(player1, player2, m, t);
+        super(player1, player2, m);
+        this.event = t;
     }
 
     @Override
@@ -93,26 +96,24 @@ public class EventMatch extends TournamentMatch {
             public void run() {
 
                 attacker.removeFromMatch();
-                tournament.removePlayer(victim);
-                tournament.removeMatch(match);
+                event.removePlayer(victim);
+                event.removeMatch(match);
 
-                if (!tournament.isEnded()) {
-                    attacker.teleport(tournament.getWaitingLocation());
-                    attacker.setPlayerStatus(PlayerStatus.IN_TOURAMENT);
-                    attacker.setInventoryForTournament();
+                if (!event.isEnded()) {
+                    attacker.teleport(event.getWaitingLocation());
+                    attacker.setPlayerStatus(PlayerStatus.IN_EVENT);
+                    attacker.setInventoryForEvent();
                 } else {
                     attacker.teleportToLobby();
                     attacker.setInventoryForLobby();
                 }
 
-                if (getSpectators().size() > 0) {
-                    for (Profile p : getSpectators()) {
-                        p.bukkit().sendMessage(CC.SEPARATOR);
-                        p.bukkit().sendMessage(viewinv);
-                        p.bukkit().spigot().sendMessage(winmessage, splitter, losemessage);
-                        p.bukkit().sendMessage(CC.SEPARATOR);
-                        p.stopSpectating();
-                    }
+                for (Profile p : getSpectators()) {
+                    p.bukkit().sendMessage(CC.SEPARATOR);
+                    p.bukkit().sendMessage(viewinv);
+                    p.bukkit().spigot().sendMessage(winmessage, splitter, losemessage);
+                    p.bukkit().sendMessage(CC.SEPARATOR);
+                    p.stopSpectating();
                 }
             }
         }, 40);

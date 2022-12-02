@@ -1,9 +1,7 @@
 package gg.mineral.practice.tournaments;
 
 import java.util.Iterator;
-import java.util.concurrent.ConcurrentLinkedDeque;
 
-import org.bukkit.Location;
 import org.bukkit.scheduler.BukkitRunnable;
 
 import gg.mineral.api.collection.GlueList;
@@ -23,7 +21,6 @@ import net.md_5.bungee.api.chat.ClickEvent;
 public class Tournament {
     GlueList<Match> matches = new GlueList<>();
     ProfileList players = new ProfileList();
-    ConcurrentLinkedDeque<Profile> spectators = new ConcurrentLinkedDeque<>();
     final PlayerManager playerManager = PracticePlugin.INSTANCE.getPlayerManager();
     final TournamentManager tournamentManager = PracticePlugin.INSTANCE.getTournamentManager();
     boolean started = false;
@@ -31,7 +28,6 @@ public class Tournament {
     MatchData m;
     int round = 1;
     String host;
-    Location loc;
 
     public Tournament(Profile p) {
         this.m = p.getMatchData();
@@ -70,12 +66,6 @@ public class Tournament {
             Profile winner = players.get(0);
             winner.removeFromTournament();
 
-            if (getSpectators().size() > 0) {
-                for (Profile pl : getSpectators()) {
-                    pl.stopSpectating();
-                }
-            }
-
             tournamentManager.remove(this);
             ended = true;
 
@@ -109,11 +99,7 @@ public class Tournament {
                 if (players.size() == 1) {
                     Profile winner = players.get(0);
                     winner.removeFromTournament();
-                    if (getSpectators().size() > 0) {
-                        for (Profile p : getSpectators()) {
-                            p.stopSpectating();
-                        }
-                    }
+
                     ErrorMessages.TOURNAMENT_NOT_ENOUGH_PLAYERS.send(winner.bukkit());
                     tournamentManager.remove(t);
                     ended = true;
@@ -130,13 +116,6 @@ public class Tournament {
         if (players.size() == 1) {
             Profile winner = players.get(0);
             winner.removeFromTournament();
-
-            if (getSpectators().size() > 0) {
-                for (Profile p : getSpectators()) {
-                    p.stopSpectating();
-                }
-            }
-
             ended = true;
             tournamentManager.remove(this);
             return;
@@ -188,17 +167,5 @@ public class Tournament {
 
     public boolean isEnded() {
         return ended;
-    }
-
-    public Location getWaitingLocation() {
-        return loc;
-    }
-
-    public void addSpectator(Profile player) {
-        spectators.add(player);
-    }
-
-    public ConcurrentLinkedDeque<Profile> getSpectators() {
-        return spectators;
     }
 }
