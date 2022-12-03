@@ -8,6 +8,7 @@ import gg.mineral.practice.inventory.PracticeMenu;
 import gg.mineral.practice.managers.GametypeManager;
 import gg.mineral.practice.util.items.ItemBuilder;
 import gg.mineral.practice.util.messages.CC;
+import gg.mineral.practice.util.messages.impl.ErrorMessages;
 
 public class SelectEventMenu extends PracticeMenu {
 
@@ -35,6 +36,7 @@ public class SelectEventMenu extends PracticeMenu {
                     viewer.getMatchData().setGametype(g);
 
                     if (g.getEventArena() == null) {
+                        viewer.message(ErrorMessages.ARENA_NOT_FOUND);
                         return;
                     }
 
