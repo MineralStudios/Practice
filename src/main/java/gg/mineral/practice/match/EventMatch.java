@@ -102,7 +102,7 @@ public class EventMatch extends Match {
                 event.removeMatch(match);
 
                 if (!event.isEnded()) {
-                    attacker.teleport(event.getWaitingLocation());
+                    attacker.teleport(event.getEventArena().getWaitingLocation());
                     attacker.setPlayerStatus(PlayerStatus.IN_EVENT);
                     attacker.setInventoryForEvent();
                 } else {

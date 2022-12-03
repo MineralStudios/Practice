@@ -60,7 +60,7 @@ public class Profile {
 	DefaultScoreboard b;
 	Match spectatingMatch;
 	MatchData matchData;
-	Integer hits = 0, currentCombo, longestCombo;
+	Integer hits = 0, currentCombo = 0, longestCombo = 0;
 	Boolean playersVisible = true;
 	PracticeMenu openMenu;
 	Profile following;

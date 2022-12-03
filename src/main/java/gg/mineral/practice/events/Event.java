@@ -1,8 +1,6 @@
 package gg.mineral.practice.events;
 
 import java.util.Iterator;
-
-import org.bukkit.Location;
 import org.bukkit.scheduler.BukkitRunnable;
 
 import gg.mineral.api.collection.GlueList;
@@ -31,18 +29,15 @@ public class Event implements Spectatable {
     boolean started = false;
     boolean ended = false;
     ProfileList players = new ProfileList();
-
     Arena eventArena;
-    Location loc;
 
     public Event(Profile p, Arena eventArena) {
         this.matchData = p.getMatchData();
         this.host = p.getName();
-        addPlayer(p);
-        EventManager.registerEvent(this);
         this.eventArena = eventArena;
         matchData.setArena(eventArena);
-        loc = eventArena.getWaitingLocation();
+        addPlayer(p);
+        EventManager.registerEvent(this);
     }
 
     public void addPlayer(Profile p) {
@@ -52,7 +47,7 @@ public class Event implements Spectatable {
             return;
         }
 
-        p.teleport(loc);
+        p.teleport(eventArena.getWaitingLocation());
         p.setEvent(this);
         players.add(p);
 
@@ -162,10 +157,6 @@ public class Event implements Spectatable {
 
     public Arena getEventArena() {
         return eventArena;
-    }
-
-    public Location getWaitingLocation() {
-        return loc;
     }
 
     public String getHost() {
