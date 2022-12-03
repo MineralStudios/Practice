@@ -21,11 +21,11 @@ public class ArenaManager {
 		list.remove(arena);
 
 		for (Gametype gametype : GametypeManager.getGametypes()) {
-			gametype.getArenas().removeBoolean(arena);
+			gametype.getArenas().remove(arena);
 		}
 
 		for (Queuetype queuetype : QueuetypeManager.getQueuetypes()) {
-			queuetype.getArenas().removeBoolean(arena);
+			queuetype.getArenas().remove(arena);
 		}
 	}
 

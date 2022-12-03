@@ -1,7 +1,6 @@
 package gg.mineral.practice.gametype;
 
 import java.util.List;
-import java.util.Map.Entry;
 
 import org.bukkit.Material;
 import org.bukkit.configuration.ConfigurationSection;
@@ -20,7 +19,6 @@ import gg.mineral.practice.managers.QueuetypeManager;
 import gg.mineral.practice.queue.Queuetype;
 import gg.mineral.practice.util.SaveableData;
 import gg.mineral.practice.util.collection.LeaderboardMap;
-import it.unimi.dsi.fastutil.objects.Object2BooleanOpenHashMap;
 import it.unimi.dsi.fastutil.objects.Object2IntOpenHashMap;
 
 public class Gametype implements SaveableData {
@@ -40,7 +38,7 @@ public class Gametype implements SaveableData {
 	Boolean boxing;
 	Boolean inCatagory;
 	Integer pearlCooldown;
-	Object2BooleanOpenHashMap<Arena> arenas = new Object2BooleanOpenHashMap<>();
+	List<Arena> arenas = new GlueList<>();
 	Arena eventArena;
 	boolean event = false;
 	Kit kit;
@@ -141,20 +139,8 @@ public class Gametype implements SaveableData {
 		return inCatagory;
 	}
 
-	public Object2BooleanOpenHashMap<Arena> getArenas() {
+	public List<Arena> getArenas() {
 		return arenas;
-	}
-
-	public List<Arena> getEnabledArenas() {
-		List<Arena> arenaList = new GlueList<Arena>();
-
-		for (Entry<Arena, Boolean> entry : arenas.object2BooleanEntrySet()) {
-			if (entry.getValue()) {
-				arenaList.add(entry.getKey());
-			}
-		}
-
-		return arenaList;
 	}
 
 	public Kit getKit() {
@@ -247,7 +233,11 @@ public class Gametype implements SaveableData {
 	}
 
 	public void enableArena(Arena arena, Boolean enabled) {
-		arenas.put(arena, enabled);
+		if (enabled) {
+			arenas.add(arena);
+		} else {
+			arenas.remove(arena);
+		}
 		save();
 	}
 
@@ -325,8 +315,8 @@ public class Gametype implements SaveableData {
 			}
 		}
 
-		for (Entry<Arena, Boolean> entry : arenas.object2BooleanEntrySet()) {
-			config.set(path + "Arenas." + entry.getKey().getName(), entry.getValue());
+		for (Arena arena : arenas) {
+			config.set(path + "Arenas." + arena.getName(), true);
 		}
 
 		ItemStack[] contents = kit.getContents();
@@ -394,7 +384,7 @@ public class Gametype implements SaveableData {
 
 		for (Arena a : ArenaManager.getArenas()) {
 			if (config.getBoolean(path + "Arenas." + a.getName(), false)) {
-				arenas.put(a, true);
+				arenas.add(a);
 			}
 		}
 

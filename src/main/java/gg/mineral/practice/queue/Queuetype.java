@@ -1,10 +1,11 @@
 package gg.mineral.practice.queue;
 
-import java.util.Iterator;
+import java.util.List;
 
 import org.bukkit.Material;
 import org.bukkit.inventory.ItemStack;
 
+import gg.mineral.api.collection.GlueList;
 import gg.mineral.api.config.FileConfiguration;
 import gg.mineral.practice.arena.Arena;
 import gg.mineral.practice.gametype.Catagory;
@@ -14,8 +15,6 @@ import gg.mineral.practice.managers.QueuetypeManager;
 import gg.mineral.practice.util.SaveableData;
 import gg.mineral.server.combat.KnockbackProfile;
 import gg.mineral.server.combat.KnockbackProfileList;
-import it.unimi.dsi.fastutil.objects.Object2BooleanMap.Entry;
-import it.unimi.dsi.fastutil.objects.Object2BooleanOpenHashMap;
 import it.unimi.dsi.fastutil.objects.Object2IntOpenHashMap;
 
 public class Queuetype implements SaveableData {
@@ -29,7 +28,7 @@ public class Queuetype implements SaveableData {
 	final String path;
 	KnockbackProfile knockback = null;
 	Object2IntOpenHashMap<Gametype> gametypes = new Object2IntOpenHashMap<>();
-	Object2BooleanOpenHashMap<Arena> arenas = new Object2BooleanOpenHashMap<>();
+	List<Arena> arenas = new GlueList<>();
 	Object2IntOpenHashMap<Catagory> catagories = new Object2IntOpenHashMap<>();
 
 	public Queuetype(String name) {
@@ -37,7 +36,7 @@ public class Queuetype implements SaveableData {
 		this.path = "Queue." + getName() + ".";
 	}
 
-	Iterator<Entry<Arena>> arenaIterator;
+	List<Arena> arenaList = new GlueList<>();
 
 	public synchronized Arena nextArena(Gametype g) {
 
@@ -49,43 +48,16 @@ public class Queuetype implements SaveableData {
 			return null;
 		}
 
-		if (arenaIterator == null) {
-			arenaIterator = arenas.object2BooleanEntrySet().fastIterator();
-		}
+		if (arenaList.isEmpty()) {
+			arenaList = new GlueList<>(arenas);
+			arenaList.retainAll(g.getArenas());
 
-		Arena arena = null;
-
-		int iterations = 0;
-
-		while (arenaIterator.hasNext()) {
-			iterations++;
-
-			Entry<Arena> entry = arenaIterator.next();
-
-			if (entry.getBooleanValue()) {
-				arena = entry.getKey();
-				break;
-			}
-
-			if (iterations >= arenas.size()) {
+			if (arenaList.isEmpty()) {
 				return null;
 			}
 		}
 
-		if (!arenaIterator.hasNext()) {
-			arenaIterator = arenas.object2BooleanEntrySet().fastIterator();
-			return nextArena(g);
-		}
-
-		if (arena == null) {
-			return null;
-		}
-
-		if (g.getArenas().keySet().contains(arena)) {
-			return arena;
-		}
-
-		return nextArena(g);
+		return arenaList.remove(0);
 	}
 
 	public String getName() {
@@ -104,7 +76,7 @@ public class Queuetype implements SaveableData {
 		return slotNumber;
 	}
 
-	public Object2BooleanOpenHashMap<Arena> getArenas() {
+	public List<Arena> getArenas() {
 		return arenas;
 	}
 
@@ -138,7 +110,11 @@ public class Queuetype implements SaveableData {
 	}
 
 	public void enableArena(Arena arena, Boolean enabled) {
-		arenas.put(arena, enabled);
+		if (enabled) {
+			arenas.add(arena);
+		} else {
+			arenas.remove(arena);
+		}
 		save();
 	}
 
@@ -179,8 +155,8 @@ public class Queuetype implements SaveableData {
 			config.set("Queue." + getName() + ".Knockback", knockback.getName());
 		}
 
-		for (Entry<Arena> entry : arenas.object2BooleanEntrySet()) {
-			config.set("Queue." + getName() + ".Arenas." + entry.getKey().getName(), entry.getBooleanValue());
+		for (Arena arena : arenas) {
+			config.set("Queue." + getName() + ".Arenas." + arena.getName(), true);
 		}
 
 		config.save();
@@ -203,7 +179,7 @@ public class Queuetype implements SaveableData {
 			Arena a = ArenaManager.getArenas().get(i);
 
 			if (config.getBoolean(path + "Arenas." + a.getName(), false)) {
-				arenas.put(a, true);
+				arenas.add(a);
 			}
 		}
 	}

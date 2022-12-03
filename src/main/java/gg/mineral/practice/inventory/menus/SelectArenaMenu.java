@@ -38,7 +38,7 @@ public class SelectArenaMenu extends PracticeMenu {
 
     @Override
     public boolean update() {
-        Iterator<Arena> arenas = simpleMode ? viewer.getMatchData().getGametype().getEnabledArenas().iterator()
+        Iterator<Arena> arenas = simpleMode ? viewer.getMatchData().getGametype().getArenas().iterator()
                 : ArenaManager.getArenas().iterator();
 
         while (arenas.hasNext()) {
