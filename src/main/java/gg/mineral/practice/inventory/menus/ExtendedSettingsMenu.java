@@ -10,15 +10,16 @@ public class ExtendedSettingsMenu extends PracticeMenu {
 
 	public ExtendedSettingsMenu() {
 		super(CC.BLUE + "Settings");
+		setClickCancelled(true);
 	}
 
 	@Override
 	public boolean update() {
-		setSlot(4,
+		setSlot(0,
 				new ItemBuilder(Material.GOLDEN_CARROT)
 						.name("Toggle Player Visibility").build(),
 				p -> p.bukkit().performCommand("toggleplayervisibility"));
-		setSlot(5,
+		setSlot(1,
 				new ItemBuilder(Material.WOOD_SWORD)
 						.name("Toggle Duel Requests").build(),
 				p -> p.bukkit().performCommand("toggleduelrequests"));

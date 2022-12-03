@@ -27,7 +27,7 @@ public class SpectateMenu extends PracticeMenu {
             ItemStack item = queueEntry == null ? new ItemStack(Material.WOOD_AXE)
                     : m.getData().getQueueEntry().getGametype().getDisplayItem();
             ItemStack skull = new ItemBuilder(item)
-                    .name(CC.SECONDARY + m.getPlayer1().getName() + " vs " + m.getPlayer2().getName())
+                    .name(CC.SECONDARY + m.getPlayer1().getName() + " vs " + m.getPlayer2().getName()).lore()
                     .build();
             add(skull, p -> p.bukkit().performCommand("spec " + m.getParticipants().get(0).getName()));
         }
