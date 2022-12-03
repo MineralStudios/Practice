@@ -90,8 +90,8 @@ public class SelectArenaMenu extends PracticeMenu {
 
                     viewer.getMatchData().setArena(a);
 
-                    Tournament t = new Tournament(viewer);
-                    t.start();
+                    Tournament tournament = new Tournament(viewer);
+                    tournament.start();
                 };
             }
 

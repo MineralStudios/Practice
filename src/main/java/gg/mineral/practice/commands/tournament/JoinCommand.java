@@ -36,19 +36,19 @@ public class JoinCommand extends PlayerCommand {
             return;
         }
 
-        Event e = EventManager.getEventByName(args[0]);
+        Event event = EventManager.getEventByName(args[0]);
 
-        if (e != null) {
-            e.addPlayer(p);
+        if (event != null) {
+            event.addPlayer(p);
         }
 
-        Tournament t = TournamentManager.getTournamentByName(args[0]);
+        Tournament tournament = TournamentManager.getTournamentByName(args[0]);
 
-        if (t == null) {
+        if (tournament == null) {
             p.message(ErrorMessages.TOURNAMENT_NOT_EXIST);
             return;
         }
 
-        t.addPlayer(p);
+        tournament.addPlayer(p);
     }
 }

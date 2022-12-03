@@ -38,8 +38,8 @@ public class SelectEventMenu extends PracticeMenu {
                         return;
                     }
 
-                    Event t = new Event(viewer, g.getEventArena());
-                    t.start();
+                    Event event = new Event(viewer, g.getEventArena());
+                    event.start();
                 }
             };
 

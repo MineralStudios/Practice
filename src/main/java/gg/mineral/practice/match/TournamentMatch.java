@@ -27,9 +27,9 @@ public class TournamentMatch extends Match {
 
     Tournament tournament;
 
-    public TournamentMatch(Profile player1, Profile player2, MatchData m, Tournament t) {
-        super(player1, player2, m);
-        this.tournament = t;
+    public TournamentMatch(Profile player1, Profile player2, MatchData matchData, Tournament tournament) {
+        super(player1, player2, matchData);
+        this.tournament = tournament;
     }
 
     @Override
@@ -119,7 +119,7 @@ public class TournamentMatch extends Match {
             }
         }, 40);
 
-        for (Item item : m.getArena().getLocation1().getWorld().getEntitiesByClass(Item.class)) {
+        for (Item item : matchData.getArena().getLocation1().getWorld().getEntitiesByClass(Item.class)) {
             EntityHuman lastHolder = ((EntityItem) ((CraftItem) item).getHandle()).lastHolder;
 
             if (lastHolder == null) {

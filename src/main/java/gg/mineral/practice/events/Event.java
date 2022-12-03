@@ -25,7 +25,7 @@ public class Event implements Spectatable {
 
     GlueList<Match> matches = new GlueList<>();
 
-    MatchData m;
+    MatchData matchData;
     int round = 1;
     String host;
     boolean started = false;
@@ -36,12 +36,12 @@ public class Event implements Spectatable {
     Location loc;
 
     public Event(Profile p, Arena eventArena) {
-        this.m = p.getMatchData();
+        this.matchData = p.getMatchData();
         this.host = p.getName();
         addPlayer(p);
         EventManager.registerEvent(this);
         this.eventArena = eventArena;
-        m.setArena(eventArena);
+        matchData.setArena(eventArena);
         loc = eventArena.getWaitingLocation();
     }
 
@@ -86,7 +86,7 @@ public class Event implements Spectatable {
 
         Profile p2 = iter.next();
 
-        EventMatch match = new EventMatch(p1, p2, m, this);
+        EventMatch match = new EventMatch(p1, p2, matchData, this);
         match.start();
         matches.add(match);
     }
@@ -135,7 +135,7 @@ public class Event implements Spectatable {
 
         PlayerManager.broadcast(PlayerManager.getProfiles(), messageToBroadcast);
 
-        Event t = this;
+        Event event = this;
         new BukkitRunnable() {
             @Override
             public void run() {
@@ -150,7 +150,7 @@ public class Event implements Spectatable {
                     }
 
                     ErrorMessages.EVENT_NOT_ENOUGH_PLAYERS.send(winner.bukkit());
-                    EventManager.remove(t);
+                    EventManager.remove(event);
                     ended = true;
                     return;
                 }

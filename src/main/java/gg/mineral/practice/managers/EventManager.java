@@ -19,9 +19,9 @@ public class EventManager {
     }
 
     public static Event getEventByName(String s) {
-        for (Event t : list) {
-            if (t.getHost().equalsIgnoreCase(s)) {
-                return t;
+        for (Event event : list) {
+            if (event.getHost().equalsIgnoreCase(s)) {
+                return event;
             }
         }
         return null;

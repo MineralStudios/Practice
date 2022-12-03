@@ -22,18 +22,18 @@ public class LeaderboardMenu extends PracticeMenu {
 
     @Override
     public boolean update() {
-        for (Gametype g : GametypeManager.getGametypes()) {
+        for (Gametype gametype : GametypeManager.getGametypes()) {
 
-            if (g.isInCatagory()) {
+            if (gametype.isInCatagory()) {
                 continue;
             }
 
-            ItemStack item = new ItemBuilder(g.getDisplayItem())
-                    .name(g.getDisplayName()).build();
+            ItemStack item = new ItemBuilder(gametype.getDisplayItem())
+                    .name(gametype.getDisplayName()).build();
             ItemMeta meta = item.getItemMeta();
 
             try {
-                meta.setLore(g.getLeaderboardLore());
+                meta.setLore(gametype.getLeaderboardLore());
             } catch (Exception e) {
                 meta.setLore(null);
             }

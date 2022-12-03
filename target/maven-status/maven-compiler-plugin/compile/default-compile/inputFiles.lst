@@ -120,5 +120,6 @@
 /home/jaiden/Documents/Practice/src/main/java/gg/mineral/practice/inventory/PlayerInventory.java
 /home/jaiden/Documents/Practice/src/main/java/gg/mineral/practice/commands/config/LobbyCommand.java
 /home/jaiden/Documents/Practice/src/main/java/gg/mineral/practice/inventory/menus/SelectCategorizedExistingKitMenu.java
+/home/jaiden/Documents/Practice/src/main/java/gg/mineral/practice/commands/events/EventCommand.java
 /home/jaiden/Documents/Practice/src/main/java/gg/mineral/practice/inventory/menus/SelectKitMenu.java
 /home/jaiden/Documents/Practice/src/main/java/gg/mineral/practice/managers/ArenaManager.java

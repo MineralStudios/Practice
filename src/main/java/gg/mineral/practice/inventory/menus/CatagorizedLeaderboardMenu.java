@@ -10,23 +10,23 @@ import gg.mineral.practice.gametype.Gametype;
 import gg.mineral.practice.inventory.PracticeMenu;
 
 public class CatagorizedLeaderboardMenu extends PracticeMenu {
-    Catagory c;
+    Catagory catagory;
 
-    public CatagorizedLeaderboardMenu(Catagory c) {
-        super(CC.BLUE + c.getDisplayName());
-        this.c = c;
+    public CatagorizedLeaderboardMenu(Catagory catagory) {
+        super(CC.BLUE + catagory.getDisplayName());
+        this.catagory = catagory;
     }
 
     @Override
     public boolean update() {
-        for (Gametype g : c.getGametypes()) {
-            ItemBuilder itemBuild = new ItemBuilder(g.getDisplayItem())
-                    .name(g.getDisplayName());
+        for (Gametype gametype : catagory.getGametypes()) {
+            ItemBuilder itemBuild = new ItemBuilder(gametype.getDisplayItem())
+                    .name(gametype.getDisplayName());
             ItemStack item = itemBuild.build();
             ItemMeta meta = item.getItemMeta();
 
             try {
-                meta.setLore(g.getLeaderboardLore());
+                meta.setLore(gametype.getLeaderboardLore());
             } catch (Exception e) {
                 meta.setLore(null);
             }

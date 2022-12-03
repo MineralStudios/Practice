@@ -76,11 +76,9 @@ public class ArenaCommand extends PlayerCommand {
 				switch (args[2].toLowerCase()) {
 					case "1":
 						arena.setLocation1(loc);
-						arena.setLocation1EyeVector(loc.getDirection());
 						break;
 					case "2":
 						arena.setLocation2(loc);
-						arena.setLocation2EyeVector(loc.getDirection());
 						break;
 					case "waiting":
 						arena.setWaitingLocation(loc);

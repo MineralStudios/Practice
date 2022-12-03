@@ -30,20 +30,21 @@ public class EloMenu extends PracticeMenu {
     @Override
     public boolean update() {
         if (arg == null) {
-            for (Gametype g : GametypeManager.getGametypes()) {
-                ItemStack item = new ItemBuilder(g.getDisplayItem())
-                        .name(g.getDisplayName())
-                        .lore(CC.ACCENT + strArg + "'s Elo: " + PlayerManager.getOfflinePlayerElo(g, strArg)).build();
+            for (Gametype gametype : GametypeManager.getGametypes()) {
+                ItemStack item = new ItemBuilder(gametype.getDisplayItem())
+                        .name(gametype.getDisplayName())
+                        .lore(CC.ACCENT + strArg + "'s Elo: " + PlayerManager.getOfflinePlayerElo(gametype, strArg))
+                        .build();
                 add(item);
             }
 
             return true;
         }
 
-        for (Gametype g : GametypeManager.getGametypes()) {
-            ItemStack item = new ItemBuilder(g.getDisplayItem())
-                    .name(g.getDisplayName())
-                    .lore(CC.ACCENT + arg.getName() + "'s Elo: " + g.getElo(arg)).build();
+        for (Gametype gametype : GametypeManager.getGametypes()) {
+            ItemStack item = new ItemBuilder(gametype.getDisplayItem())
+                    .name(gametype.getDisplayName())
+                    .lore(CC.ACCENT + arg.getName() + "'s Elo: " + gametype.getElo(arg)).build();
             add(item);
         }
 

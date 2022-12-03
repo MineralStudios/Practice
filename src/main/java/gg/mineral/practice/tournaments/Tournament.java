@@ -24,12 +24,12 @@ public class Tournament {
 
     boolean started = false;
     boolean ended = false;
-    MatchData m;
+    MatchData matchData;
     int round = 1;
     String host;
 
     public Tournament(Profile p) {
-        this.m = p.getMatchData();
+        this.matchData = p.getMatchData();
         this.host = p.getName();
         addPlayer(p);
         TournamentManager.registerTournament(this);
@@ -89,7 +89,7 @@ public class Tournament {
 
         PlayerManager.broadcast(PlayerManager.getProfiles(), messageToBroadcast);
 
-        Tournament t = this;
+        Tournament tournament = this;
         new BukkitRunnable() {
             @Override
             public void run() {
@@ -100,7 +100,7 @@ public class Tournament {
                     winner.removeFromTournament();
 
                     ErrorMessages.TOURNAMENT_NOT_ENOUGH_PLAYERS.send(winner.bukkit());
-                    TournamentManager.remove(t);
+                    TournamentManager.remove(tournament);
                     ended = true;
                     return;
                 }
@@ -132,7 +132,7 @@ public class Tournament {
 
             Profile p2 = iter.next();
 
-            TournamentMatch match = new TournamentMatch(p1, p2, m, this);
+            TournamentMatch match = new TournamentMatch(p1, p2, matchData, this);
             match.start();
             matches.add(match);
         }

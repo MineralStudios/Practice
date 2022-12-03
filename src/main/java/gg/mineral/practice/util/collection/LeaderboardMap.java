@@ -99,7 +99,7 @@ public class LeaderboardMap {
         }
     }
 
-    public void put(String key, int value, int oldValue) {
+    public void replace(String key, int value, int oldValue) {
 
         Entry oldEntry = entryList.remove(findPosition(oldValue));
         oldEntry.setValue(value);
@@ -113,13 +113,5 @@ public class LeaderboardMap {
 
     public List<Entry> getEntries() {
         return entryList;
-    }
-
-    public void merge(LeaderboardMap map) {
-        entryList.addAll(findPosition(map.get(0).getValue()), map.getEntries());
-
-        while (entryList.size() > size) {
-            entryList.remove(entryList.size() - 1);
-        }
     }
 }

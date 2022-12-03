@@ -4,16 +4,16 @@ import gg.mineral.practice.entity.Profile;
 import gg.mineral.practice.match.data.MatchData;
 
 public class DuelRequest {
-	final MatchData m;
+	final MatchData matchData;
 	final Profile sender;
 
-	public DuelRequest(Profile p, MatchData m) {
-		this.m = m;
+	public DuelRequest(Profile p, MatchData matchData) {
+		this.matchData = matchData;
 		this.sender = p;
 	}
 
 	public MatchData getMatchData() {
-		return m;
+		return matchData;
 	}
 
 	public Profile getSender() {

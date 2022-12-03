@@ -92,6 +92,7 @@ gg/mineral/practice/scoreboard/Board$ObjectiveMode.class
 gg/mineral/practice/queue/QueueSearchTask.class
 gg/mineral/practice/listeners/InteractListener.class
 gg/mineral/practice/kit/Kit.class
+gg/mineral/practice/commands/events/EventCommand.class
 gg/mineral/practice/gametype/Gametype.class
 gg/mineral/practice/util/items/ItemBuilder.class
 gg/mineral/practice/inventory/menus/CatagorizedLeaderboardMenu.class

@@ -274,12 +274,12 @@ public class Gametype implements SaveableData {
 		save();
 	}
 
-	public boolean equals(Gametype g) {
-		return g.getName().equalsIgnoreCase(getName());
+	public boolean equals(Gametype gametype) {
+		return gametype.getName().equalsIgnoreCase(getName());
 	}
 
 	public void updatePlayerLeaderboard(Profile p, int elo, int oldElo) {
-		leaderboardMap.put(p.getName(), elo, oldElo);
+		leaderboardMap.replace(p.getName(), elo, oldElo);
 	}
 
 	public List<String> getLeaderboardLore() {

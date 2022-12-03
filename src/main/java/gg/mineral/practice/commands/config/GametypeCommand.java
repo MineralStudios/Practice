@@ -504,8 +504,8 @@ public class GametypeCommand extends PlayerCommand {
 				Iterator<Gametype> gametypeIter = GametypeManager.getGametypes().iterator();
 
 				while (gametypeIter.hasNext()) {
-					Gametype g = gametypeIter.next();
-					sb.append(CC.GREEN + g.getName());
+					gametype = gametypeIter.next();
+					sb.append(CC.GREEN + gametype.getName());
 
 					if (gametypeIter.hasNext()) {
 						sb.append(CC.GRAY + ", ");

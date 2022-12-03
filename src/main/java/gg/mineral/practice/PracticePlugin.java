@@ -54,11 +54,10 @@ import net.minecraft.server.v1_8_R3.MinecraftServer;
 public class PracticePlugin extends JavaPlugin {
 
 	public static PracticePlugin INSTANCE;
-	FileConfiguration databaseDetails;
 
 	@Override
 	public void onEnable() {
-		databaseDetails = new FileConfiguration("database.yml", "plugins/Core");
+		FileConfiguration databaseDetails = new FileConfiguration("database.yml", "plugins/Core");
 
 		String host = databaseDetails.getString("host", "host");
 		String port = databaseDetails.getString("port", "3306");

@@ -27,9 +27,9 @@ public class EventMatch extends Match {
 
     Event event;
 
-    public EventMatch(Profile player1, Profile player2, MatchData m, Event t) {
-        super(player1, player2, m);
-        this.event = t;
+    public EventMatch(Profile player1, Profile player2, MatchData matchData, Event event) {
+        super(player1, player2, matchData);
+        this.event = event;
     }
 
     @Override
@@ -120,7 +120,7 @@ public class EventMatch extends Match {
             }
         }, 40);
 
-        for (Item item : m.getArena().getLocation1().getWorld().getEntitiesByClass(Item.class)) {
+        for (Item item : matchData.getArena().getLocation1().getWorld().getEntitiesByClass(Item.class)) {
             EntityHuman lastHolder = ((EntityItem) ((CraftItem) item).getHandle()).lastHolder;
 
             if (lastHolder == null) {

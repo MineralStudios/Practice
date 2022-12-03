@@ -56,10 +56,10 @@ public class AcceptCommand extends PlayerCommand {
 			}
 
 			it.remove();
-			MatchData m = duelRequest.getMatchData();
+			MatchData matchData = duelRequest.getMatchData();
 			Match match = player1.isInParty() && player.isInParty()
-					? new PartyMatch(player1.getParty(), player.getParty(), m)
-					: new Match(player1, player, m);
+					? new PartyMatch(player1.getParty(), player.getParty(), matchData)
+					: new Match(player1, player, matchData);
 			match.start();
 			return;
 		}

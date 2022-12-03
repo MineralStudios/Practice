@@ -26,8 +26,8 @@ public class PartyMatch extends Match {
 	public ProfileList team1RemainingPlayers;
 	public ProfileList team2RemainingPlayers;
 
-	public PartyMatch(Party party1, Party party2, MatchData m) {
-		super(m);
+	public PartyMatch(Party party1, Party party2, MatchData matchData) {
+		super(matchData);
 		this.player1 = party1.getPartyLeader();
 		this.player2 = party2.getPartyLeader();
 		this.team1RemainingPlayers = new ProfileList(party1.getPartyMembers());
@@ -36,8 +36,8 @@ public class PartyMatch extends Match {
 		participants.addAll(team2RemainingPlayers);
 	}
 
-	public PartyMatch(Party party, MatchData m) {
-		super(m);
+	public PartyMatch(Party party, MatchData matchData) {
+		super(matchData);
 		participants = new ProfileList(party.getPartyMembers());
 		int size = participants.size();
 		this.team1RemainingPlayers = new ProfileList(participants.subList(0, (size + 1) / 2));
@@ -54,8 +54,8 @@ public class PartyMatch extends Match {
 		}
 
 		MatchManager.registerMatch(this);
-		Location location1 = m.getArena().getLocation1().clone();
-		Location location2 = m.getArena().getLocation2().clone();
+		Location location1 = matchData.getArena().getLocation1().clone();
+		Location location2 = matchData.getArena().getLocation2().clone();
 		setupLocations(location1, location2);
 
 		org.bukkit.scoreboard.Scoreboard team1sb = getDisplayNameBoard(team1RemainingPlayers, team2RemainingPlayers);
@@ -172,7 +172,7 @@ public class PartyMatch extends Match {
 				p.stopSpectating();
 			}
 
-			for (Item item : m.getArena().getLocation1().getWorld().getEntitiesByClass(Item.class)) {
+			for (Item item : matchData.getArena().getLocation1().getWorld().getEntitiesByClass(Item.class)) {
 				EntityHuman lastHolder = ((EntityItem) ((CraftItem) item).getHandle()).lastHolder;
 
 				for (Profile participant : participants) {

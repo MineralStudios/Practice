@@ -25,39 +25,39 @@ public class MechanicsMenu extends PracticeMenu {
 
 	@Override
 	public boolean update() {
-		MatchData match = viewer.getMatchData();
+		MatchData matchData = viewer.getMatchData();
 		ItemStack kit = new ItemBuilder(Material.DIAMOND_CHESTPLATE)
-				.lore(CC.ACCENT + match.getKitName())
+				.lore(CC.ACCENT + matchData.getKitName())
 				.name("Select Kit").build();
 		ItemStack kb = new ItemBuilder(Material.STICK)
-				.lore(CC.ACCENT + match.getKnockback().getName())
+				.lore(CC.ACCENT + matchData.getKnockback().getName())
 				.name("Change Knockback").build();
 		ItemStack hitDelay = new ItemBuilder(Material.WATCH)
-				.lore(CC.ACCENT + match.getNoDamageTicks() + " Ticks")
+				.lore(CC.ACCENT + matchData.getNoDamageTicks() + " Ticks")
 				.name("Hit Delay").build();
 		ItemStack hunger = new ItemBuilder(Material.COOKED_BEEF)
-				.lore(CC.ACCENT + match.getHunger())
+				.lore(CC.ACCENT + matchData.getHunger())
 				.name("Toggle Hunger").build();
 		ItemStack deadlyWater = new ItemBuilder(Material.BLAZE_ROD)
-				.lore(CC.ACCENT + match.getDeadlyWater())
+				.lore(CC.ACCENT + matchData.getDeadlyWater())
 				.name("Deadly Water").build();
 		ItemStack build = new ItemBuilder(Material.BRICK)
-				.lore(CC.ACCENT + match.getBuild())
+				.lore(CC.ACCENT + matchData.getBuild())
 				.name("Toggle Build").build();
 		ItemStack damage = new ItemBuilder(Material.DIAMOND_AXE)
-				.lore(CC.ACCENT + match.getDamage())
+				.lore(CC.ACCENT + matchData.getDamage())
 				.name("Toggle Damage").build();
 		ItemStack griefing = new ItemBuilder(Material.TNT)
-				.lore(CC.ACCENT + match.getGriefing())
+				.lore(CC.ACCENT + matchData.getGriefing())
 				.name("Toggle Griefing").build();
 		ItemStack pearlcd = new ItemBuilder(Material.ENDER_PEARL)
-				.lore(CC.ACCENT + match.getPearlCooldown() + " Seconds")
+				.lore(CC.ACCENT + matchData.getPearlCooldown() + " Seconds")
 				.name("Pearl Cooldown").build();
 		ItemStack arena = new ItemBuilder(Material.WATER_LILY)
-				.lore(CC.ACCENT + match.getArena().getName())
+				.lore(CC.ACCENT + matchData.getArena().getName())
 				.name("Arena").build();
 		ItemStack regen = new ItemBuilder(Material.GOLDEN_APPLE)
-				.lore(CC.ACCENT + match.getRegeneration())
+				.lore(CC.ACCENT + matchData.getRegeneration())
 				.name("Regeneration").build();
 		ItemStack sendDuel = new ItemBuilder(Material.STICK)
 				.name("Submit").build();
@@ -77,22 +77,22 @@ public class MechanicsMenu extends PracticeMenu {
 		});
 		MechanicsMenu menu = this;
 		Runnable hungerTask = () -> {
-			match.setHunger(!match.getHunger());
+			matchData.setHunger(!matchData.getHunger());
 			viewer.openMenu(menu);
 		};
 		setSlot(13, hunger, hungerTask);
 		Runnable buildTask = () -> {
-			match.setBuild(!match.getBuild());
+			matchData.setBuild(!matchData.getBuild());
 			viewer.openMenu(menu);
 		};
 		setSlot(14, build, buildTask);
 		Runnable damageTask = () -> {
-			match.setDamage(!match.getDamage());
+			matchData.setDamage(!matchData.getDamage());
 			viewer.openMenu(menu);
 		};
 		setSlot(15, damage, damageTask);
 		Runnable griefingTask = () -> {
-			match.setGriefing(!match.getGriefing());
+			matchData.setGriefing(!matchData.getGriefing());
 			viewer.openMenu(menu);
 		};
 		setSlot(16, griefing, griefingTask);
@@ -105,12 +105,12 @@ public class MechanicsMenu extends PracticeMenu {
 			return true;
 		});
 		Runnable deadlyWaterTask = () -> {
-			match.setDeadlyWater(!match.getDeadlyWater());
+			matchData.setDeadlyWater(!matchData.getDeadlyWater());
 			viewer.openMenu(menu);
 		};
 		setSlot(21, deadlyWater, deadlyWaterTask);
 		Runnable regenTask = () -> {
-			match.setRegeneration(!match.getRegeneration());
+			matchData.setRegeneration(!matchData.getRegeneration());
 			viewer.openMenu(menu);
 		};
 		setSlot(22, regen, regenTask);
@@ -144,8 +144,8 @@ public class MechanicsMenu extends PracticeMenu {
 				@Override
 				public void run() {
 					viewer.bukkit().closeInventory();
-					Tournament t = new Tournament(viewer);
-					t.start();
+					Tournament tournament = new Tournament(viewer);
+					tournament.start();
 				}
 			};
 		}

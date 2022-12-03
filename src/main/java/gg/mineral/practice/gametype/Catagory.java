@@ -52,13 +52,13 @@ public class Catagory implements SaveableData {
 		save();
 	}
 
-	public void addGametype(Gametype g) {
-		gametypes.add(g);
+	public void addGametype(Gametype gametype) {
+		gametypes.add(gametype);
 		save();
 	}
 
-	public void removeGametype(Gametype g) {
-		gametypes.remove(g);
+	public void removeGametype(Gametype gametype) {
+		gametypes.remove(gametype);
 		save();
 	}
 

@@ -19,9 +19,9 @@ public class TournamentManager {
 	}
 
 	public static Tournament getTournamentByName(String s) {
-		for (Tournament t : list) {
-			if (t.getHost().equalsIgnoreCase(s)) {
-				return t;
+		for (Tournament tournament : list) {
+			if (tournament.getHost().equalsIgnoreCase(s)) {
+				return tournament;
 			}
 		}
 		return null;

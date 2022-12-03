@@ -553,9 +553,9 @@ public class Profile {
 		setPlayerStatus(PlayerStatus.SPECTATING);
 	}
 
-	public void spectateEvent(Event t) {
+	public void spectateEvent(Event event) {
 
-		if (t.isEnded()) {
+		if (event.isEnded()) {
 			return;
 		}
 
@@ -564,12 +564,12 @@ public class Profile {
 			return;
 		}
 
-		spectatingTournament = t;
-		t.getSpectators().add(this);
+		spectatingTournament = event;
+		event.getSpectators().add(this);
 
 		this.player.setGameMode(GameMode.SPECTATOR);
 
-		teleport(t.getEventArena().getWaitingLocation());
+		teleport(event.getEventArena().getWaitingLocation());
 		ChatMessages.SPECTATING_EVENT.send(bukkit());
 		ChatMessages.STOP_SPECTATING.send(bukkit());
 
