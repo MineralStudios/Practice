@@ -40,11 +40,7 @@ public class Queuetype implements SaveableData {
 
 	public synchronized Arena nextArena(Gametype g) {
 
-		if (arenas.isEmpty()) {
-			return null;
-		}
-
-		if (g.getArenas().isEmpty()) {
+		if (arenas.isEmpty() || g.getArenas().isEmpty()) {
 			return null;
 		}
 
