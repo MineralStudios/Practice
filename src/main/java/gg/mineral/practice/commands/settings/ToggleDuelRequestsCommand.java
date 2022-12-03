@@ -17,6 +17,5 @@ public class ToggleDuelRequestsCommand extends PlayerCommand {
 		player.setRequests(!player.getRequests());
 		ChatMessages.DUEL_REQUESTS_TOGGLED.clone().replace("%toggled%", player.getRequests() ? "enabled" : "disabled")
 				.send(pl);
-		;
 	}
 }

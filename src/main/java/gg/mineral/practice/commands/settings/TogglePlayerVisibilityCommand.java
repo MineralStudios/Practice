@@ -33,7 +33,7 @@ public class TogglePlayerVisibilityCommand extends PlayerCommand {
 			}
 		}
 
-		ChatMessages.DUEL_REQUESTS_TOGGLED.clone().replace("%toggled%",
+		ChatMessages.VISIBILITY_TOGGLED.clone().replace("%toggled%",
 				player.getPlayersVisible() ? "enabled" : "disabled").send(pl);
 	}
 }

@@ -121,7 +121,7 @@ public class Profile {
 	}
 
 	public void setPlayersVisible(boolean playersVisible) {
-		if (getPlayerStatus() != PlayerStatus.IN_LOBBY || getPlayerStatus() != PlayerStatus.IN_QUEUE) {
+		if (getPlayerStatus() != PlayerStatus.IN_LOBBY && getPlayerStatus() != PlayerStatus.IN_QUEUE) {
 			return;
 		}
 
