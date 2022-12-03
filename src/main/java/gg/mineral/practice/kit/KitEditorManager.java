@@ -4,7 +4,6 @@ import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.inventory.ItemStack;
-import org.bukkit.util.Vector;
 
 import gg.mineral.api.config.FileConfiguration;
 
@@ -15,7 +14,6 @@ public class KitEditorManager {
 	static int slot;
 	static Boolean enabled;
 	static Location location;
-	static Vector direction;
 
 	public static void setDisplayName(String displayName) {
 		KitEditorManager.displayName = displayName;
@@ -39,7 +37,6 @@ public class KitEditorManager {
 
 	public static void setLocation(Location loc) {
 		location = loc;
-		direction = loc.getDirection();
 		save();
 	}
 
@@ -85,10 +82,10 @@ public class KitEditorManager {
 		location = new Location(Bukkit.getWorld(config.getString("KitEditor.Location.World", null)),
 				config.getInt("KitEditor.Location.x", 0), config.getInt("KitEditor.Location.y", 70),
 				config.getInt("KitEditor.Location.z", 0));
-		config.getVector("KitEditor.Location.Direction", null);
+		location.setDirection(config.getVector("KitEditor.Location.Direction", null));
 	}
 
-	public void setDefaults() {
+	public static void setDefaults() {
 		slot = 0;
 		displayItem = new ItemStack(Material.BOOK);
 		displayName = "Kit Editor";

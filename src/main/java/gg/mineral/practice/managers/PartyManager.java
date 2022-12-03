@@ -51,18 +51,22 @@ public class PartyManager {
 
 	public static void setEnabled(boolean enabled) {
 		PartyManager.enabled = enabled;
+		save();
 	}
 
 	public static void setDisplayItem(ItemStack item) {
 		displayItem = item;
+		save();
 	}
 
 	public static void setDisplayName(String name) {
 		displayName = name;
+		save();
 	}
 
 	public static void setSlot(Integer slot) {
 		PartyManager.slot = slot;
+		save();
 	}
 
 	public static boolean getEnabled() {
@@ -81,7 +85,7 @@ public class PartyManager {
 		return slot;
 	}
 
-	public void save() {
+	public static void save() {
 		config.set("Parties.Slot", slot);
 		config.set("Parties.DisplayName", displayName);
 		config.set("Parties.DisplayItem", displayItem);
@@ -97,7 +101,7 @@ public class PartyManager {
 		enabled = config.getBoolean("Parties.Enable", true);
 	}
 
-	public void setDefaults() {
+	public static void setDefaults() {
 		slot = 4;
 		displayItem = new ItemStack(Material.NETHER_STAR);
 		displayName = "Parties";

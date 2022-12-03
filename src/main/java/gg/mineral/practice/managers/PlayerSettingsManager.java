@@ -14,18 +14,22 @@ public class PlayerSettingsManager {
 
 	public static void setEnabled(boolean enabled) {
 		PlayerSettingsManager.enabled = enabled;
+		save();
 	}
 
 	public static void setDisplayItem(ItemStack display) {
 		displayItem = display;
+		save();
 	}
 
 	public static void setDisplayName(String name) {
 		displayName = name;
+		save();
 	}
 
 	public static void setSlot(Integer slot) {
 		PlayerSettingsManager.slot = slot;
+		save();
 	}
 
 	public static Boolean getEnabled() {
@@ -44,7 +48,7 @@ public class PlayerSettingsManager {
 		return slot;
 	}
 
-	public void save() {
+	public static void save() {
 		config.set("Options.Enable", enabled);
 		config.set("Options.DisplayItem", displayItem);
 		config.set("Options.DisplayName", displayName);

@@ -31,6 +31,7 @@ import gg.mineral.practice.commands.stats.PotsCommand;
 import gg.mineral.practice.commands.stats.ViewInventoryCommand;
 import gg.mineral.practice.commands.tournament.JoinCommand;
 import gg.mineral.practice.commands.tournament.TournamentCommand;
+import gg.mineral.practice.kit.KitEditorManager;
 import gg.mineral.practice.listeners.BuildListener;
 import gg.mineral.practice.listeners.ComsumeListener;
 import gg.mineral.practice.listeners.DamageListener;
@@ -78,6 +79,9 @@ public class PracticePlugin extends JavaPlugin {
 		PartyManager.load();
 		ArenaManager.load();
 		QueuetypeManager.load();
+		KitEditorManager.load();
+		PartyManager.load();
+		PlayerSettingsManager.load();
 		CatagoryManager.load();
 		GametypeManager.load();
 
