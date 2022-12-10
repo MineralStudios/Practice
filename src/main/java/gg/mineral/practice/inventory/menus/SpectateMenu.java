@@ -24,8 +24,8 @@ public class SpectateMenu extends PracticeMenu {
         clear();
         for (Match m : MatchManager.getMatchs()) {
             QueueEntry queueEntry = m.getData().getQueueEntry();
-            ItemStack item = queueEntry == null ? new ItemStack(Material.WOOD_AXE)
-                    : m.getData().getQueueEntry().getGametype().getDisplayItem();
+            Material item = queueEntry == null ? Material.WOOD_AXE
+                    : m.getData().getQueueEntry().getGametype().getDisplayItem().getType();
             ItemStack skull = new ItemBuilder(item)
                     .name(CC.SECONDARY + m.getPlayer1().getName() + " vs " + m.getPlayer2().getName()).lore()
                     .build();
