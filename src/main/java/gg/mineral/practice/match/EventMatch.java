@@ -29,6 +29,7 @@ public class EventMatch extends Match {
 
     public EventMatch(Profile player1, Profile player2, MatchData matchData, Event event) {
         super(player1, player2, matchData);
+        nameTag.clearTagOnMatchStart(player1.bukkit().getPlayer(), player2.bukkit().getPlayer());
         this.event = event;
     }
 
@@ -89,6 +90,7 @@ public class EventMatch extends Match {
                 victim.removePotionEffects();
                 victim.teleportToLobby();
                 victim.setInventoryForLobby();
+                nameTag.giveTagAfterMatch(player1.bukkit().getPlayer(), player2.bukkit().getPlayer());
             }
         }, 1);
 

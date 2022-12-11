@@ -54,6 +54,7 @@ public class PartyMatch extends Match {
 		}
 
 		MatchManager.registerMatch(this);
+		nameTag.clearTagOnMatchStart(player1.bukkit().getPlayer(), player2.bukkit().getPlayer());
 		Location location1 = matchData.getArena().getLocation1().clone();
 		Location location2 = matchData.getArena().getLocation2().clone();
 		setupLocations(location1, location2);
@@ -148,6 +149,7 @@ public class PartyMatch extends Match {
 
 			MatchManager.remove(this);
 			victim.bukkit().sendMessage(CC.RED + "You lost");
+			nameTag.giveTagAfterMatch(player1.bukkit().getPlayer(), player2.bukkit().getPlayer());
 			new DefaultScoreboard(victim).setBoard();
 
 			Bukkit.getServer().getScheduler().runTaskLater(PracticePlugin.INSTANCE, new Runnable() {

@@ -4,6 +4,7 @@ import java.util.Arrays;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
+import de.jeezycore.utils.NameTag;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.Material;
@@ -48,6 +49,7 @@ import net.minecraft.server.v1_8_R3.PacketPlayInClientCommand;
 import net.minecraft.server.v1_8_R3.PacketPlayInClientCommand.EnumClientCommand;
 
 public class Match implements Spectatable {
+	NameTag nameTag = new NameTag();
 	ProfileList participants = new ProfileList();
 	Profile player1;
 	Profile player2;
@@ -232,6 +234,7 @@ public class Match implements Spectatable {
 			return;
 
 		MatchManager.registerMatch(this);
+		nameTag.clearTagOnMatchStart(player1.bukkit().getPlayer(), player2.bukkit().getPlayer());
 		Location location1 = matchData.getArena().getLocation1().clone();
 		Location location2 = matchData.getArena().getLocation2().clone();
 		setupLocations(location1, location2);
@@ -345,6 +348,7 @@ public class Match implements Spectatable {
 				attacker.removeFromMatch();
 				attacker.teleportToLobby();
 				attacker.setInventoryForLobby();
+				nameTag.giveTagAfterMatch(player1.bukkit().getPlayer(), player2.bukkit().getPlayer());
 
 				for (Profile p : getSpectators()) {
 					p.bukkit().sendMessage(CC.SEPARATOR);
