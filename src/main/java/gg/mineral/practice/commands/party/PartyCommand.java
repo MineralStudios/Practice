@@ -63,7 +63,7 @@ public class PartyCommand extends PlayerCommand {
 				return;
 			case "invite":
 
-				if (args.length < 3) {
+				if (args.length < 2) {
 					player.message(UsageMessages.PARTY_INVITE);
 					return;
 				}
@@ -190,7 +190,7 @@ public class PartyCommand extends PlayerCommand {
 				return;
 			case "accept":
 
-				if (args.length < 3) {
+				if (args.length < 2) {
 					player.message(UsageMessages.PARTY_ACCEPT);
 					return;
 				}
