@@ -119,7 +119,7 @@ public class InteractListener implements Listener {
 				new BukkitRunnable() {
 					@Override
 					public void run() {
-						if (player.getPlayer().getHealth() > 20) {
+						if (player.getPlayer().getHealth() >= 20) {
 							return;
 						}
 
