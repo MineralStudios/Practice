@@ -7,7 +7,7 @@ import org.bukkit.scheduler.BukkitRunnable;
 import gg.mineral.api.collection.GlueList;
 import gg.mineral.practice.PracticePlugin;
 import gg.mineral.practice.entity.Profile;
-import gg.mineral.practice.managers.PlayerManager;
+import gg.mineral.practice.managers.ProfileManager;
 import gg.mineral.practice.managers.TournamentManager;
 import gg.mineral.practice.match.Match;
 import gg.mineral.practice.match.TournamentMatch;
@@ -16,16 +16,18 @@ import gg.mineral.practice.util.collection.ProfileList;
 import gg.mineral.practice.util.messages.ChatMessage;
 import gg.mineral.practice.util.messages.impl.ChatMessages;
 import gg.mineral.practice.util.messages.impl.ErrorMessages;
+import lombok.Getter;
 import net.md_5.bungee.api.chat.ClickEvent;
 
 public class Tournament {
     GlueList<Match> matches = new GlueList<>();
     ProfileList players = new ProfileList();
-
     boolean started = false;
+    @Getter
     boolean ended = false;
     MatchData matchData;
     int round = 1;
+    @Getter
     String host;
 
     public Tournament(Profile p) {
@@ -46,14 +48,14 @@ public class Tournament {
         players.add(p);
 
         ChatMessage joinedMessage = ChatMessages.JOINED_TOURNAMENT.clone().replace("%player%", p.getName());
-        PlayerManager.broadcast(players, joinedMessage);
+        ProfileManager.broadcast(players, joinedMessage);
     }
 
     public void removePlayer(Profile p) {
         players.remove(p);
 
         ChatMessage leftMessage = ChatMessages.LEFT_TOURNAMENT.clone().replace("%player%", p.getName());
-        PlayerManager.broadcast(players, leftMessage);
+        ProfileManager.broadcast(players, leftMessage);
 
         if (players.size() == 0) {
             TournamentManager.remove(this);
@@ -70,7 +72,7 @@ public class Tournament {
 
             ChatMessage wonMessage = ChatMessages.WON_TOURNAMENT.clone().replace("%player%", winner.getName());
 
-            PlayerManager.broadcast(PlayerManager.getProfiles(),
+            ProfileManager.broadcast(ProfileManager.getProfiles(),
                     wonMessage);
 
             return;
@@ -87,7 +89,7 @@ public class Tournament {
                 .replace("%player%", host).setTextEvent(new ClickEvent(ClickEvent.Action.RUN_COMMAND, "/join " + host),
                         ChatMessages.CLICK_TO_JOIN);
 
-        PlayerManager.broadcast(PlayerManager.getProfiles(), messageToBroadcast);
+        ProfileManager.broadcast(ProfileManager.getProfiles(), messageToBroadcast);
 
         Tournament tournament = this;
         new BukkitRunnable() {
@@ -99,7 +101,7 @@ public class Tournament {
                     Profile winner = players.get(0);
                     winner.removeFromTournament();
 
-                    ErrorMessages.TOURNAMENT_NOT_ENOUGH_PLAYERS.send(winner.bukkit());
+                    ErrorMessages.TOURNAMENT_NOT_ENOUGH_PLAYERS.send(winner.getPlayer());
                     TournamentManager.remove(tournament);
                     ended = true;
                     return;
@@ -126,7 +128,7 @@ public class Tournament {
             Profile p1 = iter.next();
 
             if (!iter.hasNext()) {
-                ChatMessages.NO_OPPONENT.send(p1.bukkit());
+                ChatMessages.NO_OPPONENT.send(p1.getPlayer());
                 return;
             }
 
@@ -148,7 +150,7 @@ public class Tournament {
         if (matches.isEmpty()) {
             ChatMessage broadcastedMessage = ChatMessages.ROUND_OVER.clone().replace("%round%", "" + round);
 
-            PlayerManager.broadcast(players, broadcastedMessage);
+            ProfileManager.broadcast(players, broadcastedMessage);
 
             new BukkitRunnable() {
                 @Override
@@ -158,13 +160,5 @@ public class Tournament {
                 }
             }.runTaskLater(PracticePlugin.INSTANCE, 100);
         }
-    }
-
-    public String getHost() {
-        return host;
-    }
-
-    public boolean isEnded() {
-        return ended;
     }
 }

@@ -5,7 +5,7 @@ import gg.mineral.practice.entity.PlayerStatus;
 import gg.mineral.practice.entity.Profile;
 import gg.mineral.practice.events.Event;
 import gg.mineral.practice.managers.EventManager;
-import gg.mineral.practice.managers.PlayerManager;
+import gg.mineral.practice.managers.ProfileManager;
 import gg.mineral.practice.managers.TournamentManager;
 import gg.mineral.practice.tournaments.Tournament;
 import gg.mineral.practice.util.messages.impl.ErrorMessages;
@@ -19,7 +19,7 @@ public class JoinCommand extends PlayerCommand {
 
     @Override
     public void execute(org.bukkit.entity.Player player, String[] args) {
-        Profile p = PlayerManager.getProfile(player);
+        Profile p = ProfileManager.getOrCreateProfile(player);
 
         if (args.length < 1) {
             p.message(UsageMessages.JOIN);

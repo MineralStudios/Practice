@@ -34,10 +34,10 @@ public class TournamentMatch extends Match {
 
     @Override
     public void end(Profile attacker, Profile victim) {
-        int attackerHealth = (int) attacker.bukkit().getHealth();
+        int attackerHealth = (int) attacker.getPlayer().getHealth();
         attacker.heal();
         attacker.removePotionEffects();
-        attacker.bukkit().hidePlayer(victim.bukkit());
+        attacker.getPlayer().hidePlayer(victim.getPlayer());
 
         int attackerAmountOfPots = attacker.getNumber(Material.POTION, (short) 16421)
                 + attacker.getNumber(Material.MUSHROOM_SOUP);
@@ -63,25 +63,25 @@ public class TournamentMatch extends Match {
                         + "Hits: " + attacker.getHitCount() + "\n" + CC.GREEN + "Health: " + attackerHealth).create()));
         losemessage.setClickEvent(new ClickEvent(ClickEvent.Action.RUN_COMMAND, "/viewinventory " + victim.getName()));
         winmessage.setClickEvent(new ClickEvent(ClickEvent.Action.RUN_COMMAND, "/viewinventory " + attacker.getName()));
-        attacker.bukkit().sendMessage(CC.SEPARATOR);
-        attacker.bukkit().sendMessage(viewinv);
-        attacker.bukkit().spigot().sendMessage(winmessage, splitter, losemessage);
-        attacker.bukkit().sendMessage(CC.SEPARATOR);
-        victim.bukkit().sendMessage(CC.SEPARATOR);
-        victim.bukkit().sendMessage(viewinv);
-        victim.bukkit().spigot().sendMessage(winmessage, splitter, losemessage);
-        victim.bukkit().sendMessage(CC.SEPARATOR);
+        attacker.getPlayer().sendMessage(CC.SEPARATOR);
+        attacker.getPlayer().sendMessage(viewinv);
+        attacker.getPlayer().spigot().sendMessage(winmessage, splitter, losemessage);
+        attacker.getPlayer().sendMessage(CC.SEPARATOR);
+        victim.getPlayer().sendMessage(CC.SEPARATOR);
+        victim.getPlayer().sendMessage(viewinv);
+        victim.getPlayer().spigot().sendMessage(winmessage, splitter, losemessage);
+        victim.getPlayer().sendMessage(CC.SEPARATOR);
         attacker.setPearlCooldown(0);
         victim.setPearlCooldown(0);
-        new DefaultScoreboard(player1).setBoard();
-        new DefaultScoreboard(player2).setBoard();
+        new DefaultScoreboard(profile1).setBoard();
+        new DefaultScoreboard(profile2).setBoard();
         victim.removeFromMatch();
         MatchManager.remove(this);
 
         Bukkit.getServer().getScheduler().runTaskLater(PracticePlugin.INSTANCE, new Runnable() {
             public void run() {
-                if (victim.bukkit().isDead()) {
-                    victim.bukkit().getHandle().playerConnection
+                if (victim.getPlayer().isDead()) {
+                    victim.getPlayer().getHandle().playerConnection
                             .a(new PacketPlayInClientCommand(EnumClientCommand.PERFORM_RESPAWN));
                 }
 
@@ -110,16 +110,16 @@ public class TournamentMatch extends Match {
                     attacker.setInventoryForLobby();
                 }
                 for (Profile p : getSpectators()) {
-                    p.bukkit().sendMessage(CC.SEPARATOR);
-                    p.bukkit().sendMessage(viewinv);
-                    p.bukkit().spigot().sendMessage(winmessage, splitter, losemessage);
-                    p.bukkit().sendMessage(CC.SEPARATOR);
+                    p.getPlayer().sendMessage(CC.SEPARATOR);
+                    p.getPlayer().sendMessage(viewinv);
+                    p.getPlayer().spigot().sendMessage(winmessage, splitter, losemessage);
+                    p.getPlayer().sendMessage(CC.SEPARATOR);
                     p.stopSpectating();
                 }
             }
         }, 40);
 
-        for (Item item : matchData.getArena().getLocation1().getWorld().getEntitiesByClass(Item.class)) {
+        for (Item item : data.getArena().getLocation1().getWorld().getEntitiesByClass(Item.class)) {
             EntityHuman lastHolder = ((EntityItem) ((CraftItem) item).getHandle()).lastHolder;
 
             if (lastHolder == null) {

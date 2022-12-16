@@ -22,14 +22,14 @@ public class SpectateMenu extends PracticeMenu {
     @Override
     public boolean update() {
         clear();
-        for (Match m : MatchManager.getMatchs()) {
+        for (Match m : MatchManager.getMatches()) {
             QueueEntry queueEntry = m.getData().getQueueEntry();
             Material item = queueEntry == null ? Material.WOOD_AXE
                     : m.getData().getQueueEntry().getGametype().getDisplayItem().getType();
             ItemStack skull = new ItemBuilder(item)
-                    .name(CC.SECONDARY + m.getPlayer1().getName() + " vs " + m.getPlayer2().getName()).lore()
+                    .name(CC.SECONDARY + m.getProfile1().getName() + " vs " + m.getProfile2().getName()).lore()
                     .build();
-            add(skull, p -> p.bukkit().performCommand("spec " + m.getParticipants().get(0).getName()));
+            add(skull, p -> p.getPlayer().performCommand("spec " + m.getParticipants().get(0).getName()));
         }
 
         return true;

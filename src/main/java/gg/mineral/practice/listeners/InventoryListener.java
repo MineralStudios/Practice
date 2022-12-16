@@ -14,20 +14,20 @@ import org.bukkit.event.player.PlayerPickupItemEvent;
 import gg.mineral.practice.entity.PlayerStatus;
 import gg.mineral.practice.entity.Profile;
 import gg.mineral.practice.inventory.PracticeMenu;
-import gg.mineral.practice.managers.PlayerManager;
+import gg.mineral.practice.managers.ProfileManager;
 
 public class InventoryListener implements Listener {
 
 	@EventHandler
 	public void onInventoryClick(InventoryClickEvent e) {
-		Profile player = PlayerManager.getProfile((org.bukkit.entity.Player) e.getWhoClicked());
+		Profile player = ProfileManager.getOrCreateProfile((org.bukkit.entity.Player) e.getWhoClicked());
 		PracticeMenu menu = player.getOpenMenu();
 
-		boolean canClick = player.bukkit().isOp() && player.bukkit().getGameMode().equals(GameMode.CREATIVE);
+		boolean canClick = player.getPlayer().isOp() && player.getPlayer().getGameMode().equals(GameMode.CREATIVE);
 
 		e.setCancelled(e.getCurrentItem() == null ? false : e.getCurrentItem().getType() == Material.TNT);
 
-		if (player.getInventoryClickCancelled()) {
+		if (player.isInventoryClickCancelled()) {
 			e.setCancelled(!canClick);
 		}
 
@@ -50,14 +50,14 @@ public class InventoryListener implements Listener {
 
 	@EventHandler
 	public void onInventoryClose(InventoryCloseEvent e) {
-		Profile player = PlayerManager.getProfile((org.bukkit.entity.Player) e.getPlayer());
+		Profile player = ProfileManager.getOrCreateProfile((org.bukkit.entity.Player) e.getPlayer());
 		player.setOpenMenu(null);
 	}
 
 	@EventHandler
 	public void onPlayerDropItem(PlayerDropItemEvent e) {
-		Profile player = PlayerManager.getProfile(e.getPlayer());
-		boolean canDrop = player.bukkit().isOp() && player.bukkit().getGameMode().equals(GameMode.CREATIVE);
+		Profile player = ProfileManager.getOrCreateProfile(e.getPlayer());
+		boolean canDrop = player.getPlayer().isOp() && player.getPlayer().getGameMode().equals(GameMode.CREATIVE);
 
 		if (player.getPlayerStatus() == PlayerStatus.KIT_EDITOR) {
 			return;
@@ -72,7 +72,8 @@ public class InventoryListener implements Listener {
 
 	@EventHandler
 	public void onPlayerPickupItem(PlayerPickupItemEvent e) {
-		Profile player = PlayerManager.getProfileFromMatch(e.getPlayer());
-		e.setCancelled(player == null);
+		e.setCancelled(ProfileManager
+				.getProfile(p -> p.getUUID().equals(e.getPlayer().getUniqueId())
+						&& p.getPlayerStatus() == PlayerStatus.FIGHTING) == null);
 	}
 }

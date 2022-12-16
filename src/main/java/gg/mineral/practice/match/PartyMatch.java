@@ -1,5 +1,7 @@
 package gg.mineral.practice.match;
 
+import java.util.List;
+
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.Material;
@@ -28,8 +30,8 @@ public class PartyMatch extends Match {
 
 	public PartyMatch(Party party1, Party party2, MatchData matchData) {
 		super(matchData);
-		this.player1 = party1.getPartyLeader();
-		this.player2 = party2.getPartyLeader();
+		this.profile1 = party1.getPartyLeader();
+		this.profile2 = party2.getPartyLeader();
 		this.team1RemainingPlayers = new ProfileList(party1.getPartyMembers());
 		this.team2RemainingPlayers = new ProfileList(party2.getPartyMembers());
 		participants.addAll(team1RemainingPlayers);
@@ -42,8 +44,8 @@ public class PartyMatch extends Match {
 		int size = participants.size();
 		this.team1RemainingPlayers = new ProfileList(participants.subList(0, (size + 1) / 2));
 		this.team2RemainingPlayers = new ProfileList(participants.subList((size + 1) / 2, size));
-		this.player1 = team1RemainingPlayers.get(0);
-		this.player2 = team2RemainingPlayers.get(0);
+		this.profile1 = team1RemainingPlayers.get(0);
+		this.profile2 = team2RemainingPlayers.get(0);
 	}
 
 	@Override
@@ -54,8 +56,8 @@ public class PartyMatch extends Match {
 		}
 
 		MatchManager.registerMatch(this);
-		Location location1 = matchData.getArena().getLocation1().clone();
-		Location location2 = matchData.getArena().getLocation2().clone();
+		Location location1 = data.getArena().getLocation1().clone();
+		Location location2 = data.getArena().getLocation2().clone();
 		setupLocations(location1, location2);
 
 		org.bukkit.scoreboard.Scoreboard team1sb = getDisplayNameBoard(team1RemainingPlayers, team2RemainingPlayers);
@@ -80,16 +82,12 @@ public class PartyMatch extends Match {
 
 	public void prepareForMatch(Profile profile, org.bukkit.scoreboard.Scoreboard teamSb) {
 		prepareForMatch(profile);
-		profile.bukkit().setScoreboard(teamSb);
+		profile.getPlayer().setScoreboard(teamSb);
 	}
 
 	@Override
 	public void setScoreboard(Profile p) {
 		new PartyMatchScoreboard(p).setBoard();
-	}
-
-	@Override
-	public void setDisplayNames(Profile player) {
 	}
 
 	@Override
@@ -123,13 +121,13 @@ public class PartyMatch extends Match {
 
 			for (int i = 0; i < attackerParty.size(); i++) {
 				Profile a = attackerParty.get(i);
-				int attackerHealth = (int) a.bukkit().getHealth();
+				int attackerHealth = (int) a.getPlayer().getHealth();
 				a.heal();
 				a.removePotionEffects();
 				int attackerAmountOfPots = a.getNumber(Material.POTION, (short) 16421)
 						+ a.getNumber(Material.MUSHROOM_SOUP, new ItemStack(Material.MUSHROOM_SOUP).getDurability());
 				setInventoryStats(a, attackerHealth, attackerAmountOfPots);
-				a.bukkit().sendMessage(CC.GOLD + "You won");
+				a.getPlayer().sendMessage(CC.GOLD + "You won");
 				a.setPearlCooldown(0);
 				new DefaultScoreboard(a).setBoard();
 				a.removeFromMatch();
@@ -147,13 +145,13 @@ public class PartyMatch extends Match {
 			}
 
 			MatchManager.remove(this);
-			victim.bukkit().sendMessage(CC.RED + "You lost");
+			victim.getPlayer().sendMessage(CC.RED + "You lost");
 			new DefaultScoreboard(victim).setBoard();
 
 			Bukkit.getServer().getScheduler().runTaskLater(PracticePlugin.INSTANCE, new Runnable() {
 				public void run() {
-					if (victim.bukkit().isDead()) {
-						victim.bukkit().getHandle().playerConnection
+					if (victim.getPlayer().isDead()) {
+						victim.getPlayer().getHandle().playerConnection
 								.a(new PacketPlayInClientCommand(EnumClientCommand.PERFORM_RESPAWN));
 					}
 
@@ -172,7 +170,7 @@ public class PartyMatch extends Match {
 				p.stopSpectating();
 			}
 
-			for (Item item : matchData.getArena().getLocation1().getWorld().getEntitiesByClass(Item.class)) {
+			for (Item item : data.getArena().getLocation1().getWorld().getEntitiesByClass(Item.class)) {
 				EntityHuman lastHolder = ((EntityItem) ((CraftItem) item).getHandle()).lastHolder;
 
 				for (Profile participant : participants) {
@@ -191,8 +189,8 @@ public class PartyMatch extends Match {
 		Bukkit.getServer().getScheduler().runTaskLater(PracticePlugin.INSTANCE, new Runnable() {
 
 			public void run() {
-				if (victim.bukkit().isDead()) {
-					victim.bukkit().getHandle().playerConnection
+				if (victim.getPlayer().isDead()) {
+					victim.getPlayer().getHandle().playerConnection
 							.a(new PacketPlayInClientCommand(EnumClientCommand.PERFORM_RESPAWN));
 				}
 
@@ -204,12 +202,9 @@ public class PartyMatch extends Match {
 		}, 1);
 	}
 
-	public ProfileList getTeam(Profile p) {
-		if (team1RemainingPlayers.contains(p)) {
-			return team1RemainingPlayers;
-		}
-
-		return team2RemainingPlayers;
+	@Override
+	public List<Profile> getTeam(Profile p) {
+		return team1RemainingPlayers.contains(p) ? team1RemainingPlayers : team2RemainingPlayers;
 	}
 
 	public org.bukkit.scoreboard.Scoreboard getDisplayNameBoard(ProfileList playerTeam, ProfileList opponentTeam) {

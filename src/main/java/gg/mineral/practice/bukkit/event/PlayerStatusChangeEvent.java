@@ -5,17 +5,18 @@ import org.bukkit.event.HandlerList;
 
 import gg.mineral.practice.entity.PlayerStatus;
 import gg.mineral.practice.entity.Profile;
+import lombok.Getter;
 
 public class PlayerStatusChangeEvent extends Event {
-
     private static final HandlerList handlers = new HandlerList();
-    protected Profile p;
+    @Getter
+    protected Profile profile;
     PlayerStatus previousStatus;
     PlayerStatus newStatus;
     boolean cancelled = false;
 
     public PlayerStatusChangeEvent(final Profile p, PlayerStatus newStatus) {
-        this.p = p;
+        this.profile = p;
         this.previousStatus = p.getPlayerStatus();
         this.newStatus = newStatus;
     }
@@ -34,10 +35,6 @@ public class PlayerStatusChangeEvent extends Event {
 
     public void setCancelled(boolean b) {
         cancelled = b;
-    }
-
-    public final Profile getPlayer() {
-        return p;
     }
 
     @Override

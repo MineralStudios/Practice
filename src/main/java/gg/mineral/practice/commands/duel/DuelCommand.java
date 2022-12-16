@@ -6,7 +6,7 @@ import gg.mineral.practice.entity.Profile;
 import gg.mineral.practice.inventory.SubmitAction;
 import gg.mineral.practice.inventory.menus.OtherPartiesMenu;
 import gg.mineral.practice.inventory.menus.SelectModeMenu;
-import gg.mineral.practice.managers.PlayerManager;
+import gg.mineral.practice.managers.ProfileManager;
 import gg.mineral.practice.util.messages.impl.ErrorMessages;
 import gg.mineral.practice.util.messages.impl.UsageMessages;
 
@@ -18,7 +18,7 @@ public class DuelCommand extends PlayerCommand {
 
 	@Override
 	public void execute(org.bukkit.entity.Player pl, String[] args) {
-		Profile player = PlayerManager.getProfile(pl);
+		Profile player = ProfileManager.getOrCreateProfile(pl);
 
 		if (args.length == 0) {
 			if (!player.isInParty()) {
@@ -30,7 +30,7 @@ public class DuelCommand extends PlayerCommand {
 			return;
 		}
 
-		Profile playerarg = PlayerManager.getProfile(args[0]);
+		Profile playerarg = ProfileManager.getProfile(p -> p.getName().equalsIgnoreCase(args[0]));
 
 		if (playerarg == null) {
 			player.message(ErrorMessages.PLAYER_NOT_ONLINE);

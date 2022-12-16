@@ -22,7 +22,7 @@ public class SelectCategorizedExistingKitMenu extends SelectExistingKitMenu {
 	public boolean update() {
 		for (Gametype g : c.getGametypes()) {
 			ItemStack item = new ItemBuilder(g.getDisplayItem())
-					.name(g.getDisplayName()).build();
+					.name(g.getDisplayName()).lore().build();
 			Runnable selectGametypeTask = () -> {
 				if (viewer.getPlayerStatus() == PlayerStatus.KIT_CREATOR) {
 					viewer.giveKit(g.getKit());
@@ -32,7 +32,7 @@ public class SelectCategorizedExistingKitMenu extends SelectExistingKitMenu {
 				if (simple) {
 					viewer.getMatchData().setGametype(g);
 				} else {
-					viewer.getMatchData().setKit(g.getKit(), g.getName());
+					viewer.getMatchData().setKit(g.getKit());
 				}
 
 				viewer.openMenu(menu);

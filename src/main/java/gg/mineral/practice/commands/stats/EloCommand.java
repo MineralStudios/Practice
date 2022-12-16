@@ -3,7 +3,7 @@ package gg.mineral.practice.commands.stats;
 import gg.mineral.practice.commands.PlayerCommand;
 import gg.mineral.practice.entity.Profile;
 import gg.mineral.practice.inventory.menus.EloMenu;
-import gg.mineral.practice.managers.PlayerManager;
+import gg.mineral.practice.managers.ProfileManager;
 
 public class EloCommand extends PlayerCommand {
 
@@ -13,14 +13,14 @@ public class EloCommand extends PlayerCommand {
 
 	@Override
 	public void execute(org.bukkit.entity.Player pl, String[] args) {
-		Profile player = PlayerManager.getProfile(pl);
+		Profile player = ProfileManager.getOrCreateProfile(pl);
 
 		if (args.length == 0) {
 			player.openMenu(new EloMenu(player));
 			return;
 		}
 
-		Profile playerarg = PlayerManager.getProfile(args[0]);
+		Profile playerarg = ProfileManager.getProfile(p -> p.getName().equalsIgnoreCase(args[0]));
 
 		if (playerarg == null) {
 			player.openMenu(new EloMenu(args[0]));

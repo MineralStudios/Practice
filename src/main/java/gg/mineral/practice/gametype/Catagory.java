@@ -9,32 +9,25 @@ import gg.mineral.practice.managers.CatagoryManager;
 import gg.mineral.practice.managers.QueuetypeManager;
 import gg.mineral.practice.queue.Queuetype;
 import gg.mineral.practice.util.SaveableData;
+import lombok.Getter;
 
 public class Catagory implements SaveableData {
 
 	final FileConfiguration config = CatagoryManager.getConfig();
 
+	@Getter
 	ItemStack displayItem;
+	@Getter
 	String displayName;
+	@Getter
 	final String name;
+	@Getter
 	GlueList<Gametype> gametypes = new GlueList<>();
 	final String path;
 
 	public Catagory(String name) {
 		this.name = name;
 		this.path = "Catagory." + getName() + ".";
-	}
-
-	public ItemStack getDisplayItem() {
-		return displayItem;
-	}
-
-	public String getDisplayName() {
-		return displayName;
-	}
-
-	public String getName() {
-		return name;
 	}
 
 	public void setDisplayItem(ItemStack displayItem) {
@@ -74,10 +67,6 @@ public class Catagory implements SaveableData {
 
 	public boolean equals(Catagory c) {
 		return c.getName().equalsIgnoreCase(getName());
-	}
-
-	public GlueList<Gametype> getGametypes() {
-		return gametypes;
 	}
 
 	@Override

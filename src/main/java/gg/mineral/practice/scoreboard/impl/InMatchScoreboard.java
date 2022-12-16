@@ -14,9 +14,9 @@ public class InMatchScoreboard extends DefaultScoreboard {
 
 	@Override
 	public void updateBoard(Board board) {
-		board.updateLines(CC.BOARD_SEPARATOR, CC.ACCENT + "Opponent: " + CC.SECONDARY + p.getOpponent().getName(),
+		board.updateLines(CC.BOARD_SEPARATOR, CC.ACCENT + "Opponent: " + CC.SECONDARY + profile.getOpponent().getName(),
 				CC.ACCENT + "Your Ping: " + CC.SECONDARY + ((CraftPlayer) board.getPlayer()).getHandle().ping,
-				CC.ACCENT + "Their Ping: " + CC.SECONDARY + p.getOpponent().bukkit().getHandle().ping,
+				CC.ACCENT + "Their Ping: " + CC.SECONDARY + profile.getOpponent().getPlayer().getHandle().ping,
 				CC.BOARD_SEPARATOR);
 	}
 }

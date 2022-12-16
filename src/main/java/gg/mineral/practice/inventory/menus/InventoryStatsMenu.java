@@ -30,7 +30,7 @@ public class InventoryStatsMenu extends PracticeMenu {
     public boolean update() {
         ItemStack lever = new ItemBuilder(Material.LEVER)
                 .name("View Opponent Inventory").build();
-        setSlot(53, lever, p -> p.bukkit().performCommand("viewinventory " + opponent));
+        setSlot(53, lever, p -> p.getPlayer().performCommand("viewinventory " + opponent));
         return true;
     }
 }

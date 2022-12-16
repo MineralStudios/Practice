@@ -31,7 +31,7 @@ public class SelectExistingKitMenu extends PracticeMenu {
             if (g.isInCatagory())
                 continue;
             ItemStack item = new ItemBuilder(g.getDisplayItem())
-                    .name(g.getDisplayName()).build();
+                    .name(g.getDisplayName()).lore().build();
 
             Runnable runnable = new Runnable() {
                 @Override
@@ -40,7 +40,7 @@ public class SelectExistingKitMenu extends PracticeMenu {
                     if (simple) {
                         viewer.getMatchData().setGametype(g);
                     } else {
-                        viewer.getMatchData().setKit(g.getKit(), g.getName());
+                        viewer.getMatchData().setKit(g.getKit());
                     }
 
                     viewer.openMenu(menu);
@@ -50,7 +50,7 @@ public class SelectExistingKitMenu extends PracticeMenu {
             add(item, runnable);
         }
 
-        for (Catagory c : CatagoryManager.getCatagorys()) {
+        for (Catagory c : CatagoryManager.getCatagories()) {
             ItemStack item = new ItemBuilder(c.getDisplayItem())
                     .name(c.getDisplayName()).build();
             add(item, p -> {

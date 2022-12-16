@@ -12,11 +12,15 @@ import gg.mineral.practice.managers.ArenaManager;
 import gg.mineral.practice.util.SaveableData;
 import gg.mineral.practice.util.world.VoidWorldGenerator;
 import gg.mineral.practice.util.world.WorldUtil;
+import lombok.Getter;
 
 public class Arena implements SaveableData {
 	final FileConfiguration config = ArenaManager.getConfig();
+	@Getter
 	String name, path, displayName;
+	@Getter
 	Location location1, location2, waitingLocation;
+	@Getter
 	ItemStack displayItem;
 	int currentNameID = 0;
 	World world;
@@ -24,26 +28,6 @@ public class Arena implements SaveableData {
 	public Arena(String name) {
 		this.name = name;
 		this.path = "Arena." + getName() + ".";
-	}
-
-	public Location getLocation1() {
-		return location1;
-	}
-
-	public Location getLocation2() {
-		return location2;
-	}
-
-	public ItemStack getDisplayItem() {
-		return displayItem;
-	}
-
-	public String getDisplayName() {
-		return displayName;
-	}
-
-	public String getName() {
-		return name;
 	}
 
 	public void setLocation1(Location location1) {
@@ -73,10 +57,6 @@ public class Arena implements SaveableData {
 	public void setWaitingLocation(Location waitingLocation) {
 		this.waitingLocation = waitingLocation;
 		save();
-	}
-
-	public Location getWaitingLocation() {
-		return this.waitingLocation;
 	}
 
 	public synchronized World generate() {

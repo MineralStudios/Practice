@@ -10,8 +10,9 @@ import org.bukkit.event.player.PlayerMoveEvent;
 import org.bukkit.event.player.PlayerTeleportEvent;
 import org.spigotmc.event.entity.EntityDismountEvent;
 
+import gg.mineral.practice.entity.PlayerStatus;
 import gg.mineral.practice.entity.Profile;
-import gg.mineral.practice.managers.PlayerManager;
+import gg.mineral.practice.managers.ProfileManager;
 
 public class MovementListener implements Listener {
 
@@ -45,14 +46,15 @@ public class MovementListener implements Listener {
 
     @EventHandler
     public void onPlayerMove(PlayerMoveEvent e) {
-        Profile player = PlayerManager.getProfileFromMatch(e.getPlayer());
+        Profile player = ProfileManager.getProfile(
+                p -> p.getUUID().equals(e.getPlayer().getUniqueId()) && p.getPlayerStatus() == PlayerStatus.FIGHTING);
 
         if (player == null) {
             return;
         }
 
         if (player.getMatch().getData().getDeadlyWater()) {
-            Material type = player.bukkit().getLocation().getBlock().getType();
+            Material type = player.getPlayer().getLocation().getBlock().getType();
             if (type == Material.WATER || type == Material.STATIONARY_WATER) {
                 player.getMatch().end(player);
             }
@@ -61,12 +63,8 @@ public class MovementListener implements Listener {
 
     @EventHandler
     public void onPlayerDismount(EntityDismountEvent e) {
-        if (!(e.getEntity() instanceof org.bukkit.entity.Player)) {
-            return;
-        }
-
-        org.bukkit.entity.Player bukkitPlayer = (org.bukkit.entity.Player) e.getEntity();
-        Profile player = PlayerManager.getProfileFromMatch(bukkitPlayer);
+        Profile player = ProfileManager.getProfile(
+                p -> p.getUUID().equals(e.getEntity().getUniqueId()) && p.getPlayerStatus() == PlayerStatus.FIGHTING);
 
         if (player == null) {
             return;

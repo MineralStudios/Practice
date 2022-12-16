@@ -3,11 +3,17 @@ package gg.mineral.practice.party;
 import gg.mineral.practice.entity.Profile;
 import gg.mineral.practice.managers.PartyManager;
 import gg.mineral.practice.util.collection.ProfileList;
+import lombok.Getter;
+import lombok.Setter;
 
 public class Party {
 
+	@Getter
 	Profile partyLeader;
-	Boolean partyOpen = false;
+	@Setter
+	@Getter
+	boolean open = false;
+	@Getter
 	ProfileList partyMembers = new ProfileList();
 
 	public Party(Profile partyLeader) {
@@ -15,24 +21,8 @@ public class Party {
 		PartyManager.registerParty(this);
 	}
 
-	public ProfileList getPartyMembers() {
-		return partyMembers;
-	}
-
-	public Profile getPartyLeader() {
-		return partyLeader;
-	}
-
-	public void setOpen(boolean open) {
-		this.partyOpen = open;
-	}
-
 	public boolean equals(Party p) {
 		return p.getPartyLeader().equals(partyLeader);
-	}
-
-	public boolean getPartyOpen() {
-		return partyOpen;
 	}
 
 	public void add(Profile p) {

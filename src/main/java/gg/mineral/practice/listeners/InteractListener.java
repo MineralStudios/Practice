@@ -19,7 +19,7 @@ import gg.mineral.practice.entity.PlayerStatus;
 import gg.mineral.practice.entity.Profile;
 import gg.mineral.practice.inventory.menus.AddItemsMenu;
 import gg.mineral.practice.inventory.menus.SaveLoadKitsMenu;
-import gg.mineral.practice.managers.PlayerManager;
+import gg.mineral.practice.managers.ProfileManager;
 import gg.mineral.practice.util.messages.impl.ChatMessages;
 
 public class InteractListener implements Listener {
@@ -27,7 +27,7 @@ public class InteractListener implements Listener {
 	@EventHandler(priority = EventPriority.HIGHEST)
 	public void onPlayerInteract(PlayerInteractEvent e) {
 
-		Profile player = PlayerManager.getProfile(e.getPlayer());
+		Profile player = ProfileManager.getOrCreateProfile(e.getPlayer());
 
 		if (player.isInMatchCountdown()) {
 			e.setCancelled(true);
@@ -45,6 +45,12 @@ public class InteractListener implements Listener {
 		}
 
 		if (eAction != Action.RIGHT_CLICK_AIR && eAction != Action.RIGHT_CLICK_BLOCK) {
+			return;
+		}
+
+		Predicate<Profile> predicate = player.getInventory().getTask(player.getInventory().getHeldItemSlot());
+
+		if (predicate != null && predicate.test(player)) {
 			return;
 		}
 
@@ -99,7 +105,7 @@ public class InteractListener implements Listener {
 				if (player.getPearlCooldown().isActive()) {
 					e.setCancelled(true);
 					ChatMessages.PEARL.clone().replace("%time%", "" + player.getPearlCooldown().getTimeRemaining())
-							.send(player.bukkit());
+							.send(player.getPlayer());
 					return;
 				}
 
@@ -113,18 +119,18 @@ public class InteractListener implements Listener {
 				new BukkitRunnable() {
 					@Override
 					public void run() {
-						if (player.bukkit().getHealth() > 20) {
+						if (player.getPlayer().getHealth() > 20) {
 							return;
 						}
 
 						player.getInventory().setItemInHand(new ItemStack(Material.BOWL));
 
-						if (player.bukkit().getHealth() <= 14.0) {
-							player.bukkit().setHealth(player.bukkit().getHealth() + 6.0);
+						if (player.getPlayer().getHealth() <= 14.0) {
+							player.getPlayer().setHealth(player.getPlayer().getHealth() + 6.0);
 							return;
 						}
 
-						player.bukkit().setHealth(20);
+						player.getPlayer().setHealth(20);
 					}
 				}.runTaskLater(PracticePlugin.INSTANCE, 1);
 				return;
@@ -151,16 +157,6 @@ public class InteractListener implements Listener {
 				return;
 			}
 		}
-
-		Predicate<Profile> predicate = player.getInventory().getTask(player.getInventory().getHeldItemSlot());
-
-		if (predicate == null) {
-			return;
-		}
-
-		predicate.test(player);
-
-		return;
 	}
 
 	@EventHandler

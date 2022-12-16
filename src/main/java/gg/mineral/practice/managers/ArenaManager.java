@@ -2,23 +2,25 @@ package gg.mineral.practice.managers;
 
 import org.bukkit.configuration.ConfigurationSection;
 
+import gg.mineral.api.collection.GlueList;
+import gg.mineral.api.config.FileConfiguration;
 import gg.mineral.practice.arena.Arena;
 import gg.mineral.practice.gametype.Gametype;
 import gg.mineral.practice.queue.Queuetype;
-import gg.mineral.api.collection.GlueList;
-import gg.mineral.api.config.FileConfiguration;
+import lombok.Getter;
 
 public class ArenaManager {
+	@Getter
 	final static FileConfiguration config = new FileConfiguration("arenas.yml", "plugins/Practice");
-
-	final static GlueList<Arena> list = new GlueList<>();
+	@Getter
+	final static GlueList<Arena> arenas = new GlueList<>();
 
 	public static void registerArena(Arena arena) {
-		list.add(arena);
+		arenas.add(arena);
 	}
 
 	public static void remove(Arena arena) {
-		list.remove(arena);
+		arenas.remove(arena);
 
 		for (Gametype gametype : GametypeManager.getGametypes()) {
 			gametype.getArenas().remove(arena);
@@ -29,17 +31,9 @@ public class ArenaManager {
 		}
 	}
 
-	public static FileConfiguration getConfig() {
-		return config;
-	}
-
-	public static GlueList<Arena> getArenas() {
-		return list;
-	}
-
 	public static Arena getArenaByName(String string) {
-		for (int i = 0; i < list.size(); i++) {
-			Arena a = list.get(i);
+		for (int i = 0; i < arenas.size(); i++) {
+			Arena a = arenas.get(i);
 			if (a.getName().equalsIgnoreCase(string)) {
 				return a;
 			}

@@ -4,22 +4,18 @@ import gg.mineral.practice.tournaments.Tournament;
 import gg.mineral.api.collection.GlueList;
 
 public class TournamentManager {
-	static GlueList<Tournament> list = new GlueList<>();
+	static GlueList<Tournament> tournaments = new GlueList<>();
 
 	public static void registerTournament(Tournament tournament) {
-		list.add(tournament);
+		tournaments.add(tournament);
 	}
 
 	public static void remove(Tournament tournament) {
-		list.remove(tournament);
-	}
-
-	public GlueList<Tournament> getTournaments() {
-		return list;
+		tournaments.remove(tournament);
 	}
 
 	public static Tournament getTournamentByName(String s) {
-		for (Tournament tournament : list) {
+		for (Tournament tournament : tournaments) {
 			if (tournament.getHost().equalsIgnoreCase(s)) {
 				return tournament;
 			}

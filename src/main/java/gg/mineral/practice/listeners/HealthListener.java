@@ -6,18 +6,17 @@ import org.bukkit.event.entity.EntityRegainHealthEvent;
 import org.bukkit.event.entity.EntityRegainHealthEvent.RegainReason;
 import org.bukkit.event.entity.FoodLevelChangeEvent;
 
+import gg.mineral.practice.entity.PlayerStatus;
 import gg.mineral.practice.entity.Profile;
-import gg.mineral.practice.managers.PlayerManager;
+import gg.mineral.practice.managers.ProfileManager;
 
 public class HealthListener implements Listener {
 
 	@EventHandler
 	public void onEntityRegainHealth(EntityRegainHealthEvent e) {
-		if (!(e.getEntity() instanceof org.bukkit.entity.Player)) {
-			return;
-		}
-
-		Profile player = PlayerManager.getProfileFromMatch((org.bukkit.entity.Player) e.getEntity());
+		Profile player = ProfileManager
+				.getProfile(p -> p.getUUID().equals(e.getEntity().getUniqueId())
+						&& p.getPlayerStatus() == PlayerStatus.FIGHTING);
 
 		if (player == null) {
 			return;
@@ -32,7 +31,9 @@ public class HealthListener implements Listener {
 
 	@EventHandler
 	public void onFoodLevelChange(FoodLevelChangeEvent e) {
-		Profile player = PlayerManager.getProfileFromMatch((org.bukkit.entity.Player) e.getEntity());
+		Profile player = ProfileManager
+				.getProfile(p -> p.getUUID().equals(e.getEntity().getUniqueId())
+						&& p.getPlayerStatus() == PlayerStatus.FIGHTING);
 
 		if (player == null) {
 			e.setCancelled(true);

@@ -42,7 +42,7 @@ public class LeaderboardMenu extends PracticeMenu {
             add(item);
         }
 
-        for (Catagory c : CatagoryManager.getCatagorys()) {
+        for (Catagory c : CatagoryManager.getCatagories()) {
             ItemStack item = new ItemBuilder(c.getDisplayItem())
                     .name(c.getDisplayName()).build();
             ItemMeta meta = item.getItemMeta();

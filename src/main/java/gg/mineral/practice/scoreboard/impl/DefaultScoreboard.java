@@ -3,55 +3,52 @@ package gg.mineral.practice.scoreboard.impl;
 import org.bukkit.Bukkit;
 import org.bukkit.scheduler.BukkitScheduler;
 
-import gg.mineral.practice.util.messages.CC;
 import gg.mineral.practice.PracticePlugin;
+import gg.mineral.practice.entity.PlayerStatus;
 import gg.mineral.practice.entity.Profile;
-import gg.mineral.practice.managers.PlayerManager;
+import gg.mineral.practice.managers.ProfileManager;
 import gg.mineral.practice.scoreboard.Board;
+import gg.mineral.practice.util.messages.CC;
+import lombok.Getter;
+import lombok.Setter;
 
 public class DefaultScoreboard {
-	Profile p;
-	Board b;
+	Profile profile;
+	Board board;
 	DefaultScoreboard instance;
-
+	@Setter
+	@Getter
 	int updateFrequency = 20;
 
-	public void setUpdateFrequency(int updateFrequency) {
-		this.updateFrequency = updateFrequency;
-	}
-
-	public int getUpdateFrequency() {
-		return updateFrequency;
-	}
-
-	public DefaultScoreboard(Profile p) {
-		this.p = p;
+	public DefaultScoreboard(Profile profile) {
+		this.profile = profile;
 	}
 
 	int taskID;
 
 	public void setBoard() {
-		if (p.getBoard() != null)
-			p.getBoard().remove();
-		Board b;
+		if (profile.getScoreboard() != null)
+			profile.getScoreboard().remove();
+
+		Board board;
 
 		try {
-			b = new Board(p.bukkit());
+			board = new Board(profile.getPlayer());
 		} catch (Exception e) {
 			return;
 		}
 
-		b.updateTitle(CC.PRIMARY + CC.B + "Mineral");
-		this.b = b;
+		board.updateTitle(CC.PRIMARY + CC.B + "Mineral");
+		this.board = board;
 		instance = this;
-		p.setScoreboard(this);
+		profile.setScoreboard(this);
 		BukkitScheduler scheduler = Bukkit.getServer().getScheduler();
 		taskID = scheduler.scheduleSyncRepeatingTask(PracticePlugin.INSTANCE, new Runnable() {
 			@Override
 			public void run() {
-				if (p.getBoard() != null)
-					if (p.getBoard().equals(instance))
-						updateBoard(b);
+				if (profile.getScoreboard() != null)
+					if (profile.getScoreboard().equals(instance))
+						updateBoard(board);
 					else
 						remove();
 			}
@@ -60,12 +57,14 @@ public class DefaultScoreboard {
 
 	public void updateBoard(Board board) {
 		board.updateLines(CC.BOARD_SEPARATOR, CC.ACCENT + "Online: " + CC.SECONDARY + Bukkit.getOnlinePlayers().size(),
-				CC.ACCENT + "In Game: " + CC.SECONDARY + PlayerManager.getProfilesInMatch().size(), CC.BOARD_SEPARATOR);
+				CC.ACCENT + "In Game: " + CC.SECONDARY
+						+ ProfileManager.count(p -> p.getPlayerStatus() == PlayerStatus.FIGHTING),
+				CC.BOARD_SEPARATOR);
 	}
 
 	public void remove() {
 		Bukkit.getScheduler().cancelTask(taskID);
-		p.removeScoreboard();
+		profile.removeScoreboard();
 	}
 
 }

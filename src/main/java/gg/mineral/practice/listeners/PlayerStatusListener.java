@@ -15,8 +15,8 @@ public class PlayerStatusListener implements Listener {
 
     @EventHandler
     public void onPlayerStatusChange(PlayerStatusChangeEvent e) {
-        org.bukkit.entity.Player b = e.getPlayer().bukkit();
-        Profile p = e.getPlayer();
+        org.bukkit.entity.Player b = e.getProfile().getPlayer();
+        Profile p = e.getProfile();
 
         List<org.bukkit.entity.Player> list = b.getWorld().getPlayers();
         int i;
@@ -25,7 +25,7 @@ public class PlayerStatusListener implements Listener {
 
             if (e.newStatus() == PlayerStatus.IN_LOBBY) {
 
-                if (!p.getPlayersVisible()) {
+                if (!p.isPlayersVisible()) {
                     for (i = 0; i < list.size(); i++) {
                         b.hidePlayer(list.get(i), false);
                     }
@@ -51,10 +51,10 @@ public class PlayerStatusListener implements Listener {
                 List<Profile> list2 = p.getSpectatingMatch().getParticipants();
 
                 for (i = 0; i < list2.size(); i++) {
-                    p.bukkit().showPlayer(list2.get(i).bukkit());
+                    p.getPlayer().showPlayer(list2.get(i).getPlayer());
                 }
 
-                for (Match match : MatchManager.getMatchs()) {
+                for (Match match : MatchManager.getMatches()) {
                     match.updateVisiblity(p.getSpectatingMatch(), p);
                 }
 

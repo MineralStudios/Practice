@@ -10,8 +10,9 @@ import org.bukkit.event.entity.EntityDamageByEntityEvent;
 import org.bukkit.event.entity.EntityDamageEvent;
 import org.bukkit.event.entity.EntityDamageEvent.DamageCause;
 
+import gg.mineral.practice.entity.PlayerStatus;
 import gg.mineral.practice.entity.Profile;
-import gg.mineral.practice.managers.PlayerManager;
+import gg.mineral.practice.managers.ProfileManager;
 import gg.mineral.practice.util.messages.impl.ChatMessages;
 
 public class DamageListener implements Listener {
@@ -25,12 +26,14 @@ public class DamageListener implements Listener {
 
 		org.bukkit.entity.Player player = (org.bukkit.entity.Player) e.getEntity();
 
-		Profile victim = PlayerManager.getProfileFromMatch(player);
+		Profile victim = ProfileManager
+				.getProfile(
+						p -> p.getUUID().equals(player.getUniqueId()) && p.getPlayerStatus() == PlayerStatus.FIGHTING);
 
 		if (victim == null) {
 
 			if (e.getCause() == DamageCause.VOID) {
-				player.teleport(PlayerManager.getSpawnLocation());
+				player.teleport(ProfileManager.getSpawnLocation());
 			}
 
 			e.setCancelled(true);
@@ -80,18 +83,18 @@ public class DamageListener implements Listener {
 			return;
 		}
 
-		if (!(e.getDamager() instanceof org.bukkit.entity.Player)) {
-			return;
-		}
-
-		Profile attacker = PlayerManager.getProfileFromMatch((org.bukkit.entity.Player) e.getDamager());
+		Profile attacker = ProfileManager
+				.getProfile(p -> p.getUUID().equals(e.getDamager().getUniqueId())
+						&& p.getPlayerStatus() == PlayerStatus.FIGHTING);
 
 		if (attacker == null) {
 			e.setCancelled(true);
 			return;
 		}
 
-		Profile victim = PlayerManager.getProfileFromMatch(bukkitVictim);
+		Profile victim = ProfileManager
+				.getProfile(p -> p.getUUID().equals(bukkitVictim.getUniqueId())
+						&& p.getPlayerStatus() == PlayerStatus.FIGHTING);
 
 		if (victim == null) {
 			e.setCancelled(true);
@@ -113,24 +116,18 @@ public class DamageListener implements Listener {
 
 	@EventHandler
 	public void onEntityCombustByEntity(EntityCombustByEntityEvent e) {
-		if (!(e.getEntity() instanceof org.bukkit.entity.Player)) {
-			e.setCancelled(true);
-			return;
-		}
-
-		if (!(e.getCombuster() instanceof org.bukkit.entity.Player)) {
-			e.setCancelled(true);
-			return;
-		}
-
-		Profile attacker = PlayerManager.getProfileFromMatch((org.bukkit.entity.Player) e.getCombuster());
+		Profile attacker = ProfileManager
+				.getProfile(p -> p.getUUID().equals(e.getCombuster().getUniqueId())
+						&& p.getPlayerStatus() == PlayerStatus.FIGHTING);
 
 		if (attacker == null) {
 			e.setCancelled(true);
 			return;
 		}
 
-		Profile victim = PlayerManager.getProfileFromMatch((org.bukkit.entity.Player) e.getEntity());
+		Profile victim = ProfileManager
+				.getProfile(p -> p.getUUID().equals(e.getEntity().getUniqueId())
+						&& p.getPlayerStatus() == PlayerStatus.FIGHTING);
 
 		if (victim == null) {
 			e.setCancelled(true);

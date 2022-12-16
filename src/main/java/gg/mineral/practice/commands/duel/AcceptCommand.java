@@ -6,7 +6,7 @@ import java.util.Map.Entry;
 import gg.mineral.practice.commands.PlayerCommand;
 import gg.mineral.practice.entity.PlayerStatus;
 import gg.mineral.practice.entity.Profile;
-import gg.mineral.practice.managers.PlayerManager;
+import gg.mineral.practice.managers.ProfileManager;
 import gg.mineral.practice.match.Match;
 import gg.mineral.practice.match.PartyMatch;
 import gg.mineral.practice.match.data.MatchData;
@@ -22,7 +22,7 @@ public class AcceptCommand extends PlayerCommand {
 
 	@Override
 	public void execute(org.bukkit.entity.Player pl, String[] args) {
-		Profile player = PlayerManager.getProfile(pl);
+		Profile player = ProfileManager.getOrCreateProfile(pl);
 
 		if (player.getPlayerStatus() != PlayerStatus.IN_LOBBY) {
 			player.message(ErrorMessages.YOU_ARE_NOT_IN_LOBBY);
@@ -34,7 +34,7 @@ public class AcceptCommand extends PlayerCommand {
 			return;
 		}
 
-		Profile player1 = PlayerManager.getProfile(args[0]);
+		Profile player1 = ProfileManager.getProfile(p -> p.getName().equalsIgnoreCase(args[0]));
 
 		if (player1 == null) {
 			player.message(ErrorMessages.DUEL_SENDER_NOT_ONLINE);

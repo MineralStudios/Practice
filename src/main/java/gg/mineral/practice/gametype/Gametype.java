@@ -1,6 +1,8 @@
 package gg.mineral.practice.gametype;
 
 import java.util.List;
+import java.util.UUID;
+import java.util.concurrent.CompletableFuture;
 
 import org.bukkit.Material;
 import org.bukkit.configuration.ConfigurationSection;
@@ -20,27 +22,29 @@ import gg.mineral.practice.queue.Queuetype;
 import gg.mineral.practice.util.SaveableData;
 import gg.mineral.practice.util.collection.LeaderboardMap;
 import it.unimi.dsi.fastutil.objects.Object2IntOpenHashMap;
+import lombok.Getter;
 
 public class Gametype implements SaveableData {
 	final FileConfiguration config = GametypeManager.getConfig();
 
-	Boolean regeneration;
+	@Getter
+	Boolean regeneration, deadlyWater, griefing, build, looting, damage, hunger, boxing, event = false;
+	@Getter
+	boolean inCatagory;
+	@Getter
 	ItemStack displayItem;
+	@Getter
 	String displayName;
+	@Getter
 	final String name;
+	@Getter
 	int noDamageTicks;
-	Boolean deadlyWater;
-	Boolean griefing;
-	Boolean build;
-	Boolean looting;
-	Boolean damage;
-	Boolean hunger;
-	Boolean boxing;
-	Boolean inCatagory;
 	Integer pearlCooldown;
+	@Getter
 	List<Arena> arenas = new GlueList<>();
+	@Getter
 	Arena eventArena;
-	boolean event = false;
+	@Getter
 	Kit kit;
 	String path;
 	LeaderboardMap leaderboardMap;
@@ -55,12 +59,21 @@ public class Gametype implements SaveableData {
 	public Integer getElo(Profile profile) {
 		Integer elo = eloMap.get(profile);
 
-		if (elo == null) {
-			elo = EloManager.getEloEntry(getName(), profile.getUUID());
-			eloMap.put(profile, elo);
-		}
+		return elo == null ? EloManager.get(this, profile.getUUID()).whenComplete((value, ex) -> {
+			eloMap.put(profile, value);
+		}).join() : elo;
+	}
 
-		return elo;
+	public CompletableFuture<Object2IntOpenHashMap<UUID>> getEloMap(Profile... profiles) {
+		return CompletableFuture.supplyAsync(() -> {
+			Object2IntOpenHashMap<UUID> map = new Object2IntOpenHashMap<UUID>();
+
+			for (Profile profile : profiles) {
+				map.put(profile.getUUID(), getElo(profile));
+			}
+
+			return map;
+		});
 	}
 
 	public void saveElo(Profile profile) {
@@ -70,7 +83,7 @@ public class Gametype implements SaveableData {
 			return;
 		}
 
-		EloManager.updateElo(profile, getName(), elo);
+		EloManager.update(profile, getName(), elo);
 	}
 
 	public void setElo(Integer elo, Profile profile) {
@@ -80,71 +93,7 @@ public class Gametype implements SaveableData {
 			return;
 		}
 
-		EloManager.updateElo(profile, getName(), elo);
-	}
-
-	public boolean getRegeneration() {
-		return regeneration;
-	}
-
-	public ItemStack getDisplayItem() {
-		return displayItem;
-	}
-
-	public String getDisplayName() {
-		return displayName;
-	}
-
-	public String getName() {
-		return name;
-	}
-
-	public int getNoDamageTicks() {
-		return noDamageTicks;
-	}
-
-	public Boolean getDeadlyWater() {
-		return deadlyWater;
-	}
-
-	public Boolean getGriefing() {
-		return griefing;
-	}
-
-	public Boolean getBuild() {
-		return build;
-	}
-
-	public Boolean getLooting() {
-		return looting;
-	}
-
-	public Boolean getDamage() {
-		return damage;
-	}
-
-	public Boolean getHunger() {
-		return hunger;
-	}
-
-	public Boolean getBoxing() {
-		return boxing;
-	}
-
-	public Integer getPearlCooldown() {
-		return pearlCooldown;
-	}
-
-	public boolean isInCatagory() {
-		return inCatagory;
-	}
-
-	public List<Arena> getArenas() {
-		return arenas;
-	}
-
-	public Kit getKit() {
-		return kit;
+		EloManager.update(profile, getName(), elo);
 	}
 
 	public void setRegeneration(Boolean regeneration) {
@@ -244,14 +193,6 @@ public class Gametype implements SaveableData {
 	public void setEventArena(Arena arena) {
 		this.eventArena = arena;
 		save();
-	}
-
-	public Arena getEventArena() {
-		return eventArena;
-	}
-
-	public boolean getEvent() {
-		return event;
 	}
 
 	public void setEvent(boolean b) {
@@ -416,13 +357,8 @@ public class Gametype implements SaveableData {
 			}
 		}
 
-		this.kit = new Kit(items.toArray(new ItemStack[0]), armour.toArray(new ItemStack[0]));
-
-		try {
-			leaderboardMap = EloManager.getLeaderboardMap(this.getName());
-		} catch (Exception e) {
-			e.printStackTrace();
-		}
+		this.kit = new Kit(this.getName(), items.toArray(new ItemStack[0]), armour.toArray(new ItemStack[0]));
+		this.leaderboardMap = EloManager.getLeaderboardMap(this);
 	}
 
 	@Override
@@ -443,7 +379,7 @@ public class Gametype implements SaveableData {
 		this.eventArena = null;
 		this.pearlCooldown = 10;
 
-		this.kit = new Kit(new ItemStack[0], new ItemStack[0]);
-		leaderboardMap = new LeaderboardMap();
+		this.kit = new Kit(this.getName(), new ItemStack[0], new ItemStack[0]);
+		this.leaderboardMap = new LeaderboardMap();
 	}
 }
