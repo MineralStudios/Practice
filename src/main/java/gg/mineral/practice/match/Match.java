@@ -50,7 +50,7 @@ import net.minecraft.server.v1_8_R3.PacketPlayInClientCommand;
 import net.minecraft.server.v1_8_R3.PacketPlayInClientCommand.EnumClientCommand;
 
 public class Match implements Spectatable {
-  NameTag nameTag = new NameTag();
+	NameTag nameTag = new NameTag();
 	@Getter
 	ProfileList participants = new ProfileList();
 	@Getter
@@ -234,7 +234,7 @@ public class Match implements Spectatable {
 			return;
 
 		MatchManager.registerMatch(this);
-    nameTag.clearTagOnMatchStart(player1.bukkit().getPlayer(), player2.bukkit().getPlayer());
+		nameTag.clearTagOnMatchStart(profile1.getPlayer(), profile2.getPlayer());
 		Location location1 = data.getArena().getLocation1().clone();
 		Location location2 = data.getArena().getLocation2().clone();
 
@@ -357,7 +357,7 @@ public class Match implements Spectatable {
 				attacker.removeFromMatch();
 				attacker.teleportToLobby();
 				attacker.setInventoryForLobby();
-				nameTag.giveTagAfterMatch(player1.bukkit().getPlayer(), player2.bukkit().getPlayer());
+				nameTag.giveTagAfterMatch(profile1.getPlayer(), profile2.getPlayer());
 
 				for (Profile p : getSpectators()) {
 					p.getPlayer().sendMessage(CC.SEPARATOR);

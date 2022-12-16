@@ -27,9 +27,9 @@ public class TournamentMatch extends Match {
 
     Tournament tournament;
 
-    public TournamentMatch(Profile player1, Profile player2, MatchData matchData, Tournament tournament) {
-        super(player1, player2, matchData);
-        nameTag.clearTagOnMatchStart(player1.bukkit().getPlayer(), player2.bukkit().getPlayer());
+    public TournamentMatch(Profile profile1, Profile profile2, MatchData matchData, Tournament tournament) {
+        super(profile1, profile2, matchData);
+        nameTag.clearTagOnMatchStart(profile1.getPlayer(), profile2.getPlayer());
         this.tournament = tournament;
     }
 
@@ -90,7 +90,7 @@ public class TournamentMatch extends Match {
                 victim.removePotionEffects();
                 victim.teleportToLobby();
                 victim.setInventoryForLobby();
-                nameTag.giveTagAfterMatch(player1.bukkit().getPlayer(), player2.bukkit().getPlayer());
+                nameTag.giveTagAfterMatch(profile1.getPlayer(), profile2.getPlayer());
             }
         }, 1);
 
