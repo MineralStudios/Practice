@@ -9,39 +9,35 @@ import gg.mineral.api.collection.GlueList;
 import gg.mineral.api.config.FileConfiguration;
 import gg.mineral.practice.entity.Profile;
 import gg.mineral.practice.gametype.Gametype;
-import gg.mineral.practice.managers.PlayerManager;
+import gg.mineral.practice.managers.ProfileManager;
 import gg.mineral.practice.util.messages.impl.ChatMessages;
 import it.unimi.dsi.fastutil.objects.Object2ObjectOpenHashMap;
+import lombok.Getter;
 
 public class QueueEntry {
-	Queuetype q;
-	Gametype g;
+	@Getter
+	Queuetype queuetype;
+	@Getter
+	Gametype gametype;
 
 	Object2ObjectOpenHashMap<UUID, ItemStack[]> customKits = new Object2ObjectOpenHashMap<>();
 
-	public QueueEntry(Queuetype q, Gametype g) {
-		this.q = q;
-		this.g = g;
+	public QueueEntry(Queuetype queuetype, Gametype gametype) {
+		this.queuetype = queuetype;
+		this.gametype = gametype;
 	}
 
-	public boolean equals(QueueEntry qd) {
-		return this.q.equals(qd.getQueuetype()) && this.g.equals(qd.getGametype());
-	}
-
-	public Queuetype getQueuetype() {
-		return q;
-	}
-
-	public Gametype getGametype() {
-		return g;
+	public boolean equals(QueueEntry queueEntry) {
+		return this.queuetype.equals(queueEntry.getQueuetype()) && this.gametype.equals(queueEntry.getGametype());
 	}
 
 	public ItemStack[] getCustomKit(Profile profile) {
 		ItemStack[] kit = customKits.get(profile.getUUID());
 
 		if (kit == null) {
-			ConfigurationSection cs = PlayerManager.getConfig().getConfigurationSection(profile.getName() + ".KitData."
-					+ getGametype().getName() + "." + getQueuetype().getName());
+			ConfigurationSection cs = ProfileManager.getPlayerConfig()
+					.getConfigurationSection(profile.getName() + ".KitData."
+							+ getGametype().getName() + "." + getQueuetype().getName());
 
 			if (cs == null) {
 				return null;
@@ -76,7 +72,7 @@ public class QueueEntry {
 		ItemStack[] cont = profile.getInventory().getContents();
 
 		customKits.put(profile.getUUID(), cont);
-		FileConfiguration config = PlayerManager.getConfig();
+		FileConfiguration config = ProfileManager.getPlayerConfig();
 		String path = profile.getName() + ".KitData." + getGametype().getName() + "."
 				+ getQueuetype().getName() + ".";
 
@@ -93,7 +89,7 @@ public class QueueEntry {
 
 		config.save();
 
-		profile.bukkit().closeInventory();
-		ChatMessages.KIT_SAVED.send(profile.bukkit());
+		profile.getPlayer().closeInventory();
+		ChatMessages.KIT_SAVED.send(profile.getPlayer());
 	}
 }

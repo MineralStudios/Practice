@@ -8,7 +8,7 @@ import org.bukkit.event.entity.PlayerDeathEvent;
 import gg.mineral.practice.PracticePlugin;
 import gg.mineral.practice.entity.PlayerStatus;
 import gg.mineral.practice.entity.Profile;
-import gg.mineral.practice.managers.PlayerManager;
+import gg.mineral.practice.managers.ProfileManager;
 import net.minecraft.server.v1_8_R3.PacketPlayInClientCommand;
 import net.minecraft.server.v1_8_R3.PacketPlayInClientCommand.EnumClientCommand;
 
@@ -18,12 +18,12 @@ public class DeathListener implements Listener {
     public void onPlayerDeath(PlayerDeathEvent e) {
         e.setDropItems(false);
         e.setDeathMessage(null);
-        Profile victim = PlayerManager.getProfile(e.getEntity());
+        Profile victim = ProfileManager.getOrCreateProfile(e.getEntity());
 
         if (victim.getPlayerStatus() != PlayerStatus.FIGHTING) {
             Bukkit.getServer().getScheduler().runTaskLater(PracticePlugin.INSTANCE, new Runnable() {
                 public void run() {
-                    victim.bukkit().getHandle().playerConnection
+                    victim.getPlayer().getHandle().playerConnection
                             .a(new PacketPlayInClientCommand(EnumClientCommand.PERFORM_RESPAWN));
                     victim.heal();
                     victim.removePotionEffects();

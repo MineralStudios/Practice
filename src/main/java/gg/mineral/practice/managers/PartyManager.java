@@ -1,33 +1,38 @@
 package gg.mineral.practice.managers;
 
-import java.util.Collection;
 import java.util.UUID;
 
 import org.bukkit.Material;
 import org.bukkit.inventory.ItemStack;
 
-import gg.mineral.practice.party.Party;
 import gg.mineral.api.collection.GlueList;
 import gg.mineral.api.config.FileConfiguration;
+import gg.mineral.practice.party.Party;
+import lombok.Getter;
 
 public class PartyManager {
-	static GlueList<Party> list = new GlueList<>();
+	@Getter
+	static GlueList<Party> parties = new GlueList<>();
+	@Getter
 	static int slot;
+	@Getter
 	static ItemStack displayItem;
+	@Getter
 	static String displayName;
+	@Getter
 	static Boolean enabled;
 	static FileConfiguration config = new FileConfiguration("parties.yml", "plugins/Practice");
 
 	public static void registerParty(Party party) {
-		list.add(party);
+		parties.add(party);
 	}
 
 	public static void remove(Party party) {
-		list.remove(party);
+		parties.remove(party);
 	}
 
 	public boolean contains(Party party) {
-		for (Party p : list) {
+		for (Party p : parties) {
 			if (p.equals(party)) {
 				return true;
 			}
@@ -36,17 +41,13 @@ public class PartyManager {
 	}
 
 	public Party getParty(UUID u) {
-		for (Party p : list) {
+		for (Party p : parties) {
 			if (p.getPartyLeader().getUUID().equals(u)) {
 				return p;
 			}
 		}
 
 		return null;
-	}
-
-	public static Collection<Party> getPartys() {
-		return list;
 	}
 
 	public static void setEnabled(boolean enabled) {
@@ -67,22 +68,6 @@ public class PartyManager {
 	public static void setSlot(Integer slot) {
 		PartyManager.slot = slot;
 		save();
-	}
-
-	public static boolean getEnabled() {
-		return enabled;
-	}
-
-	public static ItemStack getDisplayItem() {
-		return displayItem;
-	}
-
-	public static String getDisplayName() {
-		return displayName;
-	}
-
-	public static Integer getSlot() {
-		return slot;
 	}
 
 	public static void save() {

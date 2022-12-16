@@ -10,7 +10,7 @@ import org.bukkit.event.player.PlayerQuitEvent;
 
 import gg.mineral.practice.entity.Profile;
 import gg.mineral.practice.managers.PartyManager;
-import gg.mineral.practice.managers.PlayerManager;
+import gg.mineral.practice.managers.ProfileManager;
 import gg.mineral.practice.party.Party;
 import gg.mineral.practice.scoreboard.impl.DefaultScoreboard;
 import gg.mineral.practice.util.messages.ChatMessage;
@@ -21,8 +21,8 @@ public class EntryListener implements Listener {
 	@EventHandler
 	public void onPlayerJoin(PlayerJoinEvent event) {
 		event.setJoinMessage(null);
-		Profile player = PlayerManager.getProfile(event.getPlayer());
-		player.bukkit().setGameMode(GameMode.SURVIVAL);
+		Profile player = ProfileManager.getOrCreateProfile(event.getPlayer());
+		player.getPlayer().setGameMode(GameMode.SURVIVAL);
 		player.heal();
 		player.setInventoryForLobby();
 		player.removePotionEffects();
@@ -34,7 +34,7 @@ public class EntryListener implements Listener {
 	public void onPlayerQuit(PlayerQuitEvent e) {
 		e.setQuitMessage(null);
 
-		Profile victim = PlayerManager.getProfile(e.getPlayer());
+		Profile victim = ProfileManager.getOrCreateProfile(e.getPlayer());
 
 		victim.removeScoreboard();
 
@@ -79,16 +79,16 @@ public class EntryListener implements Listener {
 			default:
 		}
 
-		PlayerManager.remove(victim);
+		ProfileManager.remove(victim);
 	}
 
 	@EventHandler
 	public void onPlayerInitialSpawn(PlayerInitialSpawnEvent e) {
-		e.setSpawnLocation(PlayerManager.getSpawnLocation());
+		e.setSpawnLocation(ProfileManager.getSpawnLocation());
 	}
 
 	@EventHandler
 	public void onPlayerLogin(PlayerLoginEvent e) {
-		PlayerManager.getProfile(e.getPlayer());
+		ProfileManager.getOrCreateProfile(e.getPlayer());
 	}
 }

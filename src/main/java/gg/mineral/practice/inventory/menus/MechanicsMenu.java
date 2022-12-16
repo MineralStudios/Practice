@@ -27,7 +27,7 @@ public class MechanicsMenu extends PracticeMenu {
 	public boolean update() {
 		MatchData matchData = viewer.getMatchData();
 		ItemStack kit = new ItemBuilder(Material.DIAMOND_CHESTPLATE)
-				.lore(CC.ACCENT + matchData.getKitName())
+				.lore(CC.ACCENT + matchData.getKit().getName())
 				.name("Select Kit").build();
 		ItemStack kb = new ItemBuilder(Material.STICK)
 				.lore(CC.ACCENT + matchData.getKnockback().getName())
@@ -122,7 +122,7 @@ public class MechanicsMenu extends PracticeMenu {
 			submitTask = new Runnable() {
 				@Override
 				public void run() {
-					viewer.bukkit().closeInventory();
+					viewer.getPlayer().closeInventory();
 					Party p = viewer.getParty();
 
 					if (!viewer.getParty().getPartyLeader().equals(viewer)) {
@@ -143,7 +143,7 @@ public class MechanicsMenu extends PracticeMenu {
 			submitTask = new Runnable() {
 				@Override
 				public void run() {
-					viewer.bukkit().closeInventory();
+					viewer.getPlayer().closeInventory();
 					Tournament tournament = new Tournament(viewer);
 					tournament.start();
 				}

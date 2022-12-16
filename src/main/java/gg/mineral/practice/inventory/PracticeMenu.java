@@ -12,10 +12,13 @@ import org.bukkit.inventory.ItemStack;
 import gg.mineral.practice.entity.Profile;
 import gg.mineral.practice.util.math.MathUtil;
 import it.unimi.dsi.fastutil.ints.Int2ObjectOpenHashMap;
+import lombok.Getter;
 
 public class PracticeMenu {
+	@Getter
 	String title;
-	boolean clickCancelled = false;
+	@Getter
+	Boolean clickCancelled = false;
 	protected Profile viewer;
 	Int2ObjectOpenHashMap<Predicate<Profile>> dataMap = new Int2ObjectOpenHashMap<>();
 	int size = 9;
@@ -29,7 +32,7 @@ public class PracticeMenu {
 		this.title = menu.getTitle();
 		this.clickCancelled = menu.getClickCancelled();
 		this.dataMap = menu.dataMap;
-		this.items = menu.getItems();
+		this.items = menu.items;
 		this.size = menu.size;
 	}
 
@@ -82,10 +85,6 @@ public class PracticeMenu {
 		return false;
 	}
 
-	public Int2ObjectOpenHashMap<ItemStack> getItems() {
-		return items;
-	}
-
 	public ItemStack getItemBySlot(int slot) {
 		return items.get(slot);
 	}
@@ -117,14 +116,6 @@ public class PracticeMenu {
 		this.clickCancelled = clickCancelled;
 	}
 
-	public boolean getClickCancelled() {
-		return clickCancelled;
-	}
-
-	public String getTitle() {
-		return title;
-	}
-
 	protected Inventory toInventory(Player player) {
 		Inventory inventory = Bukkit.createInventory(player, Math.max(MathUtil.roundUp(size, 9), 9), title.toString());
 
@@ -146,10 +137,10 @@ public class PracticeMenu {
 		}
 
 		if (needsUpdate || inv == null) {
-			inv = toInventory(player.bukkit());
+			inv = toInventory(player.getPlayer());
 		}
 
-		player.bukkit().openInventory(inv);
+		player.getPlayer().openInventory(inv);
 		player.setOpenMenu(this);
 	}
 

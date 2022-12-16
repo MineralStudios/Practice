@@ -2,6 +2,9 @@ package gg.mineral.practice.scoreboard.impl;
 
 import gg.mineral.practice.util.collection.ProfileList;
 import gg.mineral.practice.util.messages.CC;
+
+import java.util.List;
+
 import gg.mineral.practice.entity.Profile;
 import gg.mineral.practice.match.Match;
 import gg.mineral.practice.scoreboard.Board;
@@ -14,13 +17,13 @@ public class PartyMatchScoreboard extends DefaultScoreboard {
 
     @Override
     public void updateBoard(Board board) {
-        Match match = p.getMatch();
+        Match match = profile.getMatch();
 
         if (match == null) {
             return;
         }
 
-        ProfileList team = match.getTeam(p);
+        List<Profile> team = match.getTeam(profile);
         ProfileList opponents = new ProfileList(match.getParticipants());
         opponents.removeAll(team);
 

@@ -4,10 +4,12 @@ import org.bukkit.Bukkit;
 
 import gg.mineral.practice.PracticePlugin;
 import gg.mineral.practice.entity.Profile;
+import lombok.Getter;
 
 public class PearlCooldown {
 	final Profile profile;
-	Integer time = 0;
+	@Getter
+	Integer timeRemaining = 0;
 
 	public PearlCooldown(Profile profile) {
 		this.profile = profile;
@@ -17,29 +19,25 @@ public class PearlCooldown {
 		Bukkit.getServer().getScheduler().scheduleSyncRepeatingTask(PracticePlugin.INSTANCE, new Runnable() {
 			@Override
 			public void run() {
-				if (time > 0) {
-					time--;
-					profile.bukkit().setLevel(time);
+				if (timeRemaining > 0) {
+					timeRemaining--;
+					profile.getPlayer().setLevel(timeRemaining);
 
-					if (time <= 0) {
-						profile.bukkit().setLevel(0);
+					if (timeRemaining <= 0) {
+						profile.getPlayer().setLevel(0);
 					}
 				}
 			}
 		}, 0L, 20L);
 	}
 
-	public int getTimeRemaining() {
-		return time;
-	}
-
 	public boolean isActive() {
-		return time > 0;
+		return timeRemaining > 0;
 	}
 
 	public void setTimeRemaining(int time) {
-		this.time = time;
-		profile.bukkit().setLevel(time);
+		this.timeRemaining = time;
+		profile.getPlayer().setLevel(time);
 	}
 
 }

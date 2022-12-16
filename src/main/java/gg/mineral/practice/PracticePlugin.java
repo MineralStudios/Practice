@@ -31,7 +31,6 @@ import gg.mineral.practice.commands.stats.PotsCommand;
 import gg.mineral.practice.commands.stats.ViewInventoryCommand;
 import gg.mineral.practice.commands.tournament.JoinCommand;
 import gg.mineral.practice.commands.tournament.TournamentCommand;
-import gg.mineral.practice.kit.KitEditorManager;
 import gg.mineral.practice.listeners.BuildListener;
 import gg.mineral.practice.listeners.ComsumeListener;
 import gg.mineral.practice.listeners.DamageListener;
@@ -45,8 +44,9 @@ import gg.mineral.practice.listeners.PlayerStatusListener;
 import gg.mineral.practice.managers.ArenaManager;
 import gg.mineral.practice.managers.CatagoryManager;
 import gg.mineral.practice.managers.GametypeManager;
+import gg.mineral.practice.managers.KitEditorManager;
 import gg.mineral.practice.managers.PartyManager;
-import gg.mineral.practice.managers.PlayerManager;
+import gg.mineral.practice.managers.ProfileManager;
 import gg.mineral.practice.managers.PlayerSettingsManager;
 import gg.mineral.practice.managers.QueuetypeManager;
 import gg.mineral.practice.sql.SQLManager;
@@ -74,7 +74,7 @@ public class PracticePlugin extends JavaPlugin {
 
 		INSTANCE = this;
 
-		PlayerManager.load();
+		ProfileManager.load();
 		PlayerSettingsManager.load();
 		PartyManager.load();
 		ArenaManager.load();

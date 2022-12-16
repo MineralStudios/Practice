@@ -65,7 +65,7 @@ public class SelectArenaMenu extends PracticeMenu {
 
             if (action == SubmitAction.P_SPLIT && simpleMode) {
                 arenaRunnable = () -> {
-                    viewer.bukkit().closeInventory();
+                    viewer.getPlayer().closeInventory();
 
                     viewer.getMatchData().setArena(a);
 
@@ -86,7 +86,7 @@ public class SelectArenaMenu extends PracticeMenu {
                 };
             } else if (action == SubmitAction.TOURNAMENT && simpleMode) {
                 arenaRunnable = () -> {
-                    viewer.bukkit().closeInventory();
+                    viewer.getPlayer().closeInventory();
 
                     viewer.getMatchData().setArena(a);
 

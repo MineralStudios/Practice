@@ -1,38 +1,45 @@
 package gg.mineral.practice.match.data;
 
-import gg.mineral.practice.util.messages.CC;
 import gg.mineral.practice.arena.Arena;
 import gg.mineral.practice.gametype.Gametype;
 import gg.mineral.practice.kit.Kit;
 import gg.mineral.practice.managers.ArenaManager;
 import gg.mineral.practice.managers.GametypeManager;
 import gg.mineral.practice.queue.QueueEntry;
+import gg.mineral.practice.util.messages.CC;
 import gg.mineral.server.combat.KnockbackProfile;
 import gg.mineral.server.combat.KnockbackProfileList;
+import lombok.Getter;
+import lombok.Setter;
 
 public class MatchData {
+	@Setter
+	@Getter
 	Arena arena;
+	@Setter
+	@Getter
 	Kit kit;
-	KnockbackProfile kb;
+	@Setter
+	@Getter
+	KnockbackProfile knockback;
+	@Getter
 	Gametype gametype;
-	int noDamageTicks = 20;
-	boolean hunger = true;
-	boolean boxing = false;
-	boolean build = false;
-	boolean damage = true;
-	boolean griefing = false;
+	@Setter
+	@Getter
+	int noDamageTicks = 20, pearlCooldown = 15;
+	@Setter
+	@Getter
+	Boolean hunger = true, boxing = false, build = false, damage = true, griefing = false, deadlyWater = false,
+			regeneration = true;
+	@Getter
 	QueueEntry queueEntry;
-	boolean deadlyWater = false;
-	boolean regeneration = true;
+	@Getter
 	boolean ranked = false;
-	String kitName = "Custom";
-	Integer pearlCooldown = 15;
 
 	public MatchData() {
 
 		if (!GametypeManager.getGametypes().isEmpty()) {
 			this.gametype = GametypeManager.getGametypes().get(0);
-			this.kitName = gametype.getDisplayName();
 			this.kit = gametype.getKit();
 
 		}
@@ -41,7 +48,7 @@ public class MatchData {
 			this.arena = ArenaManager.getArenas().get(0);
 		}
 
-		this.kb = KnockbackProfileList.getDefaultKnockbackProfile();
+		this.knockback = KnockbackProfileList.getDefaultKnockbackProfile();
 	}
 
 	public MatchData(QueueEntry qe) {
@@ -50,7 +57,7 @@ public class MatchData {
 		arena = qe.getQueuetype().nextArena(this.gametype);
 		kit = this.gametype.getKit();
 		noDamageTicks = this.gametype.getNoDamageTicks();
-		kb = qe.getQueuetype().getKnockback();
+		knockback = qe.getQueuetype().getKnockback();
 		hunger = this.gametype.getHunger();
 		boxing = this.gametype.getBoxing();
 		build = this.gametype.getBuild();
@@ -64,7 +71,6 @@ public class MatchData {
 	public void setGametype(Gametype g) {
 		this.gametype = g;
 		kit = g.getKit();
-		kitName = g.getName();
 		noDamageTicks = g.getNoDamageTicks();
 		hunger = g.getHunger();
 		boxing = g.getBoxing();
@@ -75,122 +81,13 @@ public class MatchData {
 		regeneration = g.getRegeneration();
 	}
 
-	public void setArena(Arena a) {
-		arena = a;
-	}
-
-	public void setKnockback(KnockbackProfile knockbackProfile) {
-		kb = knockbackProfile;
-	}
-
-	public void setKit(Kit k, String Name) {
-		kit = k;
-		kitName = Name;
-	}
-
-	public void setNoDamageTicks(int i) {
-		noDamageTicks = i;
-	}
-
-	public void setHunger(boolean b) {
-		hunger = b;
-	}
-
-	public void setDeadlyWater(boolean b) {
-		deadlyWater = b;
-	}
-
-	public void setBuild(boolean b) {
-		build = b;
-	}
-
-	public void setDamage(boolean b) {
-		damage = b;
-	}
-
-	public void setRegeneration(boolean b) {
-		regeneration = b;
-	}
-
-	public void setPearlCooldown(int i) {
-		pearlCooldown = i;
-	}
-
-	public void setGriefing(boolean b) {
-		griefing = b;
-	}
-
-	public Arena getArena() {
-		return arena;
-	}
-
-	public KnockbackProfile getKnockback() {
-		return kb;
-	}
-
-	public Kit getKit() {
-		return kit;
-	}
-
-	public int getNoDamageTicks() {
-		return noDamageTicks;
-	}
-
-	public int getPearlCooldown() {
-		return pearlCooldown;
-	}
-
-	public boolean getHunger() {
-		return hunger;
-	}
-
-	public boolean getDeadlyWater() {
-		return deadlyWater;
-	}
-
-	public boolean getRegeneration() {
-		return regeneration;
-	}
-
-	public boolean getBuild() {
-		return build;
-	}
-
-	public boolean getDamage() {
-		return damage;
-	}
-
-	public boolean getGriefing() {
-		return griefing;
-	}
-
-	public String getKitName() {
-		return kitName;
-	}
-
-	public QueueEntry getQueueEntry() {
-		return queueEntry;
-	}
-
-	public boolean isRanked() {
-		return ranked;
-	}
-
-	public Gametype getGametype() {
-		return gametype;
-	}
-
-	public boolean getBoxing() {
-		return boxing;
-	}
-
 	public String toString() {
 		StringBuilder sb = new StringBuilder();
 		String newLine = CC.R + "\n";
 
 		sb.append(CC.GREEN + "Arena: " + arena.getDisplayName());
 		sb.append(newLine);
-		sb.append(CC.GREEN + "Kit: " + kitName);
+		sb.append(CC.GREEN + "Kit: " + kit.getName());
 		sb.append(newLine);
 		sb.append(CC.GREEN + "Hit Delay: " + noDamageTicks);
 		sb.append(newLine);

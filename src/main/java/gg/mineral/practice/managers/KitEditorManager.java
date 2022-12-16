@@ -1,4 +1,4 @@
-package gg.mineral.practice.kit;
+package gg.mineral.practice.managers;
 
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
@@ -6,13 +6,19 @@ import org.bukkit.Material;
 import org.bukkit.inventory.ItemStack;
 
 import gg.mineral.api.config.FileConfiguration;
+import lombok.Getter;
 
 public class KitEditorManager {
 	static FileConfiguration config = new FileConfiguration("kiteditor.yml", "plugins/Practice");
+	@Getter
 	static String displayName;
+	@Getter
 	static ItemStack displayItem;
+	@Getter
 	static int slot;
+	@Getter
 	static Boolean enabled;
+	@Getter
 	static Location location;
 
 	public static void setDisplayName(String displayName) {
@@ -38,26 +44,6 @@ public class KitEditorManager {
 	public static void setLocation(Location loc) {
 		location = loc;
 		save();
-	}
-
-	public static String getDisplayName() {
-		return displayName;
-	}
-
-	public static ItemStack getDisplayItem() {
-		return displayItem;
-	}
-
-	public static int getSlot() {
-		return slot;
-	}
-
-	public static Boolean getEnabled() {
-		return enabled;
-	}
-
-	public static Location getLocation() {
-		return location;
 	}
 
 	public static void save() {

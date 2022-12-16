@@ -8,7 +8,7 @@ import gg.mineral.practice.entity.Profile;
 import gg.mineral.practice.gametype.Gametype;
 import gg.mineral.practice.inventory.PracticeMenu;
 import gg.mineral.practice.managers.GametypeManager;
-import gg.mineral.practice.managers.PlayerManager;
+import gg.mineral.practice.managers.ProfileManager;
 
 public class EloMenu extends PracticeMenu {
 
@@ -33,7 +33,7 @@ public class EloMenu extends PracticeMenu {
             for (Gametype gametype : GametypeManager.getGametypes()) {
                 ItemStack item = new ItemBuilder(gametype.getDisplayItem())
                         .name(gametype.getDisplayName())
-                        .lore(CC.ACCENT + strArg + "'s Elo: " + PlayerManager.getOfflinePlayerElo(gametype, strArg))
+                        .lore(CC.ACCENT + strArg + "'s Elo: " + ProfileManager.getOfflinePlayerElo(gametype, strArg))
                         .build();
                 add(item);
             }

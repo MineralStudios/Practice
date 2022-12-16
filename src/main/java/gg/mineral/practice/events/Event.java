@@ -1,6 +1,7 @@
 package gg.mineral.practice.events;
 
 import java.util.Iterator;
+
 import org.bukkit.scheduler.BukkitRunnable;
 
 import gg.mineral.api.collection.GlueList;
@@ -8,7 +9,7 @@ import gg.mineral.practice.PracticePlugin;
 import gg.mineral.practice.arena.Arena;
 import gg.mineral.practice.entity.Profile;
 import gg.mineral.practice.managers.EventManager;
-import gg.mineral.practice.managers.PlayerManager;
+import gg.mineral.practice.managers.ProfileManager;
 import gg.mineral.practice.match.EventMatch;
 import gg.mineral.practice.match.Match;
 import gg.mineral.practice.match.data.MatchData;
@@ -17,6 +18,7 @@ import gg.mineral.practice.util.collection.ProfileList;
 import gg.mineral.practice.util.messages.ChatMessage;
 import gg.mineral.practice.util.messages.impl.ChatMessages;
 import gg.mineral.practice.util.messages.impl.ErrorMessages;
+import lombok.Getter;
 import net.md_5.bungee.api.chat.ClickEvent;
 
 public class Event implements Spectatable {
@@ -25,10 +27,12 @@ public class Event implements Spectatable {
 
     MatchData matchData;
     int round = 1;
+    @Getter
     String host;
-    boolean started = false;
-    boolean ended = false;
+    @Getter
+    boolean started = false, ended = false;
     ProfileList players = new ProfileList();
+    @Getter
     Arena eventArena;
 
     public Event(Profile p, Arena eventArena) {
@@ -52,7 +56,7 @@ public class Event implements Spectatable {
         players.add(p);
 
         ChatMessage joinedMessage = ChatMessages.JOINED_EVENT.clone().replace("%player%", p.getName());
-        PlayerManager.broadcast(players, joinedMessage);
+        ProfileManager.broadcast(players, joinedMessage);
     }
 
     public void startRound() {
@@ -75,7 +79,7 @@ public class Event implements Spectatable {
         Profile p1 = iter.next();
 
         if (!iter.hasNext()) {
-            ChatMessages.NO_OPPONENT.send(p1.bukkit());
+            ChatMessages.NO_OPPONENT.send(p1.getPlayer());
             return;
         }
 
@@ -90,7 +94,7 @@ public class Event implements Spectatable {
         players.remove(p);
 
         ChatMessage leftMessage = ChatMessages.LEFT_EVENT.clone().replace("%player%", p.getName());
-        PlayerManager.broadcast(players, leftMessage);
+        ProfileManager.broadcast(players, leftMessage);
 
         if (players.size() == 0) {
             EventManager.remove(this);
@@ -111,7 +115,7 @@ public class Event implements Spectatable {
 
             ChatMessage wonMessage = ChatMessages.WON_EVENT.clone().replace("%player%", winner.getName());
 
-            PlayerManager.broadcast(PlayerManager.getProfiles(),
+            ProfileManager.broadcast(ProfileManager.getProfiles(),
                     wonMessage);
 
             return;
@@ -128,7 +132,7 @@ public class Event implements Spectatable {
                 .replace("%player%", host).setTextEvent(new ClickEvent(ClickEvent.Action.RUN_COMMAND, "/join " + host),
                         ChatMessages.CLICK_TO_JOIN);
 
-        PlayerManager.broadcast(PlayerManager.getProfiles(), messageToBroadcast);
+        ProfileManager.broadcast(ProfileManager.getProfiles(), messageToBroadcast);
 
         Event event = this;
         new BukkitRunnable() {
@@ -144,7 +148,7 @@ public class Event implements Spectatable {
                         p.stopSpectating();
                     }
 
-                    ErrorMessages.EVENT_NOT_ENOUGH_PLAYERS.send(winner.bukkit());
+                    ErrorMessages.EVENT_NOT_ENOUGH_PLAYERS.send(winner.getPlayer());
                     EventManager.remove(event);
                     ended = true;
                     return;
@@ -153,14 +157,6 @@ public class Event implements Spectatable {
                 startRound();
             }
         }.runTaskLater(PracticePlugin.INSTANCE, 600);
-    }
-
-    public Arena getEventArena() {
-        return eventArena;
-    }
-
-    public String getHost() {
-        return host;
     }
 
     public void removeMatch(Match m) {
@@ -173,7 +169,7 @@ public class Event implements Spectatable {
         if (matches.isEmpty()) {
             ChatMessage broadcastedMessage = ChatMessages.ROUND_OVER.clone().replace("%round%", "" + round);
 
-            PlayerManager.broadcast(players, broadcastedMessage);
+            ProfileManager.broadcast(players, broadcastedMessage);
 
             new BukkitRunnable() {
                 @Override
@@ -183,10 +179,6 @@ public class Event implements Spectatable {
                 }
             }.runTaskLater(PracticePlugin.INSTANCE, 100);
         }
-    }
-
-    public boolean isEnded() {
-        return ended;
     }
 
 }

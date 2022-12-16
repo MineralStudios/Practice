@@ -11,18 +11,20 @@ import org.bukkit.event.block.BlockIgniteEvent.IgniteCause;
 import org.bukkit.event.block.BlockPlaceEvent;
 import org.bukkit.event.player.PlayerBucketEmptyEvent;
 
+import gg.mineral.practice.entity.PlayerStatus;
 import gg.mineral.practice.entity.Profile;
-import gg.mineral.practice.managers.PlayerManager;
+import gg.mineral.practice.managers.ProfileManager;
 import gg.mineral.practice.match.Match;
 import gg.mineral.practice.util.messages.impl.ErrorMessages;
 
 public class BuildListener implements Listener {
-	;
 
 	@EventHandler
 	public void onBlockBreak(BlockBreakEvent e) {
 
-		Profile player = PlayerManager.getProfileFromMatch(e.getPlayer());
+		Profile player = ProfileManager
+				.getProfile(p -> p.getUUID().equals(e.getPlayer().getUniqueId())
+						&& p.getPlayerStatus() == PlayerStatus.FIGHTING);
 
 		if (player == null) {
 			e.setCancelled(!(e.getPlayer().isOp() && e.getPlayer().getGameMode().equals(GameMode.CREATIVE)));
@@ -52,7 +54,9 @@ public class BuildListener implements Listener {
 
 	@EventHandler
 	public void onBlockPlace(BlockPlaceEvent e) {
-		Profile player = PlayerManager.getProfileFromMatch(e.getPlayer());
+		Profile player = ProfileManager
+				.getProfile(p -> p.getUUID().equals(e.getPlayer().getUniqueId())
+						&& p.getPlayerStatus() == PlayerStatus.FIGHTING);
 		boolean canPlace = e.getPlayer().isOp() && e.getPlayer().getGameMode().equals(GameMode.CREATIVE);
 
 		if (player == null) {
@@ -79,7 +83,9 @@ public class BuildListener implements Listener {
 
 	@EventHandler
 	public void onPlayerBucketEmpty(PlayerBucketEmptyEvent e) {
-		Profile player = PlayerManager.getProfileFromMatch(e.getPlayer());
+		Profile player = ProfileManager
+				.getProfile(p -> p.getUUID().equals(e.getPlayer().getUniqueId())
+						&& p.getPlayerStatus() == PlayerStatus.FIGHTING);
 		boolean canPlace = e.getPlayer().isOp() && e.getPlayer().getGameMode().equals(GameMode.CREATIVE);
 
 		if (player == null) {

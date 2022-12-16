@@ -5,14 +5,13 @@ import org.bukkit.scheduler.BukkitScheduler;
 
 import gg.mineral.practice.PracticePlugin;
 import gg.mineral.practice.entity.Profile;
-import gg.mineral.practice.managers.PlayerManager;
+import gg.mineral.practice.managers.ProfileManager;
 import gg.mineral.practice.match.Match;
 import gg.mineral.practice.util.messages.ChatMessage;
 import gg.mineral.practice.util.messages.impl.ChatMessages;
 
 public class Countdown {
-	int time;
-	int taskID;
+	int time, taskID;
 	ChatMessage message;
 	Match match;
 
@@ -39,7 +38,7 @@ public class Countdown {
 
 			message = ChatMessages.BEGINS_IN.clone().replace("%time%", "" + time);
 
-			PlayerManager.broadcast(match.getParticipants(), message);
+			ProfileManager.broadcast(match.getParticipants(), message);
 
 			time = time - 1;
 		}, 0L, 20L);

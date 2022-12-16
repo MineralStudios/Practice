@@ -24,12 +24,12 @@ public class OtherPartiesMenu extends PracticeMenu {
     public boolean update() {
         clear();
 
-        for (Party p : PartyManager.getPartys()) {
+        for (Party p : PartyManager.getParties()) {
             if (p.getPartyLeader().getPlayerStatus() == PlayerStatus.IN_LOBBY && !p.equals(viewer.getParty())) {
                 Profile partyLeader = p.getPartyLeader();
                 ItemStack skull = new ItemBuilder(Material.SKULL_ITEM)
                         .name(partyLeader.getName()).build();
-                add(skull, pr -> pr.bukkit().performCommand("duel " + partyLeader.getName()));
+                add(skull, pr -> pr.getPlayer().performCommand("duel " + partyLeader.getName()));
             }
         }
 

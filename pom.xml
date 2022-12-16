@@ -8,28 +8,57 @@
     <packaging>jar</packaging>
     <name>Practice</name>
 
-    <reporting>
-        <plugins>
-            <plugin>
-                <groupId>com.github.spotbugs</groupId>
-                <artifactId>spotbugs-maven-plugin</artifactId>
-                <version>4.2.1-SNAPSHOT</version>
-            </plugin>
-        </plugins>
-    </reporting>
 
-    <!--Spigot API -->
-    <pluginRepositories>
-        <pluginRepository>
-            <id>spigotmc-public</id>
-            <url>https://hub.spigotmc.org/nexus/content/groups/public/</url>
-        </pluginRepository>
-        <!-- PaperSpigot - Repo for gitdescribe -->
-        <pluginRepository>
-            <id>destroystokyo</id>
-            <url>https://ci.destroystokyo.com/plugin/repository/everything/</url>
-        </pluginRepository>
-    </pluginRepositories>
+    <repositories>
+        <repository>
+            <id>glowstone-internal</id>
+            <url>https://repo.glowstone.net/repository/maven-public/</url>
+        </repository>
+        <repository>
+            <id>glowstone-snapshots</id>
+            <url>https://repo.glowstone.net/repository/snapshots/</url>
+        </repository>
+    </repositories>
+
+    <distributionManagement>
+        <repository>
+            <id>glowstone-upstream</id>
+            <url>https://repo.glowstone.net/content/repositories/releases/</url>
+        </repository>
+        <snapshotRepository>
+            <id>glowstone-upstream</id>
+            <url>https://repo.glowstone.net/content/repositories/snapshots/</url>
+        </snapshotRepository>
+    </distributionManagement>
+
+    <profiles>
+        <profile>
+            <id>build-extras</id>
+            <build>
+                <plugins>
+                    <plugin>
+                        <groupId>org.projectlombok</groupId>
+                        <artifactId>lombok-maven-plugin</artifactId>
+                        <version>1.18.20.0</version>
+                        <executions>
+                            <execution>
+                                <id>delombok</id>
+                                <phase>generate-sources</phase>
+                                <goals>
+                                    <goal>delombok</goal>
+                                </goals>
+                                <configuration>
+                                    <addOutputDirectory>false</addOutputDirectory>
+                                    <sourceDirectory>src/main/java</sourceDirectory>
+                                </configuration>
+                            </execution>
+                        </executions>
+                    </plugin>
+                </plugins>
+            </build>
+        </profile>
+    </profiles>
+
     <dependencies>
         <dependency>
             <groupId>gg.mineral</groupId>
@@ -43,6 +72,12 @@
             <artifactId>HikariCP</artifactId>
             <version>2.4.5</version>
             <scope>compile</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.projectlombok</groupId>
+            <artifactId>lombok</artifactId>
+            <version>1.18.20</version>
+            <scope>provided</scope>
         </dependency>
     </dependencies>
     <build>
@@ -86,25 +121,16 @@
                 </executions>
             </plugin>
             <plugin>
+                <version>3.7.0</version>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-compiler-plugin</artifactId>
-                <!-- versions after this appear to be broken -->
-                <version>3.8.0</version>
                 <configuration>
-                    <!-- we use the Eclipse compiler as it doesn't need a JDK -->
-                    <compilerId>eclipse</compilerId>
-                    <!-- source and target are ignored if this isn't true -->
-                    <optimize>true</optimize>
+                    <source>1.8</source>
+                    <target>1.8</target>
+                    <compilerArgs>
+                        <arg>-parameters</arg>
+                    </compilerArgs>
                 </configuration>
-                <dependencies>
-                    <!-- we need our custom version as it fixes some bugs on case sensitive 
-                                                                                                                                                                                    						file systems -->
-                    <dependency>
-                        <groupId>org.codehaus.plexus</groupId>
-                        <artifactId>plexus-compiler-eclipse</artifactId>
-                        <version>2.5.0-spigotmc</version>
-                    </dependency>
-                </dependencies>
             </plugin>
         </plugins>
     </build>

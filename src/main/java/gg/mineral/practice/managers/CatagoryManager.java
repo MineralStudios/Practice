@@ -2,22 +2,24 @@ package gg.mineral.practice.managers;
 
 import org.bukkit.configuration.ConfigurationSection;
 
-import gg.mineral.practice.gametype.Catagory;
-import gg.mineral.practice.queue.Queuetype;
 import gg.mineral.api.collection.GlueList;
 import gg.mineral.api.config.FileConfiguration;
+import gg.mineral.practice.gametype.Catagory;
+import gg.mineral.practice.queue.Queuetype;
+import lombok.Getter;
 
 public class CatagoryManager {
+	@Getter
 	final static FileConfiguration config = new FileConfiguration("catagory.yml", "plugins/Practice");
-
-	static GlueList<Catagory> list = new GlueList<>();
+	@Getter
+	static GlueList<Catagory> catagories = new GlueList<>();
 
 	public static void registerCatagory(Catagory catagory) {
-		list.add(catagory);
+		catagories.add(catagory);
 	}
 
 	public static void remove(Catagory catagory) {
-		list.remove(catagory);
+		catagories.remove(catagory);
 
 		for (Queuetype queuetype : QueuetypeManager.getQueuetypes()) {
 			queuetype.getCatagories().removeInt(catagory);
@@ -25,7 +27,7 @@ public class CatagoryManager {
 	}
 
 	public boolean contains(Catagory catagory) {
-		for (Catagory g : list) {
+		for (Catagory g : catagories) {
 			if (g.equals(catagory)) {
 				return true;
 			}
@@ -33,16 +35,8 @@ public class CatagoryManager {
 		return false;
 	}
 
-	public static FileConfiguration getConfig() {
-		return config;
-	}
-
-	public static GlueList<Catagory> getCatagorys() {
-		return list;
-	}
-
 	public static Catagory getCatagoryByName(String string) {
-		for (Catagory g : list) {
+		for (Catagory g : catagories) {
 			if (g.getName().equalsIgnoreCase(string)) {
 				return g;
 			}
@@ -52,7 +46,7 @@ public class CatagoryManager {
 
 	public void save() {
 
-		for (Catagory catagory : getCatagorys()) {
+		for (Catagory catagory : getCatagories()) {
 			catagory.save();
 		}
 

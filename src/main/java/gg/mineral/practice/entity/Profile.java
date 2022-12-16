@@ -25,9 +25,9 @@ import gg.mineral.practice.inventory.menus.SelectGametypeMenu;
 import gg.mineral.practice.inventory.menus.SelectModeMenu;
 import gg.mineral.practice.inventory.menus.SelectQueuetypeMenu;
 import gg.mineral.practice.kit.Kit;
-import gg.mineral.practice.kit.KitEditorManager;
+import gg.mineral.practice.managers.KitEditorManager;
 import gg.mineral.practice.managers.PartyManager;
-import gg.mineral.practice.managers.PlayerManager;
+import gg.mineral.practice.managers.ProfileManager;
 import gg.mineral.practice.managers.PlayerSettingsManager;
 import gg.mineral.practice.managers.QueuetypeManager;
 import gg.mineral.practice.match.Match;
@@ -49,35 +49,57 @@ import gg.mineral.practice.util.messages.ChatMessage;
 import gg.mineral.practice.util.messages.Message;
 import gg.mineral.practice.util.messages.impl.ChatMessages;
 import gg.mineral.practice.util.messages.impl.ErrorMessages;
+import lombok.Getter;
+import lombok.Setter;
 import net.md_5.bungee.api.chat.ClickEvent;
 import net.md_5.bungee.api.chat.ComponentBuilder;
 import net.md_5.bungee.api.chat.HoverEvent;
 
 public class Profile {
+	@Getter
 	final CraftPlayer player;
+	@Getter
 	final PlayerInventory inventory;
-	Match match;
-	DefaultScoreboard b;
-	Match spectatingMatch;
+	@Getter
+	Match match, spectatingMatch;
+	@Setter
+	@Getter
+	DefaultScoreboard scoreboard;
+	@Getter
 	MatchData matchData;
-	Integer hits = 0, currentCombo = 0, longestCombo = 0;
-	Boolean playersVisible = true;
+	@Getter
+	Integer hitCount = 0, currentCombo = 0, longestCombo = 0;
+	@Getter
+	boolean playersVisible = true, partyOpenCooldown = false, inMatchCountdown = false;
+	@Getter
+	@Setter
 	PracticeMenu openMenu;
 	Profile following;
+	@Getter
 	GlueList<Profile> followers = new ProfileList();
+	@Getter
 	AutoExpireList<DuelRequest> recievedDuelRequests = new AutoExpireList<>();
+	@Getter
 	AutoExpireList<Party> recievedPartyRequests = new AutoExpireList<>();
-	Boolean requests = true;
+	@Getter
+	@Setter
+	boolean requests = true, inventoryClickCancelled = false;
+	@Getter
+	@Setter
 	Profile duelReciever;
-	boolean partyOpenCooldown = false;
-	PlayerStatus status = PlayerStatus.IN_LOBBY;
-	boolean inMatchCountdown = false;
+	@Getter
+	PlayerStatus playerStatus = PlayerStatus.IN_LOBBY;
+	@Getter
 	Party party;
+	@Getter
 	QueueEntry kitEditorData;
-	SubmitAction prevSubmitAction;
-	boolean inventoryClickCancelled = false;
+	@Setter
+	SubmitAction previousSubmitAction;
+	@Getter
 	Tournament tournament;
+	@Getter
 	Event event;
+	@Getter
 	PearlCooldown pearlCooldown = new PearlCooldown(this);
 	Event spectatingTournament;
 
@@ -88,36 +110,8 @@ public class Profile {
 		pearlCooldown.start();
 	}
 
-	public void setPreviousSubmitAction(SubmitAction submitAction) {
-		this.prevSubmitAction = submitAction;
-	}
-
-	public CraftPlayer bukkit() {
-		return player;
-	}
-
-	public Integer getHitCount() {
-		return hits;
-	}
-
-	public Integer getLongestCombo() {
-		return longestCombo;
-	}
-
-	public PracticeMenu getOpenMenu() {
-		return openMenu;
-	}
-
-	public PearlCooldown getPearlCooldown() {
-		return pearlCooldown;
-	}
-
 	public void openMenu(PracticeMenu m) {
 		m.open(this);
-	}
-
-	public boolean getPlayersVisible() {
-		return playersVisible;
 	}
 
 	public void setPlayersVisible(boolean playersVisible) {
@@ -128,32 +122,12 @@ public class Profile {
 		this.playersVisible = playersVisible;
 	}
 
-	public boolean getRequests() {
-		return requests;
-	}
-
-	public AutoExpireList<DuelRequest> getRecievedDuelRequests() {
-		return recievedDuelRequests;
-	}
-
-	public AutoExpireList<Party> getRecievedPartyRequests() {
-		return recievedPartyRequests;
-	}
-
-	public void setRequests(Boolean duelRequests) {
-		this.requests = duelRequests;
-	}
-
-	public DefaultScoreboard getBoard() {
-		return b;
-	}
-
 	public void removeScoreboard() {
-		b = null;
+		scoreboard = null;
 	}
 
 	public void increaseHitCount() {
-		hits++;
+		hitCount++;
 		currentCombo++;
 		longestCombo = Math.max(currentCombo, longestCombo);
 	}
@@ -163,11 +137,7 @@ public class Profile {
 	}
 
 	public void clearHitCount() {
-		hits = 0;
-	}
-
-	public void clearInventory() {
-		getInventory().clear();
+		hitCount = 0;
 	}
 
 	public void heal() {
@@ -178,17 +148,8 @@ public class Profile {
 	}
 
 	public void setMatch(Match match) {
-		PlayerManager.setInMatch(this);
 		this.match = match;
 		setPlayerStatus(PlayerStatus.FIGHTING);
-	}
-
-	public void setOpenMenu(PracticeMenu menu) {
-		this.openMenu = menu;
-	}
-
-	public Match getMatch() {
-		return match;
 	}
 
 	public boolean isInParty() {
@@ -196,7 +157,6 @@ public class Profile {
 	}
 
 	public void removeFromMatch() {
-		PlayerManager.removeFromMatch(this);
 		setPlayerStatus(PlayerStatus.IN_LOBBY);
 		match = null;
 	}
@@ -215,15 +175,11 @@ public class Profile {
 
 		this.party = null;
 
-		if (status != PlayerStatus.IN_LOBBY) {
+		if (playerStatus != PlayerStatus.IN_LOBBY) {
 			return;
 		}
 
 		setInventoryForLobby();
-	}
-
-	public Party getParty() {
-		return party;
 	}
 
 	public void giveKit(Kit kit) {
@@ -287,7 +243,7 @@ public class Profile {
 	}
 
 	public void message(Message m) {
-		m.send(this.bukkit());
+		m.send(this.getPlayer());
 	}
 
 	public String getName() {
@@ -298,7 +254,7 @@ public class Profile {
 		setInventoryClickCancelled(true);
 		inventory.clear();
 		inventory.setItem(0, ItemStacks.STOP_FOLLOWING, (Runnable) this::stopSpectatingAndFollowing);
-		bukkit().updateInventory();
+		getPlayer().updateInventory();
 	}
 
 	public void setInventoryForTournament() {
@@ -315,7 +271,7 @@ public class Profile {
 				inventory.setItem(0, ItemStacks.LEAVE_TOURNAMENT, (Runnable) pl::removeFromTournament);
 			}
 		}.runTaskLater(PracticePlugin.INSTANCE, 20);
-		bukkit().updateInventory();
+		getPlayer().updateInventory();
 	}
 
 	public void setInventoryForEvent() {
@@ -332,7 +288,7 @@ public class Profile {
 				inventory.setItem(0, ItemStacks.LEAVE_EVENT, (Runnable) pl::removeFromEvent);
 			}
 		}.runTaskLater(PracticePlugin.INSTANCE, 20);
-		bukkit().updateInventory();
+		getPlayer().updateInventory();
 	}
 
 	public void setInventoryForParty() {
@@ -343,18 +299,18 @@ public class Profile {
 		new BukkitRunnable() {
 			@Override
 			public void run() {
-				inventory.setItem(0, ItemStacks.LEAVE_PARTY, p -> p.bukkit().performCommand("p leave"));
+				inventory.setItem(0, ItemStacks.LEAVE_PARTY, p -> p.getPlayer().performCommand("p leave"));
 			}
 		}.runTaskLater(PracticePlugin.INSTANCE, 20);
 
-		inventory.setItem(1, ItemStacks.LIST_PLAYERS, p -> p.bukkit().performCommand("p list"));
-		inventory.setItem(4, ItemStacks.DUEL, p -> p.bukkit().performCommand("duel"));
+		inventory.setItem(1, ItemStacks.LIST_PLAYERS, p -> p.getPlayer().performCommand("p list"));
+		inventory.setItem(4, ItemStacks.DUEL, p -> p.getPlayer().performCommand("duel"));
 		inventory.setItem(5, ItemStacks.PARTY_SPLIT, p -> {
 			p.openMenu(new SelectModeMenu(SubmitAction.P_SPLIT));
 			return true;
 		});
-		inventory.setItem(3, ItemStacks.OPEN_PARTY, p -> p.bukkit().performCommand("p open"));
-		bukkit().updateInventory();
+		inventory.setItem(3, ItemStacks.OPEN_PARTY, p -> p.getPlayer().performCommand("p open"));
+		getPlayer().updateInventory();
 	}
 
 	public void setInventoryForLobby() {
@@ -394,7 +350,7 @@ public class Profile {
 					.name(CC.SECONDARY + CC.B + PartyManager.getDisplayName())
 					.build();
 			inventory.setItem(PartyManager.getSlot(), parties,
-					p -> p.bukkit().performCommand("p create"));
+					p -> p.getPlayer().performCommand("p create"));
 		}
 
 		if (PlayerSettingsManager.getEnabled()) {
@@ -402,9 +358,9 @@ public class Profile {
 					.name(CC.SECONDARY + CC.B + PlayerSettingsManager.getDisplayName())
 					.build();
 			inventory.setItem(PlayerSettingsManager.getSlot(), settings,
-					p -> p.bukkit().performCommand("settings"));
+					p -> p.getPlayer().performCommand("settings"));
 		}
-		bukkit().updateInventory();
+		getPlayer().updateInventory();
 	}
 
 	public void setInventoryForQueue() {
@@ -416,22 +372,14 @@ public class Profile {
 					this.removeFromQueue();
 					this.setInventoryForLobby();
 				});
-		bukkit().updateInventory();
+		getPlayer().updateInventory();
 	}
 
 	public void setInventoryForSpectating() {
 		setInventoryClickCancelled(true);
 		inventory.clear();
 		getInventory().setItem(0, ItemStacks.STOP_SPECTATING, (Runnable) this::stopSpectatingAndFollowing);
-		bukkit().updateInventory();
-	}
-
-	public void setInventoryClickCancelled(boolean c) {
-		inventoryClickCancelled = c;
-	}
-
-	public boolean getInventoryClickCancelled() {
-		return inventoryClickCancelled;
+		getPlayer().updateInventory();
 	}
 
 	public void removeFromQueue() {
@@ -442,7 +390,7 @@ public class Profile {
 	public void addPlayerToQueue(QueueEntry qd) {
 		this.player.getOpenInventory().close();
 
-		if (status != PlayerStatus.IN_LOBBY) {
+		if (playerStatus != PlayerStatus.IN_LOBBY) {
 			return;
 		}
 
@@ -464,7 +412,7 @@ public class Profile {
 
 		teleportToLobby();
 
-		if (status != PlayerStatus.FOLLOWING) {
+		if (playerStatus != PlayerStatus.FOLLOWING) {
 			this.player.setGameMode(GameMode.SURVIVAL);
 			if (this.isInParty()) {
 				this.setInventoryForParty();
@@ -479,7 +427,7 @@ public class Profile {
 
 	public void stopSpectatingAndFollowing() {
 
-		if (status != PlayerStatus.SPECTATING && status != PlayerStatus.FOLLOWING) {
+		if (playerStatus != PlayerStatus.SPECTATING && playerStatus != PlayerStatus.FOLLOWING) {
 			message(ErrorMessages.NOT_SPEC_OR_FOLLOWING);
 			return;
 		}
@@ -489,7 +437,7 @@ public class Profile {
 			spectatingMatch = null;
 		}
 
-		if (status == PlayerStatus.FOLLOWING) {
+		if (playerStatus == PlayerStatus.FOLLOWING) {
 			following.followers.remove(this);
 			following = null;
 			this.setPlayerStatus(PlayerStatus.IN_LOBBY);
@@ -503,10 +451,6 @@ public class Profile {
 		} else {
 			this.setInventoryForLobby();
 		}
-	}
-
-	public Match getSpectatingMatch() {
-		return spectatingMatch;
 	}
 
 	public void spectate(Profile p) {
@@ -537,12 +481,12 @@ public class Profile {
 		this.player.setGameMode(GameMode.SPECTATOR);
 
 		teleport(p);
-		ChatMessages.SPECTATING.clone().replace("%player%", p.getName()).send(bukkit());
+		ChatMessages.SPECTATING.clone().replace("%player%", p.getName()).send(getPlayer());
 
-		ChatMessages.STOP_SPECTATING.send(bukkit());
+		ChatMessages.STOP_SPECTATING.send(getPlayer());
 
 		ChatMessage broadcastedMessage = ChatMessages.SPECTATING_YOUR_MATCH.clone().replace("%player%", getName());
-		PlayerManager.broadcast(match.getParticipants(), broadcastedMessage);
+		ProfileManager.broadcast(match.getParticipants(), broadcastedMessage);
 
 		this.setInventoryForSpectating();
 
@@ -570,8 +514,8 @@ public class Profile {
 		this.player.setGameMode(GameMode.SPECTATOR);
 
 		teleport(event.getEventArena().getWaitingLocation());
-		ChatMessages.SPECTATING_EVENT.send(bukkit());
-		ChatMessages.STOP_SPECTATING.send(bukkit());
+		ChatMessages.SPECTATING_EVENT.send(getPlayer());
+		ChatMessages.STOP_SPECTATING.send(getPlayer());
 
 		this.setInventoryForSpectating();
 
@@ -588,28 +532,22 @@ public class Profile {
 	}
 
 	public void teleportToLobby() {
-		teleport(PlayerManager.getSpawnLocation());
+		teleport(ProfileManager.getSpawnLocation());
 
-		if (status != PlayerStatus.FOLLOWING) {
+		if (playerStatus != PlayerStatus.FOLLOWING) {
 			setPlayerStatus(PlayerStatus.IN_LOBBY);
-		}
-
-		try {
-			bukkit().setScoreboard(Bukkit.getScoreboardManager().getNewScoreboard());
-		} catch (Exception e) {
-
 		}
 	}
 
 	public void sendDuelRequest(Profile player) {
-		bukkit().closeInventory();
+		getPlayer().closeInventory();
 
 		if (player.getPlayerStatus() != PlayerStatus.IN_LOBBY) {
 			message(ErrorMessages.PLAYER_NOT_IN_LOBBY);
 			return;
 		}
 
-		if (!player.getRequests()) {
+		if (!player.isRequests()) {
 			message(ErrorMessages.DUEL_REQUESTS_DISABLED);
 			return;
 		}
@@ -635,7 +573,7 @@ public class Profile {
 		DuelRequest request = new DuelRequest(this, matchData);
 		player.getRecievedDuelRequests().add(request);
 		removeFromQueue();
-		ChatMessages.DUEL_REQUEST_SENT.clone().replace("%player%", player.getName()).send(bukkit());
+		ChatMessages.DUEL_REQUEST_SENT.clone().replace("%player%", player.getName()).send(getPlayer());
 
 		HoverEvent DATA = new HoverEvent(HoverEvent.Action.SHOW_TEXT,
 				new ComponentBuilder(matchData.toString()).create());
@@ -643,7 +581,7 @@ public class Profile {
 		ChatMessages.DUEL_REQUEST_RECIEVED.clone().replace("%player%", sender)
 				.setTextEvent(new ClickEvent(ClickEvent.Action.RUN_COMMAND, "/accept " + getName()),
 						DATA)
-				.send(player.bukkit());
+				.send(player.getPlayer());
 	}
 
 	public void leaveKitEditor() {
@@ -655,7 +593,7 @@ public class Profile {
 	public void leaveKitCreator() {
 		this.player.setGameMode(GameMode.SURVIVAL);
 		leaveKitEditor();
-		openMenu(new MechanicsMenu(prevSubmitAction));
+		openMenu(new MechanicsMenu(previousSubmitAction));
 	}
 
 	public void saveKit() {
@@ -667,7 +605,7 @@ public class Profile {
 	}
 
 	public void sendPlayerToKitEditor(QueueEntry qe) {
-		bukkit().closeInventory();
+		getPlayer().closeInventory();
 
 		Location location = KitEditorManager.getLocation();
 
@@ -685,16 +623,13 @@ public class Profile {
 	}
 
 	public void saveCreatedKit() {
-		ItemStack[] cont = getInventory().getContents();
-		ItemStack[] armcont = getInventory().getArmorContents();
-		Kit k = new Kit(cont, armcont);
-		matchData.setKit(k, "Custom");
-		bukkit().closeInventory();
-		ChatMessages.KIT_SAVED.send(bukkit());
+		matchData.setKit(new Kit(getInventory().getContents(), getInventory().getArmorContents()));
+		getPlayer().closeInventory();
+		ChatMessages.KIT_SAVED.send(getPlayer());
 	}
 
 	public void sendPlayerToKitCreator() {
-		bukkit().closeInventory();
+		getPlayer().closeInventory();
 
 		Location location = KitEditorManager.getLocation();
 
@@ -722,16 +657,8 @@ public class Profile {
 		return getInventory().getItemInHand();
 	}
 
-	public PlayerInventory getInventory() {
-		return inventory;
-	}
-
 	public UUID getUUID() {
 		return player.getUniqueId();
-	}
-
-	public PlayerStatus getPlayerStatus() {
-		return status;
 	}
 
 	public void setPlayerStatus(PlayerStatus s) {
@@ -742,27 +669,7 @@ public class Profile {
 			return;
 		}
 
-		status = s;
-	}
-
-	public QueueEntry getKitEditorData() {
-		return kitEditorData;
-	}
-
-	public MatchData getMatchData() {
-		return matchData;
-	}
-
-	public Profile getDuelReciever() {
-		return duelReciever;
-	}
-
-	public void setDuelReciever(Profile p) {
-		duelReciever = p;
-	}
-
-	public GlueList<Profile> getFollowers() {
-		return followers;
+		playerStatus = s;
 	}
 
 	public void follow(Profile p) {
@@ -782,16 +689,8 @@ public class Profile {
 		matchData = new MatchData();
 	}
 
-	public boolean isInMatchCountdown() {
-		return inMatchCountdown;
-	}
-
 	public void setPearlCooldown(int i) {
 		pearlCooldown.setTimeRemaining(i);
-	}
-
-	public void setScoreboard(DefaultScoreboard scoreboard) {
-		b = scoreboard;
 	}
 
 	ArmorStand matchCountdownEntity;
@@ -800,7 +699,7 @@ public class Profile {
 		inMatchCountdown = c;
 
 		if (c) {
-			matchCountdownEntity = player.getWorld().spawn(bukkit().getLocation(), ArmorStand.class);
+			matchCountdownEntity = player.getWorld().spawn(getPlayer().getLocation(), ArmorStand.class);
 			matchCountdownEntity.setVisible(false);
 			matchCountdownEntity.setPassenger(player);
 			return;
@@ -816,7 +715,7 @@ public class Profile {
 	}
 
 	public void teleport(Profile playerarg) {
-		teleport(playerarg.bukkit().getLocation());
+		teleport(playerarg.getPlayer().getLocation());
 	}
 
 	public void startPartyOpenCooldown() {
@@ -832,10 +731,6 @@ public class Profile {
 						partyOpenCooldown = false;
 					}
 				}, 400);
-	}
-
-	public boolean getPartyOpenCooldown() {
-		return partyOpenCooldown;
 	}
 
 	public void setTournament(Tournament tournament) {
@@ -876,13 +771,5 @@ public class Profile {
 		event.removePlayer(this);
 
 		event = null;
-	}
-
-	public Tournament getTournament() {
-		return tournament;
-	}
-
-	public Event getEvent() {
-		return event;
 	}
 }

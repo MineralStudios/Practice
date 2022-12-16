@@ -1,8 +1,8 @@
 package gg.mineral.practice.match;
 
 import java.util.Arrays;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
+import java.util.List;
+import java.util.concurrent.CompletableFuture;
 
 import de.jeezycore.utils.NameTag;
 import org.bukkit.Bukkit;
@@ -25,7 +25,7 @@ import gg.mineral.practice.gametype.Gametype;
 import gg.mineral.practice.inventory.menus.InventoryStatsMenu;
 import gg.mineral.practice.kit.Kit;
 import gg.mineral.practice.managers.MatchManager;
-import gg.mineral.practice.managers.PlayerManager;
+import gg.mineral.practice.managers.ProfileManager;
 import gg.mineral.practice.match.data.MatchData;
 import gg.mineral.practice.scoreboard.impl.BoxingScoreboard;
 import gg.mineral.practice.scoreboard.impl.DefaultScoreboard;
@@ -39,6 +39,7 @@ import gg.mineral.practice.util.math.MathUtil;
 import gg.mineral.practice.util.messages.CC;
 import gg.mineral.practice.util.messages.impl.ErrorMessages;
 import gg.mineral.practice.util.world.WorldUtil;
+import lombok.Getter;
 import net.md_5.bungee.api.chat.ClickEvent;
 import net.md_5.bungee.api.chat.ComponentBuilder;
 import net.md_5.bungee.api.chat.HoverEvent;
@@ -49,26 +50,29 @@ import net.minecraft.server.v1_8_R3.PacketPlayInClientCommand;
 import net.minecraft.server.v1_8_R3.PacketPlayInClientCommand.EnumClientCommand;
 
 public class Match implements Spectatable {
-	NameTag nameTag = new NameTag();
+  NameTag nameTag = new NameTag();
+	@Getter
 	ProfileList participants = new ProfileList();
-	Profile player1;
-	Profile player2;
+	@Getter
+	Profile profile1, profile2;
 	boolean ended = false;
-	int tntAmount;
-	MatchData matchData;
+	@Getter
+	int placedTnt;
+	@Getter
+	MatchData data;
+	@Getter
 	GlueList<Location> buildLog = new GlueList<>();
-	static final ExecutorService executor = Executors.newCachedThreadPool();
 	org.bukkit.World world = null;
 
 	public Match(Profile player1, Profile player2, MatchData matchData) {
 		this(matchData);
-		this.player1 = player1;
-		this.player2 = player2;
+		this.profile1 = player1;
+		this.profile2 = player2;
 		addParicipants(player1, player2);
 	}
 
 	public Match(MatchData matchData) {
-		this.matchData = matchData;
+		this.data = matchData;
 	}
 
 	public void prepareForMatch(ProfileList profiles) {
@@ -78,8 +82,8 @@ public class Match implements Spectatable {
 	}
 
 	public Kit getKit(Profile p) {
-		Kit kit = new Kit(matchData.getKit());
-		ItemStack[] customKit = matchData.getQueueEntry() != null ? matchData.getQueueEntry().getCustomKit(p) : null;
+		Kit kit = new Kit(data.getKit());
+		ItemStack[] customKit = data.getQueueEntry() != null ? data.getQueueEntry().getCustomKit(p) : null;
 
 		if (customKit != null) {
 			kit.setContents(customKit);
@@ -90,28 +94,28 @@ public class Match implements Spectatable {
 
 	public void setAttributes(Profile p) {
 		p.clearHitCount();
-		p.bukkit().setMaximumNoDamageTicks(matchData.getNoDamageTicks());
-		p.bukkit().setKnockback(matchData.getKnockback());
-		p.bukkit().setAllowFlight(false);
+		p.getPlayer().setMaximumNoDamageTicks(data.getNoDamageTicks());
+		p.getPlayer().setKnockback(data.getKnockback());
+		p.getPlayer().setAllowFlight(false);
 		p.setInventoryClickCancelled(false);
 	}
 
 	public void setPotionEffects(Profile p) {
-		if (!matchData.getDamage()) {
-			p.bukkit().addPotionEffect(new PotionEffect(PotionEffectType.DAMAGE_RESISTANCE, 999999999, 255));
+		if (!data.getDamage()) {
+			p.getPlayer().addPotionEffect(new PotionEffect(PotionEffectType.DAMAGE_RESISTANCE, 999999999, 255));
 		}
 
-		if (matchData.getBoxing()) {
-			p.bukkit().addPotionEffect(new PotionEffect(PotionEffectType.SPEED, 999999999, 1));
+		if (data.getBoxing()) {
+			p.getPlayer().addPotionEffect(new PotionEffect(PotionEffectType.SPEED, 999999999, 1));
 		}
 	}
 
 	public void setVisibility(Profile p) {
 		for (int i = 0; i < participants.size(); i++) {
-			p.bukkit().showPlayer(participants.get(i).bukkit());
+			p.getPlayer().showPlayer(participants.get(i).getPlayer());
 		}
 
-		for (Match match : MatchManager.getMatchs()) {
+		for (Match match : MatchManager.getMatches()) {
 			match.updateVisiblity(this, p);
 		}
 	}
@@ -129,7 +133,7 @@ public class Match implements Spectatable {
 	}
 
 	public void setScoreboard(Profile p) {
-		if (matchData.getGametype().getBoxing()) {
+		if (data.getGametype().getBoxing()) {
 			new BoxingScoreboard(p).setBoard();
 			return;
 		}
@@ -145,47 +149,43 @@ public class Match implements Spectatable {
 		if (match.getData().getArena().equals(getData().getArena())) {
 			for (int i = 0; i < participants.size(); i++) {
 				Profile participant = participants.get(i);
-				participant.bukkit().hidePlayer(profile.bukkit(), false);
-				profile.bukkit().hidePlayer(participant.bukkit(), false);
+				participant.getPlayer().hidePlayer(profile.getPlayer(), false);
+				profile.getPlayer().hidePlayer(participant.getPlayer(), false);
 			}
 		}
 	}
 
 	public void increasePlacedTnt() {
-		tntAmount++;
-	}
-
-	public int getPlacedTnt() {
-		return tntAmount;
+		placedTnt++;
 	}
 
 	public void decreasePlacedTnt() {
-		tntAmount--;
+		placedTnt--;
 	}
 
 	public void handleFollowers() {
-		for (Profile p : player1.getFollowers()) {
-			p.bukkit().showPlayer(player1.bukkit());
-			p.spectate(player1);
+		for (Profile p : profile1.getFollowers()) {
+			p.getPlayer().showPlayer(profile1.getPlayer());
+			p.spectate(profile1);
 		}
 
-		for (Profile p : player2.getFollowers()) {
-			p.bukkit().showPlayer(player2.bukkit());
-			p.spectate(player2);
+		for (Profile p : profile2.getFollowers()) {
+			p.getPlayer().showPlayer(profile2.getPlayer());
+			p.spectate(profile2);
 		}
 	}
 
 	public void handleOpponentMessages() {
-		String s1 = "Opponent: " + player2.getName();
-		String s2 = "Opponent: " + player1.getName();
+		String s1 = "Opponent: " + profile2.getName();
+		String s2 = "Opponent: " + profile1.getName();
 
-		if (matchData.isRanked()) {
-			s1 += " (Elo: " + matchData.getQueueEntry().getGametype().getElo(player2) + ")";
-			s2 += " (Elo: " + matchData.getQueueEntry().getGametype().getElo(player1) + ")";
+		if (data.isRanked()) {
+			s1 += " (Elo: " + data.getQueueEntry().getGametype().getElo(profile2) + ")";
+			s2 += " (Elo: " + data.getQueueEntry().getGametype().getElo(profile1) + ")";
 		}
 
-		player1.bukkit().sendMessage(CC.ACCENT + s1);
-		player2.bukkit().sendMessage(CC.ACCENT + s2);
+		profile1.getPlayer().sendMessage(CC.ACCENT + s1);
+		profile2.getPlayer().sendMessage(CC.ACCENT + s2);
 	}
 
 	public void setWorldParameters(World world) {
@@ -197,11 +197,11 @@ public class Match implements Spectatable {
 	}
 
 	public boolean noArenas() {
-		boolean arenaNull = matchData.getArena() == null;
+		boolean arenaNull = data.getArena() == null;
 
 		if (arenaNull) {
-			PlayerManager.broadcast(participants, ErrorMessages.ARENA_NOT_FOUND);
-			end(player1);
+			ProfileManager.broadcast(participants, ErrorMessages.ARENA_NOT_FOUND);
+			end(profile1);
 		}
 
 		return arenaNull;
@@ -209,8 +209,8 @@ public class Match implements Spectatable {
 
 	public void setupLocations(Location location1, Location location2) {
 
-		if (matchData.getGriefing() || matchData.getBuild()) {
-			world = matchData.getArena().generate();
+		if (data.getGriefing() || data.getBuild()) {
+			world = data.getArena().generate();
 			location1.setWorld(world);
 			location2.setWorld(world);
 		}
@@ -220,8 +220,8 @@ public class Match implements Spectatable {
 	}
 
 	public void teleportPlayers(Location location1, Location location2) {
-		player1.teleport(location1);
-		player2.teleport(location2);
+		profile1.teleport(location1);
+		profile2.teleport(location2);
 	}
 
 	public void startCountdown() {
@@ -234,9 +234,10 @@ public class Match implements Spectatable {
 			return;
 
 		MatchManager.registerMatch(this);
-		nameTag.clearTagOnMatchStart(player1.bukkit().getPlayer(), player2.bukkit().getPlayer());
-		Location location1 = matchData.getArena().getLocation1().clone();
-		Location location2 = matchData.getArena().getLocation2().clone();
+    nameTag.clearTagOnMatchStart(player1.bukkit().getPlayer(), player2.bukkit().getPlayer());
+		Location location1 = data.getArena().getLocation1().clone();
+		Location location2 = data.getArena().getLocation2().clone();
+
 		setupLocations(location1, location2);
 		teleportPlayers(location1, location2);
 		handleFollowers();
@@ -255,32 +256,41 @@ public class Match implements Spectatable {
 	}
 
 	public Profile getOpponent(Profile p) {
-		Profile p1 = getPlayer1();
-		return p1.equals(p) ? getPlayer2() : p1;
+		Profile p1 = getProfile1();
+		return p1.equals(p) ? getProfile2() : p1;
+	}
+
+	public CompletableFuture<Void> updateElo(Profile attacker, Profile victim) {
+		Gametype gametype = data.getQueueEntry().getGametype();
+		return gametype.getEloMap(attacker, victim)
+				.thenAccept(map -> {
+					int attackerElo = map.getInt(attacker.getUUID());
+					int victimElo = map.getInt(victim.getUUID());
+					int newAttackerElo = MathUtil.getNewRating(attackerElo, victimElo, true);
+					int newVictimElo = MathUtil.getNewRating(victimElo, attackerElo, false);
+
+					gametype.setElo(newAttackerElo, attacker);
+					gametype.setElo(newVictimElo, victim);
+					gametype.updatePlayerLeaderboard(victim, newVictimElo, victimElo);
+					gametype.updatePlayerLeaderboard(attacker, newAttackerElo, attackerElo);
+
+					String rankedMessage = CC.GREEN + attacker.getName() + " (+" + (newAttackerElo - attackerElo) + ") "
+							+ CC.RED
+							+ victim.getName() + " (" + (newVictimElo - victimElo) + ")";
+					attacker.getPlayer().sendMessage(rankedMessage);
+					victim.getPlayer().sendMessage(rankedMessage);
+				});
+
 	}
 
 	public void end(Profile attacker, Profile victim) {
-		int attackerHealth = (int) attacker.bukkit().getHealth();
+		int attackerHealth = (int) attacker.getPlayer().getHealth();
 		attacker.heal();
 		attacker.removePotionEffects();
-		attacker.bukkit().hidePlayer(victim.bukkit());
+		attacker.getPlayer().hidePlayer(victim.getPlayer());
 
-		String rankedMessage = null;
-
-		if (matchData.isRanked()) {
-			Gametype g = matchData.getQueueEntry().getGametype();
-			int attackerElo = g.getElo(attacker);
-			int victimElo = g.getElo(victim);
-			int newAttackerElo = MathUtil.getNewRating(attackerElo, victimElo, true);
-			int newVictimElo = MathUtil.getNewRating(victimElo, attackerElo, false);
-			rankedMessage = CC.GREEN + attacker.getName() + " (+" + (newAttackerElo - attackerElo) + ") " + CC.RED
-					+ victim.getName() + " (" + (newVictimElo - victimElo) + ")";
-			executor.execute(() -> {
-				g.setElo(newAttackerElo, attacker);
-				g.setElo(newVictimElo, victim);
-				g.updatePlayerLeaderboard(victim, newVictimElo, victimElo);
-				g.updatePlayerLeaderboard(attacker, newAttackerElo, attackerElo);
-			});
+		if (data.isRanked()) {
+			updateElo(attacker, victim);
 		}
 
 		int attackerAmountOfPots = attacker.getNumber(Material.POTION, (short) 16421)
@@ -307,31 +317,30 @@ public class Match implements Spectatable {
 						+ "Hits: " + attacker.getHitCount() + "\n" + CC.GREEN + "Health: " + attackerHealth).create()));
 		losemessage.setClickEvent(new ClickEvent(ClickEvent.Action.RUN_COMMAND, "/viewinventory " + victim.getName()));
 		winmessage.setClickEvent(new ClickEvent(ClickEvent.Action.RUN_COMMAND, "/viewinventory " + attacker.getName()));
-		attacker.bukkit().sendMessage(CC.SEPARATOR);
-		attacker.bukkit().sendMessage(viewinv);
-		attacker.bukkit().spigot().sendMessage(winmessage, splitter, losemessage);
-		victim.bukkit().sendMessage(CC.SEPARATOR);
-		victim.bukkit().sendMessage(viewinv);
-		victim.bukkit().spigot().sendMessage(winmessage, splitter, losemessage);
+		attacker.getPlayer().sendMessage(CC.SEPARATOR);
+		attacker.getPlayer().sendMessage(viewinv);
+		attacker.getPlayer().spigot().sendMessage(winmessage, splitter, losemessage);
+		victim.getPlayer().sendMessage(CC.SEPARATOR);
+		victim.getPlayer().sendMessage(viewinv);
+		victim.getPlayer().spigot().sendMessage(winmessage, splitter, losemessage);
 
-		if (matchData.isRanked()) {
-			attacker.bukkit().sendMessage(rankedMessage);
-			victim.bukkit().sendMessage(rankedMessage);
+		if (data.isRanked()) {
+			updateElo(attacker, victim);
 		}
 
-		attacker.bukkit().sendMessage(CC.SEPARATOR);
-		victim.bukkit().sendMessage(CC.SEPARATOR);
+		attacker.getPlayer().sendMessage(CC.SEPARATOR);
+		victim.getPlayer().sendMessage(CC.SEPARATOR);
 		attacker.setPearlCooldown(0);
 		victim.setPearlCooldown(0);
-		new DefaultScoreboard(player1).setBoard();
-		new DefaultScoreboard(player2).setBoard();
+		new DefaultScoreboard(profile1).setBoard();
+		new DefaultScoreboard(profile2).setBoard();
 		victim.removeFromMatch();
 		MatchManager.remove(this);
 
 		Bukkit.getServer().getScheduler().runTaskLater(PracticePlugin.INSTANCE, new Runnable() {
 			public void run() {
-				if (victim.bukkit().isDead()) {
-					victim.bukkit().getHandle().playerConnection
+				if (victim.getPlayer().isDead()) {
+					victim.getPlayer().getHandle().playerConnection
 							.a(new PacketPlayInClientCommand(EnumClientCommand.PERFORM_RESPAWN));
 				}
 
@@ -351,10 +360,10 @@ public class Match implements Spectatable {
 				nameTag.giveTagAfterMatch(player1.bukkit().getPlayer(), player2.bukkit().getPlayer());
 
 				for (Profile p : getSpectators()) {
-					p.bukkit().sendMessage(CC.SEPARATOR);
-					p.bukkit().sendMessage(viewinv);
-					p.bukkit().spigot().sendMessage(winmessage, splitter, losemessage);
-					p.bukkit().sendMessage(CC.SEPARATOR);
+					p.getPlayer().sendMessage(CC.SEPARATOR);
+					p.getPlayer().sendMessage(viewinv);
+					p.getPlayer().spigot().sendMessage(winmessage, splitter, losemessage);
+					p.getPlayer().sendMessage(CC.SEPARATOR);
 					p.stopSpectating();
 				}
 			}
@@ -365,7 +374,7 @@ public class Match implements Spectatable {
 			return;
 		}
 
-		for (Item item : matchData.getArena().getLocation1().getWorld().getEntitiesByClass(Item.class)) {
+		for (Item item : data.getArena().getLocation1().getWorld().getEntitiesByClass(Item.class)) {
 			EntityHuman lastHolder = ((EntityItem) ((CraftItem) item).getHandle()).lastHolder;
 
 			if (lastHolder == null) {
@@ -402,48 +411,28 @@ public class Match implements Spectatable {
 						.name("Health: " + health).build();
 
 		ItemStack hits = new ItemBuilder(Material.BLAZE_ROD)
-				.name(p.getHitCount() + " Hits").lore("Longest Combo:" + p.getLongestCombo()).build();
+				.name(p.getHitCount() + " Hits").lore("Longest Combo: " + p.getLongestCombo()).build();
 		menu.setSlot(47, hits);
 		menu.setSlot(45, healthItem);
 		menu.setSlot(46, potItem);
 
 		if (this instanceof PartyMatch) {
-			PlayerManager.setPartyInventoryStats(p, menu);
+			ProfileManager.setPartyInventoryStats(p, menu);
 		}
 
-		PlayerManager.setInventoryStats(p, menu);
-		p.clearInventory();
-	}
-
-	public Profile getPlayer1() {
-		return player1;
-	}
-
-	public Profile getPlayer2() {
-		return player2;
-	}
-
-	public GlueList<Location> getBuildLog() {
-		return buildLog;
-	}
-
-	public MatchData getData() {
-		return matchData;
+		ProfileManager.setInventoryStats(p, menu);
+		p.getInventory().clear();
 	}
 
 	public void addParicipants(Profile... players) {
 		participants.addAll(Arrays.asList(players));
 	}
 
-	public ProfileList getParticipants() {
-		return participants;
+	public List<Profile> getTeam(Profile p) {
+		return Arrays.asList(p);
 	}
 
-	public ProfileList getTeam(Profile p) {
-		return new ProfileList(Arrays.asList(p));
-	}
-
-	public void setDisplayNames(Profile player) {
+	private void setDisplayNames(Profile player) {
 
 		org.bukkit.scoreboard.Scoreboard scoreboard = Bukkit.getScoreboardManager().getNewScoreboard();
 
@@ -456,6 +445,6 @@ public class Match implements Spectatable {
 		teammates.addEntry(player.getName());
 		opponents.addEntry(getOpponent(player).getName());
 
-		player.bukkit().setScoreboard(scoreboard);
+		player.getPlayer().setScoreboard(scoreboard);
 	}
 }

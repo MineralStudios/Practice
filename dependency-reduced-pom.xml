@@ -44,32 +44,61 @@
       </plugin>
       <plugin>
         <artifactId>maven-compiler-plugin</artifactId>
-        <version>3.8.0</version>
-        <dependencies>
-          <dependency>
-            <groupId>org.codehaus.plexus</groupId>
-            <artifactId>plexus-compiler-eclipse</artifactId>
-            <version>2.5.0-spigotmc</version>
-          </dependency>
-        </dependencies>
+        <version>3.7.0</version>
         <configuration>
-          <compilerId>eclipse</compilerId>
-          <optimize>true</optimize>
+          <source>1.8</source>
+          <target>1.8</target>
+          <compilerArgs>
+            <arg>-parameters</arg>
+          </compilerArgs>
         </configuration>
       </plugin>
     </plugins>
   </build>
-  <pluginRepositories>
-    <pluginRepository>
-      <id>spigotmc-public</id>
-      <url>https://hub.spigotmc.org/nexus/content/groups/public/</url>
-    </pluginRepository>
-    <pluginRepository>
-      <id>destroystokyo</id>
-      <url>https://ci.destroystokyo.com/plugin/repository/everything/</url>
-    </pluginRepository>
-  </pluginRepositories>
+  <profiles>
+    <profile>
+      <id>build-extras</id>
+      <build>
+        <plugins>
+          <plugin>
+            <groupId>org.projectlombok</groupId>
+            <artifactId>lombok-maven-plugin</artifactId>
+            <version>1.18.20.0</version>
+            <executions>
+              <execution>
+                <id>delombok</id>
+                <phase>generate-sources</phase>
+                <goals>
+                  <goal>delombok</goal>
+                </goals>
+                <configuration>
+                  <addOutputDirectory>false</addOutputDirectory>
+                  <sourceDirectory>src/main/java</sourceDirectory>
+                </configuration>
+              </execution>
+            </executions>
+          </plugin>
+        </plugins>
+      </build>
+    </profile>
+  </profiles>
+  <repositories>
+    <repository>
+      <id>glowstone-internal</id>
+      <url>https://repo.glowstone.net/repository/maven-public/</url>
+    </repository>
+    <repository>
+      <id>glowstone-snapshots</id>
+      <url>https://repo.glowstone.net/repository/snapshots/</url>
+    </repository>
+  </repositories>
   <dependencies>
+    <dependency>
+      <groupId>org.projectlombok</groupId>
+      <artifactId>lombok</artifactId>
+      <version>1.18.20</version>
+      <scope>provided</scope>
+    </dependency>
     <dependency>
       <groupId>gg.mineral</groupId>
       <artifactId>spigot</artifactId>
@@ -78,15 +107,16 @@
       <systemPath>${basedir}/lib/spigot.jar</systemPath>
     </dependency>
   </dependencies>
-  <reporting>
-    <plugins>
-      <plugin>
-        <groupId>com.github.spotbugs</groupId>
-        <artifactId>spotbugs-maven-plugin</artifactId>
-        <version>4.2.1-SNAPSHOT</version>
-      </plugin>
-    </plugins>
-  </reporting>
+  <distributionManagement>
+    <repository>
+      <id>glowstone-upstream</id>
+      <url>https://repo.glowstone.net/content/repositories/releases/</url>
+    </repository>
+    <snapshotRepository>
+      <id>glowstone-upstream</id>
+      <url>https://repo.glowstone.net/content/repositories/snapshots/</url>
+    </snapshotRepository>
+  </distributionManagement>
   <properties>
     <maven.compiler.source>1.8</maven.compiler.source>
     <maven.compiler.target>1.8</maven.compiler.target>

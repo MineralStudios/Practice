@@ -2,25 +2,27 @@ package gg.mineral.practice.managers;
 
 import org.bukkit.configuration.ConfigurationSection;
 
+import gg.mineral.api.collection.GlueList;
+import gg.mineral.api.config.FileConfiguration;
 import gg.mineral.practice.gametype.Catagory;
 import gg.mineral.practice.gametype.Gametype;
 import gg.mineral.practice.queue.Queuetype;
-import gg.mineral.api.collection.GlueList;
-import gg.mineral.api.config.FileConfiguration;
+import lombok.Getter;
 
 public class GametypeManager {
+	@Getter
 	static FileConfiguration config = new FileConfiguration("gametype.yml", "plugins/Practice");
-
-	static GlueList<Gametype> list = new GlueList<>();
+	@Getter
+	static GlueList<Gametype> gametypes = new GlueList<>();
 
 	public static void registerGametype(Gametype gametype) {
-		list.add(gametype);
+		gametypes.add(gametype);
 	}
 
 	public static void remove(Gametype gametype) {
-		list.remove(gametype);
+		gametypes.remove(gametype);
 
-		for (Catagory catagory : CatagoryManager.getCatagorys()) {
+		for (Catagory catagory : CatagoryManager.getCatagories()) {
 			catagory.getGametypes().remove(gametype);
 		}
 
@@ -30,7 +32,7 @@ public class GametypeManager {
 	}
 
 	public boolean contains(Gametype gametype) {
-		for (Gametype g : list) {
+		for (Gametype g : gametypes) {
 			if (g.equals(gametype)) {
 				return true;
 			}
@@ -38,16 +40,8 @@ public class GametypeManager {
 		return false;
 	}
 
-	public static FileConfiguration getConfig() {
-		return config;
-	}
-
-	public static GlueList<Gametype> getGametypes() {
-		return list;
-	}
-
 	public static Gametype getGametypeByName(String string) {
-		for (Gametype g : list) {
+		for (Gametype g : gametypes) {
 			if (g.getName().equalsIgnoreCase(string)) {
 				return g;
 			}

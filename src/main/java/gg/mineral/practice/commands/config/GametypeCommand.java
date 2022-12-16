@@ -116,7 +116,7 @@ public class GametypeCommand extends PlayerCommand {
 				ItemStack[] contents = player.getInventory().getContents();
 				ItemStack[] armourContents = player.getInventory().getArmorContents();
 
-				gametype.setKit(new Kit(contents, armourContents));
+				gametype.setKit(new Kit(gametype.getName(), contents, armourContents));
 				ChatMessages.GAMETYPE_KIT_SET.clone().replace("%gametype%", gametypeName).send(player);
 
 				return;

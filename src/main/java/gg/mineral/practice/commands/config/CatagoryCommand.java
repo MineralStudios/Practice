@@ -183,7 +183,7 @@ public class CatagoryCommand extends PlayerCommand {
 			case "list":
 				sb = new StringBuilder(CC.GRAY + "[");
 
-				Iterator<Catagory> catagoryIter = CatagoryManager.getCatagorys().iterator();
+				Iterator<Catagory> catagoryIter = CatagoryManager.getCatagories().iterator();
 
 				while (catagoryIter.hasNext()) {
 					Catagory c = catagoryIter.next();

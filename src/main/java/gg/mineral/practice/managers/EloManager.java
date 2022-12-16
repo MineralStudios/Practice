@@ -2,155 +2,137 @@ package gg.mineral.practice.managers;
 
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
+import java.sql.SQLException;
 import java.util.UUID;
+import java.util.concurrent.CompletableFuture;
 
+import gg.mineral.practice.entity.Profile;
+import gg.mineral.practice.gametype.Gametype;
 import gg.mineral.practice.sql.SQLManager;
 import gg.mineral.practice.util.collection.LeaderboardMap;
-import gg.mineral.practice.entity.Profile;
 
 public class EloManager {
-	public static String table = "Elo";
+	final static String TABLE = "Elo";
 
 	public EloManager() {
 		try {
-			AutoCloseable[] stmt = SQLManager.prepare("CREATE TABLE IF NOT EXISTS " + table
-					+ " (GAMETYPE VARCHAR(200),UUID VARCHAR(200),PLAYER VARCHAR(200),ELO INT NOT NULL)");
+			AutoCloseable[] stmt = SQLManager.prepare("CREATE TABLE IF NOT EXISTS " + TABLE
+					+ " (ELO INT NOT NULL, PLAYER VARCHAR(200), GAMETYPE VARCHAR(200), UUID VARCHAR(200))");
 			SQLManager.execute(stmt);
 			SQLManager.close(stmt);
 		} catch (Exception e) {
-			System.out.println("FAILED TO CONNECT TO DATABASE");
+			e.printStackTrace();
 		}
 	}
 
-	public static void updateElo(Profile p, String g, int elo) {
-		try {
-			if (eloEntryExists(p.getUUID().toString(), g)) {
+	public static CompletableFuture<Void> update(Profile p, String g, int elo) {
+		return CompletableFuture.runAsync(() -> {
+			try {
 				AutoCloseable[] statement = SQLManager
-						.prepare("UPDATE " + table + " SET ELO=? WHERE GAMETYPE=? AND UUID=?");
+						.prepare(exists(p.getUUID().toString(), g)
+								? "UPDATE " + TABLE + " SET ELO=?, PLAYER=? WHERE GAMETYPE=? AND UUID=?"
+								: "INSERT INTO " + TABLE + " (ELO, PLAYER, GAMETYPE, UUID, ) VALUES (?, ?, ?, ?)");
 				PreparedStatement stmt = (PreparedStatement) statement[0];
 				stmt.setInt(1, elo);
-				stmt.setString(2, g);
-				stmt.setString(3, p.getUUID().toString());
+				stmt.setString(2, p.getName());
+				stmt.setString(3, g);
+				stmt.setString(4, p.getUUID().toString());
 				SQLManager.execute(statement);
 				SQLManager.close(statement);
-				return;
+			} catch (SQLException e) {
+				e.printStackTrace();
 			}
-
-			setEloEntry(p, g, elo);
-		} catch (Exception e) {
-			System.out.println("FAILED TO CONNECT TO DATABASE");
-		}
+		});
 	}
 
-	public static boolean eloEntryExists(String uuid, String g) {
+	private static boolean exists(String uuid, String g) throws SQLException {
+		AutoCloseable[] statement = SQLManager.prepare("SELECT * FROM " + TABLE + " WHERE GAMETYPE=? AND UUID=?");
+		PreparedStatement stmt = (PreparedStatement) statement[0];
+		stmt.setString(1, g);
+		stmt.setString(2, uuid);
+		AutoCloseable[] results = SQLManager.executeQuery(stmt);
+		ResultSet r = (ResultSet) results[0];
+
+		boolean returnVal = r.next();
+
+		SQLManager.close(statement);
+		SQLManager.close(results);
+
+		return returnVal;
+	}
+
+	public static CompletableFuture<Integer> get(Gametype gametype, UUID uuid) {
+		return CompletableFuture.supplyAsync(() -> {
+			try {
+				AutoCloseable[] statement = SQLManager
+						.prepare("SELECT * FROM " + TABLE + " WHERE GAMETYPE=? AND UUID=?");
+				PreparedStatement stmt = (PreparedStatement) statement[0];
+				stmt.setString(1, gametype.getName());
+				stmt.setString(2, uuid.toString());
+				AutoCloseable[] results = SQLManager.executeQuery(stmt);
+				ResultSet r = (ResultSet) results[0];
+
+				int returnVal = r.next() ? r.getInt("ELO") : 1000;
+
+				SQLManager.close(results);
+				SQLManager.close(statement);
+
+				return returnVal;
+			} catch (SQLException e) {
+				e.printStackTrace();
+				return 1000;
+			}
+		});
+	}
+
+	public static CompletableFuture<Integer> get(Gametype gametype, String playerName) {
+		return CompletableFuture.supplyAsync(() -> {
+			try {
+				AutoCloseable[] statement = SQLManager
+						.prepare("SELECT * FROM " + TABLE + " WHERE PLAYER=? AND GAMETYPE=?");
+				PreparedStatement stmt = (PreparedStatement) statement[0];
+				stmt.setString(1, playerName);
+				stmt.setString(2, gametype.getName());
+				AutoCloseable[] results = SQLManager.executeQuery(stmt);
+				ResultSet r = (ResultSet) results[0];
+
+				int returnVal = r.next() ? r.getInt("ELO") : 1000;
+
+				SQLManager.close(results);
+				SQLManager.close(statement);
+
+				return returnVal;
+			} catch (SQLException e) {
+				e.printStackTrace();
+				return 1000;
+			}
+		});
+	}
+
+	public static LeaderboardMap getLeaderboardMap(Gametype gametype) {
 		try {
-			AutoCloseable[] statement = SQLManager.prepare("SELECT * FROM " + table + " WHERE GAMETYPE=? AND UUID=?");
+			LeaderboardMap map = new LeaderboardMap();
+
+			AutoCloseable[] statement = SQLManager.prepare("SELECT * FROM " + TABLE + " WHERE GAMETYPE=?");
 			PreparedStatement stmt = (PreparedStatement) statement[0];
-			stmt.setString(1, g);
-			stmt.setString(2, uuid);
-			AutoCloseable[] results = SQLManager.executeQuery(stmt);
-			ResultSet r = (ResultSet) results[0];
-
-			boolean returnVal = r.next();
-
-			SQLManager.close(statement);
-			SQLManager.close(results);
-
-			return returnVal;
-
-		} catch (Exception e) {
-			System.out.println("FAILED TO CONNECT TO DATABASE");
-		}
-		return false;
-	}
-
-	public static void setEloEntry(final Profile p, final String g, int elo) {
-		if (elo == 1000) {
-			return;
-		}
-
-		try {
-			AutoCloseable[] insert = SQLManager
-					.prepare("INSERT INTO " + table + " (GAMETYPE, UUID, PLAYER, ELO) VALUES (?, ?, ?, ?)");
-			PreparedStatement stmt = (PreparedStatement) insert[0];
-			stmt.setString(1, g);
-			stmt.setString(2, p.getUUID().toString());
-			stmt.setString(3, p.getName());
-			stmt.setInt(4, elo);
-			SQLManager.execute(insert);
-			SQLManager.close(insert);
-		} catch (Exception e) {
-			System.out.println("FAILED TO CONNECT TO DATABASE");
-		}
-	}
-
-	public static int getEloEntry(String g, UUID uuid) {
-
-		try {
-			AutoCloseable[] statement = SQLManager.prepare("SELECT * FROM " + table + " WHERE GAMETYPE=? AND UUID=?");
-			PreparedStatement stmt = (PreparedStatement) statement[0];
-			stmt.setString(1, g);
-			stmt.setString(2, uuid.toString());
-			AutoCloseable[] results = SQLManager.executeQuery(stmt);
-			ResultSet r = (ResultSet) results[0];
-
-			int returnVal = r.next() ? r.getInt("ELO") : 1000;
-
-			SQLManager.close(results);
-			SQLManager.close(statement);
-
-			return returnVal;
-		} catch (Exception e) {
-			System.out.println("FAILED TO CONNECT TO DATABASE");
-		}
-		return 1000;
-	}
-
-	public static int getEloEntry(String g, String name) {
-
-		try {
-			AutoCloseable[] statement = SQLManager.prepare("SELECT * FROM " + table + " WHERE GAMETYPE=? AND PLAYER=?");
-			PreparedStatement stmt = (PreparedStatement) statement[0];
-			stmt.setString(1, g);
-			stmt.setString(2, name);
-			AutoCloseable[] results = SQLManager.executeQuery(stmt);
-			ResultSet r = (ResultSet) results[0];
-
-			int returnVal = r.next() ? r.getInt("ELO") : 1000;
-
-			SQLManager.close(results);
-			SQLManager.close(statement);
-
-			return returnVal;
-		} catch (Exception e) {
-			System.out.println("FAILED TO CONNECT TO DATABASE");
-		}
-		return 1000;
-	}
-
-	public static LeaderboardMap getLeaderboardMap(String g) {
-		LeaderboardMap map = new LeaderboardMap();
-
-		try {
-			AutoCloseable[] statement = SQLManager.prepare("SELECT * FROM " + table + " WHERE GAMETYPE=?");
-			PreparedStatement stmt = (PreparedStatement) statement[0];
-			stmt.setString(1, g);
+			stmt.setString(1, gametype.getName());
 			AutoCloseable[] results = SQLManager.executeQuery(stmt);
 			ResultSet r = (ResultSet) results[0];
 
 			while (r.next()) {
-				String value = r.getString("PLAYER");
-				int elo = r.getInt("ELO");
-				map.put(value, elo);
+
+				map.put(r.getString("PLAYER"), r.getInt("ELO"));
+
 			}
 
 			SQLManager.close(statement);
 			SQLManager.close(results);
 
-		} catch (Exception e) {
-			System.out.println("FAILED TO CONNECT TO DATABASE");
-		}
+			return map;
 
-		return map;
+		} catch (SQLException e) {
+			e.printStackTrace();
+			return null;
+		}
 	}
 }

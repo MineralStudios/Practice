@@ -46,7 +46,7 @@ public class SelectGametypeMenu extends PracticeMenu {
 
 			if (lore) {
 				int InGame = 0;
-				for (Match match : MatchManager.getMatchs()) {
+				for (Match match : MatchManager.getMatches()) {
 					QueueEntry queueEntry = match.getData().getQueueEntry();
 
 					if (queueEntry == null) {

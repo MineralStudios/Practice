@@ -31,7 +31,7 @@ public class SelectEventMenu extends PracticeMenu {
             Runnable runnable = new Runnable() {
                 @Override
                 public void run() {
-                    viewer.bukkit().closeInventory();
+                    viewer.getPlayer().closeInventory();
 
                     viewer.getMatchData().setGametype(g);
 

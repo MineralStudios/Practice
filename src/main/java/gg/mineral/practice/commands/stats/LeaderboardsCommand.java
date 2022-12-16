@@ -2,7 +2,7 @@ package gg.mineral.practice.commands.stats;
 
 import gg.mineral.practice.commands.PlayerCommand;
 import gg.mineral.practice.inventory.menus.LeaderboardMenu;
-import gg.mineral.practice.managers.PlayerManager;
+import gg.mineral.practice.managers.ProfileManager;
 
 public class LeaderboardsCommand extends PlayerCommand {
 
@@ -13,6 +13,6 @@ public class LeaderboardsCommand extends PlayerCommand {
 
 	@Override
 	public void execute(org.bukkit.entity.Player pl, String[] args) {
-		PlayerManager.getProfile(pl).openMenu(new LeaderboardMenu());
+		ProfileManager.getOrCreateProfile(pl).openMenu(new LeaderboardMenu());
 	}
 }

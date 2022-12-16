@@ -1,8 +1,7 @@
 package gg.mineral.practice.commands.config;
 
 import gg.mineral.practice.commands.PlayerCommand;
-
-import gg.mineral.practice.kit.KitEditorManager;
+import gg.mineral.practice.managers.KitEditorManager;
 import gg.mineral.practice.util.messages.impl.ChatMessages;
 import gg.mineral.practice.util.messages.impl.ErrorMessages;
 import gg.mineral.practice.util.messages.impl.UsageMessages;

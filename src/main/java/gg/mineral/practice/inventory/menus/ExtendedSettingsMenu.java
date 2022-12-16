@@ -18,11 +18,11 @@ public class ExtendedSettingsMenu extends PracticeMenu {
 		setSlot(0,
 				new ItemBuilder(Material.GOLDEN_CARROT)
 						.name("Toggle Player Visibility").build(),
-				p -> p.bukkit().performCommand("toggleplayervisibility"));
+				p -> p.getPlayer().performCommand("toggleplayervisibility"));
 		setSlot(1,
 				new ItemBuilder(Material.WOOD_SWORD)
 						.name("Toggle Duel Requests").build(),
-				p -> p.bukkit().performCommand("toggleduelrequests"));
+				p -> p.getPlayer().performCommand("toggleduelrequests"));
 		return true;
 	}
 }

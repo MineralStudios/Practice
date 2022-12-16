@@ -2,6 +2,7 @@ gg/mineral/practice/inventory/menus/ExtendedSettingsMenu.class
 gg/mineral/practice/match/EventMatch.class
 gg/mineral/practice/inventory/menus/SelectEventMenu$1.class
 gg/mineral/practice/listeners/BuildListener.class
+gg/mineral/practice/listeners/EntryListener$1.class
 gg/mineral/practice/match/PartyMatch$1.class
 gg/mineral/practice/commands/config/KitEditorCommand.class
 gg/mineral/practice/inventory/menus/PearlCooldownMenu.class
@@ -26,7 +27,6 @@ gg/mineral/practice/match/PartyMatch.class
 gg/mineral/practice/listeners/MovementListener.class
 gg/mineral/practice/util/PlayerUtil.class
 gg/mineral/practice/inventory/menus/LeaderboardMenu.class
-gg/mineral/practice/kit/KitEditorManager.class
 gg/mineral/practice/managers/TournamentManager.class
 gg/mineral/practice/commands/config/ArenaCommand.class
 gg/mineral/practice/commands/stats/EloCommand.class
@@ -60,6 +60,7 @@ gg/mineral/practice/inventory/menus/InventoryStatsMenu.class
 gg/mineral/practice/commands/stats/ViewInventoryCommand.class
 gg/mineral/practice/commands/stats/LeaderboardsCommand.class
 gg/mineral/practice/sql/SQLManager.class
+gg/mineral/practice/managers/ProfileManager.class
 gg/mineral/practice/listeners/ComsumeListener.class
 gg/mineral/practice/scoreboard/impl/BoxingScoreboard.class
 gg/mineral/practice/commands/settings/ExtendedSettingsCommand.class
@@ -69,6 +70,7 @@ gg/mineral/practice/commands/spectator/SpectateCommand.class
 gg/mineral/practice/util/messages/impl/UsageMessages.class
 gg/mineral/practice/managers/EloManager.class
 gg/mineral/practice/inventory/menus/MechanicsMenu$2.class
+gg/mineral/practice/managers/KitEditorManager.class
 gg/mineral/practice/inventory/menus/SaveLoadKitsMenu.class
 gg/mineral/practice/commands/config/GametypeCommand.class
 gg/mineral/practice/util/items/ItemStacks.class
@@ -128,8 +130,8 @@ gg/mineral/practice/queue/QueueEntry.class
 gg/mineral/practice/scoreboard/impl/DefaultScoreboard.class
 gg/mineral/practice/listeners/DamageListener.class
 gg/mineral/practice/scoreboard/Board$TeamMode.class
+gg/mineral/practice/listeners/ComsumeListener$1.class
 gg/mineral/practice/inventory/menus/SelectCategorizedGametypeMenu.class
-gg/mineral/practice/managers/PlayerManager.class
 gg/mineral/practice/util/messages/UsageMessage.class
 gg/mineral/practice/managers/GametypeManager.class
 gg/mineral/practice/commands/config/CatagoryCommand.class
