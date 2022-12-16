@@ -104,7 +104,7 @@ public class DamageListener implements Listener {
 		attacker.increaseHitCount();
 		victim.resetCombo();
 
-		if (attacker.getHitCount() >= 100 && attacker.getMatchData().getBoxing()) {
+		if (attacker.getHitCount() >= 100 && attacker.getMatch().getData().getBoxing()) {
 			victim.getMatch().end(victim);
 			return;
 		}

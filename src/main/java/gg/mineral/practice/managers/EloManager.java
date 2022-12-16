@@ -2,7 +2,6 @@ package gg.mineral.practice.managers;
 
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
-import java.sql.SQLException;
 import java.util.UUID;
 import java.util.concurrent.CompletableFuture;
 
@@ -39,13 +38,13 @@ public class EloManager {
 				stmt.setString(4, p.getUUID().toString());
 				SQLManager.execute(statement);
 				SQLManager.close(statement);
-			} catch (SQLException e) {
+			} catch (Exception e) {
 				e.printStackTrace();
 			}
 		});
 	}
 
-	private static boolean exists(String uuid, String g) throws SQLException {
+	private static boolean exists(String uuid, String g) throws Exception {
 		AutoCloseable[] statement = SQLManager.prepare("SELECT * FROM " + TABLE + " WHERE GAMETYPE=? AND UUID=?");
 		PreparedStatement stmt = (PreparedStatement) statement[0];
 		stmt.setString(1, g);
@@ -78,7 +77,7 @@ public class EloManager {
 				SQLManager.close(statement);
 
 				return returnVal;
-			} catch (SQLException e) {
+			} catch (Exception e) {
 				e.printStackTrace();
 				return 1000;
 			}
@@ -102,7 +101,7 @@ public class EloManager {
 				SQLManager.close(statement);
 
 				return returnVal;
-			} catch (SQLException e) {
+			} catch (Exception e) {
 				e.printStackTrace();
 				return 1000;
 			}
@@ -130,7 +129,7 @@ public class EloManager {
 
 			return map;
 
-		} catch (SQLException e) {
+		} catch (Exception e) {
 			e.printStackTrace();
 			return null;
 		}
