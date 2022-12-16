@@ -289,10 +289,6 @@ public class Match implements Spectatable {
 		attacker.removePotionEffects();
 		attacker.getPlayer().hidePlayer(victim.getPlayer());
 
-		if (data.isRanked()) {
-			updateElo(attacker, victim);
-		}
-
 		int attackerAmountOfPots = attacker.getNumber(Material.POTION, (short) 16421)
 				+ attacker.getNumber(Material.MUSHROOM_SOUP);
 
@@ -325,7 +321,13 @@ public class Match implements Spectatable {
 		victim.getPlayer().spigot().sendMessage(winmessage, splitter, losemessage);
 
 		if (data.isRanked()) {
-			updateElo(attacker, victim);
+			updateElo(attacker, victim).whenComplete((type, ex) -> {
+				attacker.getPlayer().sendMessage(CC.SEPARATOR);
+				victim.getPlayer().sendMessage(CC.SEPARATOR);
+			});
+		} else {
+			attacker.getPlayer().sendMessage(CC.SEPARATOR);
+			victim.getPlayer().sendMessage(CC.SEPARATOR);
 		}
 
 		attacker.getPlayer().sendMessage(CC.SEPARATOR);

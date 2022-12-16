@@ -13,7 +13,7 @@ import gg.mineral.practice.util.collection.LeaderboardMap;
 public class EloManager {
 	final static String TABLE = "Elo";
 
-	public EloManager() {
+	static {
 		try {
 			AutoCloseable[] stmt = SQLManager.prepare("CREATE TABLE IF NOT EXISTS " + TABLE
 					+ " (ELO INT NOT NULL, PLAYER VARCHAR(200), GAMETYPE VARCHAR(200), UUID VARCHAR(200))");
@@ -30,7 +30,7 @@ public class EloManager {
 				AutoCloseable[] statement = SQLManager
 						.prepare(exists(p.getUUID().toString(), g)
 								? "UPDATE " + TABLE + " SET ELO=?, PLAYER=? WHERE GAMETYPE=? AND UUID=?"
-								: "INSERT INTO " + TABLE + " (ELO, PLAYER, GAMETYPE, UUID, ) VALUES (?, ?, ?, ?)");
+								: "INSERT INTO " + TABLE + " (ELO, PLAYER, GAMETYPE, UUID) VALUES (?, ?, ?, ?)");
 				PreparedStatement stmt = (PreparedStatement) statement[0];
 				stmt.setInt(1, elo);
 				stmt.setString(2, p.getName());
@@ -44,10 +44,10 @@ public class EloManager {
 		});
 	}
 
-	private static boolean exists(String uuid, String g) throws Exception {
+	private static boolean exists(String uuid, String gametypeName) throws Exception {
 		AutoCloseable[] statement = SQLManager.prepare("SELECT * FROM " + TABLE + " WHERE GAMETYPE=? AND UUID=?");
 		PreparedStatement stmt = (PreparedStatement) statement[0];
-		stmt.setString(1, g);
+		stmt.setString(1, gametypeName);
 		stmt.setString(2, uuid);
 		AutoCloseable[] results = SQLManager.executeQuery(stmt);
 		ResultSet r = (ResultSet) results[0];

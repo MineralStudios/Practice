@@ -58,6 +58,7 @@ public class LeaderboardMap {
                 // above on leaderboard
                 lastIndex = midIndex;
             } else {
+
                 return midIndex;
             }
 
@@ -72,6 +73,12 @@ public class LeaderboardMap {
                 : elo <= get(entryList.size() - 1).getValue() ? entryList.size() : binarySearch(elo);
     }
 
+    private int findPositionOfEntry(int elo) {
+        int lastIndex = entryList.size() - 1;
+        return entryList.isEmpty() ? 0
+                : elo == get(lastIndex).getValue() ? lastIndex : binarySearch(elo);
+    }
+
     public Entry get(int index) {
         return entryList.get(index);
     }
@@ -84,9 +91,24 @@ public class LeaderboardMap {
         }
     }
 
+    public void putOrReplace(String key, int value, int oldValue) {
+        int oldPosition = findPositionOfEntry(oldValue);
+        Entry oldEntry = entryList.size() - 1 < oldPosition ? null : entryList.get(oldPosition);
+
+        if (oldEntry != null && oldEntry.getKey().equalsIgnoreCase(key)) {
+            entryList.remove(oldPosition);
+        }
+
+        entryList.add(findPosition(value), new Entry(key, value));
+
+        if (entryList.size() > size) {
+            entryList.remove(entryList.size() - 1);
+        }
+    }
+
     public void replace(String key, int value, int oldValue) {
 
-        Entry oldEntry = entryList.remove(findPosition(oldValue));
+        Entry oldEntry = entryList.remove(findPositionOfEntry(oldValue));
         oldEntry.setValue(value);
 
         entryList.add(findPosition(value), oldEntry);

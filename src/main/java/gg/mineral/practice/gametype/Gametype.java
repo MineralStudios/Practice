@@ -86,12 +86,8 @@ public class Gametype implements SaveableData {
 		EloManager.update(profile, getName(), elo);
 	}
 
-	public void setElo(Integer elo, Profile profile) {
+	public void setElo(int elo, Profile profile) {
 		this.eloMap.put(profile, elo);
-
-		if (elo == null) {
-			return;
-		}
 
 		EloManager.update(profile, getName(), elo);
 	}
@@ -210,6 +206,11 @@ public class Gametype implements SaveableData {
 	}
 
 	public void updatePlayerLeaderboard(Profile p, int elo, int oldElo) {
+		if (oldElo == 1000) {
+			leaderboardMap.putOrReplace(p.getName(), elo, oldElo);
+			return;
+		}
+
 		leaderboardMap.replace(p.getName(), elo, oldElo);
 	}
 
