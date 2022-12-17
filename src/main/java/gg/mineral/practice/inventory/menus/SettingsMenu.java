@@ -23,7 +23,7 @@ public class SettingsMenu extends PracticeMenu {
 				new ItemBuilder(Material.WOOD_SWORD)
 						.name("Toggle Duel Requests").build(),
 				p -> p.getPlayer().performCommand("toggleduelrequests"));
-		setSlot(1,
+		setSlot(2,
 				new ItemBuilder(Material.NETHER_STAR)
 						.name("Toggle Party Requests").build(),
 				p -> p.getPlayer().performCommand("togglepartyrequests"));
