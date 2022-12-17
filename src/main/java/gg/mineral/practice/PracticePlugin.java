@@ -66,11 +66,7 @@ public class PracticePlugin extends JavaPlugin {
 		String username = databaseDetails.getString("username", "username");
 		String password = databaseDetails.getString("password", "password");
 
-		try {
-			SQLManager.initialize(host, port, database, username, password);
-		} catch (Exception e) {
-			System.out.println("FAILED TO CONNECT TO DATABASE");
-		}
+		SQLManager.initialize(host, port, database, username, password);
 
 		INSTANCE = this;
 

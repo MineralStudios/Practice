@@ -1,7 +1,6 @@
 package gg.mineral.practice.scoreboard.impl;
 
 import org.bukkit.Bukkit;
-import org.bukkit.scheduler.BukkitScheduler;
 
 import gg.mineral.practice.PracticePlugin;
 import gg.mineral.practice.entity.PlayerStatus;
@@ -14,8 +13,6 @@ import lombok.Setter;
 
 public class DefaultScoreboard {
 	Profile profile;
-	Board board;
-	DefaultScoreboard instance;
 	@Setter
 	@Getter
 	int updateFrequency = 20;
@@ -27,32 +24,25 @@ public class DefaultScoreboard {
 	int taskID;
 
 	public void setBoard() {
-		if (profile.getScoreboard() != null)
+		if (profile.getScoreboard() != null) {
 			profile.getScoreboard().remove();
-
-		Board board;
-
-		try {
-			board = new Board(profile.getPlayer());
-		} catch (Exception e) {
-			return;
 		}
 
-		board.updateTitle(CC.PRIMARY + CC.B + "Mineral");
-		this.board = board;
-		instance = this;
-		profile.setScoreboard(this);
-		BukkitScheduler scheduler = Bukkit.getServer().getScheduler();
-		taskID = scheduler.scheduleSyncRepeatingTask(PracticePlugin.INSTANCE, new Runnable() {
-			@Override
-			public void run() {
-				if (profile.getScoreboard() != null)
-					if (profile.getScoreboard().equals(instance))
-						updateBoard(board);
-					else
-						remove();
-			}
-		}, 0, getUpdateFrequency());
+		try {
+			Board board = new Board(profile.getPlayer());
+
+			board.updateTitle(CC.PRIMARY + CC.B + "Mineral");
+			profile.setScoreboard(this);
+
+			taskID = Bukkit.getServer().getScheduler().scheduleSyncRepeatingTask(PracticePlugin.INSTANCE, () -> {
+				if (profile.getScoreboard() != null
+						&& profile.getScoreboard().equals(DefaultScoreboard.this))
+					updateBoard(board);
+				else
+					remove();
+			}, 0, getUpdateFrequency());
+		} catch (Exception e) {
+		}
 	}
 
 	public void updateBoard(Board board) {

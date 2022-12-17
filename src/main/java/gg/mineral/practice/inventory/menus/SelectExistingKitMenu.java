@@ -33,18 +33,15 @@ public class SelectExistingKitMenu extends PracticeMenu {
             ItemStack item = new ItemBuilder(g.getDisplayItem())
                     .name(g.getDisplayName()).lore().build();
 
-            Runnable runnable = new Runnable() {
-                @Override
-                public void run() {
+            Runnable runnable = () -> {
 
-                    if (simple) {
-                        viewer.getMatchData().setGametype(g);
-                    } else {
-                        viewer.getMatchData().setKit(g.getKit());
-                    }
-
-                    viewer.openMenu(menu);
+                if (simple) {
+                    viewer.getMatchData().setGametype(g);
+                } else {
+                    viewer.getMatchData().setKit(g.getKit());
                 }
+
+                viewer.openMenu(menu);
             };
 
             add(item, runnable);

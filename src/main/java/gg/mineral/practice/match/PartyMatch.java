@@ -5,8 +5,6 @@ import java.util.List;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.Material;
-import org.bukkit.craftbukkit.v1_8_R3.entity.CraftItem;
-import org.bukkit.entity.Item;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.scoreboard.Team;
 
@@ -17,16 +15,14 @@ import gg.mineral.practice.match.data.MatchData;
 import gg.mineral.practice.party.Party;
 import gg.mineral.practice.scoreboard.impl.DefaultScoreboard;
 import gg.mineral.practice.scoreboard.impl.PartyMatchScoreboard;
+import gg.mineral.practice.util.PlayerUtil;
 import gg.mineral.practice.util.collection.ProfileList;
 import gg.mineral.practice.util.messages.CC;
-import net.minecraft.server.v1_8_R3.EntityHuman;
-import net.minecraft.server.v1_8_R3.EntityItem;
 import net.minecraft.server.v1_8_R3.PacketPlayInClientCommand;
 import net.minecraft.server.v1_8_R3.PacketPlayInClientCommand.EnumClientCommand;
 
 public class PartyMatch extends Match {
-	public ProfileList team1RemainingPlayers;
-	public ProfileList team2RemainingPlayers;
+	ProfileList team1RemainingPlayers, team2RemainingPlayers;
 
 	public PartyMatch(Party party1, Party party2, MatchData matchData) {
 		super(matchData);
@@ -69,13 +65,13 @@ public class PartyMatch extends Match {
 		for (i = 0; i < team1RemainingPlayers.size(); i++) {
 			Profile player1m = team1RemainingPlayers.get(i);
 			prepareForMatch(player1m, team1sb);
-			player1m.teleport(location1);
+			PlayerUtil.teleport(player1m.getPlayer(), location1);
 		}
 
 		for (i = 0; i < team2RemainingPlayers.size(); i++) {
 			Profile player2m = team2RemainingPlayers.get(i);
 			prepareForMatch(player2m, team2sb);
-			player2m.teleport(location2);
+			PlayerUtil.teleport(player2m.getPlayer(), location2);
 		}
 
 		startCountdown();
@@ -108,8 +104,9 @@ public class PartyMatch extends Match {
 			attackerParty = team1RemainingPlayers;
 		}
 
-		int victimAmountOfPots = victim.getNumber(Material.POTION, (short) 16421)
-				+ victim.getNumber(Material.MUSHROOM_SOUP, new ItemStack(Material.MUSHROOM_SOUP).getDurability());
+		int victimAmountOfPots = victim.getInventory().getNumber(Material.POTION, (short) 16421)
+				+ victim.getInventory().getNumber(Material.MUSHROOM_SOUP,
+						new ItemStack(Material.MUSHROOM_SOUP).getDurability());
 
 		setInventoryStats(victim, 0, victimAmountOfPots);
 		victim.setPearlCooldown(0);
@@ -121,25 +118,24 @@ public class PartyMatch extends Match {
 			ended = true;
 
 			for (int i = 0; i < attackerParty.size(); i++) {
-				Profile a = attackerParty.get(i);
-				int attackerHealth = (int) a.getPlayer().getHealth();
-				a.heal();
-				a.removePotionEffects();
-				int attackerAmountOfPots = a.getNumber(Material.POTION, (short) 16421)
-						+ a.getNumber(Material.MUSHROOM_SOUP, new ItemStack(Material.MUSHROOM_SOUP).getDurability());
-				setInventoryStats(a, attackerHealth, attackerAmountOfPots);
-				a.getPlayer().sendMessage(CC.GOLD + "You won");
-				a.setPearlCooldown(0);
-				new DefaultScoreboard(a).setBoard();
-				a.removeFromMatch();
-				Bukkit.getServer().getScheduler().runTaskLater(PracticePlugin.INSTANCE, new Runnable() {
-					public void run() {
-						a.teleportToLobby();
-						if (a.isInParty()) {
-							a.setInventoryForParty();
-						} else {
-							a.setInventoryForLobby();
-						}
+				Profile attacker = attackerParty.get(i);
+				int attackerHealth = (int) attacker.getPlayer().getHealth();
+				attacker.heal();
+				attacker.removePotionEffects();
+				int attackerAmountOfPots = attacker.getInventory().getNumber(Material.POTION, (short) 16421)
+						+ attacker.getInventory().getNumber(Material.MUSHROOM_SOUP,
+								new ItemStack(Material.MUSHROOM_SOUP).getDurability());
+				setInventoryStats(attacker, attackerHealth, attackerAmountOfPots);
+				attacker.getPlayer().sendMessage(CC.GOLD + "You won");
+				attacker.setPearlCooldown(0);
+				new DefaultScoreboard(attacker).setBoard();
+				attacker.removeFromMatch();
+				Bukkit.getServer().getScheduler().runTaskLater(PracticePlugin.INSTANCE, () -> {
+					attacker.teleportToLobby();
+					if (attacker.isInParty()) {
+						attacker.setInventoryForParty();
+					} else {
+						attacker.setInventoryForLobby();
 					}
 				}, 40);
 
@@ -150,37 +146,28 @@ public class PartyMatch extends Match {
 			nameTag.giveTagAfterMatch(profile1.getPlayer(), profile2.getPlayer());
 			new DefaultScoreboard(victim).setBoard();
 
-			Bukkit.getServer().getScheduler().runTaskLater(PracticePlugin.INSTANCE, new Runnable() {
-				public void run() {
-					if (victim.getPlayer().isDead()) {
-						victim.getPlayer().getHandle().playerConnection
-								.a(new PacketPlayInClientCommand(EnumClientCommand.PERFORM_RESPAWN));
-					}
-
-					victim.removePotionEffects();
-					victim.teleportToLobby();
-
-					if (victim.isInParty()) {
-						victim.setInventoryForParty();
-					} else {
-						victim.setInventoryForLobby();
-					}
+			Bukkit.getServer().getScheduler().runTaskLater(PracticePlugin.INSTANCE, () -> {
+				if (victim.getPlayer().isDead()) {
+					victim.getPlayer().getHandle().playerConnection
+							.a(new PacketPlayInClientCommand(EnumClientCommand.PERFORM_RESPAWN));
 				}
+
+				victim.removePotionEffects();
+				victim.teleportToLobby();
+
+				if (victim.isInParty()) {
+					victim.setInventoryForParty();
+				} else {
+					victim.setInventoryForLobby();
+				}
+
+				for (Profile p : getSpectators()) {
+					p.stopSpectating();
+				}
+
+				clearWorld();
+
 			}, 1);
-
-			for (Profile p : getSpectators()) {
-				p.stopSpectating();
-			}
-
-			for (Item item : data.getArena().getLocation1().getWorld().getEntitiesByClass(Item.class)) {
-				EntityHuman lastHolder = ((EntityItem) ((CraftItem) item).getHandle()).lastHolder;
-
-				for (Profile participant : participants) {
-					if (lastHolder.getBukkitEntity().getUniqueId() == participant.getUUID()) {
-						item.remove();
-					}
-				}
-			}
 
 			return;
 		}
@@ -188,18 +175,15 @@ public class PartyMatch extends Match {
 		remaining.remove(victim);
 		participants.remove(victim);
 
-		Bukkit.getServer().getScheduler().runTaskLater(PracticePlugin.INSTANCE, new Runnable() {
-
-			public void run() {
-				if (victim.getPlayer().isDead()) {
-					victim.getPlayer().getHandle().playerConnection
-							.a(new PacketPlayInClientCommand(EnumClientCommand.PERFORM_RESPAWN));
-				}
-
-				victim.removePotionEffects();
-				victim.spectate(remaining.get(0));
-				new DefaultScoreboard(victim).setBoard();
+		Bukkit.getServer().getScheduler().runTaskLater(PracticePlugin.INSTANCE, () -> {
+			if (victim.getPlayer().isDead()) {
+				victim.getPlayer().getHandle().playerConnection
+						.a(new PacketPlayInClientCommand(EnumClientCommand.PERFORM_RESPAWN));
 			}
+
+			victim.removePotionEffects();
+			victim.spectate(remaining.get(0));
+			new DefaultScoreboard(victim).setBoard();
 
 		}, 1);
 	}

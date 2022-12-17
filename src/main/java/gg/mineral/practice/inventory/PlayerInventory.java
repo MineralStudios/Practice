@@ -3,6 +3,7 @@ package gg.mineral.practice.inventory;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.function.Predicate;
 
+import org.bukkit.Material;
 import org.bukkit.craftbukkit.v1_8_R3.entity.CraftPlayer;
 import org.bukkit.craftbukkit.v1_8_R3.inventory.CraftInventoryPlayer;
 import org.bukkit.inventory.ItemStack;
@@ -61,6 +62,48 @@ public class PlayerInventory extends CraftInventoryPlayer {
 
     public Predicate<Profile> getTask(int i) {
         return dataMap.get(i);
+    }
+
+    public int getNumber(Material m, short durability) {
+        int i = 0;
+
+        for (ItemStack itemStack : getContents()) {
+
+            if (itemStack == null) {
+                continue;
+            }
+
+            if (itemStack.getType() != m) {
+                continue;
+            }
+
+            if (itemStack.getDurability() != durability) {
+                continue;
+            }
+
+            i++;
+        }
+
+        return i;
+    }
+
+    public int getNumber(Material m) {
+        int i = 0;
+
+        for (ItemStack itemStack : getContents()) {
+
+            if (itemStack == null) {
+                continue;
+            }
+
+            if (itemStack.getType() != m) {
+                continue;
+            }
+
+            i++;
+        }
+
+        return i;
     }
 
     @Override

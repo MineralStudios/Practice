@@ -18,15 +18,15 @@ public class PotsCommand extends PlayerCommand {
 
 	@Override
 	public void execute(org.bukkit.entity.Player pl, String[] args) {
-		Profile player = ProfileManager
+		Profile profile = ProfileManager
 				.getProfile(p -> p.getUUID().equals(pl.getUniqueId()) && p.getPlayerStatus() == PlayerStatus.FIGHTING);
 
-		if (player == null) {
+		if (profile == null) {
 			pl.sendMessage(ErrorMessages.NOT_IN_MATCH.toString());
 			return;
 		}
 
-		int pots = player.getNumber(Material.POTION, (short) 16421);
+		int pots = profile.getInventory().getNumber(Material.POTION, (short) 16421);
 		ChatMessages.POTS.clone().replace("%pots%", "" + pots).send(pl);
 	}
 }

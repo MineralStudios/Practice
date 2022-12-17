@@ -139,7 +139,7 @@ public class InteractListener implements Listener {
 
 		if (e.getClickedBlock() != null) {
 			if (e.getClickedBlock().getType() == Material.TNT) {
-				Material type = player.getItemInHand().getType();
+				Material type = player.getInventory().getItemInHand().getType();
 				if (type != Material.FLINT_AND_STEEL || type != Material.FIREBALL) {
 					return;
 				}

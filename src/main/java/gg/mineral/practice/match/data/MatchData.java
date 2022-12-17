@@ -39,9 +39,7 @@ public class MatchData {
 	public MatchData() {
 
 		if (!GametypeManager.getGametypes().isEmpty()) {
-			this.gametype = GametypeManager.getGametypes().get(0);
-			this.kit = gametype.getKit();
-
+			setGametype(GametypeManager.getGametypes().get(0));
 		}
 
 		if (!ArenaManager.getArenas().isEmpty()) {
@@ -68,17 +66,17 @@ public class MatchData {
 		ranked = qe.getQueuetype().isRanked();
 	}
 
-	public void setGametype(Gametype g) {
-		this.gametype = g;
-		kit = g.getKit();
-		noDamageTicks = g.getNoDamageTicks();
-		hunger = g.getHunger();
-		boxing = g.getBoxing();
-		build = g.getBuild();
-		damage = g.getDamage();
-		griefing = g.getGriefing();
-		deadlyWater = g.getDeadlyWater();
-		regeneration = g.getRegeneration();
+	public void setGametype(Gametype gametype) {
+		this.gametype = gametype;
+		kit = gametype.getKit();
+		noDamageTicks = gametype.getNoDamageTicks();
+		hunger = gametype.getHunger();
+		boxing = gametype.getBoxing();
+		build = gametype.getBuild();
+		damage = gametype.getDamage();
+		griefing = gametype.getGriefing();
+		deadlyWater = gametype.getDeadlyWater();
+		regeneration = gametype.getRegeneration();
 	}
 
 	public String toString() {

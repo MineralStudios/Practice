@@ -37,7 +37,6 @@ public class FollowCommand extends PlayerCommand {
 
 		player.follow(playerarg);
 		ChatMessages.FOLLOWING.clone().replace("%player%", playerName).send(pl);
-		;
 
 		if (playerarg.getPlayerStatus() == PlayerStatus.FIGHTING) {
 			player.spectate(playerarg);

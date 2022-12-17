@@ -4,21 +4,17 @@ import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 
 import gg.mineral.practice.util.messages.CC;
+import lombok.Getter;
+import lombok.Setter;
 
 public abstract class PlayerCommand extends BaseCommand {
 
-    boolean console = false;
+    @Setter
+    @Getter
+    Boolean console = false;
 
     protected PlayerCommand(String name, String permission) {
         super(name, permission);
-    }
-
-    public void setConsole(boolean console) {
-        this.console = console;
-    }
-
-    public boolean getConsole() {
-        return this.console;
     }
 
     protected PlayerCommand(String name) {

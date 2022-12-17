@@ -14,6 +14,7 @@ import gg.mineral.practice.match.EventMatch;
 import gg.mineral.practice.match.Match;
 import gg.mineral.practice.match.data.MatchData;
 import gg.mineral.practice.traits.Spectatable;
+import gg.mineral.practice.util.PlayerUtil;
 import gg.mineral.practice.util.collection.ProfileList;
 import gg.mineral.practice.util.messages.ChatMessage;
 import gg.mineral.practice.util.messages.impl.ChatMessages;
@@ -51,7 +52,7 @@ public class Event implements Spectatable {
             return;
         }
 
-        p.teleport(eventArena.getWaitingLocation());
+        PlayerUtil.teleport(p.getPlayer(), eventArena.getWaitingLocation());
         p.setEvent(this);
         players.add(p);
 

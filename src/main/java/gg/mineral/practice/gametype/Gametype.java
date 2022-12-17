@@ -46,10 +46,9 @@ public class Gametype implements SaveableData {
 	Arena eventArena;
 	@Getter
 	Kit kit;
-	String path;
+	String path, catagoryName;
 	LeaderboardMap leaderboardMap;
 	Object2IntOpenHashMap<Profile> eloMap = new Object2IntOpenHashMap<>();
-	Catagory catagory;
 
 	public Gametype(String name) {
 		this.name = name;
@@ -245,7 +244,7 @@ public class Gametype implements SaveableData {
 		config.set(path + "InCatagory", inCatagory);
 
 		if (inCatagory) {
-			config.set(path + "Catagory", catagory);
+			config.set(path + "Catagory", catagoryName);
 		}
 
 		for (Queuetype q : QueuetypeManager.getQueuetypes()) {
@@ -307,10 +306,14 @@ public class Gametype implements SaveableData {
 		this.eventArena = ArenaManager.getArenaByName(config.getString(path + "EventArena", ""));
 
 		if (inCatagory) {
-			this.catagory = CatagoryManager.getCatagoryByName(config.getString(path + "Catagory", null));
+			this.catagoryName = config.getString(path + "Catagory", null);
 
-			if (catagory != null) {
-				catagory.addGametype(this);
+			if (catagoryName != null) {
+				Catagory catagory = CatagoryManager.getCatagoryByName(catagoryName);
+
+				if (catagory != null) {
+					catagory.addGametype(this);
+				}
 			}
 		}
 

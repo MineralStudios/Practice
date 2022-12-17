@@ -1,10 +1,7 @@
 package gg.mineral.practice.match;
 
 import org.bukkit.Bukkit;
-import org.bukkit.Location;
 import org.bukkit.Material;
-import org.bukkit.craftbukkit.v1_8_R3.entity.CraftItem;
-import org.bukkit.entity.Item;
 
 import gg.mineral.practice.PracticePlugin;
 import gg.mineral.practice.entity.PlayerStatus;
@@ -18,8 +15,6 @@ import net.md_5.bungee.api.chat.ClickEvent;
 import net.md_5.bungee.api.chat.ComponentBuilder;
 import net.md_5.bungee.api.chat.HoverEvent;
 import net.md_5.bungee.api.chat.TextComponent;
-import net.minecraft.server.v1_8_R3.EntityHuman;
-import net.minecraft.server.v1_8_R3.EntityItem;
 import net.minecraft.server.v1_8_R3.PacketPlayInClientCommand;
 import net.minecraft.server.v1_8_R3.PacketPlayInClientCommand.EnumClientCommand;
 
@@ -40,13 +35,13 @@ public class TournamentMatch extends Match {
         attacker.removePotionEffects();
         attacker.getPlayer().hidePlayer(victim.getPlayer());
 
-        int attackerAmountOfPots = attacker.getNumber(Material.POTION, (short) 16421)
-                + attacker.getNumber(Material.MUSHROOM_SOUP);
+        int attackerAmountOfPots = attacker.getInventory().getNumber(Material.POTION, (short) 16421)
+                + attacker.getInventory().getNumber(Material.MUSHROOM_SOUP);
 
         setInventoryStats(attacker, attackerHealth, attackerAmountOfPots);
 
-        int victimAmountOfPots = victim.getNumber(Material.POTION, (short) 16421)
-                + victim.getNumber(Material.MUSHROOM_SOUP);
+        int victimAmountOfPots = victim.getInventory().getNumber(Material.POTION, (short) 16421)
+                + victim.getInventory().getNumber(Material.MUSHROOM_SOUP);
 
         setInventoryStats(victim, 0, victimAmountOfPots);
         String viewinv = CC.YELLOW + "Match Results";
@@ -72,71 +67,51 @@ public class TournamentMatch extends Match {
         victim.getPlayer().sendMessage(viewinv);
         victim.getPlayer().spigot().sendMessage(winmessage, splitter, losemessage);
         victim.getPlayer().sendMessage(CC.SEPARATOR);
-        attacker.setPearlCooldown(0);
-        victim.setPearlCooldown(0);
+        resetPearlCooldown(attacker, victim);
         new DefaultScoreboard(profile1).setBoard();
         new DefaultScoreboard(profile2).setBoard();
         victim.removeFromMatch();
         MatchManager.remove(this);
 
-        Bukkit.getServer().getScheduler().runTaskLater(PracticePlugin.INSTANCE, new Runnable() {
-            public void run() {
-                if (victim.getPlayer().isDead()) {
-                    victim.getPlayer().getHandle().playerConnection
-                            .a(new PacketPlayInClientCommand(EnumClientCommand.PERFORM_RESPAWN));
-                }
-
-                victim.heal();
-                victim.removePotionEffects();
-                victim.teleportToLobby();
-                victim.setInventoryForLobby();
-                nameTag.giveTagAfterMatch(profile1.getPlayer(), profile2.getPlayer());
+        Bukkit.getServer().getScheduler().runTaskLater(PracticePlugin.INSTANCE, () -> {
+            if (victim.getPlayer().isDead()) {
+                victim.getPlayer().getHandle().playerConnection
+                        .a(new PacketPlayInClientCommand(EnumClientCommand.PERFORM_RESPAWN));
             }
+
+            victim.heal();
+            victim.removePotionEffects();
+            victim.teleportToLobby();
+            victim.setInventoryForLobby();
+            nameTag.giveTagAfterMatch(profile1.getPlayer(), profile2.getPlayer());
         }, 1);
 
         Match match = this;
 
-        Bukkit.getServer().getScheduler().runTaskLater(PracticePlugin.INSTANCE, new Runnable() {
-            public void run() {
+        Bukkit.getServer().getScheduler().runTaskLater(PracticePlugin.INSTANCE, () -> {
 
-                attacker.removeFromMatch();
-                tournament.removePlayer(victim);
-                tournament.removeMatch(match);
+            attacker.removeFromMatch();
+            tournament.removePlayer(victim);
+            tournament.removeMatch(match);
 
-                attacker.teleportToLobby();
+            attacker.teleportToLobby();
 
-                if (!tournament.isEnded()) {
-                    attacker.setPlayerStatus(PlayerStatus.IN_TOURAMENT);
-                    attacker.setInventoryForTournament();
-                } else {
-                    attacker.setInventoryForLobby();
-                }
-                for (Profile p : getSpectators()) {
-                    p.getPlayer().sendMessage(CC.SEPARATOR);
-                    p.getPlayer().sendMessage(viewinv);
-                    p.getPlayer().spigot().sendMessage(winmessage, splitter, losemessage);
-                    p.getPlayer().sendMessage(CC.SEPARATOR);
-                    p.stopSpectating();
-                }
+            if (!tournament.isEnded()) {
+                attacker.setPlayerStatus(PlayerStatus.IN_TOURAMENT);
+                attacker.setInventoryForTournament();
+            } else {
+                attacker.setInventoryForLobby();
             }
+            for (Profile p : getSpectators()) {
+                p.getPlayer().sendMessage(CC.SEPARATOR);
+                p.getPlayer().sendMessage(viewinv);
+                p.getPlayer().spigot().sendMessage(winmessage, splitter, losemessage);
+                p.getPlayer().sendMessage(CC.SEPARATOR);
+                p.stopSpectating();
+            }
+
+            clearWorld();
         }, 40);
 
-        for (Item item : data.getArena().getLocation1().getWorld().getEntitiesByClass(Item.class)) {
-            EntityHuman lastHolder = ((EntityItem) ((CraftItem) item).getHandle()).lastHolder;
-
-            if (lastHolder == null) {
-                continue;
-            }
-
-            for (Profile participant : participants) {
-                if (lastHolder.getBukkitEntity().getUniqueId() == participant.getUUID()) {
-                    item.remove();
-                }
-            }
-        }
-
-        for (Location location : buildLog) {
-            location.getBlock().setType(Material.AIR);
-        }
     }
 }

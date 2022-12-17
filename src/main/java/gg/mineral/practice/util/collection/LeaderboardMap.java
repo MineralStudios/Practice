@@ -1,50 +1,34 @@
 package gg.mineral.practice.util.collection;
 
-import java.util.List;
-
 import gg.mineral.api.collection.GlueList;
+import lombok.AllArgsConstructor;
+import lombok.Getter;
+import lombok.RequiredArgsConstructor;
+import lombok.Setter;
 
+@RequiredArgsConstructor
 public class LeaderboardMap {
-    int size;
-
-    public LeaderboardMap(int size) {
-        this.size = size;
-    }
+    final int size;
 
     public LeaderboardMap() {
         this(10);
     }
 
+    @AllArgsConstructor
     public static class Entry {
+        @Setter
+        @Getter
         String key;
+        @Setter
+        @Getter
         int value;
-
-        public Entry(String key, int value) {
-            this.key = key;
-            this.value = value;
-        }
-
-        public void setValue(int value) {
-            this.value = value;
-        }
-
-        public int getValue() {
-            return value;
-        }
-
-        public void setKey(String key) {
-            this.key = key;
-        }
-
-        public String getKey() {
-            return key;
-        }
     }
 
-    GlueList<Entry> entryList = new GlueList<>();
+    @Getter
+    GlueList<Entry> entries = new GlueList<>();
 
     private int binarySearch(int value) {
-        int lastIndex = entryList.size();
+        int lastIndex = entries.size();
         int firstIndex = 0;
         int midIndex = lastIndex / 2;
 
@@ -69,56 +53,52 @@ public class LeaderboardMap {
     }
 
     private int findPosition(int elo) {
-        return entryList.isEmpty() ? 0
-                : elo <= get(entryList.size() - 1).getValue() ? entryList.size() : binarySearch(elo);
+        return entries.isEmpty() ? 0
+                : elo <= get(entries.size() - 1).getValue() ? entries.size() : binarySearch(elo);
     }
 
     private int findPositionOfEntry(int elo) {
-        int lastIndex = entryList.size() - 1;
-        return entryList.isEmpty() ? 0
+        int lastIndex = entries.size() - 1;
+        return entries.isEmpty() ? 0
                 : elo == get(lastIndex).getValue() ? lastIndex : binarySearch(elo);
     }
 
     public Entry get(int index) {
-        return entryList.get(index);
+        return entries.get(index);
     }
 
     public void put(String key, int value) {
-        entryList.add(findPosition(value), new Entry(key, value));
+        entries.add(findPosition(value), new Entry(key, value));
 
-        if (entryList.size() > size) {
-            entryList.remove(entryList.size() - 1);
+        if (entries.size() > size) {
+            entries.remove(entries.size() - 1);
         }
     }
 
     public void putOrReplace(String key, int value, int oldValue) {
         int oldPosition = findPositionOfEntry(oldValue);
-        Entry oldEntry = entryList.size() - 1 < oldPosition ? null : entryList.get(oldPosition);
+        Entry oldEntry = entries.size() - 1 < oldPosition ? null : entries.get(oldPosition);
 
         if (oldEntry != null && oldEntry.getKey().equalsIgnoreCase(key)) {
-            entryList.remove(oldPosition);
+            entries.remove(oldPosition);
         }
 
-        entryList.add(findPosition(value), new Entry(key, value));
+        entries.add(findPosition(value), new Entry(key, value));
 
-        if (entryList.size() > size) {
-            entryList.remove(entryList.size() - 1);
+        if (entries.size() > size) {
+            entries.remove(entries.size() - 1);
         }
     }
 
     public void replace(String key, int value, int oldValue) {
 
-        Entry oldEntry = entryList.remove(findPositionOfEntry(oldValue));
+        Entry oldEntry = entries.remove(findPositionOfEntry(oldValue));
         oldEntry.setValue(value);
 
-        entryList.add(findPosition(value), oldEntry);
+        entries.add(findPosition(value), oldEntry);
 
-        if (entryList.size() > size) {
-            entryList.remove(entryList.size() - 1);
+        if (entries.size() > size) {
+            entries.remove(entries.size() - 1);
         }
-    }
-
-    public List<Entry> getEntries() {
-        return entryList;
     }
 }

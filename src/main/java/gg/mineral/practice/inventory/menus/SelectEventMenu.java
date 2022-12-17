@@ -28,21 +28,18 @@ public class SelectEventMenu extends PracticeMenu {
             ItemStack item = new ItemBuilder(g.getDisplayItem())
                     .name(g.getDisplayName()).lore().build();
 
-            Runnable runnable = new Runnable() {
-                @Override
-                public void run() {
-                    viewer.getPlayer().closeInventory();
+            Runnable runnable = () -> {
+                viewer.getPlayer().closeInventory();
 
-                    viewer.getMatchData().setGametype(g);
+                viewer.getMatchData().setGametype(g);
 
-                    if (g.getEventArena() == null) {
-                        viewer.message(ErrorMessages.ARENA_NOT_FOUND);
-                        return;
-                    }
-
-                    Event event = new Event(viewer, g.getEventArena());
-                    event.start();
+                if (g.getEventArena() == null) {
+                    viewer.message(ErrorMessages.ARENA_NOT_FOUND);
+                    return;
                 }
+
+                Event event = new Event(viewer, g.getEventArena());
+                event.start();
             };
 
             add(item, runnable);

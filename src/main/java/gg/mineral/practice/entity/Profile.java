@@ -6,7 +6,6 @@ import java.util.UUID;
 import org.bukkit.Bukkit;
 import org.bukkit.GameMode;
 import org.bukkit.Location;
-import org.bukkit.Material;
 import org.bukkit.craftbukkit.v1_8_R3.entity.CraftPlayer;
 import org.bukkit.entity.ArmorStand;
 import org.bukkit.inventory.ItemStack;
@@ -27,8 +26,8 @@ import gg.mineral.practice.inventory.menus.SelectQueuetypeMenu;
 import gg.mineral.practice.kit.Kit;
 import gg.mineral.practice.managers.KitEditorManager;
 import gg.mineral.practice.managers.PartyManager;
-import gg.mineral.practice.managers.ProfileManager;
 import gg.mineral.practice.managers.PlayerSettingsManager;
+import gg.mineral.practice.managers.ProfileManager;
 import gg.mineral.practice.managers.QueuetypeManager;
 import gg.mineral.practice.match.Match;
 import gg.mineral.practice.match.data.MatchData;
@@ -39,6 +38,7 @@ import gg.mineral.practice.queue.Queuetype;
 import gg.mineral.practice.request.DuelRequest;
 import gg.mineral.practice.scoreboard.impl.DefaultScoreboard;
 import gg.mineral.practice.tournaments.Tournament;
+import gg.mineral.practice.util.PlayerUtil;
 import gg.mineral.practice.util.collection.AutoExpireList;
 import gg.mineral.practice.util.collection.ProfileList;
 import gg.mineral.practice.util.items.ItemBuilder;
@@ -193,53 +193,16 @@ public class Profile {
 		while (it.hasNext()) {
 			try {
 				PotionEffect e = it.next();
+
+				if (e == null) {
+					continue;
+				}
+
 				player.removePotionEffect(e.getType());
 			} catch (Exception ex) {
 				continue;
 			}
 		}
-	}
-
-	public int getNumber(Material m, short durability) {
-		int i = 0;
-
-		for (ItemStack itemStack : getInventory().getContents()) {
-
-			if (itemStack == null) {
-				continue;
-			}
-
-			if (itemStack.getType() != m) {
-				continue;
-			}
-
-			if (itemStack.getDurability() != durability) {
-				continue;
-			}
-
-			i++;
-		}
-
-		return i;
-	}
-
-	public int getNumber(Material m) {
-		int i = 0;
-
-		for (ItemStack itemStack : getInventory().getContents()) {
-
-			if (itemStack == null) {
-				continue;
-			}
-
-			if (itemStack.getType() != m) {
-				continue;
-			}
-
-			i++;
-		}
-
-		return i;
 	}
 
 	public void message(Message m) {
@@ -466,6 +429,7 @@ public class Profile {
 		}
 
 		if (p.getPlayerStatus() != PlayerStatus.FIGHTING) {
+			message(ErrorMessages.PLAYER_NOT_IN_MATCH);
 			return;
 		}
 
@@ -480,7 +444,7 @@ public class Profile {
 
 		this.player.setGameMode(GameMode.SPECTATOR);
 
-		teleport(p);
+		PlayerUtil.teleport(this.getPlayer(), p.getPlayer());
 		ChatMessages.SPECTATING.clone().replace("%player%", p.getName()).send(getPlayer());
 
 		ChatMessages.STOP_SPECTATING.send(getPlayer());
@@ -513,7 +477,7 @@ public class Profile {
 
 		this.player.setGameMode(GameMode.SPECTATOR);
 
-		teleport(event.getEventArena().getWaitingLocation());
+		PlayerUtil.teleport(this.getPlayer(), event.getEventArena().getWaitingLocation());
 		ChatMessages.SPECTATING_EVENT.send(getPlayer());
 		ChatMessages.STOP_SPECTATING.send(getPlayer());
 
@@ -526,13 +490,8 @@ public class Profile {
 		setPlayerStatus(PlayerStatus.SPECTATING);
 	}
 
-	public void teleport(Location loc) {
-		this.player.getHandle().playerConnection.checkMovement = false;
-		this.player.teleport(loc);
-	}
-
 	public void teleportToLobby() {
-		teleport(ProfileManager.getSpawnLocation());
+		PlayerUtil.teleport(this.getPlayer(), ProfileManager.getSpawnLocation());
 
 		if (playerStatus != PlayerStatus.FOLLOWING) {
 			setPlayerStatus(PlayerStatus.IN_LOBBY);
@@ -614,7 +573,7 @@ public class Profile {
 			return;
 		}
 
-		teleport(location);
+		PlayerUtil.teleport(this.getPlayer(), location);
 		setInventoryClickCancelled(false);
 		getInventory().clear();
 		setPlayerStatus(PlayerStatus.KIT_EDITOR);
@@ -638,7 +597,7 @@ public class Profile {
 			return;
 		}
 
-		teleport(location);
+		PlayerUtil.teleport(this.getPlayer(), location);
 		setInventoryClickCancelled(false);
 		getInventory().clear();
 		setPlayerStatus(PlayerStatus.KIT_CREATOR);
@@ -651,10 +610,6 @@ public class Profile {
 
 	public Profile getOpponent() {
 		return getMatch().getOpponent(this);
-	}
-
-	public ItemStack getItemInHand() {
-		return getInventory().getItemInHand();
 	}
 
 	public UUID getUUID() {
@@ -714,10 +669,6 @@ public class Profile {
 		this.player.setFoodLevel(20);
 	}
 
-	public void teleport(Profile playerarg) {
-		teleport(playerarg.getPlayer().getLocation());
-	}
-
 	public void startPartyOpenCooldown() {
 		if (partyOpenCooldown) {
 			return;
@@ -726,11 +677,7 @@ public class Profile {
 		partyOpenCooldown = true;
 
 		Bukkit.getServer().getScheduler().runTaskLaterAsynchronously(PracticePlugin.INSTANCE,
-				new Runnable() {
-					public void run() {
-						partyOpenCooldown = false;
-					}
-				}, 400);
+				() -> partyOpenCooldown = false, 400);
 	}
 
 	public void setTournament(Tournament tournament) {

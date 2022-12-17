@@ -119,34 +119,28 @@ public class MechanicsMenu extends PracticeMenu {
 		};
 
 		if (action == SubmitAction.P_SPLIT) {
-			submitTask = new Runnable() {
-				@Override
-				public void run() {
-					viewer.getPlayer().closeInventory();
-					Party p = viewer.getParty();
+			submitTask = () -> {
+				viewer.getPlayer().closeInventory();
+				Party p = viewer.getParty();
 
-					if (!viewer.getParty().getPartyLeader().equals(viewer)) {
-						viewer.message(ErrorMessages.YOU_ARE_NOT_PARTY_LEADER);
-						return;
-					}
-
-					if (p.getPartyMembers().size() < 2) {
-						viewer.message(ErrorMessages.PARTY_NOT_BIG_ENOUGH);
-						return;
-					}
-
-					PartyMatch m = new PartyMatch(p, viewer.getMatchData());
-					m.start();
+				if (!viewer.getParty().getPartyLeader().equals(viewer)) {
+					viewer.message(ErrorMessages.YOU_ARE_NOT_PARTY_LEADER);
+					return;
 				}
+
+				if (p.getPartyMembers().size() < 2) {
+					viewer.message(ErrorMessages.PARTY_NOT_BIG_ENOUGH);
+					return;
+				}
+
+				PartyMatch m = new PartyMatch(p, viewer.getMatchData());
+				m.start();
 			};
 		} else if (action == SubmitAction.TOURNAMENT) {
-			submitTask = new Runnable() {
-				@Override
-				public void run() {
-					viewer.getPlayer().closeInventory();
-					Tournament tournament = new Tournament(viewer);
-					tournament.start();
-				}
+			submitTask = () -> {
+				viewer.getPlayer().closeInventory();
+				Tournament tournament = new Tournament(viewer);
+				tournament.start();
 			};
 		}
 

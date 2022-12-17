@@ -4,7 +4,6 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.concurrent.CompletableFuture;
 
-import de.jeezycore.utils.NameTag;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.Material;
@@ -18,6 +17,7 @@ import org.bukkit.potion.PotionEffect;
 import org.bukkit.potion.PotionEffectType;
 import org.bukkit.scoreboard.Team;
 
+import de.jeezycore.utils.NameTag;
 import gg.mineral.api.collection.GlueList;
 import gg.mineral.practice.PracticePlugin;
 import gg.mineral.practice.entity.Profile;
@@ -31,6 +31,7 @@ import gg.mineral.practice.scoreboard.impl.BoxingScoreboard;
 import gg.mineral.practice.scoreboard.impl.DefaultScoreboard;
 import gg.mineral.practice.scoreboard.impl.InMatchScoreboard;
 import gg.mineral.practice.traits.Spectatable;
+import gg.mineral.practice.util.PlayerUtil;
 import gg.mineral.practice.util.collection.ProfileList;
 import gg.mineral.practice.util.items.ItemBuilder;
 import gg.mineral.practice.util.items.ItemStacks;
@@ -64,11 +65,11 @@ public class Match implements Spectatable {
 	GlueList<Location> buildLog = new GlueList<>();
 	org.bukkit.World world = null;
 
-	public Match(Profile player1, Profile player2, MatchData matchData) {
+	public Match(Profile profile1, Profile profile2, MatchData matchData) {
 		this(matchData);
-		this.profile1 = player1;
-		this.profile2 = player2;
-		addParicipants(player1, player2);
+		this.profile1 = profile1;
+		this.profile2 = profile2;
+		addParicipants(profile1, profile2);
 	}
 
 	public Match(MatchData matchData) {
@@ -133,7 +134,7 @@ public class Match implements Spectatable {
 	}
 
 	public void setScoreboard(Profile p) {
-		if (data.getGametype().getBoxing()) {
+		if (data.getBoxing()) {
 			new BoxingScoreboard(p).setBoard();
 			return;
 		}
@@ -220,8 +221,8 @@ public class Match implements Spectatable {
 	}
 
 	public void teleportPlayers(Location location1, Location location2) {
-		profile1.teleport(location1);
-		profile2.teleport(location2);
+		PlayerUtil.teleport(profile1.getPlayer(), location1);
+		PlayerUtil.teleport(profile2.getPlayer(), location2);
 	}
 
 	public void startCountdown() {
@@ -289,13 +290,13 @@ public class Match implements Spectatable {
 		attacker.removePotionEffects();
 		attacker.getPlayer().hidePlayer(victim.getPlayer());
 
-		int attackerAmountOfPots = attacker.getNumber(Material.POTION, (short) 16421)
-				+ attacker.getNumber(Material.MUSHROOM_SOUP);
+		int attackerAmountOfPots = attacker.getInventory().getNumber(Material.POTION, (short) 16421)
+				+ attacker.getInventory().getNumber(Material.MUSHROOM_SOUP);
 
 		setInventoryStats(attacker, attackerHealth, attackerAmountOfPots);
 
-		int victimAmountOfPots = victim.getNumber(Material.POTION, (short) 16421)
-				+ victim.getNumber(Material.MUSHROOM_SOUP);
+		int victimAmountOfPots = victim.getInventory().getNumber(Material.POTION, (short) 16421)
+				+ victim.getInventory().getNumber(Material.MUSHROOM_SOUP);
 
 		setInventoryStats(victim, 0, victimAmountOfPots);
 		String viewinv = CC.YELLOW + "Match Results";
@@ -319,58 +320,58 @@ public class Match implements Spectatable {
 		victim.getPlayer().sendMessage(CC.SEPARATOR);
 		victim.getPlayer().sendMessage(viewinv);
 		victim.getPlayer().spigot().sendMessage(winmessage, splitter, losemessage);
-
-		if (data.isRanked()) {
-			updateElo(attacker, victim).whenComplete((type, ex) -> {
-				attacker.getPlayer().sendMessage(CC.SEPARATOR);
-				victim.getPlayer().sendMessage(CC.SEPARATOR);
-			});
-		} else {
-			attacker.getPlayer().sendMessage(CC.SEPARATOR);
-			victim.getPlayer().sendMessage(CC.SEPARATOR);
-		}
-
 		attacker.getPlayer().sendMessage(CC.SEPARATOR);
 		victim.getPlayer().sendMessage(CC.SEPARATOR);
-		attacker.setPearlCooldown(0);
-		victim.setPearlCooldown(0);
+
+		if (data.isRanked()) {
+			updateElo(attacker, victim);
+		}
+
+		resetPearlCooldown(attacker, victim);
 		new DefaultScoreboard(profile1).setBoard();
 		new DefaultScoreboard(profile2).setBoard();
-		victim.removeFromMatch();
 		MatchManager.remove(this);
 
-		Bukkit.getServer().getScheduler().runTaskLater(PracticePlugin.INSTANCE, new Runnable() {
-			public void run() {
-				if (victim.getPlayer().isDead()) {
-					victim.getPlayer().getHandle().playerConnection
-							.a(new PacketPlayInClientCommand(EnumClientCommand.PERFORM_RESPAWN));
-				}
-
-				victim.heal();
-				victim.removePotionEffects();
-				victim.teleportToLobby();
-				victim.setInventoryForLobby();
+		Bukkit.getServer().getScheduler().runTaskLater(PracticePlugin.INSTANCE, () -> {
+			if (victim.getPlayer().isDead()) {
+				victim.getPlayer().getHandle().playerConnection
+						.a(new PacketPlayInClientCommand(EnumClientCommand.PERFORM_RESPAWN));
 			}
+
+			victim.heal();
+			victim.removePotionEffects();
+			sendBackToLobby(victim);
 		}, 1);
 
-		Bukkit.getServer().getScheduler().runTaskLater(PracticePlugin.INSTANCE, new Runnable() {
-			public void run() {
+		Bukkit.getServer().getScheduler().runTaskLater(PracticePlugin.INSTANCE, () -> {
+			sendBackToLobby(attacker);
+			nameTag.giveTagAfterMatch(profile1.getPlayer(), profile2.getPlayer());
 
-				attacker.removeFromMatch();
-				attacker.teleportToLobby();
-				attacker.setInventoryForLobby();
-				nameTag.giveTagAfterMatch(profile1.getPlayer(), profile2.getPlayer());
-
-				for (Profile p : getSpectators()) {
-					p.getPlayer().sendMessage(CC.SEPARATOR);
-					p.getPlayer().sendMessage(viewinv);
-					p.getPlayer().spigot().sendMessage(winmessage, splitter, losemessage);
-					p.getPlayer().sendMessage(CC.SEPARATOR);
-					p.stopSpectating();
-				}
+			for (Profile p : getSpectators()) {
+				p.getPlayer().sendMessage(CC.SEPARATOR);
+				p.getPlayer().sendMessage(viewinv);
+				p.getPlayer().spigot().sendMessage(winmessage, splitter, losemessage);
+				p.getPlayer().sendMessage(CC.SEPARATOR);
+				p.stopSpectating();
 			}
-		}, 40);
 
+			clearWorld();
+		}, 40);
+	}
+
+	public void sendBackToLobby(Profile profile) {
+		profile.removeFromMatch();
+		profile.teleportToLobby();
+		profile.setInventoryForLobby();
+	}
+
+	public void resetPearlCooldown(Profile... profiles) {
+		for (Profile profile : profiles) {
+			profile.setPearlCooldown(0);
+		}
+	}
+
+	public void clearWorld() {
 		if (world != null) {
 			WorldUtil.deleteWorld(world);
 			return;
