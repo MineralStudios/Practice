@@ -383,7 +383,7 @@ public class ChatMessages {
 	public static final ChatMessage GAMETYPE_EPEARL = new ListElementMessage("/gametype epearl <Gametype> <Time(s)>",
 			CC.SECONDARY);
 	public static final ChatMessage GAMETYPE_ARENA = new ListElementMessage(
-			"/gametype arena <Gametype> <Arena> <True/False>",
+			"/gametype arena <Gametype>",
 			CC.SECONDARY);
 	public static final ChatMessage GAMETYPE_EVENT = new ListElementMessage("/gametype event <Gametype> <True/False>",
 			CC.SECONDARY);
@@ -452,7 +452,7 @@ public class ChatMessages {
 			"/queuetype kb <Queuetype> <KnockbackProfile>",
 			CC.SECONDARY);
 	public static final ChatMessage QUEUETYPE_ARENA = new ListElementMessage(
-			"/queuetype arena <Queuetype> <Arena> <True/False>",
+			"/queuetype arena <Queuetype>",
 			CC.SECONDARY);
 	public static final ChatMessage QUEUETYPE_DELETE = new ListElementMessage("/queuetype delete <Queuetype>",
 			CC.SECONDARY);

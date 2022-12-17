@@ -5,16 +5,18 @@ import java.util.Iterator;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 
-import gg.mineral.practice.commands.PlayerCommand;
-
-import gg.mineral.practice.util.messages.CC;
 import gg.mineral.practice.arena.Arena;
+import gg.mineral.practice.commands.PlayerCommand;
+import gg.mineral.practice.entity.Profile;
 import gg.mineral.practice.gametype.Gametype;
+import gg.mineral.practice.inventory.menus.GametypeArenaEnableMenu;
 import gg.mineral.practice.kit.Kit;
 import gg.mineral.practice.managers.ArenaManager;
 import gg.mineral.practice.managers.GametypeManager;
+import gg.mineral.practice.managers.ProfileManager;
 import gg.mineral.practice.managers.QueuetypeManager;
 import gg.mineral.practice.queue.Queuetype;
+import gg.mineral.practice.util.messages.CC;
 import gg.mineral.practice.util.messages.impl.ChatMessages;
 import gg.mineral.practice.util.messages.impl.ErrorMessages;
 import gg.mineral.practice.util.messages.impl.UsageMessages;
@@ -517,7 +519,7 @@ public class GametypeCommand extends PlayerCommand {
 				player.sendMessage(sb.toString());
 				return;
 			case "arena":
-				if (args.length < 4) {
+				if (args.length < 2) {
 					UsageMessages.GAMETYPE_ARENA.send(player);
 					return;
 				}
@@ -530,30 +532,9 @@ public class GametypeCommand extends PlayerCommand {
 					return;
 				}
 
-				arenaName = args[2];
-				arena = ArenaManager.getArenaByName(arenaName);
+				Profile profile = ProfileManager.getOrCreateProfile(player);
 
-				if (arena == null) {
-					ErrorMessages.ARENA_DOES_NOT_EXIST.send(player);
-					return;
-				}
-
-				toggled = args[3].toLowerCase();
-
-				switch (toggled) {
-					case "false":
-						gametype.enableArena(arena, false);
-						break;
-					case "true":
-						gametype.enableArena(arena, true);
-						break;
-					default:
-						UsageMessages.GAMETYPE_ARENA.send(player);
-						return;
-				}
-
-				ChatMessages.GAMETYPE_ARENA_SET.clone().replace("%gametype%", gametypeName)
-						.replace("%toggled%", toggled).replace("%arena%", arenaName).send(player);
+				profile.openMenu(new GametypeArenaEnableMenu(gametype));
 
 				return;
 			case "event":
