@@ -19,8 +19,9 @@ import gg.mineral.practice.commands.duel.AcceptCommand;
 import gg.mineral.practice.commands.duel.DuelCommand;
 import gg.mineral.practice.commands.events.EventCommand;
 import gg.mineral.practice.commands.party.PartyCommand;
-import gg.mineral.practice.commands.settings.ExtendedSettingsCommand;
+import gg.mineral.practice.commands.settings.SettingsCommand;
 import gg.mineral.practice.commands.settings.ToggleDuelRequestsCommand;
+import gg.mineral.practice.commands.settings.TogglePartyRequestsCommand;
 import gg.mineral.practice.commands.settings.TogglePlayerVisibilityCommand;
 import gg.mineral.practice.commands.spectator.FollowCommand;
 import gg.mineral.practice.commands.spectator.SpectateCommand;
@@ -89,7 +90,8 @@ public class PracticePlugin extends JavaPlugin {
 				new AcceptCommand(), new ViewInventoryCommand(), new DuelCommand(), new SpectateCommand(),
 				new PotsCommand(), new EloCommand(), new LeaderboardsCommand(), new PartyCommand(),
 				new SettingsConfigCommand(), new FollowCommand(), new TogglePlayerVisibilityCommand(),
-				new ToggleDuelRequestsCommand(), new CatagoryCommand(), new ExtendedSettingsCommand(),
+				new ToggleDuelRequestsCommand(), new TogglePartyRequestsCommand(), new CatagoryCommand(),
+				new SettingsCommand(),
 				new StopSpectatingCommand(), new TournamentCommand(), new JoinCommand(), new EventCommand());
 
 		registerListeners(new BuildListener(), new InteractListener(), new ComsumeListener(), new InventoryListener(),

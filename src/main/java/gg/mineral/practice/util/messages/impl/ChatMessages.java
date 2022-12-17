@@ -171,6 +171,9 @@ public class ChatMessages {
 	public static final ChatMessage DUEL_REQUESTS_TOGGLED = new ChatMessage(
 			"Your duel requests has now been %toggled%.",
 			CC.YELLOW).highlightText(CC.GOLD, "%toggled%");
+	public static final ChatMessage PARTY_REQUESTS_TOGGLED = new ChatMessage(
+			"Your party requests has now been %toggled%.",
+			CC.YELLOW).highlightText(CC.GOLD, "%toggled%");
 	public static final ChatMessage VISIBILITY_TOGGLED = new ChatMessage(
 			"Your player visibility has now been %toggled%.",
 			CC.YELLOW).highlightText(CC.GOLD, "%toggled%");

@@ -85,7 +85,7 @@ public class Profile {
 	AutoExpireList<Party> recievedPartyRequests = new AutoExpireList<>();
 	@Getter
 	@Setter
-	boolean requests = true, inventoryClickCancelled = false;
+	boolean duelRequests = true, partyRequests = true, inventoryClickCancelled = false;
 	@Getter
 	@Setter
 	Profile duelReciever;
@@ -526,7 +526,7 @@ public class Profile {
 			return;
 		}
 
-		if (!player.isRequests()) {
+		if (!player.isDuelRequests()) {
 			message(ErrorMessages.DUEL_REQUESTS_DISABLED);
 			return;
 		}

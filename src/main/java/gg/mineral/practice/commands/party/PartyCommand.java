@@ -99,6 +99,11 @@ public class PartyCommand extends PlayerCommand {
 					return;
 				}
 
+				if (!profile2.isPartyRequests()) {
+					profile.message(ErrorMessages.PARTY_REQUESTS_DISABLED);
+					return;
+				}
+
 				profile2.getRecievedPartyRequests().add(profile.getParty());
 
 				ChatMessages.PARTY_REQUEST_RECIEVED.clone().replace("%player%", profile.getName()).setTextEvent(

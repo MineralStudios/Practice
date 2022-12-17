@@ -48,6 +48,8 @@ public class ErrorMessages {
 	public static final Message PARTY_NOT_BIG_ENOUGH = new ErrorMessage(
 			"You need to be in a party with at least 2 people.");
 	public static final Message PARTY_NOT_OPEN = new ErrorMessage("That party is not open.");
+	public static final Message PARTY_REQUESTS_DISABLED = new ErrorMessage(
+			"That player has party requests disabled.");
 	public static final Message YOU_CAN_NOT_INVITE_YOURSELF = new ErrorMessage("You can not invite yourself.");
 	public static final Message REQUEST_SENDER_NOT_ONLINE = new ErrorMessage("The request sender is not online.");
 	public static final Message REQUEST_EXPIRED = new ErrorMessage("That party request has expired.");

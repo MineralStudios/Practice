@@ -6,9 +6,9 @@ import gg.mineral.practice.inventory.PracticeMenu;
 import gg.mineral.practice.util.items.ItemBuilder;
 import gg.mineral.practice.util.messages.CC;
 
-public class ExtendedSettingsMenu extends PracticeMenu {
+public class SettingsMenu extends PracticeMenu {
 
-	public ExtendedSettingsMenu() {
+	public SettingsMenu() {
 		super(CC.BLUE + "Settings");
 		setClickCancelled(true);
 	}
@@ -23,6 +23,10 @@ public class ExtendedSettingsMenu extends PracticeMenu {
 				new ItemBuilder(Material.WOOD_SWORD)
 						.name("Toggle Duel Requests").build(),
 				p -> p.getPlayer().performCommand("toggleduelrequests"));
+		setSlot(1,
+				new ItemBuilder(Material.NETHER_STAR)
+						.name("Toggle Party Requests").build(),
+				p -> p.getPlayer().performCommand("togglepartyrequests"));
 		return true;
 	}
 }
