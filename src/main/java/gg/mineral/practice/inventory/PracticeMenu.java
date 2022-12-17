@@ -13,10 +13,13 @@ import gg.mineral.practice.entity.Profile;
 import gg.mineral.practice.util.math.MathUtil;
 import it.unimi.dsi.fastutil.ints.Int2ObjectOpenHashMap;
 import lombok.Getter;
+import lombok.Setter;
 
 public class PracticeMenu {
+	@Setter
 	@Getter
 	String title;
+	@Setter
 	@Getter
 	Boolean clickCancelled = false;
 	protected Profile viewer;
@@ -112,10 +115,6 @@ public class PracticeMenu {
 		return -1;
 	}
 
-	public void setClickCancelled(boolean clickCancelled) {
-		this.clickCancelled = clickCancelled;
-	}
-
 	protected Inventory toInventory(Player player) {
 		Inventory inventory = Bukkit.createInventory(player, Math.max(MathUtil.roundUp(size, 9), 9), title.toString());
 
@@ -152,10 +151,6 @@ public class PracticeMenu {
 
 	public Predicate<Profile> getTask(int i) {
 		return dataMap.get(i);
-	}
-
-	public void setTitle(String title) {
-		this.title = title;
 	}
 
 	public void clear() {
