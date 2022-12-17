@@ -70,7 +70,7 @@ public class Profile {
 	@Getter
 	MatchData matchData;
 	@Getter
-	Integer hitCount = 0, currentCombo = 0, longestCombo = 0, averageCombo = 0;
+	Integer hitCount = 0, currentCombo = 0, longestCombo = 0, averageCombo = 0, highestCps = 0;
 	@Getter
 	boolean playersVisible = true, partyOpenCooldown = false, inMatchCountdown = false;
 	@Getter
@@ -104,6 +104,8 @@ public class Profile {
 	@Getter
 	PearlCooldown pearlCooldown = new PearlCooldown(this);
 	Event spectatingTournament;
+	int clicks = 0;
+	long clickCounterStart = System.currentTimeMillis();
 
 	public Profile(org.bukkit.entity.Player player) {
 		this.player = (CraftPlayer) player;
@@ -219,6 +221,16 @@ public class Profile {
 
 	public String getName() {
 		return player.getName();
+	}
+
+	public void click() {
+		if (System.currentTimeMillis() - clickCounterStart > 1000) {
+			clickCounterStart = System.currentTimeMillis();
+			highestCps = Math.max(clicks, highestCps);
+			clicks = 1;
+		}
+
+		clicks++;
 	}
 
 	public void setInventoryToFollow() {

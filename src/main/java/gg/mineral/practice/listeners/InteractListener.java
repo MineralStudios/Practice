@@ -3,7 +3,6 @@ package gg.mineral.practice.listeners;
 import java.util.function.Predicate;
 
 import org.bukkit.Material;
-import org.bukkit.block.Block;
 import org.bukkit.block.BlockFace;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
@@ -27,35 +26,32 @@ public class InteractListener implements Listener {
 	@EventHandler(priority = EventPriority.HIGHEST)
 	public void onPlayerInteract(PlayerInteractEvent e) {
 
-		Profile player = ProfileManager.getOrCreateProfile(e.getPlayer());
+		Profile profile = ProfileManager.getOrCreateProfile(e.getPlayer());
 
-		if (player.isInMatchCountdown()) {
+		Action action = e.getAction();
+
+		if (profile.isInMatchCountdown() || (action == Action.PHYSICAL
+				&& e.getPlayer().getLocation().getBlock().getRelative(BlockFace.DOWN).getType() == Material.SOIL)) {
 			e.setCancelled(true);
 			return;
 		}
 
-		Action eAction = e.getAction();
-
-		if (eAction == Action.PHYSICAL) {
-			Block soilBlock = e.getPlayer().getLocation().getBlock().getRelative(BlockFace.DOWN);
-			if (soilBlock.getType() == Material.SOIL) {
-				e.setCancelled(true);
-				return;
-			}
+		if (action == Action.LEFT_CLICK_AIR || action == Action.LEFT_CLICK_BLOCK) {
+			profile.click();
 		}
 
-		if (eAction != Action.RIGHT_CLICK_AIR && eAction != Action.RIGHT_CLICK_BLOCK) {
+		if (action != Action.RIGHT_CLICK_AIR && action != Action.RIGHT_CLICK_BLOCK) {
 			return;
 		}
 
-		Predicate<Profile> predicate = player.getInventory().getTask(player.getInventory().getHeldItemSlot());
+		Predicate<Profile> predicate = profile.getInventory().getTask(profile.getInventory().getHeldItemSlot());
 
-		if (predicate != null && predicate.test(player)) {
+		if (predicate != null && predicate.test(profile)) {
 			return;
 		}
 
-		if (player.getPlayerStatus() == PlayerStatus.KIT_CREATOR
-				|| player.getPlayerStatus() == PlayerStatus.KIT_EDITOR) {
+		if (profile.getPlayerStatus() == PlayerStatus.KIT_CREATOR
+				|| profile.getPlayerStatus() == PlayerStatus.KIT_EDITOR) {
 			e.setCancelled(true);
 
 			if (e.getClickedBlock() == null) {
@@ -63,14 +59,14 @@ public class InteractListener implements Listener {
 			}
 
 			if (e.getClickedBlock().getType() == Material.ANVIL) {
-				player.openMenu(new SaveLoadKitsMenu());
+				profile.openMenu(new SaveLoadKitsMenu());
 				return;
 			}
 
-			if (player.getPlayerStatus() == PlayerStatus.KIT_CREATOR) {
+			if (profile.getPlayerStatus() == PlayerStatus.KIT_CREATOR) {
 
 				if (e.getClickedBlock().getType() == Material.WOODEN_DOOR) {
-					player.leaveKitCreator();
+					profile.leaveKitCreator();
 					return;
 				}
 
@@ -78,12 +74,12 @@ public class InteractListener implements Listener {
 			}
 
 			if (e.getClickedBlock().getType() == Material.CHEST) {
-				player.openMenu(new AddItemsMenu());
+				profile.openMenu(new AddItemsMenu());
 				return;
 			}
 
 			if (e.getClickedBlock().getType() == Material.WOODEN_DOOR) {
-				player.leaveKitEditor();
+				profile.leaveKitEditor();
 				return;
 			}
 
@@ -93,23 +89,23 @@ public class InteractListener implements Listener {
 		if (e.getMaterial() != null) {
 			if (e.getMaterial() == Material.ENDER_PEARL) {
 
-				if (player.getPlayerStatus() != PlayerStatus.FIGHTING) {
+				if (profile.getPlayerStatus() != PlayerStatus.FIGHTING) {
 					return;
 				}
 
-				if (player.isInMatchCountdown()) {
+				if (profile.isInMatchCountdown()) {
 					e.setCancelled(true);
 					return;
 				}
 
-				if (player.getPearlCooldown().isActive()) {
+				if (profile.getPearlCooldown().isActive()) {
 					e.setCancelled(true);
-					ChatMessages.PEARL.clone().replace("%time%", "" + player.getPearlCooldown().getTimeRemaining())
-							.send(player.getPlayer());
+					ChatMessages.PEARL.clone().replace("%time%", "" + profile.getPearlCooldown().getTimeRemaining())
+							.send(profile.getPlayer());
 					return;
 				}
 
-				player.getPearlCooldown().setTimeRemaining(player.getMatch().getData().getPearlCooldown());
+				profile.getPearlCooldown().setTimeRemaining(profile.getMatch().getData().getPearlCooldown());
 				e.setCancelled(false);
 
 				return;
@@ -119,51 +115,43 @@ public class InteractListener implements Listener {
 				new BukkitRunnable() {
 					@Override
 					public void run() {
-						if (player.getPlayer().getHealth() >= 20) {
+						if (profile.getPlayer().getHealth() >= 20) {
 							return;
 						}
 
-						player.getInventory().setItemInHand(new ItemStack(Material.BOWL));
+						profile.getInventory().setItemInHand(new ItemStack(Material.BOWL));
 
-						if (player.getPlayer().getHealth() <= 14.0) {
-							player.getPlayer().setHealth(player.getPlayer().getHealth() + 6.0);
+						if (profile.getPlayer().getHealth() <= 14.0) {
+							profile.getPlayer().setHealth(profile.getPlayer().getHealth() + 6.0);
 							return;
 						}
 
-						player.getPlayer().setHealth(20);
+						profile.getPlayer().setHealth(20);
 					}
 				}.runTaskLater(PracticePlugin.INSTANCE, 1);
 				return;
 			}
 		}
 
-		if (e.getClickedBlock() != null) {
-			if (e.getClickedBlock().getType() == Material.TNT) {
-				Material type = player.getInventory().getItemInHand().getType();
-				if (type != Material.FLINT_AND_STEEL || type != Material.FIREBALL) {
-					return;
-				}
+		if (e.getClickedBlock() != null && e.getClickedBlock().getType() == Material.TNT) {
+			Material type = profile.getInventory().getItemInHand().getType();
+			if (type != Material.FLINT_AND_STEEL || type != Material.FIREBALL) {
+				return;
+			}
 
-				if (player.getPlayerStatus() != PlayerStatus.FIGHTING) {
-					e.setCancelled(true);
-					return;
-				}
-
-				if (player.getMatch().getData().getGriefing()) {
-					return;
-				}
-
+			if (profile.getPlayerStatus() != PlayerStatus.FIGHTING) {
 				e.setCancelled(true);
 				return;
 			}
+
+			e.setCancelled(!profile.getMatch().getData().getGriefing());
+			return;
 		}
+
 	}
 
 	@EventHandler
 	public void onEntityInteract(EntityInteractEvent e) {
-
-		if (e.getBlock().getType() == Material.SOIL) {
-			e.setCancelled(true);
-		}
+		e.setCancelled(e.getBlock().getType() == Material.SOIL);
 	}
 }

@@ -416,9 +416,14 @@ public class Match implements Spectatable {
 		ItemStack hits = new ItemBuilder(Material.BLAZE_ROD)
 				.name(p.getHitCount() + " Hits")
 				.lore("Longest Combo: " + p.getLongestCombo(), "Average Combo: " + p.getAverageCombo()).build();
-		menu.setSlot(47, hits);
+		ItemStack clicks = new ItemBuilder(Material.GHAST_TEAR)
+				.name("Highest CPS: " + p.getHighestCps())
+				.lore().build();
+
 		menu.setSlot(45, healthItem);
 		menu.setSlot(46, potItem);
+		menu.setSlot(47, hits);
+		menu.setSlot(48, clicks);
 
 		if (this instanceof PartyMatch) {
 			ProfileManager.setPartyInventoryStats(p, menu);
