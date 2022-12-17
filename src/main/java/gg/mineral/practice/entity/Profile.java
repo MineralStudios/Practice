@@ -68,7 +68,7 @@ public class Profile {
 	@Getter
 	MatchData matchData;
 	@Getter
-	Integer hitCount = 0, currentCombo = 0, longestCombo = 0;
+	Integer hitCount = 0, currentCombo = 0, longestCombo = 0, averageCombo = 0;
 	@Getter
 	boolean playersVisible = true, partyOpenCooldown = false, inMatchCountdown = false;
 	@Getter
@@ -129,6 +129,12 @@ public class Profile {
 	public void increaseHitCount() {
 		hitCount++;
 		currentCombo++;
+
+		if (currentCombo > 1) {
+			averageCombo += currentCombo;
+			averageCombo /= 2;
+		}
+
 		longestCombo = Math.max(currentCombo, longestCombo);
 	}
 
