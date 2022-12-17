@@ -4,7 +4,7 @@ import org.bukkit.configuration.ConfigurationSection;
 
 import gg.mineral.api.collection.GlueList;
 import gg.mineral.api.config.FileConfiguration;
-import gg.mineral.practice.gametype.Catagory;
+import gg.mineral.practice.catagory.Catagory;
 import gg.mineral.practice.gametype.Gametype;
 import gg.mineral.practice.queue.Queuetype;
 import lombok.Getter;

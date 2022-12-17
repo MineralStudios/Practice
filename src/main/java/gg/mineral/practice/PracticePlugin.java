@@ -40,14 +40,13 @@ import gg.mineral.practice.listeners.HealthListener;
 import gg.mineral.practice.listeners.InteractListener;
 import gg.mineral.practice.listeners.InventoryListener;
 import gg.mineral.practice.listeners.MovementListener;
-import gg.mineral.practice.listeners.PlayerStatusListener;
 import gg.mineral.practice.managers.ArenaManager;
 import gg.mineral.practice.managers.CatagoryManager;
 import gg.mineral.practice.managers.GametypeManager;
 import gg.mineral.practice.managers.KitEditorManager;
 import gg.mineral.practice.managers.PartyManager;
-import gg.mineral.practice.managers.ProfileManager;
 import gg.mineral.practice.managers.PlayerSettingsManager;
+import gg.mineral.practice.managers.ProfileManager;
 import gg.mineral.practice.managers.QueuetypeManager;
 import gg.mineral.practice.sql.SQLManager;
 import net.minecraft.server.v1_8_R3.MinecraftServer;
@@ -66,7 +65,11 @@ public class PracticePlugin extends JavaPlugin {
 		String username = databaseDetails.getString("username", "username");
 		String password = databaseDetails.getString("password", "password");
 
-		SQLManager.initialize(host, port, database, username, password);
+		try {
+			SQLManager.initialize(host, port, database, username, password);
+		} catch (Exception e) {
+
+		}
 
 		INSTANCE = this;
 
@@ -91,7 +94,7 @@ public class PracticePlugin extends JavaPlugin {
 
 		registerListeners(new BuildListener(), new InteractListener(), new ComsumeListener(), new InventoryListener(),
 				new DeathListener(), new DamageListener(), new EntryListener(), new HealthListener(),
-				new MovementListener(), new PlayerStatusListener());
+				new MovementListener());
 	}
 
 	public void registerCommands(Command... cmds) {

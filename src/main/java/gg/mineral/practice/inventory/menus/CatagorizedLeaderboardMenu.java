@@ -3,11 +3,11 @@ package gg.mineral.practice.inventory.menus;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
 
-import gg.mineral.practice.util.items.ItemBuilder;
-import gg.mineral.practice.util.messages.CC;
-import gg.mineral.practice.gametype.Catagory;
+import gg.mineral.practice.catagory.Catagory;
 import gg.mineral.practice.gametype.Gametype;
 import gg.mineral.practice.inventory.PracticeMenu;
+import gg.mineral.practice.util.items.ItemBuilder;
+import gg.mineral.practice.util.messages.CC;
 
 public class CatagorizedLeaderboardMenu extends PracticeMenu {
     Catagory catagory;

@@ -2,12 +2,12 @@ package gg.mineral.practice.inventory.menus;
 
 import org.bukkit.inventory.ItemStack;
 
-import gg.mineral.practice.util.items.ItemBuilder;
-import gg.mineral.practice.util.messages.CC;
+import gg.mineral.practice.catagory.Catagory;
 import gg.mineral.practice.entity.PlayerStatus;
-import gg.mineral.practice.gametype.Catagory;
 import gg.mineral.practice.gametype.Gametype;
 import gg.mineral.practice.inventory.PracticeMenu;
+import gg.mineral.practice.util.items.ItemBuilder;
+import gg.mineral.practice.util.messages.CC;
 
 public class SelectCategorizedExistingKitMenu extends SelectExistingKitMenu {
 	Catagory c;

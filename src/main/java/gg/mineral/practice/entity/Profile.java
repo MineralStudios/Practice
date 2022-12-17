@@ -1,6 +1,7 @@
 package gg.mineral.practice.entity;
 
 import java.util.Iterator;
+import java.util.List;
 import java.util.UUID;
 
 import org.bukkit.Bukkit;
@@ -8,13 +9,13 @@ import org.bukkit.GameMode;
 import org.bukkit.Location;
 import org.bukkit.craftbukkit.v1_8_R3.entity.CraftPlayer;
 import org.bukkit.entity.ArmorStand;
+import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.potion.PotionEffect;
 import org.bukkit.scheduler.BukkitRunnable;
 
 import gg.mineral.api.collection.GlueList;
 import gg.mineral.practice.PracticePlugin;
-import gg.mineral.practice.bukkit.event.PlayerStatusChangeEvent;
 import gg.mineral.practice.events.Event;
 import gg.mineral.practice.inventory.PlayerInventory;
 import gg.mineral.practice.inventory.PracticeMenu;
@@ -25,6 +26,7 @@ import gg.mineral.practice.inventory.menus.SelectModeMenu;
 import gg.mineral.practice.inventory.menus.SelectQueuetypeMenu;
 import gg.mineral.practice.kit.Kit;
 import gg.mineral.practice.managers.KitEditorManager;
+import gg.mineral.practice.managers.MatchManager;
 import gg.mineral.practice.managers.PartyManager;
 import gg.mineral.practice.managers.PlayerSettingsManager;
 import gg.mineral.practice.managers.ProfileManager;
@@ -622,15 +624,53 @@ public class Profile {
 		return player.getUniqueId();
 	}
 
-	public void setPlayerStatus(PlayerStatus s) {
-		PlayerStatusChangeEvent psce = new PlayerStatusChangeEvent(this, s);
-		Bukkit.getServer().getPluginManager().callEvent(psce);
+	public void setPlayerStatus(PlayerStatus newPlayerStatus) {
 
-		if (psce.cancelled()) {
-			return;
+		List<org.bukkit.entity.Player> playersInWorld = getPlayer().getWorld().getPlayers();
+		int i;
+
+		if (playerStatus != PlayerStatus.IN_QUEUE) {
+
+			switch (newPlayerStatus) {
+				case IN_LOBBY:
+					if (!this.isPlayersVisible()) {
+						for (Player player : playersInWorld) {
+							getPlayer().hidePlayer(player, false);
+						}
+
+						break;
+					}
+
+					for (Player player : playersInWorld) {
+						getPlayer().showPlayer(player);
+					}
+
+					break;
+				case KIT_EDITOR:
+				case KIT_CREATOR:
+					for (Player player : playersInWorld) {
+						getPlayer().hidePlayer(player, false);
+					}
+
+					break;
+				case SPECTATING:
+					List<Profile> participants = this.getSpectatingMatch().getParticipants();
+
+					for (Profile profile : participants) {
+						this.getPlayer().showPlayer(profile.getPlayer());
+					}
+
+					for (Match match : MatchManager.getMatches()) {
+						match.updateVisiblity(this.getSpectatingMatch(), this);
+					}
+
+					break;
+				default:
+
+			}
 		}
 
-		playerStatus = s;
+		playerStatus = newPlayerStatus;
 	}
 
 	public void follow(Profile p) {

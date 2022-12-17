@@ -2,15 +2,14 @@ package gg.mineral.practice.commands.config;
 
 import java.util.Iterator;
 
+import gg.mineral.practice.catagory.Catagory;
 import gg.mineral.practice.commands.PlayerCommand;
-
-import gg.mineral.practice.util.messages.CC;
-import gg.mineral.practice.gametype.Catagory;
 import gg.mineral.practice.gametype.Gametype;
 import gg.mineral.practice.managers.CatagoryManager;
 import gg.mineral.practice.managers.GametypeManager;
 import gg.mineral.practice.managers.QueuetypeManager;
 import gg.mineral.practice.queue.Queuetype;
+import gg.mineral.practice.util.messages.CC;
 import gg.mineral.practice.util.messages.impl.ChatMessages;
 import gg.mineral.practice.util.messages.impl.ErrorMessages;
 import gg.mineral.practice.util.messages.impl.UsageMessages;

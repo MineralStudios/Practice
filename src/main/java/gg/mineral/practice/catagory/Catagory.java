@@ -1,10 +1,11 @@
-package gg.mineral.practice.gametype;
+package gg.mineral.practice.catagory;
 
 import org.bukkit.Material;
 import org.bukkit.inventory.ItemStack;
 
 import gg.mineral.api.collection.GlueList;
 import gg.mineral.api.config.FileConfiguration;
+import gg.mineral.practice.gametype.Gametype;
 import gg.mineral.practice.managers.CatagoryManager;
 import gg.mineral.practice.managers.QueuetypeManager;
 import gg.mineral.practice.queue.Queuetype;

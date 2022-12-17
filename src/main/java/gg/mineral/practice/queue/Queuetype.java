@@ -8,7 +8,7 @@ import org.bukkit.inventory.ItemStack;
 import gg.mineral.api.collection.GlueList;
 import gg.mineral.api.config.FileConfiguration;
 import gg.mineral.practice.arena.Arena;
-import gg.mineral.practice.gametype.Catagory;
+import gg.mineral.practice.catagory.Catagory;
 import gg.mineral.practice.gametype.Gametype;
 import gg.mineral.practice.managers.ArenaManager;
 import gg.mineral.practice.managers.QueuetypeManager;

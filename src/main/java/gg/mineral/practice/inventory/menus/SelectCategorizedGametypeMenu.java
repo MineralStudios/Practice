@@ -2,7 +2,7 @@ package gg.mineral.practice.inventory.menus;
 
 import org.bukkit.inventory.ItemStack;
 
-import gg.mineral.practice.gametype.Catagory;
+import gg.mineral.practice.catagory.Catagory;
 import gg.mineral.practice.gametype.Gametype;
 import gg.mineral.practice.managers.MatchManager;
 import gg.mineral.practice.managers.QueueEntryManager;
