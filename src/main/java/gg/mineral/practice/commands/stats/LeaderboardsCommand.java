@@ -8,7 +8,7 @@ public class LeaderboardsCommand extends PlayerCommand {
 
 	public LeaderboardsCommand() {
 		super("leaderboards");
-		setAliases("lb");
+		setAliases("leaderboard", "lb");
 	}
 
 	@Override
