@@ -413,9 +413,12 @@ public class Match implements Spectatable {
 				: new ItemBuilder(new ItemStack(Material.POTION, health, (short) 8193))
 						.name("Health: " + health).build();
 
+		int wTapAccuracy = (int) (p.getHitCount() * 100D / p.getWTapCount());
 		ItemStack hits = new ItemBuilder(Material.BLAZE_ROD)
 				.name(p.getHitCount() + " Hits")
-				.lore("Longest Combo: " + p.getLongestCombo(), "Average Combo: " + p.getAverageCombo()).build();
+				.lore("Longest Combo: " + p.getLongestCombo(), "Average Combo: " + p.getAverageCombo(),
+						"W Tap Accuracy: " + wTapAccuracy)
+				.build();
 		ItemStack clicks = new ItemBuilder(Material.GHAST_TEAR)
 				.name("Highest CPS: " + p.getHighestCps())
 				.lore().build();
