@@ -142,7 +142,6 @@ public class PartyMatch extends Match {
 						+ attacker.getInventory().getNumber(Material.MUSHROOM_SOUP,
 								new ItemStack(Material.MUSHROOM_SOUP).getDurability());
 				attackerInventoryStatsMenus.add(setInventoryStats(attacker, attackerHealth, attackerAmountOfPots));
-				attacker.getPlayer().sendMessage(CC.GOLD + "You won");
 				attacker.setPearlCooldown(0);
 				new DefaultScoreboard(attacker).setBoard();
 				attacker.removeFromMatch();
@@ -171,17 +170,16 @@ public class PartyMatch extends Match {
 			winmessage.setClickEvent(
 					new ClickEvent(ClickEvent.Action.RUN_COMMAND,
 							"/viewteaminventory " + attackerTeamLeader.getName()));
-			attackerTeamLeader.getPlayer().sendMessage(CC.SEPARATOR);
-			attackerTeamLeader.getPlayer().sendMessage(viewinv);
-			attackerTeamLeader.getPlayer().spigot().sendMessage(winmessage);
-			attackerTeamLeader.getPlayer().spigot().sendMessage(losemessage);
-			victim.getPlayer().sendMessage(CC.SEPARATOR);
-			victim.getPlayer().sendMessage(viewinv);
-			victim.getPlayer().spigot().sendMessage(winmessage);
-			victim.getPlayer().spigot().sendMessage(losemessage);
-			attackerTeamLeader.getPlayer().sendMessage(CC.SEPARATOR);
-			victim.getPlayer().sendMessage(CC.SEPARATOR);
-			nameTag.giveTagAfterMatch(profile1.getPlayer(), profile2.getPlayer());
+
+			for (Profile profile : participants) {
+				profile.getPlayer().sendMessage(CC.SEPARATOR);
+				profile.getPlayer().sendMessage(viewinv);
+				profile.getPlayer().spigot().sendMessage(winmessage);
+				profile.getPlayer().spigot().sendMessage(losemessage);
+				profile.getPlayer().sendMessage(CC.SEPARATOR);
+				nameTag.giveTagAfterMatch(profile.getPlayer(), profile.getPlayer());
+			}
+
 			new DefaultScoreboard(victim).setBoard();
 
 			Bukkit.getServer().getScheduler().runTaskLater(PracticePlugin.INSTANCE, () -> {
@@ -226,6 +224,7 @@ public class PartyMatch extends Match {
 
 			victim.removePotionEffects();
 			victim.spectate(victimTeam.get(0));
+			nameTag.giveTagAfterMatch(victim.getPlayer(), victim.getPlayer());
 			new DefaultScoreboard(victim).setBoard();
 
 		}, 1);
