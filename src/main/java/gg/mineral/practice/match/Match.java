@@ -144,16 +144,14 @@ public class Match implements Spectatable {
 	}
 
 	public void updateVisiblity(Match match, Profile profile) {
-		if (match.equals(this)) {
+		if (match.equals(this) || !match.getData().getArena().equals(getData().getArena())) {
 			return;
 		}
 
-		if (match.getData().getArena().equals(getData().getArena())) {
-			for (int i = 0; i < participants.size(); i++) {
-				Profile participant = participants.get(i);
-				participant.getPlayer().hidePlayer(profile.getPlayer(), false);
-				profile.getPlayer().hidePlayer(participant.getPlayer(), false);
-			}
+		for (int i = 0; i < participants.size(); i++) {
+			Profile participant = participants.get(i);
+			participant.getPlayer().hidePlayer(profile.getPlayer(), false);
+			profile.getPlayer().hidePlayer(participant.getPlayer(), false);
 		}
 	}
 
@@ -260,6 +258,18 @@ public class Match implements Spectatable {
 	public Profile getOpponent(Profile p) {
 		Profile p1 = getProfile1();
 		return p1.equals(p) ? getProfile2() : p1;
+	}
+
+	public boolean incrementTeamHitCount(Profile attacker, Profile victim) {
+		attacker.increaseHitCount();
+		victim.resetCombo();
+
+		if (attacker.getHitCount() >= 100 && getData().getBoxing()) {
+			end(victim);
+			return true;
+		}
+
+		return false;
 	}
 
 	public CompletableFuture<Void> updateElo(Profile attacker, Profile victim) {

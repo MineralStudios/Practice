@@ -13,6 +13,7 @@ import org.bukkit.event.entity.EntityDamageEvent.DamageCause;
 import gg.mineral.practice.entity.PlayerStatus;
 import gg.mineral.practice.entity.Profile;
 import gg.mineral.practice.managers.ProfileManager;
+import gg.mineral.practice.match.PartyMatch;
 import gg.mineral.practice.util.messages.impl.ChatMessages;
 
 public class DamageListener implements Listener {
@@ -101,17 +102,12 @@ public class DamageListener implements Listener {
 			return;
 		}
 
-		attacker.increaseHitCount();
-		victim.resetCombo();
-
-		if (attacker.getHitCount() >= 100 && attacker.getMatch().getData().getBoxing()) {
-			victim.getMatch().end(victim);
+		if (attacker.getMatch() instanceof PartyMatch && attacker.getMatch().getTeam(attacker).contains(victim)) {
+			e.setCancelled(true);
 			return;
 		}
 
-		if (attacker.isInParty() && victim.isInParty()) {
-			e.setCancelled(attacker.getMatch().getTeam(attacker).contains(victim));
-		}
+		e.setCancelled(attacker.getMatch().incrementTeamHitCount(attacker, victim));
 	}
 
 	@EventHandler

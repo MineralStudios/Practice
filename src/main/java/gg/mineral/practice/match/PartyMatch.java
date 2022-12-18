@@ -18,18 +18,25 @@ import gg.mineral.practice.managers.ProfileManager;
 import gg.mineral.practice.match.data.MatchData;
 import gg.mineral.practice.party.Party;
 import gg.mineral.practice.scoreboard.impl.DefaultScoreboard;
+import gg.mineral.practice.scoreboard.impl.PartyBoxingScoreboard;
 import gg.mineral.practice.scoreboard.impl.PartyMatchScoreboard;
 import gg.mineral.practice.util.PlayerUtil;
 import gg.mineral.practice.util.collection.ProfileList;
 import gg.mineral.practice.util.messages.CC;
+import lombok.Getter;
 import net.md_5.bungee.api.chat.ClickEvent;
+import net.md_5.bungee.api.chat.ComponentBuilder;
+import net.md_5.bungee.api.chat.HoverEvent;
 import net.md_5.bungee.api.chat.TextComponent;
 import net.minecraft.server.v1_8_R3.PacketPlayInClientCommand;
 import net.minecraft.server.v1_8_R3.PacketPlayInClientCommand.EnumClientCommand;
 
 public class PartyMatch extends Match {
+	@Getter
 	ProfileList team1RemainingPlayers, team2RemainingPlayers;
 	List<InventoryStatsMenu> team1InventoryStatsMenus = new GlueList<>(), team2InventoryStatsMenus = new GlueList<>();
+	@Getter
+	int team1HitCount = 0, team2HitCount = 0, team1RequiredHitCount, team2RequiredHitCount;
 
 	public PartyMatch(Party party1, Party party2, MatchData matchData) {
 		super(matchData);
@@ -37,18 +44,22 @@ public class PartyMatch extends Match {
 		this.profile2 = party2.getPartyLeader();
 		this.team1RemainingPlayers = new ProfileList(party1.getPartyMembers());
 		this.team2RemainingPlayers = new ProfileList(party2.getPartyMembers());
-		participants.addAll(team1RemainingPlayers);
-		participants.addAll(team2RemainingPlayers);
+		this.participants.addAll(team1RemainingPlayers);
+		this.participants.addAll(team2RemainingPlayers);
+		this.team1RequiredHitCount = team1RemainingPlayers.size() * 100;
+		this.team2RequiredHitCount = team2RemainingPlayers.size() * 100;
 	}
 
 	public PartyMatch(Party party, MatchData matchData) {
 		super(matchData);
-		participants = new ProfileList(party.getPartyMembers());
+		this.participants.addAll(party.getPartyMembers());
 		int size = participants.size();
 		this.team1RemainingPlayers = new ProfileList(participants.subList(0, (size + 1) / 2));
 		this.team2RemainingPlayers = new ProfileList(participants.subList((size + 1) / 2, size));
 		this.profile1 = team1RemainingPlayers.get(0);
 		this.profile2 = team2RemainingPlayers.get(0);
+		this.team1RequiredHitCount = team1RemainingPlayers.size() * 100;
+		this.team2RequiredHitCount = team2RemainingPlayers.size() * 100;
 	}
 
 	@Override
@@ -91,6 +102,11 @@ public class PartyMatch extends Match {
 
 	@Override
 	public void setScoreboard(Profile p) {
+		if (data.getBoxing()) {
+			new PartyBoxingScoreboard(p).setBoard();
+			return;
+		}
+
 		new PartyMatchScoreboard(p).setBoard();
 	}
 
@@ -103,17 +119,22 @@ public class PartyMatch extends Match {
 		ProfileList attackerTeam, victimTeam;
 		List<InventoryStatsMenu> attackerInventoryStatsMenus = new GlueList<>(),
 				victimInventoryStatsMenus = new GlueList<>();
+		int attackerTeamHits, victimTeamHits;
 
 		if (team1RemainingPlayers.contains(victim)) {
 			victimTeam = team1RemainingPlayers;
 			attackerTeam = team2RemainingPlayers;
 			victimInventoryStatsMenus = team1InventoryStatsMenus;
 			attackerInventoryStatsMenus = team2InventoryStatsMenus;
+			attackerTeamHits = team2HitCount;
+			victimTeamHits = team1HitCount;
 		} else {
 			victimTeam = team2RemainingPlayers;
 			attackerTeam = team1RemainingPlayers;
 			victimInventoryStatsMenus = team2InventoryStatsMenus;
 			attackerInventoryStatsMenus = team1InventoryStatsMenus;
+			attackerTeamHits = team1HitCount;
+			victimTeamHits = team2HitCount;
 		}
 
 		int victimAmountOfPots = victim.getInventory().getNumber(Material.POTION, (short) 16421)
@@ -164,6 +185,13 @@ public class PartyMatch extends Match {
 					CC.GREEN + "Winner: " + CC.GRAY + attackerTeamLeader.getName() + "\'s party");
 			TextComponent losemessage = new TextComponent(
 					CC.RED + "Loser: " + CC.GRAY + victim.getName() + "\'s party");
+			losemessage
+					.setHoverEvent(
+							new HoverEvent(HoverEvent.Action.SHOW_TEXT,
+									new ComponentBuilder(CC.RED + "Hits: " + victimTeamHits)
+											.create()));
+			winmessage.setHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT,
+					new ComponentBuilder(CC.GREEN + "Hits: " + attackerTeamHits).create()));
 			losemessage
 					.setClickEvent(
 							new ClickEvent(ClickEvent.Action.RUN_COMMAND, "/viewteaminventory " + victim.getName()));
@@ -233,6 +261,27 @@ public class PartyMatch extends Match {
 	@Override
 	public List<Profile> getTeam(Profile p) {
 		return team1RemainingPlayers.contains(p) ? team1RemainingPlayers : team2RemainingPlayers;
+	}
+
+	@Override
+	public boolean incrementTeamHitCount(Profile attacker, Profile victim) {
+		attacker.increaseHitCount();
+		victim.resetCombo();
+
+		boolean isTeam1 = team1RemainingPlayers.contains(attacker);
+		int hitCount = isTeam1 ? team1HitCount++ : team2HitCount++;
+		int requiredHitCount = isTeam1 ? team1RequiredHitCount : team2RequiredHitCount;
+		ProfileList opponentTeam = isTeam1 ? team2RemainingPlayers : team1RemainingPlayers;
+
+		if (hitCount >= requiredHitCount
+				&& getData().getBoxing()) {
+			for (Profile opponent : opponentTeam) {
+				end(opponent);
+			}
+			return true;
+		}
+
+		return false;
 	}
 
 	public org.bukkit.scoreboard.Scoreboard getDisplayNameBoard(ProfileList playerTeam, ProfileList opponentTeam) {
