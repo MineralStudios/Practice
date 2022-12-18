@@ -301,6 +301,14 @@ public class Profile {
 	}
 
 	public void setInventoryForLobby() {
+		if (playerStatus == PlayerStatus.IN_QUEUE) {
+			return;
+		}
+
+		if (playerStatus == PlayerStatus.FIGHTING && !getMatch().isEnded()) {
+			return;
+		}
+
 		setInventoryClickCancelled(true);
 		inventory.clear();
 
@@ -518,9 +526,13 @@ public class Profile {
 	}
 
 	public void teleportToLobby() {
+		if (playerStatus == PlayerStatus.FIGHTING && !getMatch().isEnded()) {
+			return;
+		}
+
 		PlayerUtil.teleport(this.getPlayer(), ProfileManager.getSpawnLocation());
 
-		if (playerStatus != PlayerStatus.FOLLOWING) {
+		if (playerStatus != PlayerStatus.FOLLOWING && playerStatus != PlayerStatus.IN_QUEUE) {
 			setPlayerStatus(PlayerStatus.IN_LOBBY);
 		}
 	}

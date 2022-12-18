@@ -56,6 +56,7 @@ public class Match implements Spectatable {
 	ProfileList participants = new ProfileList();
 	@Getter
 	Profile profile1, profile2;
+	@Getter
 	boolean ended = false;
 	@Getter
 	int placedTnt;
@@ -343,6 +344,8 @@ public class Match implements Spectatable {
 			sendBackToLobby(victim);
 		}, 1);
 
+		giveQueueAgainItem(attacker);
+
 		Bukkit.getServer().getScheduler().runTaskLater(PracticePlugin.INSTANCE, () -> {
 			sendBackToLobby(attacker);
 			nameTag.giveTagAfterMatch(profile1.getPlayer(), profile2.getPlayer());
@@ -357,6 +360,19 @@ public class Match implements Spectatable {
 
 			clearWorld();
 		}, 40);
+	}
+
+	public void giveQueueAgainItem(Profile profile) {
+		if (getData().getQueueEntry() != null) {
+			Bukkit.getServer().getScheduler().runTaskLater(PracticePlugin.INSTANCE, () -> {
+				int slot = profile.getInventory().getHeldItemSlot();
+
+				profile.getInventory().setItem(slot, ItemStacks.QUEUE_AGAIN,
+						() -> {
+							profile.addPlayerToQueue(getData().getQueueEntry());
+						});
+			}, 20);
+		}
 	}
 
 	public void sendBackToLobby(Profile profile) {
