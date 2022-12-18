@@ -367,6 +367,7 @@ public class Profile {
 
 	public void removeFromQueue() {
 		QueueSearchTask.removePlayer(this);
+		message(ChatMessages.LEFT_QUEUE);
 		setPlayerStatus(PlayerStatus.IN_LOBBY);
 	}
 
@@ -380,6 +381,8 @@ public class Profile {
 		setPlayerStatus(PlayerStatus.IN_QUEUE);
 		setInventoryForQueue();
 		QueueSearchTask.addPlayer(this, qd);
+		message(ChatMessages.JOINED_QUEUE.clone().replace("%queue%", qd.getQueuetype().getDisplayName())
+				.replace("%gametype%", qd.getGametype().getDisplayName()));
 	}
 
 	public void stopSpectating() {

@@ -191,6 +191,14 @@ public class ChatMessages {
 			"You can use the ender pearl again in %time% second(s).",
 			CC.AQUA)
 			.highlightText(CC.D_AQUA, "%time%");
+	public static final ChatMessage JOINED_QUEUE = new ChatMessage(
+			"You are now queued for %queue% %gametype%.",
+			CC.AQUA)
+			.highlightText(CC.D_AQUA, "%queue%", "%gametype%");
+	public static final ChatMessage LEFT_QUEUE = new ChatMessage(
+			"You are no longer queued",
+			CC.AQUA)
+			.highlightText(CC.D_AQUA, "%queue%", "%gametype%");
 	public static final ChatMessage HEALTH = new ChatMessage(
 			"%player% now has %health% health remaining.",
 			CC.AQUA)
