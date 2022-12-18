@@ -28,9 +28,11 @@ public class InventoryStatsMenu extends PracticeMenu {
 
     @Override
     public boolean update() {
-        ItemStack lever = new ItemBuilder(Material.LEVER)
-                .name("View Opponent Inventory").build();
-        setSlot(53, lever, p -> p.getPlayer().performCommand("viewinventory " + opponent));
+        if (opponent != null) {
+            ItemStack lever = new ItemBuilder(Material.LEVER)
+                    .name("View Opponent Inventory").build();
+            setSlot(53, lever, p -> p.getPlayer().performCommand("viewinventory " + opponent));
+        }
         return true;
     }
 }

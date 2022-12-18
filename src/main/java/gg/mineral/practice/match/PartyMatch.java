@@ -1,5 +1,6 @@
 package gg.mineral.practice.match;
 
+import java.util.Iterator;
 import java.util.List;
 
 import org.bukkit.Bukkit;
@@ -8,9 +9,12 @@ import org.bukkit.Material;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.scoreboard.Team;
 
+import gg.mineral.api.collection.GlueList;
 import gg.mineral.practice.PracticePlugin;
 import gg.mineral.practice.entity.Profile;
+import gg.mineral.practice.inventory.menus.InventoryStatsMenu;
 import gg.mineral.practice.managers.MatchManager;
+import gg.mineral.practice.managers.ProfileManager;
 import gg.mineral.practice.match.data.MatchData;
 import gg.mineral.practice.party.Party;
 import gg.mineral.practice.scoreboard.impl.DefaultScoreboard;
@@ -18,11 +22,14 @@ import gg.mineral.practice.scoreboard.impl.PartyMatchScoreboard;
 import gg.mineral.practice.util.PlayerUtil;
 import gg.mineral.practice.util.collection.ProfileList;
 import gg.mineral.practice.util.messages.CC;
+import net.md_5.bungee.api.chat.ClickEvent;
+import net.md_5.bungee.api.chat.TextComponent;
 import net.minecraft.server.v1_8_R3.PacketPlayInClientCommand;
 import net.minecraft.server.v1_8_R3.PacketPlayInClientCommand.EnumClientCommand;
 
 public class PartyMatch extends Match {
 	ProfileList team1RemainingPlayers, team2RemainingPlayers;
+	List<InventoryStatsMenu> team1InventoryStatsMenus = new GlueList<>(), team2InventoryStatsMenus = new GlueList<>();
 
 	public PartyMatch(Party party1, Party party2, MatchData matchData) {
 		super(matchData);
@@ -93,39 +100,48 @@ public class PartyMatch extends Match {
 			return;
 		}
 
-		ProfileList attackerParty;
-		ProfileList remaining;
+		ProfileList attackerTeam, victimTeam;
+		List<InventoryStatsMenu> attackerInventoryStatsMenus = new GlueList<>(),
+				victimInventoryStatsMenus = new GlueList<>();
 
 		if (team1RemainingPlayers.contains(victim)) {
-			remaining = team1RemainingPlayers;
-			attackerParty = team2RemainingPlayers;
+			victimTeam = team1RemainingPlayers;
+			attackerTeam = team2RemainingPlayers;
+			victimInventoryStatsMenus = team1InventoryStatsMenus;
+			attackerInventoryStatsMenus = team2InventoryStatsMenus;
 		} else {
-			remaining = team2RemainingPlayers;
-			attackerParty = team1RemainingPlayers;
+			victimTeam = team2RemainingPlayers;
+			attackerTeam = team1RemainingPlayers;
+			victimInventoryStatsMenus = team2InventoryStatsMenus;
+			attackerInventoryStatsMenus = team1InventoryStatsMenus;
 		}
 
 		int victimAmountOfPots = victim.getInventory().getNumber(Material.POTION, (short) 16421)
 				+ victim.getInventory().getNumber(Material.MUSHROOM_SOUP,
 						new ItemStack(Material.MUSHROOM_SOUP).getDurability());
 
-		setInventoryStats(victim, 0, victimAmountOfPots);
+		victimInventoryStatsMenus.add(setInventoryStats(victim, 0, victimAmountOfPots));
 		victim.setPearlCooldown(0);
 		victim.removeFromMatch();
 		victim.heal();
 
-		if (remaining.size() <= 1) {
+		if (victimTeam.size() <= 1) {
 
 			ended = true;
 
-			for (int i = 0; i < attackerParty.size(); i++) {
-				Profile attacker = attackerParty.get(i);
+			Iterator<Profile> attackerTeamIterator = attackerTeam.iterator();
+
+			Profile attackerTeamLeader = attackerTeamIterator.next();
+
+			while (attackerTeamIterator.hasNext()) {
+				Profile attacker = attackerTeamIterator.next();
 				int attackerHealth = (int) attacker.getPlayer().getHealth();
 				attacker.heal();
 				attacker.removePotionEffects();
 				int attackerAmountOfPots = attacker.getInventory().getNumber(Material.POTION, (short) 16421)
 						+ attacker.getInventory().getNumber(Material.MUSHROOM_SOUP,
 								new ItemStack(Material.MUSHROOM_SOUP).getDurability());
-				setInventoryStats(attacker, attackerHealth, attackerAmountOfPots);
+				attackerInventoryStatsMenus.add(setInventoryStats(attacker, attackerHealth, attackerAmountOfPots));
 				attacker.getPlayer().sendMessage(CC.GOLD + "You won");
 				attacker.setPearlCooldown(0);
 				new DefaultScoreboard(attacker).setBoard();
@@ -141,8 +157,30 @@ public class PartyMatch extends Match {
 
 			}
 
+			ProfileManager.setTeamInventoryStats(attackerTeamLeader, attackerInventoryStatsMenus);
+			ProfileManager.setTeamInventoryStats(victim, victimInventoryStatsMenus);
 			MatchManager.remove(this);
-			victim.getPlayer().sendMessage(CC.RED + "You lost");
+			String viewinv = CC.YELLOW + "Match Results";
+			TextComponent winmessage = new TextComponent(
+					CC.GREEN + "Winner: " + CC.GRAY + attackerTeamLeader.getName() + "\'s party");
+			TextComponent losemessage = new TextComponent(
+					CC.RED + "Loser: " + CC.GRAY + victim.getName() + "\'s party");
+			losemessage
+					.setClickEvent(
+							new ClickEvent(ClickEvent.Action.RUN_COMMAND, "/viewteaminventory " + victim.getName()));
+			winmessage.setClickEvent(
+					new ClickEvent(ClickEvent.Action.RUN_COMMAND,
+							"/viewteaminventory " + attackerTeamLeader.getName()));
+			attackerTeamLeader.getPlayer().sendMessage(CC.SEPARATOR);
+			attackerTeamLeader.getPlayer().sendMessage(viewinv);
+			attackerTeamLeader.getPlayer().spigot().sendMessage(winmessage);
+			attackerTeamLeader.getPlayer().spigot().sendMessage(losemessage);
+			victim.getPlayer().sendMessage(CC.SEPARATOR);
+			victim.getPlayer().sendMessage(viewinv);
+			victim.getPlayer().spigot().sendMessage(winmessage);
+			victim.getPlayer().spigot().sendMessage(losemessage);
+			attackerTeamLeader.getPlayer().sendMessage(CC.SEPARATOR);
+			victim.getPlayer().sendMessage(CC.SEPARATOR);
 			nameTag.giveTagAfterMatch(profile1.getPlayer(), profile2.getPlayer());
 			new DefaultScoreboard(victim).setBoard();
 
@@ -162,6 +200,11 @@ public class PartyMatch extends Match {
 				}
 
 				for (Profile p : getSpectators()) {
+					p.getPlayer().sendMessage(CC.SEPARATOR);
+					p.getPlayer().sendMessage(viewinv);
+					p.getPlayer().spigot().sendMessage(winmessage);
+					p.getPlayer().spigot().sendMessage(losemessage);
+					p.getPlayer().sendMessage(CC.SEPARATOR);
 					p.stopSpectating();
 				}
 
@@ -172,7 +215,7 @@ public class PartyMatch extends Match {
 			return;
 		}
 
-		remaining.remove(victim);
+		victimTeam.remove(victim);
 		participants.remove(victim);
 
 		Bukkit.getServer().getScheduler().runTaskLater(PracticePlugin.INSTANCE, () -> {
@@ -182,7 +225,7 @@ public class PartyMatch extends Match {
 			}
 
 			victim.removePotionEffects();
-			victim.spectate(remaining.get(0));
+			victim.spectate(victimTeam.get(0));
 			new DefaultScoreboard(victim).setBoard();
 
 		}, 1);

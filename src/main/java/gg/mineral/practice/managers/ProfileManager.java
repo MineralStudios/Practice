@@ -1,6 +1,7 @@
 package gg.mineral.practice.managers;
 
 import java.util.Collection;
+import java.util.List;
 import java.util.concurrent.CompletableFuture;
 import java.util.function.Predicate;
 
@@ -28,8 +29,8 @@ public class ProfileManager {
 	static Location spawnLocation;
 	@Getter
 	static ProfileList profiles = new ProfileList();
-	static Object2ObjectOpenHashMap<String, InventoryStatsMenu> inventoryStats = new Object2ObjectOpenHashMap<>(),
-			partyInventoryStats = new Object2ObjectOpenHashMap<>();
+	static Object2ObjectOpenHashMap<String, InventoryStatsMenu> inventoryStats = new Object2ObjectOpenHashMap<>();
+	static Object2ObjectOpenHashMap<String, List<InventoryStatsMenu>> teamInventoryStats = new Object2ObjectOpenHashMap<>();
 
 	public static void add(Profile player) {
 		profiles.add(player);
@@ -45,6 +46,10 @@ public class ProfileManager {
 
 	public static InventoryStatsMenu getInventoryStats(String s) {
 		return inventoryStats.get(s);
+	}
+
+	public static List<InventoryStatsMenu> getTeamInventoryStats(String s) {
+		return teamInventoryStats.get(s);
 	}
 
 	public static int count(Predicate<Profile> predicate) {
@@ -94,8 +99,8 @@ public class ProfileManager {
 		inventoryStats.put(p.getName(), menu);
 	}
 
-	public static void setPartyInventoryStats(Profile p, InventoryStatsMenu menu) {
-		partyInventoryStats.put(p.getName(), menu);
+	public static void setTeamInventoryStats(Profile p, List<InventoryStatsMenu> menus) {
+		teamInventoryStats.put(p.getName(), menus);
 	}
 
 	public static void broadcast(Collection<Profile> c, Message message) {

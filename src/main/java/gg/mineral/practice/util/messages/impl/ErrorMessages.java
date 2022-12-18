@@ -64,6 +64,8 @@ public class ErrorMessages {
 	// Inventory
 	public static final Message PLAYER_INVENTORY_NOT_FOUND = new ErrorMessage(
 			"That player's inventory was not found");
+	public static final Message TEAM_INVENTORY_NOT_FOUND = new ErrorMessage(
+			"That team's inventory was not found");
 	// Tournament
 	public static final Message ALREADY_IN_TOURNAMENT = new ErrorMessage("You are already in a tournament.");
 	public static final Message TOURNAMENT_NOT_EXIST = new ErrorMessage("That tournament no longer exists.");

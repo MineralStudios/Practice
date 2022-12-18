@@ -392,7 +392,7 @@ public class Match implements Spectatable {
 		}
 	}
 
-	public void setInventoryStats(Profile p, int health, int amountOfPots) {
+	public InventoryStatsMenu setInventoryStats(Profile p, int health, int amountOfPots) {
 		amountOfPots = amountOfPots == 0 ? 1 : amountOfPots;
 
 		InventoryStatsMenu menu = new InventoryStatsMenu(p, getOpponent(p).getName());
@@ -425,12 +425,12 @@ public class Match implements Spectatable {
 		menu.setSlot(47, hits);
 		menu.setSlot(48, clicks);
 
-		if (this instanceof PartyMatch) {
-			ProfileManager.setPartyInventoryStats(p, menu);
+		if (!(this instanceof PartyMatch)) {
+			ProfileManager.setInventoryStats(p, menu);
 		}
 
-		ProfileManager.setInventoryStats(p, menu);
 		p.getInventory().clear();
+		return menu;
 	}
 
 	public void addParicipants(Profile... players) {
