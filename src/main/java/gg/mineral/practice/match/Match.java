@@ -1,10 +1,12 @@
 package gg.mineral.practice.match;
 
 import java.util.Arrays;
+import java.util.Collection;
 import java.util.List;
 import java.util.concurrent.CompletableFuture;
 
 import org.bukkit.Bukkit;
+import org.bukkit.ChatColor;
 import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.World;
@@ -38,6 +40,7 @@ import gg.mineral.practice.util.items.ItemStacks;
 import gg.mineral.practice.util.math.Countdown;
 import gg.mineral.practice.util.math.MathUtil;
 import gg.mineral.practice.util.messages.CC;
+import gg.mineral.practice.util.messages.StringUtil;
 import gg.mineral.practice.util.messages.impl.ErrorMessages;
 import gg.mineral.practice.util.world.WorldUtil;
 import lombok.Getter;
@@ -297,6 +300,8 @@ public class Match implements Spectatable {
 
 	public void end(Profile attacker, Profile victim) {
 		int attackerHealth = (int) attacker.getPlayer().getHealth();
+		Collection<PotionEffect> attackerPotionEffects = attacker.getPlayer().getActivePotionEffects();
+		Collection<PotionEffect> victimPotionEffects = victim.getPlayer().getActivePotionEffects();
 		attacker.heal();
 		attacker.removePotionEffects();
 		attacker.getPlayer().hidePlayer(victim.getPlayer());
@@ -304,12 +309,12 @@ public class Match implements Spectatable {
 		int attackerAmountOfPots = attacker.getInventory().getNumber(Material.POTION, (short) 16421)
 				+ attacker.getInventory().getNumber(Material.MUSHROOM_SOUP);
 
-		setInventoryStats(attacker, attackerHealth, attackerAmountOfPots);
+		setInventoryStats(attacker, attackerHealth, attackerAmountOfPots, attackerPotionEffects);
 
 		int victimAmountOfPots = victim.getInventory().getNumber(Material.POTION, (short) 16421)
 				+ victim.getInventory().getNumber(Material.MUSHROOM_SOUP);
 
-		setInventoryStats(victim, 0, victimAmountOfPots);
+		setInventoryStats(victim, 0, victimAmountOfPots, victimPotionEffects);
 		String viewinv = CC.YELLOW + "Match Results";
 		TextComponent winmessage = new TextComponent(CC.GREEN + "Winner: " + CC.GRAY + attacker.getName());
 		TextComponent splitter = new TextComponent(CC.D_GRAY + " - ");
@@ -418,7 +423,8 @@ public class Match implements Spectatable {
 		}
 	}
 
-	public InventoryStatsMenu setInventoryStats(Profile p, int health, int amountOfPots) {
+	public InventoryStatsMenu setInventoryStats(Profile p, int health, int amountOfPots,
+			Collection<PotionEffect> potionEffects) {
 		amountOfPots = amountOfPots == 0 ? 1 : amountOfPots;
 
 		InventoryStatsMenu menu = new InventoryStatsMenu(p, getOpponent(p).getName());
@@ -453,11 +459,23 @@ public class Match implements Spectatable {
 		ItemStack clicks = new ItemBuilder(Material.GHAST_TEAR)
 				.name("Highest CPS: " + p.getHighestCps())
 				.lore().build();
+		final List<String> potionEffectStrings = new GlueList<String>();
+		for (final PotionEffect potionEffect : potionEffects) {
+			final String romanNumeral = MathUtil.convertToRomanNumeral(potionEffect.getAmplifier() + 1);
+			final String effectName = StringUtil.toNiceString(potionEffect.getType().getName().toLowerCase());
+			final String duration = MathUtil.convertTicksToMinutes(potionEffect.getDuration());
+			potionEffectStrings.add(ChatColor.YELLOW.toString() + ChatColor.BOLD + "* " + ChatColor.WHITE + effectName
+					+ " " + romanNumeral + ChatColor.GRAY + " (" + duration + ")");
+		}
+		ItemStack effects = new ItemBuilder(Material.BLAZE_POWDER)
+				.name("Potion Effects")
+				.lore(potionEffectStrings.toArray(new String[0])).build();
 
 		menu.setSlot(45, healthItem);
 		menu.setSlot(46, potItem);
 		menu.setSlot(47, hits);
 		menu.setSlot(48, clicks);
+		menu.setSlot(49, effects);
 
 		if (!(this instanceof PartyMatch)) {
 			ProfileManager.setInventoryStats(p, menu);

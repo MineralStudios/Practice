@@ -1,5 +1,6 @@
 package gg.mineral.practice.match;
 
+import java.util.Collection;
 import java.util.Iterator;
 import java.util.List;
 
@@ -7,6 +8,7 @@ import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.inventory.ItemStack;
+import org.bukkit.potion.PotionEffect;
 import org.bukkit.scoreboard.Team;
 
 import gg.mineral.api.collection.GlueList;
@@ -141,7 +143,8 @@ public class PartyMatch extends Match {
 				+ victim.getInventory().getNumber(Material.MUSHROOM_SOUP,
 						new ItemStack(Material.MUSHROOM_SOUP).getDurability());
 
-		victimInventoryStatsMenus.add(setInventoryStats(victim, 0, victimAmountOfPots));
+		Collection<PotionEffect> victimPotionEffects = victim.getPlayer().getActivePotionEffects();
+		victimInventoryStatsMenus.add(setInventoryStats(victim, 0, victimAmountOfPots, victimPotionEffects));
 		victim.setPearlCooldown(0);
 		victim.removeFromMatch();
 		victim.heal();
@@ -157,12 +160,14 @@ public class PartyMatch extends Match {
 			while (attackerTeamIterator.hasNext()) {
 				Profile attacker = attackerTeamIterator.next();
 				int attackerHealth = (int) attacker.getPlayer().getHealth();
+				Collection<PotionEffect> attackerPotionEffects = attacker.getPlayer().getActivePotionEffects();
 				attacker.heal();
 				attacker.removePotionEffects();
 				int attackerAmountOfPots = attacker.getInventory().getNumber(Material.POTION, (short) 16421)
 						+ attacker.getInventory().getNumber(Material.MUSHROOM_SOUP,
 								new ItemStack(Material.MUSHROOM_SOUP).getDurability());
-				attackerInventoryStatsMenus.add(setInventoryStats(attacker, attackerHealth, attackerAmountOfPots));
+				attackerInventoryStatsMenus
+						.add(setInventoryStats(attacker, attackerHealth, attackerAmountOfPots, attackerPotionEffects));
 				attacker.setPearlCooldown(0);
 				new DefaultScoreboard(attacker).setBoard();
 				attacker.removeFromMatch();

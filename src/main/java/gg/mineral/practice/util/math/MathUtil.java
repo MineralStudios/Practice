@@ -31,4 +31,32 @@ public class MathUtil {
 		int mod = val % multiple;
 		return mod == 0 ? val : val + multiple - mod;
 	}
+
+	public static String convertTicksToMinutes(final int ticks) {
+		final long minute = ticks / 1200L;
+		final long second = ticks / 20L - minute * 60L;
+		String secondString = Math.round(second) + "";
+		if (second < 10L) {
+			secondString = 0 + secondString;
+		}
+		String minuteString = Math.round(minute) + "";
+		if (minute == 0L) {
+			minuteString = "0";
+		}
+		return minuteString + ":" + secondString;
+	}
+
+	public static String convertToRomanNumeral(final int number) {
+		switch (number) {
+			case 1: {
+				return "I";
+			}
+			case 2: {
+				return "II";
+			}
+			default: {
+				return null;
+			}
+		}
+	}
 }

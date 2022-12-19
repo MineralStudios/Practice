@@ -1,7 +1,10 @@
 package gg.mineral.practice.match;
 
+import java.util.Collection;
+
 import org.bukkit.Bukkit;
 import org.bukkit.Material;
+import org.bukkit.potion.PotionEffect;
 
 import gg.mineral.practice.PracticePlugin;
 import gg.mineral.practice.entity.PlayerStatus;
@@ -31,6 +34,8 @@ public class TournamentMatch extends Match {
     @Override
     public void end(Profile attacker, Profile victim) {
         int attackerHealth = (int) attacker.getPlayer().getHealth();
+        Collection<PotionEffect> attackerPotionEffects = attacker.getPlayer().getActivePotionEffects();
+        Collection<PotionEffect> victimPotionEffects = victim.getPlayer().getActivePotionEffects();
         attacker.heal();
         attacker.removePotionEffects();
         attacker.getPlayer().hidePlayer(victim.getPlayer());
@@ -38,12 +43,12 @@ public class TournamentMatch extends Match {
         int attackerAmountOfPots = attacker.getInventory().getNumber(Material.POTION, (short) 16421)
                 + attacker.getInventory().getNumber(Material.MUSHROOM_SOUP);
 
-        setInventoryStats(attacker, attackerHealth, attackerAmountOfPots);
+        setInventoryStats(attacker, attackerHealth, attackerAmountOfPots, attackerPotionEffects);
 
         int victimAmountOfPots = victim.getInventory().getNumber(Material.POTION, (short) 16421)
                 + victim.getInventory().getNumber(Material.MUSHROOM_SOUP);
 
-        setInventoryStats(victim, 0, victimAmountOfPots);
+        setInventoryStats(victim, 0, victimAmountOfPots, victimPotionEffects);
         String viewinv = CC.YELLOW + "Match Results";
         TextComponent winmessage = new TextComponent(CC.GREEN + "Winner: " + CC.GRAY + attacker.getName());
         TextComponent splitter = new TextComponent(CC.D_GRAY + " - ");
