@@ -39,6 +39,8 @@ import gg.mineral.practice.queue.QueueSearchTask;
 import gg.mineral.practice.queue.Queuetype;
 import gg.mineral.practice.request.DuelRequest;
 import gg.mineral.practice.scoreboard.impl.DefaultScoreboard;
+import gg.mineral.practice.scoreboard.impl.FollowingScoreboard;
+import gg.mineral.practice.scoreboard.impl.SpectatorScoreboard;
 import gg.mineral.practice.tournaments.Tournament;
 import gg.mineral.practice.util.PlayerUtil;
 import gg.mineral.practice.util.collection.AutoExpireList;
@@ -77,6 +79,7 @@ public class Profile {
 	@Getter
 	@Setter
 	PracticeMenu openMenu;
+	@Getter
 	Profile following;
 	@Getter
 	GlueList<Profile> followers = new ProfileList();
@@ -430,6 +433,7 @@ public class Profile {
 			} else {
 				this.setInventoryForLobby();
 			}
+			new DefaultScoreboard(this).setBoard();
 			return;
 		}
 
@@ -462,6 +466,7 @@ public class Profile {
 		} else {
 			this.setInventoryForLobby();
 		}
+		new DefaultScoreboard(this).setBoard();
 	}
 
 	public void spectate(Profile p) {
@@ -506,6 +511,7 @@ public class Profile {
 			return;
 		}
 
+		new SpectatorScoreboard(this).setBoard();
 		setPlayerStatus(PlayerStatus.SPECTATING);
 	}
 
@@ -728,6 +734,11 @@ public class Profile {
 		following = p;
 		p.getFollowers().add(this);
 		this.setInventoryToFollow();
+		new FollowingScoreboard(this).setBoard();
+
+		if (p.getPlayerStatus() == PlayerStatus.FIGHTING) {
+			spectate(following);
+		}
 	}
 
 	public void resetMatchData() {

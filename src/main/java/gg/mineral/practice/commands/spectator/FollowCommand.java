@@ -1,7 +1,6 @@
 package gg.mineral.practice.commands.spectator;
 
 import gg.mineral.practice.commands.PlayerCommand;
-import gg.mineral.practice.entity.PlayerStatus;
 import gg.mineral.practice.entity.Profile;
 import gg.mineral.practice.managers.ProfileManager;
 import gg.mineral.practice.util.messages.impl.ChatMessages;
@@ -37,9 +36,5 @@ public class FollowCommand extends PlayerCommand {
 
 		player.follow(playerarg);
 		ChatMessages.FOLLOWING.clone().replace("%player%", playerName).send(pl);
-
-		if (playerarg.getPlayerStatus() == PlayerStatus.FIGHTING) {
-			player.spectate(playerarg);
-		}
 	}
 }
