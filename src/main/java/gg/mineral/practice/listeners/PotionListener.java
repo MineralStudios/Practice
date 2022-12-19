@@ -1,7 +1,5 @@
 package gg.mineral.practice.listeners;
 
-import java.util.Collection;
-
 import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
