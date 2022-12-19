@@ -42,6 +42,7 @@ import gg.mineral.practice.listeners.HealthListener;
 import gg.mineral.practice.listeners.InteractListener;
 import gg.mineral.practice.listeners.InventoryListener;
 import gg.mineral.practice.listeners.MovementListener;
+import gg.mineral.practice.listeners.PotionListener;
 import gg.mineral.practice.managers.ArenaManager;
 import gg.mineral.practice.managers.CatagoryManager;
 import gg.mineral.practice.managers.GametypeManager;
@@ -98,7 +99,7 @@ public class PracticePlugin extends JavaPlugin {
 
 		registerListeners(new BuildListener(), new InteractListener(), new ComsumeListener(), new InventoryListener(),
 				new DeathListener(), new DamageListener(), new EntryListener(), new HealthListener(),
-				new MovementListener());
+				new MovementListener(), new PotionListener());
 	}
 
 	public void registerCommands(Command... cmds) {

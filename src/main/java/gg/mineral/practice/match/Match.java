@@ -433,8 +433,11 @@ public class Match implements Spectatable {
 		} catch (Exception e) {
 		}
 
+		int potAccuracy = (int) (100 - (p.getPotionsMissed() * 100D / p.getPotionsThrown()));
 		ItemStack potItem = new ItemBuilder(new ItemStack(Material.POTION, 1, (short) 16421))
-				.name("Health Potions Left").amount(amountOfPots).build();
+				.name("Health Potions Left").lore("Thrown: " + p.getPotionsThrown(), "Missed: " + p.getPotionsMissed(),
+						"Accuracy: " + potAccuracy + "%")
+				.amount(amountOfPots).build();
 		ItemStack healthItem = health == 0 ? ItemStacks.NO_HEALTH
 				: new ItemBuilder(new ItemStack(Material.POTION, health, (short) 8193))
 						.name("Health: " + health).build();
@@ -443,7 +446,7 @@ public class Match implements Spectatable {
 		ItemStack hits = new ItemBuilder(Material.BLAZE_ROD)
 				.name(p.getHitCount() + " Hits")
 				.lore("Longest Combo: " + p.getLongestCombo(), "Average Combo: " + p.getAverageCombo(),
-						"W Tap Accuracy: " + wTapAccuracy)
+						"W Tap Accuracy: " + wTapAccuracy + "%")
 				.build();
 		ItemStack clicks = new ItemBuilder(Material.GHAST_TEAR)
 				.name("Highest CPS: " + p.getHighestCps())
