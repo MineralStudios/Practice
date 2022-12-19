@@ -435,7 +435,9 @@ public class Match implements Spectatable {
 
 		int potAccuracy = (int) (100 - (p.getPotionsMissed() * 100D / p.getPotionsThrown()));
 		ItemStack potItem = new ItemBuilder(new ItemStack(Material.POTION, 1, (short) 16421))
-				.name("Health Potions Left").lore("Thrown: " + p.getPotionsThrown(), "Missed: " + p.getPotionsMissed(),
+				.name("Health Potions Left")
+				.lore("Thrown: " + p.getPotionsThrown(), "Missed: " + p.getPotionsMissed(),
+						"Stolen: " + p.getPotionsStolen(),
 						"Accuracy: " + potAccuracy + "%")
 				.amount(amountOfPots).build();
 		ItemStack healthItem = health == 0 ? ItemStacks.NO_HEALTH

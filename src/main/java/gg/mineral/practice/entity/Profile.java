@@ -71,7 +71,7 @@ public class Profile {
 	MatchData matchData;
 	@Getter
 	Integer hitCount = 0, currentCombo = 0, longestCombo = 0, averageCombo = 0, highestCps = 0, wTapCount = 0,
-			potionsThrown = 0, potionsMissed = 0;
+			potionsThrown = 0, potionsMissed = 0, potionsStolen = 0;
 	@Getter
 	boolean playersVisible = true, partyOpenCooldown = false, inMatchCountdown = false;
 	@Getter
@@ -161,6 +161,10 @@ public class Profile {
 		if (missed) {
 			potionsMissed++;
 		}
+	}
+
+	public void stolenPotion() {
+		potionsStolen++;
 	}
 
 	public void heal() {

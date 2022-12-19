@@ -1,5 +1,7 @@
 package gg.mineral.practice.listeners;
 
+import java.util.Collection;
+
 import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
@@ -26,7 +28,19 @@ public class PotionListener implements Listener {
             final Player shooter = (Player) e.getEntity().getShooter();
             final Profile shooterProfile = ProfileManager.getProfile(p -> p.getUUID().equals(shooter.getUniqueId()));
 
-            // e.getAffectedEntities()
+            for (LivingEntity entity : e.getAffectedEntities()) {
+                if (entity.getUniqueId().equals(shooter.getUniqueId())) {
+                    continue;
+                }
+
+                if (!(entity instanceof Player)) {
+                    return;
+                }
+
+                Profile entityProfile = ProfileManager.getProfile(p -> p.getUUID().equals(entity.getUniqueId()));
+                entityProfile.stolenPotion();
+            }
+
             shooterProfile.thrownPotion(e.getIntensity((LivingEntity) shooter) <= 0.5);
             break;
         }
