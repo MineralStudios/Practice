@@ -12,7 +12,9 @@ import gg.mineral.practice.entity.Profile;
 import gg.mineral.practice.util.math.MathUtil;
 import gg.mineral.practice.util.messages.StringUtil;
 import lombok.Getter;
+import lombok.RequiredArgsConstructor;
 
+@RequiredArgsConstructor
 public class MatchStatisticCollector {
     final Profile profile;
     @Getter
@@ -27,10 +29,6 @@ public class MatchStatisticCollector {
     ItemStack helmet, chestplate, leggings, boots;
     @Getter
     List<String> potionEffectStrings;
-
-    public MatchStatisticCollector(Profile profile) {
-        this.profile = profile;
-    }
 
     public void start() {
         hitCount = 0;
