@@ -25,7 +25,7 @@ public class OtherPartiesMenu extends PracticeMenu {
         clear();
 
         for (Party p : PartyManager.getParties()) {
-            if (p.getPartyLeader().getPlayerStatus() == PlayerStatus.IN_LOBBY && !p.equals(viewer.getParty())) {
+            if (p.getPartyLeader().getPlayerStatus() == PlayerStatus.IDLE && !p.equals(viewer.getParty())) {
                 Profile partyLeader = p.getPartyLeader();
                 ItemStack skull = new ItemBuilder(Material.SKULL_ITEM)
                         .name(partyLeader.getName()).build();

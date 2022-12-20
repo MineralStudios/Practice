@@ -37,7 +37,7 @@ public class DuelCommand extends PlayerCommand {
 			return;
 		}
 
-		if (player.getPlayerStatus() != PlayerStatus.IN_LOBBY) {
+		if (player.getPlayerStatus() != PlayerStatus.IDLE) {
 			player.message(ErrorMessages.YOU_ARE_NOT_IN_LOBBY);
 			return;
 		}

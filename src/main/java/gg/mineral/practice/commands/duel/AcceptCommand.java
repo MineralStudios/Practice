@@ -24,7 +24,7 @@ public class AcceptCommand extends PlayerCommand {
 	public void execute(org.bukkit.entity.Player pl, String[] args) {
 		Profile player = ProfileManager.getOrCreateProfile(pl);
 
-		if (player.getPlayerStatus() != PlayerStatus.IN_LOBBY) {
+		if (player.getPlayerStatus() != PlayerStatus.IDLE) {
 			player.message(ErrorMessages.YOU_ARE_NOT_IN_LOBBY);
 			return;
 		}
@@ -41,7 +41,7 @@ public class AcceptCommand extends PlayerCommand {
 			return;
 		}
 
-		if (player1.getPlayerStatus() != PlayerStatus.IN_LOBBY) {
+		if (player1.getPlayerStatus() != PlayerStatus.IDLE) {
 			player.message(ErrorMessages.DUEL_SENDER_NOT_IN_LOBBY);
 			return;
 		}

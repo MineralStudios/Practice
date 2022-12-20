@@ -37,7 +37,7 @@ public class InteractListener implements Listener {
 		}
 
 		if (action == Action.LEFT_CLICK_AIR || action == Action.LEFT_CLICK_BLOCK) {
-			profile.click();
+			profile.getMatchStatisticCollector().click();
 		}
 
 		if (action != Action.RIGHT_CLICK_AIR && action != Action.RIGHT_CLICK_BLOCK) {

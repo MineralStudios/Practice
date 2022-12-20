@@ -36,10 +36,10 @@ public class PotionListener implements Listener {
                 }
 
                 Profile entityProfile = ProfileManager.getProfile(p -> p.getUUID().equals(entity.getUniqueId()));
-                entityProfile.stolenPotion();
+                entityProfile.getMatchStatisticCollector().stolenPotion();
             }
 
-            shooterProfile.thrownPotion(e.getIntensity((LivingEntity) shooter) <= 0.5);
+            shooterProfile.getMatchStatisticCollector().thrownPotion(e.getIntensity((LivingEntity) shooter) <= 0.5);
             break;
         }
     }

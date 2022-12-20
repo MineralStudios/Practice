@@ -33,6 +33,7 @@ import gg.mineral.practice.managers.ProfileManager;
 import gg.mineral.practice.managers.QueuetypeManager;
 import gg.mineral.practice.match.Match;
 import gg.mineral.practice.match.data.MatchData;
+import gg.mineral.practice.match.data.MatchStatisticCollector;
 import gg.mineral.practice.party.Party;
 import gg.mineral.practice.queue.QueueEntry;
 import gg.mineral.practice.queue.QueueSearchTask;
@@ -72,8 +73,7 @@ public class Profile {
 	@Getter
 	MatchData matchData;
 	@Getter
-	Integer hitCount = 0, currentCombo = 0, longestCombo = 0, averageCombo = 0, highestCps = 0, wTapCount = 0,
-			potionsThrown = 0, potionsMissed = 0, potionsStolen = 0;
+	MatchStatisticCollector matchStatisticCollector = new MatchStatisticCollector(this);
 	@Getter
 	boolean playersVisible = true, partyOpenCooldown = false, inMatchCountdown = false;
 	@Getter
@@ -94,7 +94,7 @@ public class Profile {
 	@Setter
 	Profile duelReciever;
 	@Getter
-	PlayerStatus playerStatus = PlayerStatus.IN_LOBBY;
+	PlayerStatus playerStatus = PlayerStatus.IDLE;
 	@Getter
 	Party party;
 	@Getter
@@ -107,9 +107,7 @@ public class Profile {
 	Event event;
 	@Getter
 	PearlCooldown pearlCooldown = new PearlCooldown(this);
-	Event spectatingTournament;
-	int clicks = 0;
-	long clickCounterStart = System.currentTimeMillis();
+	Event spectatingEvent;
 
 	public Profile(org.bukkit.entity.Player player) {
 		this.player = (CraftPlayer) player;
@@ -123,7 +121,7 @@ public class Profile {
 	}
 
 	public void setPlayersVisible(boolean playersVisible) {
-		if (getPlayerStatus() != PlayerStatus.IN_LOBBY && getPlayerStatus() != PlayerStatus.IN_QUEUE) {
+		if (getPlayerStatus() != PlayerStatus.IDLE && getPlayerStatus() != PlayerStatus.QUEUEING) {
 			return;
 		}
 
@@ -132,42 +130,6 @@ public class Profile {
 
 	public void removeScoreboard() {
 		scoreboard = null;
-	}
-
-	public void increaseHitCount() {
-		hitCount++;
-		currentCombo++;
-
-		if (getPlayer().getHandle().isExtraKnockback()) {
-			wTapCount++;
-		}
-
-		if (currentCombo > 1) {
-			averageCombo += currentCombo;
-			averageCombo /= 2;
-		}
-
-		longestCombo = Math.max(currentCombo, longestCombo);
-	}
-
-	public void resetCombo() {
-		currentCombo = 0;
-	}
-
-	public void clearHitCount() {
-		hitCount = 0;
-	}
-
-	public void thrownPotion(boolean missed) {
-		potionsThrown++;
-
-		if (missed) {
-			potionsMissed++;
-		}
-	}
-
-	public void stolenPotion() {
-		potionsStolen++;
 	}
 
 	public void heal() {
@@ -187,7 +149,7 @@ public class Profile {
 	}
 
 	public void removeFromMatch() {
-		setPlayerStatus(PlayerStatus.IN_LOBBY);
+		setPlayerStatus(PlayerStatus.IDLE);
 		match = null;
 	}
 
@@ -205,7 +167,7 @@ public class Profile {
 
 		this.party = null;
 
-		if (playerStatus != PlayerStatus.IN_LOBBY) {
+		if (playerStatus != PlayerStatus.IDLE) {
 			return;
 		}
 
@@ -243,16 +205,6 @@ public class Profile {
 		return player.getName();
 	}
 
-	public void click() {
-		if (System.currentTimeMillis() - clickCounterStart > 1000) {
-			clickCounterStart = System.currentTimeMillis();
-			highestCps = Math.max(clicks, highestCps);
-			clicks = 1;
-		}
-
-		clicks++;
-	}
-
 	public void setInventoryToFollow() {
 		setInventoryClickCancelled(true);
 		inventory.clear();
@@ -283,12 +235,10 @@ public class Profile {
 		inventory.setItem(0, ItemStacks.WAIT_TO_LEAVE,
 				(Runnable) () -> this.message(ErrorMessages.CAN_NOT_LEAVE_YET));
 
-		Profile pl = this;
-
 		new BukkitRunnable() {
 			@Override
 			public void run() {
-				inventory.setItem(0, ItemStacks.LEAVE_EVENT, (Runnable) pl::removeFromEvent);
+				inventory.setItem(0, ItemStacks.LEAVE_EVENT, (Runnable) Profile.this::removeFromEvent);
 			}
 		}.runTaskLater(PracticePlugin.INSTANCE, 20);
 		getPlayer().updateInventory();
@@ -317,7 +267,7 @@ public class Profile {
 	}
 
 	public void setInventoryForLobby() {
-		if (playerStatus == PlayerStatus.IN_QUEUE) {
+		if (playerStatus == PlayerStatus.QUEUEING) {
 			return;
 		}
 
@@ -396,17 +346,17 @@ public class Profile {
 	public void removeFromQueue() {
 		QueueSearchTask.removePlayer(this);
 		message(ChatMessages.LEFT_QUEUE);
-		setPlayerStatus(PlayerStatus.IN_LOBBY);
+		setPlayerStatus(PlayerStatus.IDLE);
 	}
 
 	public void addPlayerToQueue(QueueEntry qd) {
 		this.player.getOpenInventory().close();
 
-		if (playerStatus != PlayerStatus.IN_LOBBY) {
+		if (playerStatus != PlayerStatus.IDLE) {
 			return;
 		}
 
-		setPlayerStatus(PlayerStatus.IN_QUEUE);
+		setPlayerStatus(PlayerStatus.QUEUEING);
 		setInventoryForQueue();
 		QueueSearchTask.addPlayer(this, qd);
 		message(ChatMessages.JOINED_QUEUE.clone().replace("%queue%", qd.getQueuetype().getDisplayName())
@@ -419,9 +369,9 @@ public class Profile {
 			spectatingMatch = null;
 		}
 
-		if (spectatingTournament != null) {
-			spectatingTournament.getSpectators().remove(this);
-			spectatingTournament = null;
+		if (spectatingEvent != null) {
+			spectatingEvent.getSpectators().remove(this);
+			spectatingEvent = null;
 		}
 
 		teleportToLobby();
@@ -455,7 +405,7 @@ public class Profile {
 		if (playerStatus == PlayerStatus.FOLLOWING) {
 			following.followers.remove(this);
 			following = null;
-			this.setPlayerStatus(PlayerStatus.IN_LOBBY);
+			this.setPlayerStatus(PlayerStatus.IDLE);
 		}
 
 		this.player.setGameMode(GameMode.SURVIVAL);
@@ -476,7 +426,7 @@ public class Profile {
 			return;
 		}
 
-		if (p.getPlayerStatus() == PlayerStatus.IN_EVENT) {
+		if (p.isInEvent()) {
 			spectateEvent(p.getEvent());
 			return;
 		}
@@ -486,7 +436,7 @@ public class Profile {
 			return;
 		}
 
-		if (getPlayerStatus() != PlayerStatus.IN_LOBBY && getPlayerStatus() != PlayerStatus.FOLLOWING) {
+		if (getPlayerStatus() != PlayerStatus.IDLE && getPlayerStatus() != PlayerStatus.FOLLOWING) {
 			message(ErrorMessages.YOU_ARE_NOT_IN_LOBBY);
 			return;
 		}
@@ -521,12 +471,12 @@ public class Profile {
 			return;
 		}
 
-		if (getPlayerStatus() != PlayerStatus.IN_LOBBY && getPlayerStatus() != PlayerStatus.FOLLOWING) {
+		if (getPlayerStatus() != PlayerStatus.IDLE && getPlayerStatus() != PlayerStatus.FOLLOWING) {
 			message(ErrorMessages.YOU_ARE_NOT_IN_LOBBY);
 			return;
 		}
 
-		spectatingTournament = event;
+		spectatingEvent = event;
 		event.getSpectators().add(this);
 
 		this.player.setGameMode(GameMode.SPECTATOR);
@@ -551,15 +501,15 @@ public class Profile {
 
 		PlayerUtil.teleport(this.getPlayer(), ProfileManager.getSpawnLocation());
 
-		if (playerStatus != PlayerStatus.FOLLOWING && playerStatus != PlayerStatus.IN_QUEUE) {
-			setPlayerStatus(PlayerStatus.IN_LOBBY);
+		if (playerStatus != PlayerStatus.FOLLOWING && playerStatus != PlayerStatus.QUEUEING) {
+			setPlayerStatus(PlayerStatus.IDLE);
 		}
 	}
 
 	public void sendDuelRequest(Profile player) {
 		getPlayer().closeInventory();
 
-		if (player.getPlayerStatus() != PlayerStatus.IN_LOBBY) {
+		if (player.getPlayerStatus() != PlayerStatus.IDLE) {
 			message(ErrorMessages.PLAYER_NOT_IN_LOBBY);
 			return;
 		}
@@ -677,12 +627,11 @@ public class Profile {
 	public void setPlayerStatus(PlayerStatus newPlayerStatus) {
 
 		List<org.bukkit.entity.Player> playersInWorld = getPlayer().getWorld().getPlayers();
-		int i;
 
-		if (playerStatus != PlayerStatus.IN_QUEUE) {
+		if (playerStatus != PlayerStatus.QUEUEING) {
 
 			switch (newPlayerStatus) {
-				case IN_LOBBY:
+				case IDLE:
 					if (!this.isPlayersVisible()) {
 						for (Player player : playersInWorld) {
 							getPlayer().hidePlayer(player, false);
@@ -725,7 +674,7 @@ public class Profile {
 
 	public void follow(Profile p) {
 
-		if (getPlayerStatus() != PlayerStatus.IN_LOBBY) {
+		if (getPlayerStatus() != PlayerStatus.IDLE) {
 			message(ErrorMessages.YOU_ARE_NOT_IN_LOBBY);
 			return;
 		}
@@ -782,15 +731,21 @@ public class Profile {
 	}
 
 	public void setTournament(Tournament tournament) {
-		setPlayerStatus(PlayerStatus.IN_TOURAMENT);
 		this.setInventoryForTournament();
 		this.tournament = tournament;
 	}
 
 	public void setEvent(Event event) {
-		setPlayerStatus(PlayerStatus.IN_EVENT);
-		this.setInventoryForTournament();
+		this.setInventoryForEvent();
 		this.event = event;
+	}
+
+	public boolean isInTournament() {
+		return this.tournament != null;
+	}
+
+	public boolean isInEvent() {
+		return this.tournament != null;
 	}
 
 	public void removeFromTournament() {

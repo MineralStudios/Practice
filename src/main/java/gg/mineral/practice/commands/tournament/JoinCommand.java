@@ -26,12 +26,12 @@ public class JoinCommand extends PlayerCommand {
             return;
         }
 
-        if (p.getPlayerStatus() == PlayerStatus.IN_TOURAMENT) {
+        if (p.isInTournament()) {
             p.message(ErrorMessages.ALREADY_IN_TOURNAMENT);
             return;
         }
 
-        if (p.getPlayerStatus() != PlayerStatus.IN_LOBBY) {
+        if (p.getPlayerStatus() != PlayerStatus.IDLE) {
             p.message(ErrorMessages.YOU_ARE_NOT_IN_LOBBY);
             return;
         }

@@ -41,18 +41,12 @@ public class DamageListener implements Listener {
 			return;
 		}
 
-		if (victim.isInMatchCountdown()) {
+		if (victim.isInMatchCountdown() || victim.getMatch().isEnded()) {
 			e.setCancelled(true);
 			return;
 		}
 
-		if (e.getFinalDamage() >= player.getHealth()) {
-			victim.getMatch().end(victim);
-			e.setCancelled(true);
-			return;
-		}
-
-		if (e.getCause() == DamageCause.VOID) {
+		if (e.getCause() == DamageCause.VOID || e.getFinalDamage() >= player.getHealth()) {
 			victim.getMatch().end(victim);
 			e.setCancelled(true);
 			return;
@@ -93,11 +87,21 @@ public class DamageListener implements Listener {
 			return;
 		}
 
+		if (attacker.getMatch().isEnded()) {
+			e.setCancelled(true);
+			return;
+		}
+
 		Profile victim = ProfileManager
 				.getProfile(p -> p.getUUID().equals(bukkitVictim.getUniqueId())
 						&& p.getPlayerStatus() == PlayerStatus.FIGHTING);
 
 		if (victim == null) {
+			e.setCancelled(true);
+			return;
+		}
+
+		if (victim.getMatch().isEnded()) {
 			e.setCancelled(true);
 			return;
 		}

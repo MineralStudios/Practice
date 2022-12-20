@@ -17,7 +17,7 @@ public class EventCommand extends PlayerCommand {
     public void execute(org.bukkit.entity.Player pl, String[] args) {
         Profile player = ProfileManager.getOrCreateProfile(pl);
 
-        if (player.getPlayerStatus() != PlayerStatus.IN_LOBBY) {
+        if (player.getPlayerStatus() != PlayerStatus.IDLE) {
             player.message(ErrorMessages.YOU_ARE_NOT_IN_LOBBY);
             return;
         }

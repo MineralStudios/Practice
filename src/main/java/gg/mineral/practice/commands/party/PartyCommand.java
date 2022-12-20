@@ -47,7 +47,7 @@ public class PartyCommand extends PlayerCommand {
 
 				return;
 			case "create":
-				if (profile.getPlayerStatus() != PlayerStatus.IN_LOBBY) {
+				if (profile.getPlayerStatus() != PlayerStatus.IDLE) {
 					profile.message(ErrorMessages.YOU_ARE_NOT_IN_LOBBY);
 					return;
 				}
@@ -170,7 +170,7 @@ public class PartyCommand extends PlayerCommand {
 					return;
 				}
 
-				if (profile.getPlayerStatus() != PlayerStatus.IN_LOBBY) {
+				if (profile.getPlayerStatus() != PlayerStatus.IDLE) {
 					profile.message(ErrorMessages.YOU_ARE_NOT_IN_LOBBY);
 					return;
 				}
@@ -199,7 +199,7 @@ public class PartyCommand extends PlayerCommand {
 					return;
 				}
 
-				if (profile.getPlayerStatus() != PlayerStatus.IN_LOBBY) {
+				if (profile.getPlayerStatus() != PlayerStatus.IDLE) {
 					profile.message(ErrorMessages.YOU_ARE_NOT_IN_LOBBY);
 					return;
 				}

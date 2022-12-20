@@ -1,12 +1,10 @@
 package gg.mineral.practice.match;
 
 import java.util.Arrays;
-import java.util.Collection;
 import java.util.List;
 import java.util.concurrent.CompletableFuture;
 
 import org.bukkit.Bukkit;
-import org.bukkit.ChatColor;
 import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.World;
@@ -14,7 +12,6 @@ import org.bukkit.craftbukkit.v1_8_R3.CraftWorld;
 import org.bukkit.craftbukkit.v1_8_R3.entity.CraftItem;
 import org.bukkit.entity.Item;
 import org.bukkit.inventory.ItemStack;
-import org.bukkit.inventory.PlayerInventory;
 import org.bukkit.potion.PotionEffect;
 import org.bukkit.potion.PotionEffectType;
 import org.bukkit.scoreboard.Team;
@@ -29,6 +26,7 @@ import gg.mineral.practice.kit.Kit;
 import gg.mineral.practice.managers.MatchManager;
 import gg.mineral.practice.managers.ProfileManager;
 import gg.mineral.practice.match.data.MatchData;
+import gg.mineral.practice.match.data.MatchStatisticCollector;
 import gg.mineral.practice.scoreboard.impl.BoxingScoreboard;
 import gg.mineral.practice.scoreboard.impl.DefaultScoreboard;
 import gg.mineral.practice.scoreboard.impl.InMatchScoreboard;
@@ -41,8 +39,9 @@ import gg.mineral.practice.util.items.ItemStacks;
 import gg.mineral.practice.util.math.Countdown;
 import gg.mineral.practice.util.math.MathUtil;
 import gg.mineral.practice.util.messages.CC;
-import gg.mineral.practice.util.messages.StringUtil;
 import gg.mineral.practice.util.messages.impl.ErrorMessages;
+import gg.mineral.practice.util.messages.impl.Strings;
+import gg.mineral.practice.util.messages.impl.TextComponents;
 import gg.mineral.practice.util.world.WorldUtil;
 import lombok.Getter;
 import net.md_5.bungee.api.chat.ClickEvent;
@@ -51,8 +50,6 @@ import net.md_5.bungee.api.chat.HoverEvent;
 import net.md_5.bungee.api.chat.TextComponent;
 import net.minecraft.server.v1_8_R3.EntityHuman;
 import net.minecraft.server.v1_8_R3.EntityItem;
-import net.minecraft.server.v1_8_R3.PacketPlayInClientCommand;
-import net.minecraft.server.v1_8_R3.PacketPlayInClientCommand.EnumClientCommand;
 
 public class Match implements Spectatable {
 	NameTag nameTag = new NameTag();
@@ -68,6 +65,8 @@ public class Match implements Spectatable {
 	MatchData data;
 	@Getter
 	GlueList<Location> buildLog = new GlueList<>();
+	@Getter
+	int postMatchTime = 40;
 	org.bukkit.World world = null;
 
 	public Match(Profile profile1, Profile profile2, MatchData matchData) {
@@ -99,7 +98,7 @@ public class Match implements Spectatable {
 	}
 
 	public void setAttributes(Profile p) {
-		p.clearHitCount();
+		p.getMatchStatisticCollector().clearHitCount();
 		p.getPlayer().setMaximumNoDamageTicks(data.getNoDamageTicks());
 		p.getPlayer().setKnockback(data.getKnockback());
 		p.getPlayer().setAllowFlight(false);
@@ -129,7 +128,10 @@ public class Match implements Spectatable {
 	public void prepareForMatch(Profile p) {
 
 		p.setMatch(this);
+		p.getMatchStatisticCollector().start();
 		p.giveKit(getKit(p));
+
+		nameTag.clearTagOnMatchStart(p.getPlayer(), p.getPlayer());
 
 		setAttributes(p);
 		setPotionEffects(p);
@@ -238,7 +240,6 @@ public class Match implements Spectatable {
 			return;
 
 		MatchManager.registerMatch(this);
-		nameTag.clearTagOnMatchStart(profile1.getPlayer(), profile2.getPlayer());
 		Location location1 = data.getArena().getLocation1().clone();
 		Location location2 = data.getArena().getLocation2().clone();
 
@@ -251,7 +252,7 @@ public class Match implements Spectatable {
 	}
 
 	public void end(Profile victim) {
-		if (ended) {
+		if (isEnded()) {
 			return;
 		}
 
@@ -265,10 +266,10 @@ public class Match implements Spectatable {
 	}
 
 	public boolean incrementTeamHitCount(Profile attacker, Profile victim) {
-		attacker.increaseHitCount();
-		victim.resetCombo();
+		attacker.getMatchStatisticCollector().increaseHitCount();
+		victim.getMatchStatisticCollector().resetCombo();
 
-		if (attacker.getHitCount() >= 100 && getData().getBoxing()) {
+		if (attacker.getMatchStatisticCollector().getHitCount() >= 100 && getData().getBoxing()) {
 			end(victim);
 			return true;
 		}
@@ -300,45 +301,22 @@ public class Match implements Spectatable {
 	}
 
 	public void end(Profile attacker, Profile victim) {
-		int attackerHealth = (int) attacker.getPlayer().getHealth();
-		Collection<PotionEffect> attackerPotionEffects = attacker.getPlayer().getActivePotionEffects();
-		Collection<PotionEffect> victimPotionEffects = victim.getPlayer().getActivePotionEffects();
-		attacker.heal();
-		attacker.removePotionEffects();
-		attacker.getPlayer().hidePlayer(victim.getPlayer());
+		attacker.getMatchStatisticCollector().end();
+		victim.getMatchStatisticCollector().end();
 
-		int attackerAmountOfPots = attacker.getInventory().getNumber(Material.POTION, (short) 16421)
-				+ attacker.getInventory().getNumber(Material.MUSHROOM_SOUP);
+		deathAnimation(attacker, victim);
 
-		setInventoryStats(attacker, attackerHealth, attackerAmountOfPots, attackerPotionEffects);
+		setInventoryStats(attacker, attacker.getMatchStatisticCollector());
+		setInventoryStats(victim, victim.getMatchStatisticCollector());
 
-		int victimAmountOfPots = victim.getInventory().getNumber(Material.POTION, (short) 16421)
-				+ victim.getInventory().getNumber(Material.MUSHROOM_SOUP);
+		TextComponent winMessage = getWinMessage(attacker), loseMessage = getLoseMessage(victim);
 
-		setInventoryStats(victim, 0, victimAmountOfPots, victimPotionEffects);
-		String viewinv = CC.YELLOW + "Match Results";
-		TextComponent winmessage = new TextComponent(CC.GREEN + "Winner: " + CC.GRAY + attacker.getName());
-		TextComponent splitter = new TextComponent(CC.D_GRAY + " - ");
-		TextComponent losemessage = new TextComponent(CC.RED + "Loser: " + CC.GRAY + victim.getName());
-		losemessage
-				.setHoverEvent(
-						new HoverEvent(HoverEvent.Action.SHOW_TEXT,
-								new ComponentBuilder(CC.RED + "Health Potions Remaining: " + victimAmountOfPots + "\n"
-										+ CC.RED + "Hits: " + victim.getHitCount() + "\n" + CC.RED + "Health: 0")
-										.create()));
-		winmessage.setHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT,
-				new ComponentBuilder(CC.GREEN + "Health Potions Remaining: " + attackerAmountOfPots + "\n" + CC.GREEN
-						+ "Hits: " + attacker.getHitCount() + "\n" + CC.GREEN + "Health: " + attackerHealth).create()));
-		losemessage.setClickEvent(new ClickEvent(ClickEvent.Action.RUN_COMMAND, "/viewinventory " + victim.getName()));
-		winmessage.setClickEvent(new ClickEvent(ClickEvent.Action.RUN_COMMAND, "/viewinventory " + attacker.getName()));
-		attacker.getPlayer().sendMessage(CC.SEPARATOR);
-		attacker.getPlayer().sendMessage(viewinv);
-		attacker.getPlayer().spigot().sendMessage(winmessage, splitter, losemessage);
-		victim.getPlayer().sendMessage(CC.SEPARATOR);
-		victim.getPlayer().sendMessage(viewinv);
-		victim.getPlayer().spigot().sendMessage(winmessage, splitter, losemessage);
-		attacker.getPlayer().sendMessage(CC.SEPARATOR);
-		victim.getPlayer().sendMessage(CC.SEPARATOR);
+		for (Profile profile : getParticipants()) {
+			profile.getPlayer().sendMessage(CC.SEPARATOR);
+			profile.getPlayer().sendMessage(Strings.MATCH_RESULTS);
+			profile.getPlayer().spigot().sendMessage(winMessage, TextComponents.SPLITTER, loseMessage);
+			profile.getPlayer().sendMessage(CC.SEPARATOR);
+		}
 
 		if (data.isRanked()) {
 			updateElo(attacker, victim);
@@ -349,16 +327,9 @@ public class Match implements Spectatable {
 		new DefaultScoreboard(victim).setBoard();
 		MatchManager.remove(this);
 
-		Bukkit.getServer().getScheduler().runTaskLater(PracticePlugin.INSTANCE, () -> {
-			if (victim.getPlayer().isDead()) {
-				victim.getPlayer().getHandle().playerConnection
-						.a(new PacketPlayInClientCommand(EnumClientCommand.PERFORM_RESPAWN));
-			}
-
-			victim.heal();
-			victim.removePotionEffects();
-			sendBackToLobby(victim);
-		}, 1);
+		victim.heal();
+		victim.removePotionEffects();
+		sendBackToLobby(victim);
 
 		giveQueueAgainItem(attacker);
 
@@ -366,17 +337,48 @@ public class Match implements Spectatable {
 			new DefaultScoreboard(attacker).setBoard();
 			sendBackToLobby(attacker);
 			nameTag.giveTagAfterMatch(profile1.getPlayer(), profile2.getPlayer());
+		}, getPostMatchTime());
 
-			for (Profile p : getSpectators()) {
-				p.getPlayer().sendMessage(CC.SEPARATOR);
-				p.getPlayer().sendMessage(viewinv);
-				p.getPlayer().spigot().sendMessage(winmessage, splitter, losemessage);
-				p.getPlayer().sendMessage(CC.SEPARATOR);
-				p.stopSpectating();
-			}
+		for (Profile p : getSpectators()) {
+			p.getPlayer().sendMessage(CC.SEPARATOR);
+			p.getPlayer().sendMessage(Strings.MATCH_RESULTS);
+			p.getPlayer().spigot().sendMessage(winMessage, TextComponents.SPLITTER, loseMessage);
+			p.getPlayer().sendMessage(CC.SEPARATOR);
+			p.stopSpectating();
+		}
 
-			clearWorld();
-		}, 40);
+		clearWorld();
+	}
+
+	public TextComponent getWinMessage(Profile profile) {
+		TextComponent winMessage = new TextComponent(CC.RED + " Loser: " + CC.GRAY + profile.getName());
+		winMessage.setHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT,
+				new ComponentBuilder(CC.GREEN + "Health Potions Remaining: "
+						+ profile.getMatchStatisticCollector().getPotionsRemaining() + "\n" + CC.GREEN
+						+ "Hits: " + profile.getMatchStatisticCollector().getHitCount() + "\n" + CC.GREEN + "Health: "
+						+ profile.getMatchStatisticCollector().getRemainingHealth()).create()));
+		winMessage.setClickEvent(new ClickEvent(ClickEvent.Action.RUN_COMMAND, "/viewinventory " + profile.getName()));
+		return winMessage;
+	}
+
+	public TextComponent getLoseMessage(Profile profile) {
+		TextComponent loseMessage = new TextComponent(CC.GREEN + "Winner: " + CC.GRAY + profile.getName());
+		loseMessage.setHoverEvent(
+				new HoverEvent(HoverEvent.Action.SHOW_TEXT,
+						new ComponentBuilder(CC.RED + "Health Potions Remaining: "
+								+ profile.getMatchStatisticCollector().getPotionsRemaining() + "\n"
+								+ CC.RED + "Hits: " + profile.getMatchStatisticCollector().getHitCount() + "\n"
+								+ CC.RED + "Health: 0")
+								.create()));
+		loseMessage.setClickEvent(new ClickEvent(ClickEvent.Action.RUN_COMMAND, "/viewinventory " + profile.getName()));
+		return loseMessage;
+	}
+
+	public void deathAnimation(Profile attacker, Profile victim) {
+		attacker.heal();
+		attacker.removePotionEffects();
+		attacker.getInventory().clear();
+		attacker.getPlayer().hidePlayer(victim.getPlayer());
 	}
 
 	public void giveQueueAgainItem(Profile profile) {
@@ -393,9 +395,9 @@ public class Match implements Spectatable {
 	}
 
 	public void sendBackToLobby(Profile profile) {
-		profile.removeFromMatch();
 		profile.teleportToLobby();
 		profile.setInventoryForLobby();
+		profile.removeFromMatch();
 	}
 
 	public void resetPearlCooldown(Profile... profiles) {
@@ -405,85 +407,81 @@ public class Match implements Spectatable {
 	}
 
 	public void clearWorld() {
-		if (world != null) {
-			WorldUtil.deleteWorld(world);
-			return;
-		}
-
-		for (Item item : data.getArena().getLocation1().getWorld().getEntitiesByClass(Item.class)) {
-			EntityHuman lastHolder = ((EntityItem) ((CraftItem) item).getHandle()).lastHolder;
-
-			if (lastHolder == null) {
-				continue;
+		Bukkit.getServer().getScheduler().runTaskLater(PracticePlugin.INSTANCE, () -> {
+			if (world != null) {
+				WorldUtil.deleteWorld(world);
+				return;
 			}
 
-			for (Profile participant : participants) {
-				if (lastHolder.getBukkitEntity().getUniqueId() == participant.getUUID()) {
-					item.remove();
+			for (Item item : data.getArena().getLocation1().getWorld().getEntitiesByClass(Item.class)) {
+				EntityHuman lastHolder = ((EntityItem) ((CraftItem) item).getHandle()).lastHolder;
+
+				if (lastHolder == null) {
+					continue;
+				}
+
+				for (Profile participant : participants) {
+					if (lastHolder.getBukkitEntity().getUniqueId() == participant.getUUID()) {
+						item.remove();
+					}
 				}
 			}
-		}
+
+			for (Location location : buildLog) {
+				location.getBlock().setType(Material.AIR);
+			}
+		}, getPostMatchTime() + 1);
 	}
 
-	public InventoryStatsMenu setInventoryStats(Profile p, int health, int amountOfPots,
-			Collection<PotionEffect> potionEffects) {
-		amountOfPots = amountOfPots == 0 ? 1 : amountOfPots;
+	public InventoryStatsMenu setInventoryStats(Profile profile, MatchStatisticCollector matchStatisticCollector) {
 
-		InventoryStatsMenu menu = new InventoryStatsMenu(p, getOpponent(p).getName());
+		InventoryStatsMenu menu = new InventoryStatsMenu(profile, getOpponent(profile).getName());
 
-		try {
-			PlayerInventory inv = p.getInventory();
-			menu.setContents(inv.getContents());
-			menu.setSlot(36, inv.getHelmet());
-			menu.setSlot(37, inv.getChestplate());
-			menu.setSlot(38, inv.getLeggings());
-			menu.setSlot(39, inv.getBoots());
-		} catch (Exception e) {
-		}
+		menu.setContents(matchStatisticCollector.getInventoryContents());
+		menu.setSlot(36, matchStatisticCollector.getHelmet());
+		menu.setSlot(37, matchStatisticCollector.getChestplate());
+		menu.setSlot(38, matchStatisticCollector.getLeggings());
+		menu.setSlot(39, matchStatisticCollector.getBoots());
 
-		int potAccuracy = (int) (100 - (p.getPotionsMissed() * 100D / p.getPotionsThrown()));
 		ItemStack potItem = new ItemBuilder(new ItemStack(Material.POTION, 1, (short) 16421))
 				.name("Health Potions Left")
-				.lore("Thrown: " + p.getPotionsThrown(), "Missed: " + p.getPotionsMissed(),
-						"Stolen: " + p.getPotionsStolen(),
-						"Accuracy: " + potAccuracy + "%")
-				.amount(amountOfPots).build();
-		ItemStack healthItem = health == 0 ? ItemStacks.NO_HEALTH
-				: new ItemBuilder(new ItemStack(Material.POTION, health, (short) 8193))
-						.name("Health: " + health).build();
+				.lore("Thrown: " + matchStatisticCollector.getPotionsThrown(),
+						"Missed: " + matchStatisticCollector.getPotionsMissed(),
+						"Stolen: " + matchStatisticCollector.getPotionsStolen(),
+						"Accuracy: " + matchStatisticCollector.getPotionAccuracy() + "%")
+				.amount(Math.max(matchStatisticCollector.getPotionsRemaining(), 1)).build();
+		ItemStack soupItem = new ItemBuilder(Material.MUSHROOM_SOUP)
+				.name("Soup Left")
+				.amount(Math.max(matchStatisticCollector.getSoupsRemaining(), 1)).build();
+		ItemStack healthItem = matchStatisticCollector.getRemainingHealth() == 0 ? ItemStacks.NO_HEALTH
+				: new ItemBuilder(
+						new ItemStack(Material.POTION, matchStatisticCollector.getRemainingHealth(), (short) 8193))
+						.name("Health: " + matchStatisticCollector.getRemainingHealth()).build();
 
-		int wTapAccuracy = (int) (p.getHitCount() * 100D / p.getWTapCount());
 		ItemStack hits = new ItemBuilder(Material.BLAZE_ROD)
-				.name(p.getHitCount() + " Hits")
-				.lore("Longest Combo: " + p.getLongestCombo(), "Average Combo: " + p.getAverageCombo(),
-						"W Tap Accuracy: " + wTapAccuracy + "%")
+				.name(profile.getMatchStatisticCollector().getHitCount() + " Hits")
+				.lore("Longest Combo: " + matchStatisticCollector.getLongestCombo(),
+						"Average Combo: " + matchStatisticCollector.getAverageCombo(),
+						"W Tap Accuracy: " + matchStatisticCollector.getWTapAccuracy() + "%")
 				.build();
 		ItemStack clicks = new ItemBuilder(Material.GHAST_TEAR)
-				.name("Highest CPS: " + p.getHighestCps())
+				.name("Highest CPS: " + matchStatisticCollector.getHighestCps())
 				.lore().build();
-		final List<String> potionEffectStrings = new GlueList<String>();
-		for (final PotionEffect potionEffect : potionEffects) {
-			final String romanNumeral = MathUtil.convertToRomanNumeral(potionEffect.getAmplifier() + 1);
-			final String effectName = StringUtil.toNiceString(potionEffect.getType().getName().toLowerCase());
-			final String duration = MathUtil.convertTicksToMinutes(potionEffect.getDuration());
-			potionEffectStrings.add(ChatColor.YELLOW.toString() + ChatColor.BOLD + "* " + ChatColor.WHITE + effectName
-					+ " " + romanNumeral + ChatColor.GRAY + " (" + duration + ")");
-		}
 		ItemStack effects = new ItemBuilder(Material.BLAZE_POWDER)
 				.name("Potion Effects")
-				.lore(potionEffectStrings.toArray(new String[0])).build();
+				.lore(matchStatisticCollector.getPotionEffectStringArray()).build();
 
 		menu.setSlot(45, healthItem);
 		menu.setSlot(46, potItem);
-		menu.setSlot(47, hits);
-		menu.setSlot(48, clicks);
-		menu.setSlot(49, effects);
+		menu.setSlot(47, soupItem);
+		menu.setSlot(48, hits);
+		menu.setSlot(49, clicks);
+		menu.setSlot(50, effects);
 
 		if (!(this instanceof PartyMatch)) {
-			ProfileManager.setInventoryStats(p, menu);
+			ProfileManager.setInventoryStats(profile, menu);
 		}
 
-		p.getInventory().clear();
 		return menu;
 	}
 

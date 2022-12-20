@@ -1,14 +1,10 @@
 package gg.mineral.practice.match;
 
-import java.util.Collection;
 import java.util.Iterator;
 import java.util.List;
 
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
-import org.bukkit.Material;
-import org.bukkit.inventory.ItemStack;
-import org.bukkit.potion.PotionEffect;
 import org.bukkit.scoreboard.Team;
 
 import gg.mineral.api.collection.GlueList;
@@ -26,13 +22,12 @@ import gg.mineral.practice.scoreboard.impl.PartyMatchScoreboard;
 import gg.mineral.practice.util.PlayerUtil;
 import gg.mineral.practice.util.collection.ProfileList;
 import gg.mineral.practice.util.messages.CC;
+import gg.mineral.practice.util.messages.impl.Strings;
 import lombok.Getter;
 import net.md_5.bungee.api.chat.ClickEvent;
 import net.md_5.bungee.api.chat.ComponentBuilder;
 import net.md_5.bungee.api.chat.HoverEvent;
 import net.md_5.bungee.api.chat.TextComponent;
-import net.minecraft.server.v1_8_R3.PacketPlayInClientCommand;
-import net.minecraft.server.v1_8_R3.PacketPlayInClientCommand.EnumClientCommand;
 
 public class PartyMatch extends Match {
 	@Getter
@@ -73,7 +68,6 @@ public class PartyMatch extends Match {
 		}
 
 		MatchManager.registerMatch(this);
-		nameTag.clearTagOnMatchStart(profile1.getPlayer(), profile2.getPlayer());
 		Location location1 = data.getArena().getLocation1().clone();
 		Location location2 = data.getArena().getLocation2().clone();
 		setupLocations(location1, location2);
@@ -115,9 +109,11 @@ public class PartyMatch extends Match {
 
 	@Override
 	public void end(Profile victim) {
-		if (ended) {
+		if (isEnded()) {
 			return;
 		}
+
+		victim.getMatchStatisticCollector().end();
 
 		ProfileList attackerTeam, victimTeam;
 		List<InventoryStatsMenu> attackerInventoryStatsMenus = new GlueList<>(),
@@ -140,129 +136,110 @@ public class PartyMatch extends Match {
 			victimTeamHits = team2HitCount;
 		}
 
-		int victimAmountOfPots = victim.getInventory().getNumber(Material.POTION, (short) 16421)
-				+ victim.getInventory().getNumber(Material.MUSHROOM_SOUP,
-						new ItemStack(Material.MUSHROOM_SOUP).getDurability());
+		victimInventoryStatsMenus.add(setInventoryStats(victim, victim.getMatchStatisticCollector()));
 
-		Collection<PotionEffect> victimPotionEffects = victim.getPlayer().getActivePotionEffects();
-		victimInventoryStatsMenus.add(setInventoryStats(victim, 0, victimAmountOfPots, victimPotionEffects));
 		victim.setPearlCooldown(0);
-		victim.removeFromMatch();
 		victim.heal();
+		victim.removePotionEffects();
+		victim.getInventory().clear();
 
-		if (victimTeam.size() <= 1) {
+		new DefaultScoreboard(victim).setBoard();
 
-			ended = true;
+		if (victimTeam.size() > 1) {
+			victimTeam.remove(victim);
+			participants.remove(victim);
 
-			Iterator<Profile> attackerTeamIterator = attackerTeam.iterator();
-
-			Profile attackerTeamLeader = attackerTeamIterator.next();
-
-			while (attackerTeamIterator.hasNext()) {
-				Profile attacker = attackerTeamIterator.next();
-				int attackerHealth = (int) attacker.getPlayer().getHealth();
-				Collection<PotionEffect> attackerPotionEffects = attacker.getPlayer().getActivePotionEffects();
-				attacker.heal();
-				attacker.removePotionEffects();
-				int attackerAmountOfPots = attacker.getInventory().getNumber(Material.POTION, (short) 16421)
-						+ attacker.getInventory().getNumber(Material.MUSHROOM_SOUP,
-								new ItemStack(Material.MUSHROOM_SOUP).getDurability());
-				attackerInventoryStatsMenus
-						.add(setInventoryStats(attacker, attackerHealth, attackerAmountOfPots, attackerPotionEffects));
-				attacker.setPearlCooldown(0);
-				new MatchEndScoreboard(attacker).setBoard();
-				attacker.removeFromMatch();
-				Bukkit.getServer().getScheduler().runTaskLater(PracticePlugin.INSTANCE, () -> {
-					attacker.teleportToLobby();
-					if (attacker.isInParty()) {
-						attacker.setInventoryForParty();
-					} else {
-						attacker.setInventoryForLobby();
-					}
-					new DefaultScoreboard(attacker).setBoard();
-				}, 40);
-
-			}
-
-			ProfileManager.setTeamInventoryStats(attackerTeamLeader, attackerInventoryStatsMenus);
-			ProfileManager.setTeamInventoryStats(victim, victimInventoryStatsMenus);
-			MatchManager.remove(this);
-			String viewinv = CC.YELLOW + "Match Results";
-			TextComponent winmessage = new TextComponent(
-					CC.GREEN + "Winner: " + CC.GRAY + attackerTeamLeader.getName() + "\'s party");
-			TextComponent losemessage = new TextComponent(
-					CC.RED + "Loser: " + CC.GRAY + victim.getName() + "\'s party");
-			losemessage
-					.setHoverEvent(
-							new HoverEvent(HoverEvent.Action.SHOW_TEXT,
-									new ComponentBuilder(CC.RED + "Hits: " + victimTeamHits)
-											.create()));
-			winmessage.setHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT,
-					new ComponentBuilder(CC.GREEN + "Hits: " + attackerTeamHits).create()));
-			losemessage
-					.setClickEvent(
-							new ClickEvent(ClickEvent.Action.RUN_COMMAND, "/viewteaminventory " + victim.getName()));
-			winmessage.setClickEvent(
-					new ClickEvent(ClickEvent.Action.RUN_COMMAND,
-							"/viewteaminventory " + attackerTeamLeader.getName()));
-
-			for (Profile profile : participants) {
-				profile.getPlayer().sendMessage(CC.SEPARATOR);
-				profile.getPlayer().sendMessage(viewinv);
-				profile.getPlayer().spigot().sendMessage(winmessage);
-				profile.getPlayer().spigot().sendMessage(losemessage);
-				profile.getPlayer().sendMessage(CC.SEPARATOR);
-				nameTag.giveTagAfterMatch(profile.getPlayer(), profile.getPlayer());
-			}
-
-			new DefaultScoreboard(victim).setBoard();
-
-			Bukkit.getServer().getScheduler().runTaskLater(PracticePlugin.INSTANCE, () -> {
-				if (victim.getPlayer().isDead()) {
-					victim.getPlayer().getHandle().playerConnection
-							.a(new PacketPlayInClientCommand(EnumClientCommand.PERFORM_RESPAWN));
-				}
-
-				victim.removePotionEffects();
-				victim.teleportToLobby();
-
-				if (victim.isInParty()) {
-					victim.setInventoryForParty();
-				} else {
-					victim.setInventoryForLobby();
-				}
-
-				for (Profile p : getSpectators()) {
-					p.getPlayer().sendMessage(CC.SEPARATOR);
-					p.getPlayer().sendMessage(viewinv);
-					p.getPlayer().spigot().sendMessage(winmessage);
-					p.getPlayer().spigot().sendMessage(losemessage);
-					p.getPlayer().sendMessage(CC.SEPARATOR);
-					p.stopSpectating();
-				}
-
-				clearWorld();
-
-			}, 1);
-
+			victim.spectate(victimTeam.get(0));
+			victim.removeFromMatch();
+			nameTag.giveTagAfterMatch(victim.getPlayer(), victim.getPlayer());
 			return;
 		}
 
-		victimTeam.remove(victim);
-		participants.remove(victim);
+		ended = true;
 
-		Bukkit.getServer().getScheduler().runTaskLater(PracticePlugin.INSTANCE, () -> {
-			if (victim.getPlayer().isDead()) {
-				victim.getPlayer().getHandle().playerConnection
-						.a(new PacketPlayInClientCommand(EnumClientCommand.PERFORM_RESPAWN));
-			}
+		Iterator<Profile> attackerTeamIterator = attackerTeam.iterator();
 
-			victim.removePotionEffects();
-			victim.spectate(victimTeam.get(0));
-			nameTag.giveTagAfterMatch(victim.getPlayer(), victim.getPlayer());
-			new DefaultScoreboard(victim).setBoard();
+		Profile attackerTeamLeader = attackerTeamIterator.next();
 
-		}, 1);
+		while (attackerTeamIterator.hasNext()) {
+			Profile attacker = attackerTeamIterator.next();
+			attacker.getMatchStatisticCollector().end();
+
+			attackerInventoryStatsMenus
+					.add(setInventoryStats(attacker, attacker.getMatchStatisticCollector()));
+
+			attacker.setPearlCooldown(0);
+			attacker.heal();
+			attacker.removePotionEffects();
+			attacker.getInventory().clear();
+
+			new MatchEndScoreboard(attacker).setBoard();
+
+			Bukkit.getServer().getScheduler().runTaskLater(PracticePlugin.INSTANCE, () -> {
+				attacker.teleportToLobby();
+				if (attacker.isInParty()) {
+					attacker.setInventoryForParty();
+				} else {
+					attacker.setInventoryForLobby();
+				}
+				attacker.removeFromMatch();
+				new DefaultScoreboard(attacker).setBoard();
+			}, getPostMatchTime());
+		}
+
+		ProfileManager.setTeamInventoryStats(attackerTeamLeader, attackerInventoryStatsMenus);
+		ProfileManager.setTeamInventoryStats(victim, victimInventoryStatsMenus);
+		MatchManager.remove(this);
+
+		TextComponent winMessage = new TextComponent(
+				CC.GREEN + "Winner: " + CC.GRAY + attackerTeamLeader.getName() + "\'s party");
+		TextComponent loseMessage = new TextComponent(
+				CC.RED + "Loser: " + CC.GRAY + victim.getName() + "\'s party");
+		loseMessage
+				.setHoverEvent(
+						new HoverEvent(HoverEvent.Action.SHOW_TEXT,
+								new ComponentBuilder(CC.RED + "Hits: " + victimTeamHits)
+										.create()));
+		winMessage.setHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT,
+				new ComponentBuilder(CC.GREEN + "Hits: " + attackerTeamHits).create()));
+		loseMessage
+				.setClickEvent(
+						new ClickEvent(ClickEvent.Action.RUN_COMMAND, "/viewteaminventory " + victim.getName()));
+		winMessage.setClickEvent(
+				new ClickEvent(ClickEvent.Action.RUN_COMMAND,
+						"/viewteaminventory " + attackerTeamLeader.getName()));
+
+		for (Profile profile : participants) {
+			profile.getPlayer().sendMessage(CC.SEPARATOR);
+			profile.getPlayer().sendMessage(Strings.MATCH_RESULTS);
+			profile.getPlayer().spigot().sendMessage(winMessage);
+			profile.getPlayer().spigot().sendMessage(loseMessage);
+			profile.getPlayer().sendMessage(CC.SEPARATOR);
+			nameTag.giveTagAfterMatch(profile.getPlayer(), profile.getPlayer());
+		}
+
+		victim.removePotionEffects();
+		victim.teleportToLobby();
+
+		if (victim.isInParty()) {
+			victim.setInventoryForParty();
+		} else {
+			victim.setInventoryForLobby();
+		}
+
+		victim.removeFromMatch();
+
+		for (Profile p : getSpectators()) {
+			p.getPlayer().sendMessage(CC.SEPARATOR);
+			p.getPlayer().sendMessage(Strings.MATCH_RESULTS);
+			p.getPlayer().spigot().sendMessage(winMessage);
+			p.getPlayer().spigot().sendMessage(loseMessage);
+			p.getPlayer().sendMessage(CC.SEPARATOR);
+			p.stopSpectating();
+		}
+
+		clearWorld();
+
 	}
 
 	@Override
@@ -272,8 +249,8 @@ public class PartyMatch extends Match {
 
 	@Override
 	public boolean incrementTeamHitCount(Profile attacker, Profile victim) {
-		attacker.increaseHitCount();
-		victim.resetCombo();
+		attacker.getMatchStatisticCollector().increaseHitCount();
+		victim.getMatchStatisticCollector().resetCombo();
 
 		boolean isTeam1 = team1RemainingPlayers.contains(attacker);
 		int hitCount = isTeam1 ? team1HitCount++ : team2HitCount++;
