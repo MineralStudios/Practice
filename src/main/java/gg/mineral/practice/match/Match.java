@@ -489,11 +489,11 @@ public class Match implements Spectatable {
 		participants.addAll(Arrays.asList(players));
 	}
 
-	public List<Profile> getTeam(Profile p) {
-		return Arrays.asList(p);
+	public List<Profile> getTeam(Profile profile) {
+		return Arrays.asList(profile);
 	}
 
-	private void setDisplayNames(Profile player) {
+	private void setDisplayNames(Profile profile) {
 
 		org.bukkit.scoreboard.Scoreboard scoreboard = Bukkit.getScoreboardManager().getNewScoreboard();
 
@@ -503,9 +503,9 @@ public class Match implements Spectatable {
 		teammates.setPrefix(CC.GREEN);
 		opponents.setPrefix(CC.RED);
 
-		teammates.addEntry(player.getName());
-		opponents.addEntry(getOpponent(player).getName());
+		teammates.addEntry(profile.getName());
+		opponents.addEntry(getOpponent(profile).getName());
 
-		player.getPlayer().setScoreboard(scoreboard);
+		profile.getPlayer().setScoreboard(scoreboard);
 	}
 }

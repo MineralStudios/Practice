@@ -18,44 +18,44 @@ public class DuelCommand extends PlayerCommand {
 
 	@Override
 	public void execute(org.bukkit.entity.Player pl, String[] args) {
-		Profile player = ProfileManager.getOrCreateProfile(pl);
+		Profile profile = ProfileManager.getOrCreateProfile(pl);
 
 		if (args.length == 0) {
-			if (!player.isInParty()) {
-				player.message(UsageMessages.DUEL);
+			if (!profile.isInParty()) {
+				profile.message(UsageMessages.DUEL);
 				return;
 			}
 
-			player.openMenu(new OtherPartiesMenu());
+			profile.openMenu(new OtherPartiesMenu());
 			return;
 		}
 
-		Profile playerarg = ProfileManager.getProfile(p -> p.getName().equalsIgnoreCase(args[0]));
+		Profile duelReceiver = ProfileManager.getProfile(p -> p.getName().equalsIgnoreCase(args[0]));
 
-		if (playerarg == null) {
-			player.message(ErrorMessages.PLAYER_NOT_ONLINE);
+		if (duelReceiver == null) {
+			profile.message(ErrorMessages.PLAYER_NOT_ONLINE);
 			return;
 		}
 
-		if (player.getPlayerStatus() != PlayerStatus.IDLE) {
-			player.message(ErrorMessages.YOU_ARE_NOT_IN_LOBBY);
+		if (profile.getPlayerStatus() != PlayerStatus.IDLE) {
+			profile.message(ErrorMessages.YOU_ARE_NOT_IN_LOBBY);
 			return;
 		}
 
-		if (player.equals(playerarg)) {
-			player.message(ErrorMessages.YOU_CAN_NOT_DUEL_YOURSELF);
+		if (profile.equals(duelReceiver)) {
+			profile.message(ErrorMessages.YOU_CAN_NOT_DUEL_YOURSELF);
 			return;
 		}
 
-		if (player.isInParty()) {
-			if (!(playerarg.isInParty() && playerarg.getParty().getPartyLeader().equals(playerarg)
-					&& player.getParty().getPartyLeader().equals(player))) {
-				player.message(ErrorMessages.PLAYER_NOT_IN_PARTY_OR_PARTY_LEADER);
+		if (profile.isInParty()) {
+			if (!(duelReceiver.isInParty() && duelReceiver.getParty().getPartyLeader().equals(duelReceiver)
+					&& profile.getParty().getPartyLeader().equals(profile))) {
+				profile.message(ErrorMessages.PLAYER_NOT_IN_PARTY_OR_PARTY_LEADER);
 				return;
 			}
 		}
 
-		player.setDuelReciever(playerarg);
-		player.openMenu(new SelectModeMenu(SubmitAction.DUEL));
+		profile.setDuelReciever(duelReceiver);
+		profile.openMenu(new SelectModeMenu(SubmitAction.DUEL));
 	}
 }

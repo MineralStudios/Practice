@@ -46,31 +46,31 @@ public class MovementListener implements Listener {
 
     @EventHandler
     public void onPlayerMove(PlayerMoveEvent e) {
-        Profile player = ProfileManager.getProfile(
+        Profile profile = ProfileManager.getProfile(
                 p -> p.getUUID().equals(e.getPlayer().getUniqueId()) && p.getPlayerStatus() == PlayerStatus.FIGHTING);
 
-        if (player == null) {
+        if (profile == null) {
             return;
         }
 
-        if (player.getMatch().getData().getDeadlyWater()) {
-            Material type = player.getPlayer().getLocation().getBlock().getType();
+        if (profile.getMatch().getData().getDeadlyWater()) {
+            Material type = profile.getPlayer().getLocation().getBlock().getType();
             if (type == Material.WATER || type == Material.STATIONARY_WATER) {
-                player.getMatch().end(player);
+                profile.getMatch().end(profile);
             }
         }
     }
 
     @EventHandler
     public void onPlayerDismount(EntityDismountEvent e) {
-        Profile player = ProfileManager.getProfile(
+        Profile profile = ProfileManager.getProfile(
                 p -> p.getUUID().equals(e.getEntity().getUniqueId()) && p.getPlayerStatus() == PlayerStatus.FIGHTING);
 
-        if (player == null) {
+        if (profile == null) {
             return;
         }
 
-        if (player.isInMatchCountdown()) {
+        if (profile.isInMatchCountdown()) {
             e.setCancelled(true);
         }
     }

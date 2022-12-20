@@ -6,7 +6,6 @@ import java.util.Map.Entry;
 import gg.mineral.practice.commands.PlayerCommand;
 import gg.mineral.practice.entity.PlayerStatus;
 import gg.mineral.practice.entity.Profile;
-import gg.mineral.practice.managers.PartyManager;
 import gg.mineral.practice.managers.ProfileManager;
 import gg.mineral.practice.party.Party;
 import gg.mineral.practice.util.messages.CC;
@@ -262,31 +261,7 @@ public class PartyCommand extends PlayerCommand {
 					return;
 				}
 
-				Party p = profile.getParty();
-
-				ChatMessage leftMessage = ChatMessages.LEFT_PARTY.clone().replace("%player%", profile.getName());
-
-				Iterator<Profile> iter = p.getPartyMembers().iterator();
-
-				if (p.getPartyLeader().equals(profile)) {
-					while (iter.hasNext()) {
-						Profile plr = iter.next();
-						iter.remove();
-						plr.removeFromParty();
-						plr.message(leftMessage);
-					}
-
-					PartyManager.remove(p);
-				} else {
-
-					profile.removeFromParty();
-
-					while (iter.hasNext()) {
-						Profile plr = iter.next();
-						plr.message(leftMessage);
-					}
-				}
-
+				profile.getParty().leave(profile);
 				return;
 		}
 

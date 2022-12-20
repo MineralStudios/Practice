@@ -13,7 +13,7 @@ public class StopSpectatingCommand extends PlayerCommand {
 
     @Override
     public void execute(org.bukkit.entity.Player pl, String[] args) {
-        Profile player = ProfileManager.getOrCreateProfile(pl);
-        player.stopSpectatingAndFollowing();
+        Profile profile = ProfileManager.getOrCreateProfile(pl);
+        profile.stopSpectatingAndFollowing();
     }
 }

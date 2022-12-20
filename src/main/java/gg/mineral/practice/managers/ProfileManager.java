@@ -32,12 +32,12 @@ public class ProfileManager {
 	static Object2ObjectOpenHashMap<String, InventoryStatsMenu> inventoryStats = new Object2ObjectOpenHashMap<>();
 	static Object2ObjectOpenHashMap<String, List<InventoryStatsMenu>> teamInventoryStats = new Object2ObjectOpenHashMap<>();
 
-	public static void add(Profile player) {
-		profiles.add(player);
+	public static void add(Profile profile) {
+		profiles.add(profile);
 	}
 
-	public static void remove(Profile player) {
-		profiles.remove(player);
+	public static void remove(Profile profile) {
+		profiles.remove(profile);
 	}
 
 	public static CompletableFuture<Integer> getOfflinePlayerElo(Gametype g, String name) {

@@ -8,16 +8,16 @@ import gg.mineral.api.collection.GlueList;
 public class QueueEntryManager {
     static GlueList<QueueEntry> entries = new GlueList<>();
 
-    public static void register(QueueEntry qe) {
-        entries.add(qe);
+    public static void register(QueueEntry queueEntry) {
+        entries.add(queueEntry);
     }
 
     public static QueueEntry newEntry(Queuetype q, Gametype g) {
         QueueEntry entry = null;
 
-        for (QueueEntry qe : entries) {
-            if (qe.getGametype().equals(g) && qe.getQueuetype().equals(q)) {
-                entry = qe;
+        for (QueueEntry queueEntry : entries) {
+            if (queueEntry.getGametype().equals(g) && queueEntry.getQueuetype().equals(q)) {
+                entry = queueEntry;
                 break;
             }
         }

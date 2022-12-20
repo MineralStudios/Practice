@@ -13,21 +13,21 @@ public class EloCommand extends PlayerCommand {
 
 	@Override
 	public void execute(org.bukkit.entity.Player pl, String[] args) {
-		Profile player = ProfileManager.getOrCreateProfile(pl);
+		Profile profile = ProfileManager.getOrCreateProfile(pl);
 
 		if (args.length == 0) {
-			player.openMenu(new EloMenu(player));
+			profile.openMenu(new EloMenu(profile));
 			return;
 		}
 
-		Profile playerarg = ProfileManager.getProfile(p -> p.getName().equalsIgnoreCase(args[0]));
+		Profile eloProfile = ProfileManager.getProfile(p -> p.getName().equalsIgnoreCase(args[0]));
 
-		if (playerarg == null) {
-			player.openMenu(new EloMenu(args[0]));
+		if (eloProfile == null) {
+			profile.openMenu(new EloMenu(args[0]));
 			return;
 		}
 
-		player.openMenu(new EloMenu(playerarg));
+		profile.openMenu(new EloMenu(eloProfile));
 
 	}
 }

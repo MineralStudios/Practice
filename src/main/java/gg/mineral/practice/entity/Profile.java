@@ -218,12 +218,10 @@ public class Profile {
 		inventory.setItem(0, ItemStacks.WAIT_TO_LEAVE,
 				(Runnable) () -> this.message(ErrorMessages.CAN_NOT_LEAVE_YET));
 
-		Profile pl = this;
-
 		new BukkitRunnable() {
 			@Override
 			public void run() {
-				inventory.setItem(0, ItemStacks.LEAVE_TOURNAMENT, (Runnable) pl::removeFromTournament);
+				inventory.setItem(0, ItemStacks.LEAVE_TOURNAMENT, (Runnable) Profile.this::removeFromTournament);
 			}
 		}.runTaskLater(PracticePlugin.INSTANCE, 20);
 		getPlayer().updateInventory();
@@ -349,7 +347,7 @@ public class Profile {
 		setPlayerStatus(PlayerStatus.IDLE);
 	}
 
-	public void addPlayerToQueue(QueueEntry qd) {
+	public void addPlayerToQueue(QueueEntry queueEntry) {
 		this.player.getOpenInventory().close();
 
 		if (playerStatus != PlayerStatus.IDLE) {
@@ -358,9 +356,9 @@ public class Profile {
 
 		setPlayerStatus(PlayerStatus.QUEUEING);
 		setInventoryForQueue();
-		QueueSearchTask.addPlayer(this, qd);
-		message(ChatMessages.JOINED_QUEUE.clone().replace("%queue%", qd.getQueuetype().getDisplayName())
-				.replace("%gametype%", qd.getGametype().getDisplayName()));
+		QueueSearchTask.addPlayer(this, queueEntry);
+		message(ChatMessages.JOINED_QUEUE.clone().replace("%queue%", queueEntry.getQueuetype().getDisplayName())
+				.replace("%gametype%", queueEntry.getGametype().getDisplayName()));
 	}
 
 	public void stopSpectating() {
@@ -506,20 +504,20 @@ public class Profile {
 		}
 	}
 
-	public void sendDuelRequest(Profile player) {
+	public void sendDuelRequest(Profile profile) {
 		getPlayer().closeInventory();
 
-		if (player.getPlayerStatus() != PlayerStatus.IDLE) {
+		if (profile.getPlayerStatus() != PlayerStatus.IDLE) {
 			message(ErrorMessages.PLAYER_NOT_IN_LOBBY);
 			return;
 		}
 
-		if (!player.isDuelRequests()) {
+		if (!profile.isDuelRequests()) {
 			message(ErrorMessages.DUEL_REQUESTS_DISABLED);
 			return;
 		}
 
-		for (DuelRequest d : player.getRecievedDuelRequests()) {
+		for (DuelRequest d : profile.getRecievedDuelRequests()) {
 			if (d.getSender().equals(this)) {
 				message(ErrorMessages.DUEL_REQUEST_ALREADY_SENT);
 				return;
@@ -538,9 +536,9 @@ public class Profile {
 		}
 
 		DuelRequest request = new DuelRequest(this, matchData);
-		player.getRecievedDuelRequests().add(request);
+		profile.getRecievedDuelRequests().add(request);
 		removeFromQueue();
-		ChatMessages.DUEL_REQUEST_SENT.clone().replace("%player%", player.getName()).send(getPlayer());
+		ChatMessages.DUEL_REQUEST_SENT.clone().replace("%player%", profile.getName()).send(getPlayer());
 
 		HoverEvent DATA = new HoverEvent(HoverEvent.Action.SHOW_TEXT,
 				new ComponentBuilder(matchData.toString()).create());
@@ -548,7 +546,7 @@ public class Profile {
 		ChatMessages.DUEL_REQUEST_RECIEVED.clone().replace("%player%", sender)
 				.setTextEvent(new ClickEvent(ClickEvent.Action.RUN_COMMAND, "/accept " + getName()),
 						DATA)
-				.send(player.getPlayer());
+				.send(profile.getPlayer());
 	}
 
 	public void leaveKitEditor() {
@@ -571,7 +569,7 @@ public class Profile {
 		kitEditorData.saveKit(this);
 	}
 
-	public void sendPlayerToKitEditor(QueueEntry qe) {
+	public void sendPlayerToKitEditor(QueueEntry queueEntry) {
 		getPlayer().closeInventory();
 
 		Location location = KitEditorManager.getLocation();
@@ -585,8 +583,8 @@ public class Profile {
 		setInventoryClickCancelled(false);
 		getInventory().clear();
 		setPlayerStatus(PlayerStatus.KIT_EDITOR);
-		kitEditorData = qe;
-		getInventory().setContents(qe.getGametype().getKit().getContents());
+		kitEditorData = queueEntry;
+		getInventory().setContents(queueEntry.getGametype().getKit().getContents());
 	}
 
 	public void saveCreatedKit() {

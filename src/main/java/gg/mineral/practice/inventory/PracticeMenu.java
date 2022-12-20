@@ -128,19 +128,19 @@ public class PracticeMenu {
 	protected Inventory inv;
 	protected boolean needsUpdate = true;
 
-	public void open(Profile player) {
-		viewer = player;
+	public void open(Profile profile) {
+		this.viewer = profile;
 
 		if (needsUpdate) {
 			needsUpdate = update();
 		}
 
 		if (needsUpdate || inv == null) {
-			inv = toInventory(player.getPlayer());
+			inv = toInventory(profile.getPlayer());
 		}
 
-		player.getPlayer().openInventory(inv);
-		player.setOpenMenu(this);
+		profile.getPlayer().openInventory(inv);
+		profile.setOpenMenu(this);
 	}
 
 	public void setContents(ItemStack[] contents) {

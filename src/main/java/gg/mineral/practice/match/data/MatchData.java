@@ -49,13 +49,13 @@ public class MatchData {
 		this.knockback = KnockbackProfileList.getDefaultKnockbackProfile();
 	}
 
-	public MatchData(QueueEntry qe) {
-		this.queueEntry = qe;
-		this.gametype = qe.getGametype();
-		arena = qe.getQueuetype().nextArena(this.gametype);
+	public MatchData(QueueEntry queueEntry) {
+		this.queueEntry = queueEntry;
+		this.gametype = queueEntry.getGametype();
+		arena = queueEntry.getQueuetype().nextArena(this.gametype);
 		kit = this.gametype.getKit();
 		noDamageTicks = this.gametype.getNoDamageTicks();
-		knockback = qe.getQueuetype().getKnockback();
+		knockback = queueEntry.getQueuetype().getKnockback();
 		hunger = this.gametype.getHunger();
 		boxing = this.gametype.getBoxing();
 		build = this.gametype.getBuild();
@@ -63,7 +63,7 @@ public class MatchData {
 		griefing = this.gametype.getGriefing();
 		deadlyWater = this.gametype.getDeadlyWater();
 		regeneration = this.gametype.getRegeneration();
-		ranked = qe.getQueuetype().isRanked();
+		ranked = queueEntry.getQueuetype().isRanked();
 	}
 
 	public void setGametype(Gametype gametype) {

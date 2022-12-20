@@ -15,26 +15,26 @@ public class FollowCommand extends PlayerCommand {
 
 	@Override
 	public void execute(org.bukkit.entity.Player pl, String[] args) {
-		Profile player = ProfileManager.getOrCreateProfile(pl);
+		Profile profile = ProfileManager.getOrCreateProfile(pl);
 		if (args.length < 1) {
-			player.message(UsageMessages.FOLLOW);
+			profile.message(UsageMessages.FOLLOW);
 			return;
 		}
 
-		if (player.getName().equalsIgnoreCase(args[0])) {
-			player.message(ErrorMessages.NOT_FOLLOW_SELF);
+		if (profile.getName().equalsIgnoreCase(args[0])) {
+			profile.message(ErrorMessages.NOT_FOLLOW_SELF);
 			return;
 		}
 
 		String playerName = args[0];
-		Profile playerarg = ProfileManager.getProfile(p -> p.getName().equalsIgnoreCase(playerName));
+		Profile profileToFollow = ProfileManager.getProfile(p -> p.getName().equalsIgnoreCase(playerName));
 
-		if (playerarg == null) {
-			player.message(ErrorMessages.PLAYER_NOT_ONLINE);
+		if (profileToFollow == null) {
+			profile.message(ErrorMessages.PLAYER_NOT_ONLINE);
 			return;
 		}
 
-		player.follow(playerarg);
+		profile.follow(profileToFollow);
 		ChatMessages.FOLLOWING.clone().replace("%player%", playerName).send(pl);
 	}
 }

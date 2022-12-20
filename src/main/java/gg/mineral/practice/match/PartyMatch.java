@@ -78,15 +78,15 @@ public class PartyMatch extends Match {
 		int i;
 
 		for (i = 0; i < team1RemainingPlayers.size(); i++) {
-			Profile player1m = team1RemainingPlayers.get(i);
-			prepareForMatch(player1m, team1sb);
-			PlayerUtil.teleport(player1m.getPlayer(), location1);
+			Profile teamMember = team1RemainingPlayers.get(i);
+			prepareForMatch(teamMember, team1sb);
+			PlayerUtil.teleport(teamMember.getPlayer(), location1);
 		}
 
 		for (i = 0; i < team2RemainingPlayers.size(); i++) {
-			Profile player2m = team2RemainingPlayers.get(i);
-			prepareForMatch(player2m, team2sb);
-			PlayerUtil.teleport(player2m.getPlayer(), location2);
+			Profile teamMember = team2RemainingPlayers.get(i);
+			prepareForMatch(teamMember, team2sb);
+			PlayerUtil.teleport(teamMember.getPlayer(), location2);
 		}
 
 		startCountdown();

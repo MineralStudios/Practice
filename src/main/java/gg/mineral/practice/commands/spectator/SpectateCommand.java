@@ -16,28 +16,28 @@ public class SpectateCommand extends PlayerCommand {
 
 	@Override
 	public void execute(org.bukkit.entity.Player pl, String[] args) {
-		Profile player = ProfileManager.getOrCreateProfile(pl);
+		Profile profile = ProfileManager.getOrCreateProfile(pl);
 
-		if (player.getPlayerStatus() != PlayerStatus.IDLE) {
-			player.message(ErrorMessages.YOU_ARE_NOT_IN_LOBBY);
+		if (profile.getPlayerStatus() != PlayerStatus.IDLE) {
+			profile.message(ErrorMessages.YOU_ARE_NOT_IN_LOBBY);
 			return;
 		}
 
 		if (args.length < 1) {
 
-			player.openMenu(new SpectateMenu());
+			profile.openMenu(new SpectateMenu());
 
 			return;
 		}
 
-		Profile playerarg = ProfileManager
+		Profile profileToSpectate = ProfileManager
 				.getProfile(p -> p.getName().equalsIgnoreCase(args[0]) && p.getPlayerStatus() == PlayerStatus.FIGHTING);
 
-		if (playerarg == null) {
-			player.message(ErrorMessages.PLAYER_NOT_IN_MATCH);
+		if (profileToSpectate == null) {
+			profile.message(ErrorMessages.PLAYER_NOT_IN_MATCH);
 			return;
 		}
 
-		player.spectate(playerarg);
+		profile.spectate(profileToSpectate);
 	}
 }

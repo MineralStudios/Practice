@@ -107,8 +107,8 @@ public class Event implements Spectatable {
             Profile winner = players.get(0);
             winner.removeFromEvent();
 
-            for (Profile pl : getSpectators()) {
-                pl.stopSpectating();
+            for (Profile profile : getSpectators()) {
+                profile.stopSpectating();
             }
 
             EventManager.remove(this);

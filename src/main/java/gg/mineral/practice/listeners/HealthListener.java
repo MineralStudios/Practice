@@ -14,15 +14,15 @@ public class HealthListener implements Listener {
 
 	@EventHandler
 	public void onEntityRegainHealth(EntityRegainHealthEvent e) {
-		Profile player = ProfileManager
+		Profile profile = ProfileManager
 				.getProfile(p -> p.getUUID().equals(e.getEntity().getUniqueId())
 						&& p.getPlayerStatus() == PlayerStatus.FIGHTING);
 
-		if (player == null) {
+		if (profile == null) {
 			return;
 		}
 
-		if (!player.getMatch().getData().getRegeneration()) {
+		if (!profile.getMatch().getData().getRegeneration()) {
 			if (e.getRegainReason() == RegainReason.SATIATED || e.getRegainReason() == RegainReason.REGEN) {
 				e.setCancelled(true);
 			}
@@ -31,20 +31,20 @@ public class HealthListener implements Listener {
 
 	@EventHandler
 	public void onFoodLevelChange(FoodLevelChangeEvent e) {
-		Profile player = ProfileManager
+		Profile profile = ProfileManager
 				.getProfile(p -> p.getUUID().equals(e.getEntity().getUniqueId())
 						&& p.getPlayerStatus() == PlayerStatus.FIGHTING);
 
-		if (player == null) {
+		if (profile == null) {
 			e.setCancelled(true);
 			return;
 		}
 
-		if (player.isInMatchCountdown()) {
+		if (profile.isInMatchCountdown()) {
 			e.setCancelled(true);
 			return;
 		}
 
-		e.setCancelled(!player.getMatch().getData().getHunger());
+		e.setCancelled(!profile.getMatch().getData().getHunger());
 	}
 }

@@ -20,14 +20,14 @@ public class InventoryListener implements Listener {
 
 	@EventHandler
 	public void onInventoryClick(InventoryClickEvent e) {
-		Profile player = ProfileManager.getOrCreateProfile((org.bukkit.entity.Player) e.getWhoClicked());
-		PracticeMenu menu = player.getOpenMenu();
+		Profile profile = ProfileManager.getOrCreateProfile((org.bukkit.entity.Player) e.getWhoClicked());
+		PracticeMenu menu = profile.getOpenMenu();
 
-		boolean canClick = player.getPlayer().isOp() && player.getPlayer().getGameMode().equals(GameMode.CREATIVE);
+		boolean canClick = profile.getPlayer().isOp() && profile.getPlayer().getGameMode().equals(GameMode.CREATIVE);
 
 		e.setCancelled(e.getCurrentItem() == null ? false : e.getCurrentItem().getType() == Material.TNT);
 
-		if (player.isInventoryClickCancelled()) {
+		if (profile.isInventoryClickCancelled()) {
 			e.setCancelled(!canClick);
 		}
 
@@ -45,25 +45,25 @@ public class InventoryListener implements Listener {
 			return;
 		}
 
-		predicate.test(player);
+		predicate.test(profile);
 	}
 
 	@EventHandler
 	public void onInventoryClose(InventoryCloseEvent e) {
-		Profile player = ProfileManager.getOrCreateProfile((org.bukkit.entity.Player) e.getPlayer());
-		player.setOpenMenu(null);
+		Profile profile = ProfileManager.getOrCreateProfile((org.bukkit.entity.Player) e.getPlayer());
+		profile.setOpenMenu(null);
 	}
 
 	@EventHandler
 	public void onPlayerDropItem(PlayerDropItemEvent e) {
-		Profile player = ProfileManager.getOrCreateProfile(e.getPlayer());
-		boolean canDrop = player.getPlayer().isOp() && player.getPlayer().getGameMode().equals(GameMode.CREATIVE);
+		Profile profile = ProfileManager.getOrCreateProfile(e.getPlayer());
+		boolean canDrop = profile.getPlayer().isOp() && profile.getPlayer().getGameMode().equals(GameMode.CREATIVE);
 
-		if (player.getPlayerStatus() == PlayerStatus.KIT_EDITOR) {
+		if (profile.getPlayerStatus() == PlayerStatus.KIT_EDITOR) {
 			return;
 		}
 
-		if (player.getPlayerStatus() == PlayerStatus.FIGHTING) {
+		if (profile.getPlayerStatus() == PlayerStatus.FIGHTING) {
 			return;
 		}
 

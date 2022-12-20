@@ -13,10 +13,10 @@ public class TogglePartyRequestsCommand extends PlayerCommand {
 
     @Override
     public void execute(org.bukkit.entity.Player pl, String[] args) {
-        Profile player = ProfileManager.getOrCreateProfile(pl);
-        player.setPartyRequests(!player.isPartyRequests());
+        Profile profile = ProfileManager.getOrCreateProfile(pl);
+        profile.setPartyRequests(!profile.isPartyRequests());
         ChatMessages.PARTY_REQUESTS_TOGGLED.clone()
-                .replace("%toggled%", player.isPartyRequests() ? "enabled" : "disabled")
+                .replace("%toggled%", profile.isPartyRequests() ? "enabled" : "disabled")
                 .send(pl);
     }
 }

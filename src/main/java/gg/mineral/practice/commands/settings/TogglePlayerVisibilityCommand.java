@@ -15,13 +15,13 @@ public class TogglePlayerVisibilityCommand extends PlayerCommand {
 
 	@Override
 	public void execute(org.bukkit.entity.Player pl, String[] args) {
-		Profile player = ProfileManager.getOrCreateProfile(pl);
-		player.setPlayersVisible(!player.isPlayersVisible());
+		Profile profile = ProfileManager.getOrCreateProfile(pl);
+		profile.setPlayersVisible(!profile.isPlayersVisible());
 
 		List<org.bukkit.entity.Player> list = pl.getWorld().getPlayers();
 		int i;
 
-		if (player.isPlayersVisible()) {
+		if (profile.isPlayersVisible()) {
 			for (i = 0; i < list.size(); i++) {
 				org.bukkit.entity.Player p = list.get(i);
 				pl.showPlayer(p);
@@ -34,6 +34,6 @@ public class TogglePlayerVisibilityCommand extends PlayerCommand {
 		}
 
 		ChatMessages.VISIBILITY_TOGGLED.clone().replace("%toggled%",
-				player.isPlayersVisible() ? "enabled" : "disabled").send(pl);
+				profile.isPlayersVisible() ? "enabled" : "disabled").send(pl);
 	}
 }

@@ -16,13 +16,13 @@ public class TournamentCommand extends PlayerCommand {
 
     @Override
     public void execute(org.bukkit.entity.Player pl, String[] args) {
-        Profile player = ProfileManager.getOrCreateProfile(pl);
+        Profile profile = ProfileManager.getOrCreateProfile(pl);
 
-        if (player.getPlayerStatus() != PlayerStatus.IDLE) {
-            player.message(ErrorMessages.YOU_ARE_NOT_IN_LOBBY);
+        if (profile.getPlayerStatus() != PlayerStatus.IDLE) {
+            profile.message(ErrorMessages.YOU_ARE_NOT_IN_LOBBY);
             return;
         }
 
-        player.openMenu(new SelectModeMenu(SubmitAction.TOURNAMENT));
+        profile.openMenu(new SelectModeMenu(SubmitAction.TOURNAMENT));
     }
 }

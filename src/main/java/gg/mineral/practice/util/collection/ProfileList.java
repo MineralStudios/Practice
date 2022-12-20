@@ -46,8 +46,8 @@ public class ProfileList extends GlueList<Profile> {
             return false;
         }
 
-        for (Profile pl : this) {
-            if (p.equals(pl)) {
+        for (Profile profile : this) {
+            if (p.equals(profile)) {
                 return true;
             }
         }

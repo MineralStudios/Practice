@@ -18,20 +18,20 @@ public class ViewTeamInventoryCommand extends PlayerCommand {
 
     @Override
     public void execute(org.bukkit.entity.Player pl, String[] args) {
-        Profile player = ProfileManager.getOrCreateProfile(pl);
+        Profile profile = ProfileManager.getOrCreateProfile(pl);
 
         if (args.length < 1) {
-            player.message(UsageMessages.VIEW_TEAM_INV);
+            profile.message(UsageMessages.VIEW_TEAM_INV);
             return;
         }
 
         List<InventoryStatsMenu> inventoryStatsList = ProfileManager.getTeamInventoryStats(args[0]);
 
         if (inventoryStatsList == null) {
-            player.message(ErrorMessages.TEAM_INVENTORY_NOT_FOUND);
+            profile.message(ErrorMessages.TEAM_INVENTORY_NOT_FOUND);
             return;
         }
 
-        player.openMenu(new InventoryStatsListMenu(inventoryStatsList));
+        profile.openMenu(new InventoryStatsListMenu(inventoryStatsList));
     }
 }
