@@ -390,7 +390,7 @@ public class Match implements Spectatable {
 						() -> {
 							profile.addPlayerToQueue(getData().getQueueEntry());
 						});
-			}, 20);
+			}, getPostMatchTime() / 2);
 		}
 	}
 

@@ -16,7 +16,7 @@ public class BoxingScoreboard extends DefaultScoreboard {
     @Override
     public void updateBoard(Board board) {
         int hitDifference = profile.getMatchStatisticCollector().getHitCount()
-                - profile.getOpponent().getMatchStatisticCollector().getHitCount();
+                - profile.getMatch().getOpponent(profile).getMatchStatisticCollector().getHitCount();
         String symbol = "+";
         String color = CC.D_GREEN;
 
@@ -25,14 +25,16 @@ public class BoxingScoreboard extends DefaultScoreboard {
             color = CC.D_RED;
         }
 
-        board.updateLines(CC.BOARD_SEPARATOR, CC.ACCENT + "Opponent: " + CC.SECONDARY + profile.getOpponent().getName(),
+        board.updateLines(CC.BOARD_SEPARATOR,
+                CC.ACCENT + "Opponent: " + CC.SECONDARY + profile.getMatch().getOpponent(profile).getName(),
                 CC.ACCENT + "Your Hits: " + CC.SECONDARY + profile.getMatchStatisticCollector().getHitCount() + color
                         + " (" + symbol + hitDifference
                         + ")",
                 CC.ACCENT + "Their Hits: " + CC.SECONDARY
-                        + profile.getOpponent().getMatchStatisticCollector().getHitCount(),
+                        + profile.getMatch().getOpponent(profile).getMatchStatisticCollector().getHitCount(),
                 CC.ACCENT + "Your Ping: " + CC.SECONDARY + ((CraftPlayer) board.getPlayer()).getHandle().ping,
-                CC.ACCENT + "Their Ping: " + CC.SECONDARY + profile.getOpponent().getPlayer().getHandle().ping,
+                CC.ACCENT + "Their Ping: " + CC.SECONDARY
+                        + profile.getMatch().getOpponent(profile).getPlayer().getHandle().ping,
                 CC.BOARD_SEPARATOR);
     }
 }

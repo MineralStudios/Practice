@@ -279,18 +279,15 @@ public class Profile {
 		GlueList<Queuetype> list = QueuetypeManager.getQueuetypes();
 
 		for (int i = 0; i < list.size(); i++) {
-			Queuetype q = list.get(i);
-			try {
-				ItemStack item = new ItemBuilder(q.getDisplayItem())
-						.name(CC.SECONDARY + CC.B + q.getDisplayName()).build();
-				inventory.setItem(q.getSlotNumber(), item,
-						p -> {
-							p.openMenu(new SelectGametypeMenu(q, true, false));
-							return true;
-						});
-			} catch (NullPointerException e) {
-				continue;
-			}
+			Queuetype queuetype = list.get(i);
+
+			ItemStack item = new ItemBuilder(queuetype.getDisplayItem())
+					.name(CC.SECONDARY + CC.B + queuetype.getDisplayName()).build();
+			inventory.setItem(queuetype.getSlotNumber(), item,
+					p -> {
+						p.openMenu(new SelectGametypeMenu(queuetype, true, false));
+						return true;
+					});
 		}
 
 		if (KitEditorManager.getEnabled()) {
@@ -612,10 +609,6 @@ public class Profile {
 
 	public boolean equals(Profile p) {
 		return p.getUUID().equals(player.getUniqueId());
-	}
-
-	public Profile getOpponent() {
-		return getMatch().getOpponent(this);
 	}
 
 	public UUID getUUID() {

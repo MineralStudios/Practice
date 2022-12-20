@@ -16,19 +16,29 @@ import gg.mineral.practice.util.SaveableData;
 import gg.mineral.server.combat.KnockbackProfile;
 import gg.mineral.server.combat.KnockbackProfileList;
 import it.unimi.dsi.fastutil.objects.Object2IntOpenHashMap;
+import lombok.Getter;
 
 public class Queuetype implements SaveableData {
 	final FileConfiguration config = QueuetypeManager.getConfig();
 
+	@Getter
 	ItemStack displayItem;
+	@Getter
 	String name;
+	@Getter
 	String displayName;
+	@Getter
 	Integer slotNumber;
-	Boolean ranked;
+	@Getter
+	boolean ranked;
 	final String path;
+	@Getter
 	KnockbackProfile knockback = null;
+	@Getter
 	Object2IntOpenHashMap<Gametype> gametypes = new Object2IntOpenHashMap<>();
+	@Getter
 	List<Arena> arenas = new GlueList<>();
+	@Getter
 	Object2IntOpenHashMap<Catagory> catagories = new Object2IntOpenHashMap<>();
 
 	public Queuetype(String name) {
@@ -55,30 +65,6 @@ public class Queuetype implements SaveableData {
 		return arenaList.remove(0);
 	}
 
-	public String getName() {
-		return name;
-	}
-
-	public String getDisplayName() {
-		return displayName;
-	}
-
-	public ItemStack getDisplayItem() {
-		return displayItem;
-	}
-
-	public Integer getSlotNumber() {
-		return slotNumber;
-	}
-
-	public List<Arena> getArenas() {
-		return arenas;
-	}
-
-	public KnockbackProfile getKnockback() {
-		return knockback;
-	}
-
 	public void setDisplayName(String displayName) {
 		this.displayName = displayName;
 		save();
@@ -94,13 +80,13 @@ public class Queuetype implements SaveableData {
 		save();
 	}
 
-	public void setRanked(boolean r) {
-		this.ranked = r;
+	public void setRanked(boolean ranked) {
+		this.ranked = ranked;
 		save();
 	}
 
-	public void setKnockback(KnockbackProfile kb) {
-		this.knockback = kb;
+	public void setKnockback(KnockbackProfile knockback) {
+		this.knockback = knockback;
 		save();
 	}
 
@@ -117,14 +103,6 @@ public class Queuetype implements SaveableData {
 		return q.getName().equalsIgnoreCase(getName());
 	}
 
-	public Object2IntOpenHashMap<Gametype> getGametypes() {
-		return gametypes;
-	}
-
-	public boolean isRanked() {
-		return ranked;
-	}
-
 	public void addCatagory(Catagory catagory, int slot) {
 		catagories.put(catagory, slot);
 		save();
@@ -133,10 +111,6 @@ public class Queuetype implements SaveableData {
 	public void addGametype(Gametype gametype, int slot) {
 		gametypes.put(gametype, slot);
 		save();
-	}
-
-	public Object2IntOpenHashMap<Catagory> getCatagories() {
-		return catagories;
 	}
 
 	@Override
