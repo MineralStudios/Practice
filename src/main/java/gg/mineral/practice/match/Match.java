@@ -32,6 +32,7 @@ import gg.mineral.practice.match.data.MatchData;
 import gg.mineral.practice.scoreboard.impl.BoxingScoreboard;
 import gg.mineral.practice.scoreboard.impl.DefaultScoreboard;
 import gg.mineral.practice.scoreboard.impl.InMatchScoreboard;
+import gg.mineral.practice.scoreboard.impl.MatchEndScoreboard;
 import gg.mineral.practice.traits.Spectatable;
 import gg.mineral.practice.util.PlayerUtil;
 import gg.mineral.practice.util.collection.ProfileList;
@@ -344,8 +345,8 @@ public class Match implements Spectatable {
 		}
 
 		resetPearlCooldown(attacker, victim);
-		new DefaultScoreboard(profile1).setBoard();
-		new DefaultScoreboard(profile2).setBoard();
+		new MatchEndScoreboard(attacker).setBoard();
+		new DefaultScoreboard(victim).setBoard();
 		MatchManager.remove(this);
 
 		Bukkit.getServer().getScheduler().runTaskLater(PracticePlugin.INSTANCE, () -> {
@@ -362,6 +363,7 @@ public class Match implements Spectatable {
 		giveQueueAgainItem(attacker);
 
 		Bukkit.getServer().getScheduler().runTaskLater(PracticePlugin.INSTANCE, () -> {
+			new DefaultScoreboard(attacker).setBoard();
 			sendBackToLobby(attacker);
 			nameTag.giveTagAfterMatch(profile1.getPlayer(), profile2.getPlayer());
 

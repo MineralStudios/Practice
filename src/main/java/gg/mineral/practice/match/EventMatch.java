@@ -14,6 +14,7 @@ import gg.mineral.practice.events.Event;
 import gg.mineral.practice.managers.MatchManager;
 import gg.mineral.practice.match.data.MatchData;
 import gg.mineral.practice.scoreboard.impl.DefaultScoreboard;
+import gg.mineral.practice.scoreboard.impl.MatchEndScoreboard;
 import gg.mineral.practice.util.PlayerUtil;
 import gg.mineral.practice.util.messages.CC;
 import net.md_5.bungee.api.chat.ClickEvent;
@@ -80,8 +81,8 @@ public class EventMatch extends Match {
         victim.getPlayer().spigot().sendMessage(winmessage, splitter, losemessage);
         victim.getPlayer().sendMessage(CC.SEPARATOR);
         resetPearlCooldown(attacker, victim);
-        new DefaultScoreboard(profile1).setBoard();
-        new DefaultScoreboard(profile2).setBoard();
+        new MatchEndScoreboard(attacker).setBoard();
+        new DefaultScoreboard(victim).setBoard();
         victim.removeFromMatch();
         MatchManager.remove(this);
 
@@ -102,6 +103,7 @@ public class EventMatch extends Match {
         Bukkit.getServer().getScheduler().runTaskLater(PracticePlugin.INSTANCE, () -> {
 
             attacker.removeFromMatch();
+            new DefaultScoreboard(attacker).setBoard();
             event.removePlayer(victim);
             event.removeMatch(EventMatch.this);
 

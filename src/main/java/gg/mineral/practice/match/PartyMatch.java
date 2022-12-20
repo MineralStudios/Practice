@@ -20,6 +20,7 @@ import gg.mineral.practice.managers.ProfileManager;
 import gg.mineral.practice.match.data.MatchData;
 import gg.mineral.practice.party.Party;
 import gg.mineral.practice.scoreboard.impl.DefaultScoreboard;
+import gg.mineral.practice.scoreboard.impl.MatchEndScoreboard;
 import gg.mineral.practice.scoreboard.impl.PartyBoxingScoreboard;
 import gg.mineral.practice.scoreboard.impl.PartyMatchScoreboard;
 import gg.mineral.practice.util.PlayerUtil;
@@ -169,7 +170,7 @@ public class PartyMatch extends Match {
 				attackerInventoryStatsMenus
 						.add(setInventoryStats(attacker, attackerHealth, attackerAmountOfPots, attackerPotionEffects));
 				attacker.setPearlCooldown(0);
-				new DefaultScoreboard(attacker).setBoard();
+				new MatchEndScoreboard(attacker).setBoard();
 				attacker.removeFromMatch();
 				Bukkit.getServer().getScheduler().runTaskLater(PracticePlugin.INSTANCE, () -> {
 					attacker.teleportToLobby();
@@ -178,6 +179,7 @@ public class PartyMatch extends Match {
 					} else {
 						attacker.setInventoryForLobby();
 					}
+					new DefaultScoreboard(attacker).setBoard();
 				}, 40);
 
 			}
