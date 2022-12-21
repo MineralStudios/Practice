@@ -148,7 +148,11 @@ public class Spectator {
 
         new SpectatorScoreboard(profile).setBoard();
         profile.setPlayerStatus(PlayerStatus.SPECTATING);
+        updateVisiblity();
 
+    }
+
+    private void updateVisiblity() {
         for (Profile profile : getSpectatable().getParticipants()) {
             profile.getPlayer().showPlayer(profile.getPlayer());
         }
@@ -198,25 +202,7 @@ public class Spectator {
 
         profile.setPlayerStatus(PlayerStatus.SPECTATING);
 
-        for (Profile profile : getSpectatable().getParticipants()) {
-            profile.getPlayer().showPlayer(profile.getPlayer());
-        }
-
-        if (getSpectatable() instanceof Match) {
-            Match spectatingMatch = (Match) getSpectatable();
-            for (Match match : MatchManager.getMatches()) {
-                match.updateVisiblity(spectatingMatch, profile);
-            }
-
-            return;
-        }
-
-        if (getSpectatable() instanceof Event) {
-            Event spectatingEvent = (Event) getSpectatable();
-            for (Event event : EventManager.getEvents()) {
-                event.updateVisiblity(spectatingEvent, profile);
-            }
-        }
+        updateVisiblity();
     }
 
 }
