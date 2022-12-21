@@ -407,7 +407,7 @@ public class Profile extends Spectator {
 		teleportToLobby();
 		getInventory().setInventoryForLobby();
 
-		if (tournament == null) {
+		if (!isInTournament()) {
 			return;
 		}
 
@@ -421,7 +421,7 @@ public class Profile extends Spectator {
 		teleportToLobby();
 		getInventory().setInventoryForLobby();
 
-		if (tournament == null) {
+		if (!isInEvent()) {
 			return;
 		}
 
