@@ -6,30 +6,24 @@ import gg.mineral.practice.PracticePlugin;
 import gg.mineral.practice.entity.PlayerStatus;
 import gg.mineral.practice.entity.Profile;
 import gg.mineral.practice.managers.ProfileManager;
-import gg.mineral.practice.scoreboard.Board;
+import gg.mineral.practice.scoreboard.Scoreboard;
 import gg.mineral.practice.util.messages.CC;
 import lombok.Getter;
 import lombok.Setter;
 
 public class DefaultScoreboard {
-	Profile profile;
 	@Setter
 	@Getter
 	int updateFrequency = 20;
-
-	public DefaultScoreboard(Profile profile) {
-		this.profile = profile;
-	}
-
 	int taskID;
 
-	public void setBoard() {
+	public void setBoard(Profile profile) {
 		if (profile.getScoreboard() != null) {
-			profile.getScoreboard().remove();
+			profile.getScoreboard().remove(profile);
 		}
 
 		try {
-			Board board = new Board(profile.getPlayer());
+			Scoreboard board = new Scoreboard(profile.getPlayer());
 
 			board.updateTitle(CC.PRIMARY + CC.B + "Mineral");
 			profile.setScoreboard(this);
@@ -37,22 +31,22 @@ public class DefaultScoreboard {
 			taskID = Bukkit.getServer().getScheduler().scheduleSyncRepeatingTask(PracticePlugin.INSTANCE, () -> {
 				if (profile.getScoreboard() != null
 						&& profile.getScoreboard().equals(DefaultScoreboard.this))
-					updateBoard(board);
+					updateBoard(board, profile);
 				else
-					remove();
+					remove(profile);
 			}, 0, getUpdateFrequency());
 		} catch (Exception e) {
 		}
 	}
 
-	public void updateBoard(Board board) {
+	public void updateBoard(Scoreboard board, Profile profile) {
 		board.updateLines(CC.BOARD_SEPARATOR, CC.ACCENT + "Online: " + CC.SECONDARY + Bukkit.getOnlinePlayers().size(),
 				CC.ACCENT + "In Game: " + CC.SECONDARY
 						+ ProfileManager.count(p -> p.getPlayerStatus() == PlayerStatus.FIGHTING),
 				CC.BOARD_SEPARATOR);
 	}
 
-	public void remove() {
+	public void remove(Profile profile) {
 		Bukkit.getScheduler().cancelTask(taskID);
 		profile.removeScoreboard();
 	}

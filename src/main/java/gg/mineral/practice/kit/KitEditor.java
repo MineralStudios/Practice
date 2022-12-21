@@ -46,7 +46,7 @@ public class KitEditor {
     }
 
     public void start() {
-        new KitEditorScoreboard(profile).setBoard();
+        profile.setScoreboard(new KitEditorScoreboard());
         PlayerUtil.teleport(profile.getPlayer(), KitEditorManager.getLocation());
         profile.getInventory().setInventoryClickCancelled(false);
         profile.getInventory().clear();

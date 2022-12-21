@@ -23,7 +23,7 @@ public class EntryListener implements Listener {
 		profile.getInventory().setInventoryForLobby();
 		profile.removePotionEffects();
 
-		new DefaultScoreboard(profile).setBoard();
+		profile.setScoreboard(new DefaultScoreboard());
 	}
 
 	@EventHandler

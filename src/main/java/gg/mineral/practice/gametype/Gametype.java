@@ -39,8 +39,7 @@ public class Gametype implements SaveableData {
 	@Getter
 	final String name;
 	@Getter
-	int noDamageTicks;
-	Integer pearlCooldown;
+	int noDamageTicks, pearlCooldown;
 	@Getter
 	List<Arena> arenas = new GlueList<>();
 	@Getter

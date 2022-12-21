@@ -4,18 +4,13 @@ import java.util.List;
 
 import gg.mineral.practice.entity.Profile;
 import gg.mineral.practice.match.PartyMatch;
-import gg.mineral.practice.scoreboard.Board;
+import gg.mineral.practice.scoreboard.Scoreboard;
 import gg.mineral.practice.util.collection.ProfileList;
 import gg.mineral.practice.util.messages.CC;
 
 public class PartyBoxingScoreboard extends DefaultScoreboard {
-
-    public PartyBoxingScoreboard(Profile p) {
-        super(p);
-    }
-
     @Override
-    public void updateBoard(Board board) {
+    public void updateBoard(Scoreboard board, Profile profile) {
         if (profile.getMatch() == null) {
             return;
         }

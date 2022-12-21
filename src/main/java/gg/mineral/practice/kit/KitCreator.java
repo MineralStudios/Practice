@@ -26,7 +26,7 @@ public class KitCreator {
     }
 
     public void start() {
-        new KitCreatorScoreboard(profile).setBoard();
+        profile.setScoreboard(new KitCreatorScoreboard());
         PlayerUtil.teleport(profile.getPlayer(), KitEditorManager.getLocation());
         profile.getInventory().setInventoryClickCancelled(false);
         profile.getInventory().clear();

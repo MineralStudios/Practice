@@ -47,7 +47,6 @@ public class Profile {
 	final PlayerInventory inventory;
 	@Getter
 	Match match;
-	@Setter
 	@Getter
 	DefaultScoreboard scoreboard;
 	@Getter
@@ -111,6 +110,11 @@ public class Profile {
 	public void setMatch(Match match) {
 		this.match = match;
 		setPlayerStatus(PlayerStatus.FIGHTING);
+	}
+
+	public void setScoreboard(DefaultScoreboard scoreboard) {
+		this.scoreboard = scoreboard;
+		this.scoreboard.setBoard(this);
 	}
 
 	public boolean isInParty() {
@@ -207,7 +211,7 @@ public class Profile {
 	}
 
 	public void leaveKitEditor() {
-		new DefaultScoreboard(this).setBoard();
+		setScoreboard(new DefaultScoreboard());
 		getInventory().setInventoryClickCancelled(true);
 		this.kitEditor = null;
 		teleportToLobby();
@@ -215,7 +219,7 @@ public class Profile {
 	}
 
 	public void leaveKitCreator() {
-		new DefaultScoreboard(this).setBoard();
+		setScoreboard(new DefaultScoreboard());
 		this.player.setGameMode(GameMode.SURVIVAL);
 		leaveKitEditor();
 		openMenu(new MechanicsMenu(kitCreator.getSubmitAction()));

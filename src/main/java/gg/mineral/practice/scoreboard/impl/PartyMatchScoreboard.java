@@ -7,16 +7,11 @@ import java.util.List;
 
 import gg.mineral.practice.entity.Profile;
 import gg.mineral.practice.match.Match;
-import gg.mineral.practice.scoreboard.Board;
+import gg.mineral.practice.scoreboard.Scoreboard;
 
 public class PartyMatchScoreboard extends DefaultScoreboard {
-
-    public PartyMatchScoreboard(Profile p) {
-        super(p);
-    }
-
     @Override
-    public void updateBoard(Board board) {
+    public void updateBoard(Scoreboard board, Profile profile) {
         Match match = profile.getMatch();
 
         if (match == null) {

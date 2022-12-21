@@ -44,8 +44,8 @@ public class TournamentMatch extends Match {
         }
 
         resetPearlCooldown(attacker, victim);
-        new MatchEndScoreboard(attacker).setBoard();
-        new DefaultScoreboard(victim).setBoard();
+        attacker.setScoreboard(new MatchEndScoreboard());
+        victim.setScoreboard(new DefaultScoreboard());
         MatchManager.remove(this);
 
         victim.heal();
@@ -53,7 +53,7 @@ public class TournamentMatch extends Match {
         sendBackToLobby(victim);
 
         Bukkit.getServer().getScheduler().runTaskLater(PracticePlugin.INSTANCE, () -> {
-            new DefaultScoreboard(attacker).setBoard();
+            attacker.setScoreboard(new DefaultScoreboard());
 
             tournament.removePlayer(victim);
             tournament.removeMatch(TournamentMatch.this);

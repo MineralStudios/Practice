@@ -51,18 +51,9 @@ public class MatchData {
 
 	public MatchData(QueueEntry queueEntry) {
 		this.queueEntry = queueEntry;
-		this.gametype = queueEntry.getGametype();
-		arena = queueEntry.getQueuetype().nextArena(this.gametype);
-		kit = this.gametype.getKit();
-		noDamageTicks = this.gametype.getNoDamageTicks();
+		setGametype(queueEntry.getGametype());
 		knockback = queueEntry.getQueuetype().getKnockback();
-		hunger = this.gametype.getHunger();
-		boxing = this.gametype.getBoxing();
-		build = this.gametype.getBuild();
-		damage = this.gametype.getDamage();
-		griefing = this.gametype.getGriefing();
-		deadlyWater = this.gametype.getDeadlyWater();
-		regeneration = this.gametype.getRegeneration();
+		arena = queueEntry.getQueuetype().nextArena(this.gametype);
 		ranked = queueEntry.getQueuetype().isRanked();
 	}
 
@@ -77,6 +68,7 @@ public class MatchData {
 		griefing = gametype.getGriefing();
 		deadlyWater = gametype.getDeadlyWater();
 		regeneration = gametype.getRegeneration();
+		pearlCooldown = gametype.getPearlCooldown();
 	}
 
 	public String toString() {

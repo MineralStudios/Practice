@@ -21,7 +21,7 @@ import net.minecraft.server.v1_8_R3.PacketPlayOutScoreboardScore;
 import net.minecraft.server.v1_8_R3.PacketPlayOutScoreboardTeam;
 import net.minecraft.server.v1_8_R3.PlayerConnection;
 
-public class Board {
+public class Scoreboard {
 
     // Scoreboard enums
     private static final Class<?> ENUM_SB_HEALTH_DISPLAY;
@@ -53,7 +53,7 @@ public class Board {
      *
      * @param player the player the scoreboard is for
      */
-    public Board(Player player) {
+    public Scoreboard(Player player) {
         this.player = Objects.requireNonNull(player, "player");
 
         id = "fb-" + Double.toString(Math.random()).substring(2, 10);
