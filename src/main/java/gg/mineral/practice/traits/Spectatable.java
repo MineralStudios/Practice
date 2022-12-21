@@ -13,4 +13,6 @@ public interface Spectatable {
     }
 
     public ProfileList getParticipants();
+
+    public boolean isEnded();
 }

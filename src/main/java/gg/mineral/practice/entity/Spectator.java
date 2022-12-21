@@ -122,6 +122,11 @@ public class Spectator {
         }
 
         this.spectatable = p.getMatch();
+
+        if (spectatable.isEnded()) {
+            return;
+        }
+
         spectatable.getSpectators().add(this);
 
         profile.getPlayer().setGameMode(GameMode.SPECTATOR);
