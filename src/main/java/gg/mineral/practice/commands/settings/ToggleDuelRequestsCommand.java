@@ -14,9 +14,9 @@ public class ToggleDuelRequestsCommand extends PlayerCommand {
 	@Override
 	public void execute(org.bukkit.entity.Player pl, String[] args) {
 		Profile profile = ProfileManager.getOrCreateProfile(pl);
-		profile.setDuelRequests(!profile.isDuelRequests());
+		profile.getRequestHandler().setDuelRequests(!profile.getRequestHandler().isDuelRequests());
 		ChatMessages.DUEL_REQUESTS_TOGGLED.clone()
-				.replace("%toggled%", profile.isDuelRequests() ? "enabled" : "disabled")
+				.replace("%toggled%", profile.getRequestHandler().isDuelRequests() ? "enabled" : "disabled")
 				.send(pl);
 	}
 }

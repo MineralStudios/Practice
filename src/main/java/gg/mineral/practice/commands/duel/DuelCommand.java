@@ -55,7 +55,7 @@ public class DuelCommand extends PlayerCommand {
 			}
 		}
 
-		profile.setDuelReciever(duelReceiver);
+		profile.getRequestHandler().setDuelRequestReciever(duelReceiver);
 		profile.openMenu(new SelectModeMenu(SubmitAction.DUEL));
 	}
 }

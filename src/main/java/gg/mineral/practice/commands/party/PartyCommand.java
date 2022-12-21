@@ -93,17 +93,17 @@ public class PartyCommand extends PlayerCommand {
 					return;
 				}
 
-				if (profile2.getRecievedPartyRequests().containsKey(profile.getParty())) {
+				if (profile2.getRequestHandler().getRecievedPartyRequests().containsKey(profile.getParty())) {
 					ErrorMessages.WAIT_TO_INVITE.send(pl);
 					return;
 				}
 
-				if (!profile2.isPartyRequests()) {
+				if (!profile2.getRequestHandler().isPartyRequests()) {
 					profile.message(ErrorMessages.PARTY_REQUESTS_DISABLED);
 					return;
 				}
 
-				profile2.getRecievedPartyRequests().add(profile.getParty());
+				profile2.getRequestHandler().getRecievedPartyRequests().add(profile.getParty());
 
 				ChatMessages.PARTY_REQUEST_RECIEVED.clone().replace("%player%", profile.getName()).setTextEvent(
 						new ClickEvent(ClickEvent.Action.RUN_COMMAND, "/party accept " + profile.getName()),
@@ -210,7 +210,8 @@ public class PartyCommand extends PlayerCommand {
 					return;
 				}
 
-				Iterator<Entry<Party, Long>> it = profile.getRecievedPartyRequests().entryIterator();
+				Iterator<Entry<Party, Long>> it = profile.getRequestHandler().getRecievedPartyRequests()
+						.entryIterator();
 
 				while (it.hasNext()) {
 					party = it.next().getKey();

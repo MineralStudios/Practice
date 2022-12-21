@@ -46,7 +46,7 @@ public class AcceptCommand extends PlayerCommand {
 			return;
 		}
 
-		Iterator<Entry<DuelRequest, Long>> it = profile.getRecievedDuelRequests().entryIterator();
+		Iterator<Entry<DuelRequest, Long>> it = profile.getRequestHandler().getRecievedDuelRequests().entryIterator();
 
 		while (it.hasNext()) {
 			DuelRequest duelRequest = it.next().getKey();

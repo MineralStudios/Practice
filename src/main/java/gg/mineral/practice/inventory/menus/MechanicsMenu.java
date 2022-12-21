@@ -117,7 +117,7 @@ public class MechanicsMenu extends PracticeMenu {
 		};
 		setSlot(22, regen, regenTask);
 		Runnable submitTask = () -> {
-			viewer.sendDuelRequest(viewer.getDuelReciever());
+			viewer.getRequestHandler().sendDuelRequest(viewer.getRequestHandler().getDuelRequestReciever());
 		};
 
 		if (submitAction == SubmitAction.P_SPLIT) {

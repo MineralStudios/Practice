@@ -56,7 +56,7 @@ public class SelectArenaMenu extends PracticeMenu {
                 viewer.getMatchData().setArena(a);
 
                 if (simpleMode) {
-                    viewer.sendDuelRequest(viewer.getDuelReciever());
+                    viewer.getRequestHandler().sendDuelRequest(viewer.getRequestHandler().getDuelRequestReciever());
                     return;
                 }
 

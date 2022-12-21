@@ -12,6 +12,7 @@ import org.bukkit.entity.Player;
 import org.bukkit.potion.PotionEffect;
 
 import gg.mineral.practice.PracticePlugin;
+import gg.mineral.practice.entity.handler.RequestHandler;
 import gg.mineral.practice.entity.handler.SpectateHandler;
 import gg.mineral.practice.events.Event;
 import gg.mineral.practice.inventory.PlayerInventory;
@@ -29,20 +30,15 @@ import gg.mineral.practice.match.data.MatchStatisticCollector;
 import gg.mineral.practice.party.Party;
 import gg.mineral.practice.queue.QueueEntry;
 import gg.mineral.practice.queue.QueueSearchTask;
-import gg.mineral.practice.request.DuelRequest;
 import gg.mineral.practice.scoreboard.impl.DefaultScoreboard;
 import gg.mineral.practice.tournaments.Tournament;
 import gg.mineral.practice.util.PlayerUtil;
-import gg.mineral.practice.util.collection.AutoExpireList;
 import gg.mineral.practice.util.math.PearlCooldown;
 import gg.mineral.practice.util.messages.Message;
 import gg.mineral.practice.util.messages.impl.ChatMessages;
 import gg.mineral.practice.util.messages.impl.ErrorMessages;
 import lombok.Getter;
 import lombok.Setter;
-import net.md_5.bungee.api.chat.ClickEvent;
-import net.md_5.bungee.api.chat.ComponentBuilder;
-import net.md_5.bungee.api.chat.HoverEvent;
 
 public class Profile {
 	@Getter
@@ -59,22 +55,14 @@ public class Profile {
 	@Getter
 	SpectateHandler spectateHandler = new SpectateHandler(this);
 	@Getter
+	RequestHandler requestHandler = new RequestHandler(this);
+	@Getter
 	MatchStatisticCollector matchStatisticCollector = new MatchStatisticCollector(this);
 	@Getter
 	boolean playersVisible = true, partyOpenCooldown = false, inMatchCountdown = false;
 	@Getter
 	@Setter
 	PracticeMenu openMenu;
-	@Getter
-	AutoExpireList<DuelRequest> recievedDuelRequests = new AutoExpireList<>();
-	@Getter
-	AutoExpireList<Party> recievedPartyRequests = new AutoExpireList<>();
-	@Getter
-	@Setter
-	boolean duelRequests = true, partyRequests = true;
-	@Getter
-	@Setter
-	Profile duelReciever;
 	@Getter
 	PlayerStatus playerStatus = PlayerStatus.IDLE;
 	@Getter
@@ -216,51 +204,6 @@ public class Profile {
 		if (playerStatus != PlayerStatus.FOLLOWING && playerStatus != PlayerStatus.QUEUEING) {
 			setPlayerStatus(PlayerStatus.IDLE);
 		}
-	}
-
-	public void sendDuelRequest(Profile profile) {
-		getPlayer().closeInventory();
-
-		if (profile.getPlayerStatus() != PlayerStatus.IDLE) {
-			message(ErrorMessages.PLAYER_NOT_IN_LOBBY);
-			return;
-		}
-
-		if (!profile.isDuelRequests()) {
-			message(ErrorMessages.DUEL_REQUESTS_DISABLED);
-			return;
-		}
-
-		for (DuelRequest d : profile.getRecievedDuelRequests()) {
-			if (d.getSender().equals(this)) {
-				message(ErrorMessages.DUEL_REQUEST_ALREADY_SENT);
-				return;
-			}
-		}
-
-		String sender = getName();
-
-		if (isInParty()) {
-			if (!getParty().getPartyLeader().equals(this)) {
-				message(ErrorMessages.YOU_ARE_NOT_PARTY_LEADER);
-				return;
-			}
-
-			sender += "'s party (" + getParty().getPartyMembers().size() + ") ";
-		}
-
-		DuelRequest request = new DuelRequest(this, matchData);
-		profile.getRecievedDuelRequests().add(request);
-		removeFromQueue();
-		ChatMessages.DUEL_REQUEST_SENT.clone().replace("%player%", profile.getName()).send(getPlayer());
-
-		HoverEvent DATA = new HoverEvent(HoverEvent.Action.SHOW_TEXT,
-				new ComponentBuilder(matchData.toString()).create());
-
-		ChatMessages.DUEL_REQUEST_RECIEVED.clone().replace("%player%", sender)
-				.setTextEvent(new ClickEvent(ClickEvent.Action.RUN_COMMAND, "/accept " + getName()),
-						DATA)
-				.send(profile.getPlayer());
 	}
 
 	public void leaveKitEditor() {
