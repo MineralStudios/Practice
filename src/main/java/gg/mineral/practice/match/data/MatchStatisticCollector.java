@@ -55,8 +55,8 @@ public class MatchStatisticCollector {
         this.remainingHealth = profile.getPlayer().isDead() ? 0 : (int) profile.getPlayer().getHealth();
         this.potionAccuracy = (int) (100 - (getPotionsMissed() * 100D
                 / getPotionsThrown()));
-        this.wTapAccuracy = (int) (getHitCount() * 100D
-                / getWTapCount());
+        this.wTapAccuracy = (int) (getWTapCount() * 100D
+                / getHitCount());
         this.inventoryContents = profile.getInventory().getContents();
         this.helmet = profile.getInventory().getHelmet();
         this.chestplate = profile.getInventory().getChestplate();
