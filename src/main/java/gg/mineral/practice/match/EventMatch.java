@@ -68,10 +68,10 @@ public class EventMatch extends Match {
             if (!event.isEnded()) {
                 PlayerUtil.teleport(attacker.getPlayer(), event.getEventArena().getWaitingLocation());
                 attacker.setPlayerStatus(PlayerStatus.IDLE);
-                attacker.setInventoryForEvent();
+                attacker.getInventory().setInventoryForEvent();
             } else {
                 attacker.teleportToLobby();
-                attacker.setInventoryForLobby();
+                attacker.getInventory().setInventoryForLobby();
             }
 
             attacker.removeFromMatch();

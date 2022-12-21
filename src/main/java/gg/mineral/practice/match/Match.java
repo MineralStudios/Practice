@@ -102,7 +102,7 @@ public class Match implements Spectatable {
 		p.getPlayer().setMaximumNoDamageTicks(data.getNoDamageTicks());
 		p.getPlayer().setKnockback(data.getKnockback());
 		p.getPlayer().setAllowFlight(false);
-		p.setInventoryClickCancelled(false);
+		p.getInventory().setInventoryClickCancelled(false);
 	}
 
 	public void setPotionEffects(Profile p) {
@@ -396,7 +396,7 @@ public class Match implements Spectatable {
 
 	public void sendBackToLobby(Profile profile) {
 		profile.teleportToLobby();
-		profile.setInventoryForLobby();
+		profile.getInventory().setInventoryForLobby();
 		profile.removeFromMatch();
 	}
 

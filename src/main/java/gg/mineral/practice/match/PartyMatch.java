@@ -178,9 +178,9 @@ public class PartyMatch extends Match {
 			Bukkit.getServer().getScheduler().runTaskLater(PracticePlugin.INSTANCE, () -> {
 				attacker.teleportToLobby();
 				if (attacker.isInParty()) {
-					attacker.setInventoryForParty();
+					attacker.getInventory().setInventoryForParty();
 				} else {
-					attacker.setInventoryForLobby();
+					attacker.getInventory().setInventoryForLobby();
 				}
 				attacker.removeFromMatch();
 				new DefaultScoreboard(attacker).setBoard();
@@ -222,9 +222,9 @@ public class PartyMatch extends Match {
 		victim.teleportToLobby();
 
 		if (victim.isInParty()) {
-			victim.setInventoryForParty();
+			victim.getInventory().setInventoryForParty();
 		} else {
-			victim.setInventoryForLobby();
+			victim.getInventory().setInventoryForLobby();
 		}
 
 		victim.removeFromMatch();

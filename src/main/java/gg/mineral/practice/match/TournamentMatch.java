@@ -62,9 +62,9 @@ public class TournamentMatch extends Match {
 
             if (!tournament.isEnded()) {
                 attacker.setPlayerStatus(PlayerStatus.IDLE);
-                attacker.setInventoryForTournament();
+                attacker.getInventory().setInventoryForTournament();
             } else {
-                attacker.setInventoryForLobby();
+                attacker.getInventory().setInventoryForLobby();
             }
 
             attacker.removeFromMatch();

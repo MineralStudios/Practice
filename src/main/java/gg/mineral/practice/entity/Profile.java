@@ -9,9 +9,7 @@ import org.bukkit.GameMode;
 import org.bukkit.craftbukkit.v1_8_R3.entity.CraftPlayer;
 import org.bukkit.entity.ArmorStand;
 import org.bukkit.entity.Player;
-import org.bukkit.inventory.ItemStack;
 import org.bukkit.potion.PotionEffect;
-import org.bukkit.scheduler.BukkitRunnable;
 
 import gg.mineral.api.collection.GlueList;
 import gg.mineral.practice.PracticePlugin;
@@ -20,25 +18,18 @@ import gg.mineral.practice.inventory.PlayerInventory;
 import gg.mineral.practice.inventory.PracticeMenu;
 import gg.mineral.practice.inventory.SubmitAction;
 import gg.mineral.practice.inventory.menus.MechanicsMenu;
-import gg.mineral.practice.inventory.menus.SelectGametypeMenu;
-import gg.mineral.practice.inventory.menus.SelectModeMenu;
-import gg.mineral.practice.inventory.menus.SelectQueuetypeMenu;
 import gg.mineral.practice.kit.Kit;
 import gg.mineral.practice.kit.KitCreator;
 import gg.mineral.practice.kit.KitEditor;
 import gg.mineral.practice.managers.KitEditorManager;
 import gg.mineral.practice.managers.MatchManager;
-import gg.mineral.practice.managers.PartyManager;
-import gg.mineral.practice.managers.PlayerSettingsManager;
 import gg.mineral.practice.managers.ProfileManager;
-import gg.mineral.practice.managers.QueuetypeManager;
 import gg.mineral.practice.match.Match;
 import gg.mineral.practice.match.data.MatchData;
 import gg.mineral.practice.match.data.MatchStatisticCollector;
 import gg.mineral.practice.party.Party;
 import gg.mineral.practice.queue.QueueEntry;
 import gg.mineral.practice.queue.QueueSearchTask;
-import gg.mineral.practice.queue.Queuetype;
 import gg.mineral.practice.request.DuelRequest;
 import gg.mineral.practice.scoreboard.impl.DefaultScoreboard;
 import gg.mineral.practice.scoreboard.impl.FollowingScoreboard;
@@ -47,10 +38,7 @@ import gg.mineral.practice.tournaments.Tournament;
 import gg.mineral.practice.util.PlayerUtil;
 import gg.mineral.practice.util.collection.AutoExpireList;
 import gg.mineral.practice.util.collection.ProfileList;
-import gg.mineral.practice.util.items.ItemBuilder;
-import gg.mineral.practice.util.items.ItemStacks;
 import gg.mineral.practice.util.math.PearlCooldown;
-import gg.mineral.practice.util.messages.CC;
 import gg.mineral.practice.util.messages.ChatMessage;
 import gg.mineral.practice.util.messages.Message;
 import gg.mineral.practice.util.messages.impl.ChatMessages;
@@ -90,7 +78,7 @@ public class Profile {
 	AutoExpireList<Party> recievedPartyRequests = new AutoExpireList<>();
 	@Getter
 	@Setter
-	boolean duelRequests = true, partyRequests = true, inventoryClickCancelled = false;
+	boolean duelRequests = true, partyRequests = true;
 	@Getter
 	@Setter
 	Profile duelReciever;
@@ -113,7 +101,7 @@ public class Profile {
 	public Profile(org.bukkit.entity.Player player) {
 		this.player = (CraftPlayer) player;
 		this.matchData = new MatchData();
-		this.inventory = new PlayerInventory(player.getInventory());
+		this.inventory = new PlayerInventory(this);
 		pearlCooldown.start();
 	}
 
@@ -157,7 +145,7 @@ public class Profile {
 	public void addToParty(Party party) {
 		party.add(this);
 		this.party = party;
-		setInventoryForParty();
+		getInventory().setInventoryForParty();
 	}
 
 	public void removeFromParty() {
@@ -172,7 +160,7 @@ public class Profile {
 			return;
 		}
 
-		setInventoryForLobby();
+		getInventory().setInventoryForLobby();
 	}
 
 	public void giveKit(Kit kit) {
@@ -206,140 +194,6 @@ public class Profile {
 		return player.getName();
 	}
 
-	public void setInventoryToFollow() {
-		setInventoryClickCancelled(true);
-		inventory.clear();
-		inventory.setItem(0, ItemStacks.STOP_FOLLOWING, (Runnable) this::stopSpectatingAndFollowing);
-		getPlayer().updateInventory();
-	}
-
-	public void setInventoryForTournament() {
-		setInventoryClickCancelled(true);
-		inventory.clear();
-		inventory.setItem(0, ItemStacks.WAIT_TO_LEAVE,
-				(Runnable) () -> this.message(ErrorMessages.CAN_NOT_LEAVE_YET));
-
-		new BukkitRunnable() {
-			@Override
-			public void run() {
-				inventory.setItem(0, ItemStacks.LEAVE_TOURNAMENT, (Runnable) Profile.this::removeFromTournament);
-			}
-		}.runTaskLater(PracticePlugin.INSTANCE, 20);
-		getPlayer().updateInventory();
-	}
-
-	public void setInventoryForEvent() {
-		setInventoryClickCancelled(true);
-		inventory.clear();
-		inventory.setItem(0, ItemStacks.WAIT_TO_LEAVE,
-				(Runnable) () -> this.message(ErrorMessages.CAN_NOT_LEAVE_YET));
-
-		new BukkitRunnable() {
-			@Override
-			public void run() {
-				inventory.setItem(0, ItemStacks.LEAVE_EVENT, (Runnable) Profile.this::removeFromEvent);
-			}
-		}.runTaskLater(PracticePlugin.INSTANCE, 20);
-		getPlayer().updateInventory();
-	}
-
-	public void setInventoryForParty() {
-		setInventoryClickCancelled(true);
-		inventory.clear();
-		inventory.setItem(0, ItemStacks.WAIT_TO_LEAVE, (Runnable) () -> this.message(ErrorMessages.CAN_NOT_LEAVE_YET));
-
-		new BukkitRunnable() {
-			@Override
-			public void run() {
-				inventory.setItem(0, ItemStacks.LEAVE_PARTY, p -> p.getPlayer().performCommand("p leave"));
-			}
-		}.runTaskLater(PracticePlugin.INSTANCE, 20);
-
-		inventory.setItem(1, ItemStacks.LIST_PLAYERS, p -> p.getPlayer().performCommand("p list"));
-		inventory.setItem(3, ItemStacks.OPEN_PARTY, p -> p.getPlayer().performCommand("p open"));
-		inventory.setItem(4, ItemStacks.DUEL, p -> p.getPlayer().performCommand("duel"));
-		inventory.setItem(5, ItemStacks.PARTY_SPLIT, p -> {
-			p.openMenu(new SelectModeMenu(SubmitAction.P_SPLIT));
-			return true;
-		});
-
-		getPlayer().updateInventory();
-	}
-
-	public void setInventoryForLobby() {
-		if (playerStatus == PlayerStatus.QUEUEING) {
-			return;
-		}
-
-		if (playerStatus == PlayerStatus.FIGHTING && !getMatch().isEnded()) {
-			return;
-		}
-
-		setInventoryClickCancelled(true);
-		inventory.clear();
-
-		GlueList<Queuetype> list = QueuetypeManager.getQueuetypes();
-
-		for (int i = 0; i < list.size(); i++) {
-			Queuetype queuetype = list.get(i);
-
-			ItemStack item = new ItemBuilder(queuetype.getDisplayItem())
-					.name(CC.SECONDARY + CC.B + queuetype.getDisplayName()).build();
-			inventory.setItem(queuetype.getSlotNumber(), item,
-					p -> {
-						p.openMenu(new SelectGametypeMenu(queuetype, SelectGametypeMenu.Type.QUEUE));
-						return true;
-					});
-		}
-
-		if (KitEditorManager.getEnabled()) {
-			ItemStack editor = new ItemBuilder(KitEditorManager.getDisplayItem())
-					.name(CC.SECONDARY + CC.B + KitEditorManager.getDisplayName())
-					.build();
-			inventory.setItem(KitEditorManager.getSlot(), editor,
-					p -> {
-						p.openMenu(new SelectQueuetypeMenu());
-						return true;
-					});
-		}
-
-		if (PartyManager.getEnabled()) {
-			ItemStack parties = new ItemBuilder(PartyManager.getDisplayItem())
-					.name(CC.SECONDARY + CC.B + PartyManager.getDisplayName())
-					.build();
-			inventory.setItem(PartyManager.getSlot(), parties,
-					p -> p.getPlayer().performCommand("p create"));
-		}
-
-		if (PlayerSettingsManager.getEnabled()) {
-			ItemStack settings = new ItemBuilder(PlayerSettingsManager.getDisplayItem())
-					.name(CC.SECONDARY + CC.B + PlayerSettingsManager.getDisplayName())
-					.build();
-			inventory.setItem(PlayerSettingsManager.getSlot(), settings,
-					p -> p.getPlayer().performCommand("settings"));
-		}
-		getPlayer().updateInventory();
-	}
-
-	public void setInventoryForQueue() {
-		setInventoryClickCancelled(true);
-		inventory.clear();
-
-		getInventory().setItem(0, ItemStacks.LEAVE_QUEUE,
-				() -> {
-					this.removeFromQueue();
-					this.setInventoryForLobby();
-				});
-		getPlayer().updateInventory();
-	}
-
-	public void setInventoryForSpectating() {
-		setInventoryClickCancelled(true);
-		inventory.clear();
-		getInventory().setItem(0, ItemStacks.STOP_SPECTATING, (Runnable) this::stopSpectatingAndFollowing);
-		getPlayer().updateInventory();
-	}
-
 	public void removeFromQueue() {
 		QueueSearchTask.removePlayer(this);
 		message(ChatMessages.LEFT_QUEUE);
@@ -354,7 +208,7 @@ public class Profile {
 		}
 
 		setPlayerStatus(PlayerStatus.QUEUEING);
-		setInventoryForQueue();
+		getInventory().setInventoryForQueue();
 		QueueSearchTask.addPlayer(this, queueEntry);
 		message(ChatMessages.JOINED_QUEUE.clone().replace("%queue%", queueEntry.getQueuetype().getDisplayName())
 				.replace("%gametype%", queueEntry.getGametype().getDisplayName()));
@@ -376,15 +230,15 @@ public class Profile {
 		if (playerStatus != PlayerStatus.FOLLOWING) {
 			this.player.setGameMode(GameMode.SURVIVAL);
 			if (this.isInParty()) {
-				this.setInventoryForParty();
+				getInventory().setInventoryForParty();
 			} else {
-				this.setInventoryForLobby();
+				getInventory().setInventoryForLobby();
 			}
 			new DefaultScoreboard(this).setBoard();
 			return;
 		}
 
-		this.setInventoryToFollow();
+		getInventory().setInventoryToFollow();
 	}
 
 	public void stopSpectatingAndFollowing() {
@@ -409,9 +263,9 @@ public class Profile {
 
 		teleportToLobby();
 		if (this.isInParty()) {
-			this.setInventoryForParty();
+			getInventory().setInventoryForParty();
 		} else {
-			this.setInventoryForLobby();
+			getInventory().setInventoryForLobby();
 		}
 		new DefaultScoreboard(this).setBoard();
 	}
@@ -452,7 +306,7 @@ public class Profile {
 		ChatMessage broadcastedMessage = ChatMessages.SPECTATING_YOUR_MATCH.clone().replace("%player%", getName());
 		ProfileManager.broadcast(match.getParticipants(), broadcastedMessage);
 
-		this.setInventoryForSpectating();
+		getInventory().setInventoryForSpectating();
 
 		if (getPlayerStatus() == PlayerStatus.FOLLOWING) {
 			return;
@@ -482,7 +336,7 @@ public class Profile {
 		ChatMessages.SPECTATING_EVENT.send(getPlayer());
 		ChatMessages.STOP_SPECTATING.send(getPlayer());
 
-		this.setInventoryForSpectating();
+		getInventory().setInventoryForSpectating();
 
 		if (getPlayerStatus() == PlayerStatus.FOLLOWING) {
 			return;
@@ -550,10 +404,10 @@ public class Profile {
 
 	public void leaveKitEditor() {
 		new DefaultScoreboard(this).setBoard();
-		setInventoryClickCancelled(true);
+		getInventory().setInventoryClickCancelled(true);
 		this.kitEditor = null;
 		teleportToLobby();
-		this.setInventoryForLobby();
+		getInventory().setInventoryForLobby();
 	}
 
 	public void leaveKitCreator() {
@@ -653,7 +507,7 @@ public class Profile {
 		setPlayerStatus(PlayerStatus.FOLLOWING);
 		following = p;
 		p.getFollowers().add(this);
-		this.setInventoryToFollow();
+		getInventory().setInventoryToFollow();
 		new FollowingScoreboard(this).setBoard();
 
 		if (p.getPlayerStatus() == PlayerStatus.FIGHTING) {
@@ -702,12 +556,12 @@ public class Profile {
 	}
 
 	public void setTournament(Tournament tournament) {
-		this.setInventoryForTournament();
+		getInventory().setInventoryForTournament();
 		this.tournament = tournament;
 	}
 
 	public void setEvent(Event event) {
-		this.setInventoryForEvent();
+		getInventory().setInventoryForEvent();
 		this.event = event;
 	}
 
@@ -722,7 +576,7 @@ public class Profile {
 	public void removeFromTournament() {
 
 		teleportToLobby();
-		this.setInventoryForLobby();
+		getInventory().setInventoryForLobby();
 
 		if (tournament == null) {
 			return;
@@ -736,7 +590,7 @@ public class Profile {
 	public void removeFromEvent() {
 
 		teleportToLobby();
-		this.setInventoryForLobby();
+		getInventory().setInventoryForLobby();
 
 		if (tournament == null) {
 			return;

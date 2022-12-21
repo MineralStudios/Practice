@@ -27,7 +27,7 @@ public class InventoryListener implements Listener {
 
 		e.setCancelled(e.getCurrentItem() == null ? false : e.getCurrentItem().getType() == Material.TNT);
 
-		if (profile.isInventoryClickCancelled()) {
+		if (profile.getInventory().isInventoryClickCancelled()) {
 			e.setCancelled(!canClick);
 		}
 
