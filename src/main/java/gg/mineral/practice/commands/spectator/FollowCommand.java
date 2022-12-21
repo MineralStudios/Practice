@@ -34,7 +34,7 @@ public class FollowCommand extends PlayerCommand {
 			return;
 		}
 
-		profile.follow(profileToFollow);
+		profile.getSpectateHandler().follow(profileToFollow);
 		ChatMessages.FOLLOWING.clone().replace("%player%", playerName).send(pl);
 	}
 }

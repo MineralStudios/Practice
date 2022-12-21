@@ -165,7 +165,7 @@ public class PlayerInventory extends CraftInventoryPlayer {
     public void setInventoryToFollow() {
         setInventoryClickCancelled(true);
         clear();
-        setItem(0, ItemStacks.STOP_FOLLOWING, (Runnable) holder::stopSpectatingAndFollowing);
+        setItem(0, ItemStacks.STOP_FOLLOWING, (Runnable) holder.getSpectateHandler()::stopSpectatingAndFollowing);
         holder.getPlayer().updateInventory();
     }
 
@@ -292,7 +292,7 @@ public class PlayerInventory extends CraftInventoryPlayer {
     public void setInventoryForSpectating() {
         setInventoryClickCancelled(true);
         clear();
-        setItem(0, ItemStacks.STOP_SPECTATING, (Runnable) holder::stopSpectatingAndFollowing);
+        setItem(0, ItemStacks.STOP_SPECTATING, (Runnable) holder.getSpectateHandler()::stopSpectatingAndFollowing);
         holder.getPlayer().updateInventory();
     }
 }

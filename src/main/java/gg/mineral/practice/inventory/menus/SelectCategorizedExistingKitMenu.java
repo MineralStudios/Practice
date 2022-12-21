@@ -3,7 +3,6 @@ package gg.mineral.practice.inventory.menus;
 import org.bukkit.inventory.ItemStack;
 
 import gg.mineral.practice.catagory.Catagory;
-import gg.mineral.practice.entity.PlayerStatus;
 import gg.mineral.practice.gametype.Gametype;
 import gg.mineral.practice.inventory.PracticeMenu;
 import gg.mineral.practice.util.items.ItemBuilder;

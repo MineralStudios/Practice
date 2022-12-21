@@ -1,8 +1,10 @@
-package gg.mineral.practice.entity;
+package gg.mineral.practice.entity.handler;
 
 import org.bukkit.GameMode;
 
 import gg.mineral.api.collection.GlueList;
+import gg.mineral.practice.entity.PlayerStatus;
+import gg.mineral.practice.entity.Profile;
 import gg.mineral.practice.events.Event;
 import gg.mineral.practice.managers.EventManager;
 import gg.mineral.practice.managers.MatchManager;
@@ -18,10 +20,11 @@ import gg.mineral.practice.util.messages.ChatMessage;
 import gg.mineral.practice.util.messages.impl.ChatMessages;
 import gg.mineral.practice.util.messages.impl.ErrorMessages;
 import lombok.Getter;
+import lombok.RequiredArgsConstructor;
 
-public class Spectator {
-    @Getter
-    protected Profile profile;
+@RequiredArgsConstructor
+public class SpectateHandler {
+    final Profile profile;
     @Getter
     Spectatable spectatable;
     @Getter
@@ -38,7 +41,7 @@ public class Spectator {
 
         profile.setPlayerStatus(PlayerStatus.FOLLOWING);
         following = p;
-        p.getFollowers().add(profile);
+        p.getSpectateHandler().getFollowers().add(profile);
         profile.getInventory().setInventoryToFollow();
         new FollowingScoreboard(profile).setBoard();
 
@@ -49,7 +52,7 @@ public class Spectator {
 
     public void stopSpectating() {
         if (spectatable != null) {
-            spectatable.getSpectators().remove(this);
+            spectatable.getSpectators().remove(profile);
             spectatable = null;
         }
 
@@ -78,12 +81,12 @@ public class Spectator {
         }
 
         if (spectatable != null) {
-            spectatable.getSpectators().remove(this);
+            spectatable.getSpectators().remove(profile);
             spectatable = null;
         }
 
         if (profile.getPlayerStatus() == PlayerStatus.FOLLOWING) {
-            following.getFollowers().remove(this);
+            following.getSpectateHandler().getFollowers().remove(profile);
             following = null;
             profile.setPlayerStatus(PlayerStatus.IDLE);
         }
@@ -101,7 +104,7 @@ public class Spectator {
 
     public void spectate(Profile p) {
 
-        if (p.equals(this)) {
+        if (p.equals(profile)) {
             profile.message(ErrorMessages.NOT_SPEC_SELF);
             return;
         }
@@ -127,7 +130,7 @@ public class Spectator {
             return;
         }
 
-        spectatable.getSpectators().add(this);
+        spectatable.getSpectators().add(profile);
 
         profile.getPlayer().setGameMode(GameMode.SPECTATOR);
 
@@ -186,7 +189,7 @@ public class Spectator {
         }
 
         spectatable = eventToSpectate;
-        getSpectatable().getSpectators().add(this);
+        getSpectatable().getSpectators().add(profile);
 
         profile.getPlayer().setGameMode(GameMode.SPECTATOR);
 

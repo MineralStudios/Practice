@@ -8,7 +8,6 @@ import gg.mineral.api.collection.GlueList;
 import gg.mineral.practice.PracticePlugin;
 import gg.mineral.practice.arena.Arena;
 import gg.mineral.practice.entity.Profile;
-import gg.mineral.practice.entity.Spectator;
 import gg.mineral.practice.managers.EventManager;
 import gg.mineral.practice.managers.ProfileManager;
 import gg.mineral.practice.match.EventMatch;
@@ -68,8 +67,8 @@ public class Event implements Spectatable {
             Profile winner = participants.get(0);
             winner.removeFromEvent();
 
-            for (Spectator spectator : getSpectators()) {
-                spectator.stopSpectating();
+            for (Profile spectator : getSpectators()) {
+                spectator.getSpectateHandler().stopSpectating();
             }
 
             ended = true;
@@ -109,8 +108,8 @@ public class Event implements Spectatable {
             Profile winner = participants.get(0);
             winner.removeFromEvent();
 
-            for (Spectator spectator : getSpectators()) {
-                spectator.stopSpectating();
+            for (Profile spectator : getSpectators()) {
+                spectator.getSpectateHandler().stopSpectating();
             }
 
             EventManager.remove(this);
@@ -137,7 +136,6 @@ public class Event implements Spectatable {
 
         ProfileManager.broadcast(ProfileManager.getProfiles(), messageToBroadcast);
 
-        Event event = this;
         new BukkitRunnable() {
             @Override
             public void run() {
@@ -147,12 +145,12 @@ public class Event implements Spectatable {
                     Profile winner = participants.get(0);
                     winner.removeFromEvent();
 
-                    for (Spectator spectator : getSpectators()) {
-                        spectator.stopSpectating();
+                    for (Profile spectator : getSpectators()) {
+                        spectator.getSpectateHandler().stopSpectating();
                     }
 
                     ErrorMessages.EVENT_NOT_ENOUGH_PLAYERS.send(winner.getPlayer());
-                    EventManager.remove(event);
+                    EventManager.remove(Event.this);
                     ended = true;
                     return;
                 }

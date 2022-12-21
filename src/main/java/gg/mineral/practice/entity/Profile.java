@@ -12,6 +12,7 @@ import org.bukkit.entity.Player;
 import org.bukkit.potion.PotionEffect;
 
 import gg.mineral.practice.PracticePlugin;
+import gg.mineral.practice.entity.handler.SpectateHandler;
 import gg.mineral.practice.events.Event;
 import gg.mineral.practice.inventory.PlayerInventory;
 import gg.mineral.practice.inventory.PracticeMenu;
@@ -43,7 +44,7 @@ import net.md_5.bungee.api.chat.ClickEvent;
 import net.md_5.bungee.api.chat.ComponentBuilder;
 import net.md_5.bungee.api.chat.HoverEvent;
 
-public class Profile extends Spectator {
+public class Profile {
 	@Getter
 	final CraftPlayer player;
 	@Getter
@@ -55,6 +56,8 @@ public class Profile extends Spectator {
 	DefaultScoreboard scoreboard;
 	@Getter
 	MatchData matchData;
+	@Getter
+	SpectateHandler spectateHandler = new SpectateHandler(this);
 	@Getter
 	MatchStatisticCollector matchStatisticCollector = new MatchStatisticCollector(this);
 	@Getter
@@ -88,7 +91,6 @@ public class Profile extends Spectator {
 	PearlCooldown pearlCooldown = new PearlCooldown(this);
 
 	public Profile(org.bukkit.entity.Player player) {
-		this.profile = this;
 		this.player = (CraftPlayer) player;
 		this.matchData = new MatchData();
 		this.inventory = new PlayerInventory(this);

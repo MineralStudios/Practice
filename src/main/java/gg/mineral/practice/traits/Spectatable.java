@@ -2,7 +2,7 @@ package gg.mineral.practice.traits;
 
 import java.util.concurrent.ConcurrentLinkedDeque;
 
-import gg.mineral.practice.entity.Spectator;
+import gg.mineral.practice.entity.Profile;
 import gg.mineral.practice.util.collection.ProfileList;
 
 public interface Spectatable {
@@ -11,9 +11,9 @@ public interface Spectatable {
         EVENT, MATCH
     }
 
-    ConcurrentLinkedDeque<Spectator> spectators = new ConcurrentLinkedDeque<>();
+    ConcurrentLinkedDeque<Profile> spectators = new ConcurrentLinkedDeque<>();
 
-    default ConcurrentLinkedDeque<Spectator> getSpectators() {
+    default ConcurrentLinkedDeque<Profile> getSpectators() {
         return spectators;
     }
 

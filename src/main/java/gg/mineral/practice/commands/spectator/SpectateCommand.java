@@ -38,6 +38,6 @@ public class SpectateCommand extends PlayerCommand {
 			return;
 		}
 
-		profile.spectate(profileToSpectate);
+		profile.getSpectateHandler().spectate(profileToSpectate);
 	}
 }

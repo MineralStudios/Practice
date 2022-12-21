@@ -14,7 +14,7 @@ public class FollowingScoreboard extends DefaultScoreboard {
     public void updateBoard(Board board) {
 
         board.updateLines(CC.BOARD_SEPARATOR,
-                CC.ACCENT + "Following: " + CC.SECONDARY + profile.getFollowing().getName(),
+                CC.ACCENT + "Following: " + CC.SECONDARY + profile.getSpectateHandler().getFollowing().getName(),
                 CC.BOARD_SEPARATOR);
     }
 }

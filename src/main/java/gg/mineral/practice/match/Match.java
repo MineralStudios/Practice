@@ -20,7 +20,6 @@ import de.jeezycore.utils.NameTag;
 import gg.mineral.api.collection.GlueList;
 import gg.mineral.practice.PracticePlugin;
 import gg.mineral.practice.entity.Profile;
-import gg.mineral.practice.entity.Spectator;
 import gg.mineral.practice.gametype.Gametype;
 import gg.mineral.practice.inventory.menus.InventoryStatsMenu;
 import gg.mineral.practice.kit.Kit;
@@ -172,9 +171,9 @@ public class Match implements Spectatable {
 	}
 
 	public void handleFollowers(Profile profile) {
-		for (Profile p : profile.getFollowers()) {
+		for (Profile p : profile.getSpectateHandler().getFollowers()) {
 			p.getPlayer().showPlayer(profile.getPlayer());
-			p.spectate(profile);
+			p.getSpectateHandler().spectate(profile);
 		}
 	}
 
@@ -335,13 +334,12 @@ public class Match implements Spectatable {
 			nameTag.giveTagAfterMatch(profile1.getPlayer(), profile2.getPlayer());
 		}, getPostMatchTime());
 
-		for (Spectator spectator : getSpectators()) {
-			Profile p = spectator.getProfile();
-			p.getPlayer().sendMessage(CC.SEPARATOR);
-			p.getPlayer().sendMessage(Strings.MATCH_RESULTS);
-			p.getPlayer().spigot().sendMessage(winMessage, TextComponents.SPLITTER, loseMessage);
-			p.getPlayer().sendMessage(CC.SEPARATOR);
-			p.stopSpectating();
+		for (Profile spectator : getSpectators()) {
+			spectator.getPlayer().sendMessage(CC.SEPARATOR);
+			spectator.getPlayer().sendMessage(Strings.MATCH_RESULTS);
+			spectator.getPlayer().spigot().sendMessage(winMessage, TextComponents.SPLITTER, loseMessage);
+			spectator.getPlayer().sendMessage(CC.SEPARATOR);
+			spectator.getSpectateHandler().stopSpectating();
 		}
 
 		clearWorld();
