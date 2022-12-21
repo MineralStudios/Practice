@@ -6,6 +6,7 @@ import org.bukkit.Location;
 import gg.mineral.practice.PracticePlugin;
 import gg.mineral.practice.entity.PlayerStatus;
 import gg.mineral.practice.entity.Profile;
+import gg.mineral.practice.entity.Spectator;
 import gg.mineral.practice.events.Event;
 import gg.mineral.practice.managers.MatchManager;
 import gg.mineral.practice.match.data.MatchData;
@@ -78,12 +79,13 @@ public class EventMatch extends Match {
             nameTag.giveTagAfterMatch(profile1.getPlayer(), profile2.getPlayer());
         }, getPostMatchTime());
 
-        for (Profile p : getSpectators()) {
+        for (Spectator spectator : getSpectators()) {
+            Profile p = spectator.getProfile();
             p.getPlayer().sendMessage(CC.SEPARATOR);
             p.getPlayer().sendMessage(Strings.MATCH_RESULTS);
             p.getPlayer().spigot().sendMessage(winMessage, TextComponents.SPLITTER, loseMessage);
             p.getPlayer().sendMessage(CC.SEPARATOR);
-            p.stopSpectating();
+            spectator.stopSpectating();
         }
 
         clearWorld();

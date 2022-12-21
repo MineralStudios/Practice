@@ -14,8 +14,7 @@ public class SpectatorScoreboard extends DefaultScoreboard {
     public void updateBoard(Board board) {
 
         board.updateLines(CC.BOARD_SEPARATOR,
-                CC.ACCENT + "Spectating: ", CC.SECONDARY + profile.getSpectatingMatch().getProfile1().getName(),
-                CC.SECONDARY + profile.getSpectatingMatch().getProfile2().getName(),
+                CC.ACCENT + "Spectating",
                 CC.BOARD_SEPARATOR);
     }
 }

@@ -11,7 +11,6 @@ import org.bukkit.entity.ArmorStand;
 import org.bukkit.entity.Player;
 import org.bukkit.potion.PotionEffect;
 
-import gg.mineral.api.collection.GlueList;
 import gg.mineral.practice.PracticePlugin;
 import gg.mineral.practice.events.Event;
 import gg.mineral.practice.inventory.PlayerInventory;
@@ -22,7 +21,6 @@ import gg.mineral.practice.kit.Kit;
 import gg.mineral.practice.kit.KitCreator;
 import gg.mineral.practice.kit.KitEditor;
 import gg.mineral.practice.managers.KitEditorManager;
-import gg.mineral.practice.managers.MatchManager;
 import gg.mineral.practice.managers.ProfileManager;
 import gg.mineral.practice.match.Match;
 import gg.mineral.practice.match.data.MatchData;
@@ -32,14 +30,10 @@ import gg.mineral.practice.queue.QueueEntry;
 import gg.mineral.practice.queue.QueueSearchTask;
 import gg.mineral.practice.request.DuelRequest;
 import gg.mineral.practice.scoreboard.impl.DefaultScoreboard;
-import gg.mineral.practice.scoreboard.impl.FollowingScoreboard;
-import gg.mineral.practice.scoreboard.impl.SpectatorScoreboard;
 import gg.mineral.practice.tournaments.Tournament;
 import gg.mineral.practice.util.PlayerUtil;
 import gg.mineral.practice.util.collection.AutoExpireList;
-import gg.mineral.practice.util.collection.ProfileList;
 import gg.mineral.practice.util.math.PearlCooldown;
-import gg.mineral.practice.util.messages.ChatMessage;
 import gg.mineral.practice.util.messages.Message;
 import gg.mineral.practice.util.messages.impl.ChatMessages;
 import gg.mineral.practice.util.messages.impl.ErrorMessages;
@@ -49,13 +43,13 @@ import net.md_5.bungee.api.chat.ClickEvent;
 import net.md_5.bungee.api.chat.ComponentBuilder;
 import net.md_5.bungee.api.chat.HoverEvent;
 
-public class Profile {
+public class Profile extends Spectator {
 	@Getter
 	final CraftPlayer player;
 	@Getter
 	final PlayerInventory inventory;
 	@Getter
-	Match match, spectatingMatch;
+	Match match;
 	@Setter
 	@Getter
 	DefaultScoreboard scoreboard;
@@ -68,10 +62,6 @@ public class Profile {
 	@Getter
 	@Setter
 	PracticeMenu openMenu;
-	@Getter
-	Profile following;
-	@Getter
-	GlueList<Profile> followers = new ProfileList();
 	@Getter
 	AutoExpireList<DuelRequest> recievedDuelRequests = new AutoExpireList<>();
 	@Getter
@@ -96,9 +86,9 @@ public class Profile {
 	Event event;
 	@Getter
 	PearlCooldown pearlCooldown = new PearlCooldown(this);
-	Event spectatingEvent;
 
 	public Profile(org.bukkit.entity.Player player) {
+		this.profile = this;
 		this.player = (CraftPlayer) player;
 		this.matchData = new MatchData();
 		this.inventory = new PlayerInventory(this);
@@ -212,137 +202,6 @@ public class Profile {
 		QueueSearchTask.addPlayer(this, queueEntry);
 		message(ChatMessages.JOINED_QUEUE.clone().replace("%queue%", queueEntry.getQueuetype().getDisplayName())
 				.replace("%gametype%", queueEntry.getGametype().getDisplayName()));
-	}
-
-	public void stopSpectating() {
-		if (spectatingMatch != null) {
-			spectatingMatch.getSpectators().remove(this);
-			spectatingMatch = null;
-		}
-
-		if (spectatingEvent != null) {
-			spectatingEvent.getSpectators().remove(this);
-			spectatingEvent = null;
-		}
-
-		teleportToLobby();
-
-		if (playerStatus != PlayerStatus.FOLLOWING) {
-			this.player.setGameMode(GameMode.SURVIVAL);
-			if (this.isInParty()) {
-				getInventory().setInventoryForParty();
-			} else {
-				getInventory().setInventoryForLobby();
-			}
-			new DefaultScoreboard(this).setBoard();
-			return;
-		}
-
-		getInventory().setInventoryToFollow();
-	}
-
-	public void stopSpectatingAndFollowing() {
-
-		if (playerStatus != PlayerStatus.SPECTATING && playerStatus != PlayerStatus.FOLLOWING) {
-			message(ErrorMessages.NOT_SPEC_OR_FOLLOWING);
-			return;
-		}
-
-		if (spectatingMatch != null) {
-			spectatingMatch.getSpectators().remove(this);
-			spectatingMatch = null;
-		}
-
-		if (playerStatus == PlayerStatus.FOLLOWING) {
-			following.followers.remove(this);
-			following = null;
-			this.setPlayerStatus(PlayerStatus.IDLE);
-		}
-
-		this.player.setGameMode(GameMode.SURVIVAL);
-
-		teleportToLobby();
-		if (this.isInParty()) {
-			getInventory().setInventoryForParty();
-		} else {
-			getInventory().setInventoryForLobby();
-		}
-		new DefaultScoreboard(this).setBoard();
-	}
-
-	public void spectate(Profile p) {
-
-		if (p.equals(this)) {
-			message(ErrorMessages.NOT_SPEC_SELF);
-			return;
-		}
-
-		if (p.isInEvent()) {
-			spectateEvent(p.getEvent());
-			return;
-		}
-
-		if (p.getPlayerStatus() != PlayerStatus.FIGHTING) {
-			message(ErrorMessages.PLAYER_NOT_IN_MATCH);
-			return;
-		}
-
-		if (getPlayerStatus() != PlayerStatus.IDLE && getPlayerStatus() != PlayerStatus.FOLLOWING) {
-			message(ErrorMessages.YOU_ARE_NOT_IN_LOBBY);
-			return;
-		}
-
-		Match match = p.getMatch();
-		match.getSpectators().add(this);
-		spectatingMatch = match;
-
-		this.player.setGameMode(GameMode.SPECTATOR);
-
-		PlayerUtil.teleport(this.getPlayer(), p.getPlayer());
-		ChatMessages.SPECTATING.clone().replace("%player%", p.getName()).send(getPlayer());
-
-		ChatMessages.STOP_SPECTATING.send(getPlayer());
-
-		ChatMessage broadcastedMessage = ChatMessages.SPECTATING_YOUR_MATCH.clone().replace("%player%", getName());
-		ProfileManager.broadcast(match.getParticipants(), broadcastedMessage);
-
-		getInventory().setInventoryForSpectating();
-
-		if (getPlayerStatus() == PlayerStatus.FOLLOWING) {
-			return;
-		}
-
-		new SpectatorScoreboard(this).setBoard();
-		setPlayerStatus(PlayerStatus.SPECTATING);
-	}
-
-	public void spectateEvent(Event event) {
-
-		if (event.isEnded()) {
-			return;
-		}
-
-		if (getPlayerStatus() != PlayerStatus.IDLE && getPlayerStatus() != PlayerStatus.FOLLOWING) {
-			message(ErrorMessages.YOU_ARE_NOT_IN_LOBBY);
-			return;
-		}
-
-		spectatingEvent = event;
-		event.getSpectators().add(this);
-
-		this.player.setGameMode(GameMode.SPECTATOR);
-
-		PlayerUtil.teleport(this.getPlayer(), event.getEventArena().getWaitingLocation());
-		ChatMessages.SPECTATING_EVENT.send(getPlayer());
-		ChatMessages.STOP_SPECTATING.send(getPlayer());
-
-		getInventory().setInventoryForSpectating();
-
-		if (getPlayerStatus() == PlayerStatus.FOLLOWING) {
-			return;
-		}
-
-		setPlayerStatus(PlayerStatus.SPECTATING);
 	}
 
 	public void teleportToLobby() {
@@ -477,42 +336,12 @@ public class Profile {
 					}
 
 					break;
-				case SPECTATING:
-					List<Profile> participants = this.getSpectatingMatch().getParticipants();
-
-					for (Profile profile : participants) {
-						this.getPlayer().showPlayer(profile.getPlayer());
-					}
-
-					for (Match match : MatchManager.getMatches()) {
-						match.updateVisiblity(this.getSpectatingMatch(), this);
-					}
-
-					break;
 				default:
 
 			}
 		}
 
 		playerStatus = newPlayerStatus;
-	}
-
-	public void follow(Profile p) {
-
-		if (getPlayerStatus() != PlayerStatus.IDLE) {
-			message(ErrorMessages.YOU_ARE_NOT_IN_LOBBY);
-			return;
-		}
-
-		setPlayerStatus(PlayerStatus.FOLLOWING);
-		following = p;
-		p.getFollowers().add(this);
-		getInventory().setInventoryToFollow();
-		new FollowingScoreboard(this).setBoard();
-
-		if (p.getPlayerStatus() == PlayerStatus.FIGHTING) {
-			spectate(following);
-		}
 	}
 
 	public void resetMatchData() {

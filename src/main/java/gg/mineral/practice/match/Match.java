@@ -20,6 +20,7 @@ import de.jeezycore.utils.NameTag;
 import gg.mineral.api.collection.GlueList;
 import gg.mineral.practice.PracticePlugin;
 import gg.mineral.practice.entity.Profile;
+import gg.mineral.practice.entity.Spectator;
 import gg.mineral.practice.gametype.Gametype;
 import gg.mineral.practice.inventory.menus.InventoryStatsMenu;
 import gg.mineral.practice.kit.Kit;
@@ -138,6 +139,7 @@ public class Match implements Spectatable {
 		setVisibility(p);
 		setDisplayNames(p);
 		setScoreboard(p);
+		handleFollowers(p);
 	}
 
 	public void setScoreboard(Profile p) {
@@ -169,15 +171,10 @@ public class Match implements Spectatable {
 		placedTnt--;
 	}
 
-	public void handleFollowers() {
-		for (Profile p : profile1.getFollowers()) {
-			p.getPlayer().showPlayer(profile1.getPlayer());
-			p.spectate(profile1);
-		}
-
-		for (Profile p : profile2.getFollowers()) {
-			p.getPlayer().showPlayer(profile2.getPlayer());
-			p.spectate(profile2);
+	public void handleFollowers(Profile profile) {
+		for (Profile p : profile.getFollowers()) {
+			p.getPlayer().showPlayer(profile.getPlayer());
+			p.spectate(profile);
 		}
 	}
 
@@ -245,7 +242,6 @@ public class Match implements Spectatable {
 
 		setupLocations(location1, location2);
 		teleportPlayers(location1, location2);
-		handleFollowers();
 		prepareForMatch(participants);
 		handleOpponentMessages();
 		startCountdown();
@@ -339,7 +335,8 @@ public class Match implements Spectatable {
 			nameTag.giveTagAfterMatch(profile1.getPlayer(), profile2.getPlayer());
 		}, getPostMatchTime());
 
-		for (Profile p : getSpectators()) {
+		for (Spectator spectator : getSpectators()) {
+			Profile p = spectator.getProfile();
 			p.getPlayer().sendMessage(CC.SEPARATOR);
 			p.getPlayer().sendMessage(Strings.MATCH_RESULTS);
 			p.getPlayer().spigot().sendMessage(winMessage, TextComponents.SPLITTER, loseMessage);

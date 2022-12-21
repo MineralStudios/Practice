@@ -8,6 +8,7 @@ import gg.mineral.api.collection.GlueList;
 import gg.mineral.practice.PracticePlugin;
 import gg.mineral.practice.arena.Arena;
 import gg.mineral.practice.entity.Profile;
+import gg.mineral.practice.entity.Spectator;
 import gg.mineral.practice.managers.EventManager;
 import gg.mineral.practice.managers.ProfileManager;
 import gg.mineral.practice.match.EventMatch;
@@ -32,7 +33,8 @@ public class Event implements Spectatable {
     String host;
     @Getter
     boolean started = false, ended = false;
-    ProfileList players = new ProfileList();
+    @Getter
+    ProfileList participants = new ProfileList();
     @Getter
     Arena eventArena;
 
@@ -54,20 +56,20 @@ public class Event implements Spectatable {
 
         PlayerUtil.teleport(p.getPlayer(), eventArena.getWaitingLocation());
         p.setEvent(this);
-        players.add(p);
+        participants.add(p);
 
         ChatMessage joinedMessage = ChatMessages.JOINED_EVENT.clone().replace("%player%", p.getName());
-        ProfileManager.broadcast(players, joinedMessage);
+        ProfileManager.broadcast(participants, joinedMessage);
     }
 
     public void startRound() {
 
-        if (players.size() == 1) {
-            Profile winner = players.get(0);
+        if (participants.size() == 1) {
+            Profile winner = participants.get(0);
             winner.removeFromEvent();
 
-            for (Profile p : getSpectators()) {
-                p.stopSpectating();
+            for (Spectator spectator : getSpectators()) {
+                spectator.stopSpectating();
             }
 
             ended = true;
@@ -75,7 +77,7 @@ public class Event implements Spectatable {
             return;
         }
 
-        Iterator<Profile> iter = players.iterator();
+        Iterator<Profile> iter = participants.iterator();
 
         Profile p1 = iter.next();
 
@@ -92,23 +94,23 @@ public class Event implements Spectatable {
     }
 
     public void removePlayer(Profile p) {
-        players.remove(p);
+        participants.remove(p);
 
         ChatMessage leftMessage = ChatMessages.LEFT_EVENT.clone().replace("%player%", p.getName());
-        ProfileManager.broadcast(players, leftMessage);
+        ProfileManager.broadcast(participants, leftMessage);
 
-        if (players.size() == 0) {
+        if (participants.size() == 0) {
             EventManager.remove(this);
             ended = true;
             return;
         }
 
-        if (started && players.size() == 1) {
-            Profile winner = players.get(0);
+        if (started && participants.size() == 1) {
+            Profile winner = participants.get(0);
             winner.removeFromEvent();
 
-            for (Profile profile : getSpectators()) {
-                profile.stopSpectating();
+            for (Spectator spectator : getSpectators()) {
+                spectator.stopSpectating();
             }
 
             EventManager.remove(this);
@@ -141,12 +143,12 @@ public class Event implements Spectatable {
             public void run() {
                 started = true;
 
-                if (players.size() == 1) {
-                    Profile winner = players.get(0);
+                if (participants.size() == 1) {
+                    Profile winner = participants.get(0);
                     winner.removeFromEvent();
 
-                    for (Profile p : getSpectators()) {
-                        p.stopSpectating();
+                    for (Spectator spectator : getSpectators()) {
+                        spectator.stopSpectating();
                     }
 
                     ErrorMessages.EVENT_NOT_ENOUGH_PLAYERS.send(winner.getPlayer());
@@ -170,7 +172,7 @@ public class Event implements Spectatable {
         if (matches.isEmpty()) {
             ChatMessage broadcastedMessage = ChatMessages.ROUND_OVER.clone().replace("%round%", "" + round);
 
-            ProfileManager.broadcast(players, broadcastedMessage);
+            ProfileManager.broadcast(participants, broadcastedMessage);
 
             new BukkitRunnable() {
                 @Override
@@ -182,4 +184,15 @@ public class Event implements Spectatable {
         }
     }
 
+    public void updateVisiblity(Event event, Profile profile) {
+        if (event.equals(this) || !event.getEventArena().equals(getEventArena())) {
+            return;
+        }
+
+        for (int i = 0; i < participants.size(); i++) {
+            Profile participant = participants.get(i);
+            participant.getPlayer().hidePlayer(profile.getPlayer(), false);
+            profile.getPlayer().hidePlayer(participant.getPlayer(), false);
+        }
+    }
 }

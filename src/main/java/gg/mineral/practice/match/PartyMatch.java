@@ -10,6 +10,7 @@ import org.bukkit.scoreboard.Team;
 import gg.mineral.api.collection.GlueList;
 import gg.mineral.practice.PracticePlugin;
 import gg.mineral.practice.entity.Profile;
+import gg.mineral.practice.entity.Spectator;
 import gg.mineral.practice.inventory.menus.InventoryStatsMenu;
 import gg.mineral.practice.managers.MatchManager;
 import gg.mineral.practice.managers.ProfileManager;
@@ -229,13 +230,14 @@ public class PartyMatch extends Match {
 
 		victim.removeFromMatch();
 
-		for (Profile p : getSpectators()) {
+		for (Spectator spectator : getSpectators()) {
+			Profile p = spectator.getProfile();
 			p.getPlayer().sendMessage(CC.SEPARATOR);
 			p.getPlayer().sendMessage(Strings.MATCH_RESULTS);
 			p.getPlayer().spigot().sendMessage(winMessage);
 			p.getPlayer().spigot().sendMessage(loseMessage);
 			p.getPlayer().sendMessage(CC.SEPARATOR);
-			p.stopSpectating();
+			spectator.stopSpectating();
 		}
 
 		clearWorld();
