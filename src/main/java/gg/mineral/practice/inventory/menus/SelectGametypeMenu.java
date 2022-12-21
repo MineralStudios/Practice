@@ -75,7 +75,7 @@ public class SelectGametypeMenu extends PracticeMenu {
 			itemBuild.lore();
 			ItemStack item = itemBuild.build();
 			setSlot(entry.getValue(), item, p -> {
-				p.openMenu(new SelectCategorizedGametypeMenu(queuetype, c, SelectGametypeMenu.Type.KIT_EDITOR));
+				p.openMenu(new SelectCategorizedGametypeMenu(queuetype, c, type));
 				return true;
 			});
 		}
