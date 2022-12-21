@@ -24,7 +24,7 @@ public class SelectCategorizedExistingKitMenu extends SelectExistingKitMenu {
 			ItemStack item = new ItemBuilder(g.getDisplayItem())
 					.name(g.getDisplayName()).lore().build();
 			Runnable selectGametypeTask = () -> {
-				if (viewer.getPlayerStatus() == PlayerStatus.KIT_CREATOR) {
+				if (viewer.isInKitCreator()) {
 					viewer.giveKit(g.getKit());
 					return;
 				}

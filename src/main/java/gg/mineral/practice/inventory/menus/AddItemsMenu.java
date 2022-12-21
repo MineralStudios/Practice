@@ -28,7 +28,7 @@ public class AddItemsMenu extends PracticeMenu {
 	@Override
 	public boolean update() {
 
-		for (ItemStack is : viewer.getKitEditorData().getGametype().getKit().getContents()) {
+		for (ItemStack is : viewer.getKitEditor().getQueueEntry().getGametype().getKit().getContents()) {
 
 			if (is == null) {
 				continue;

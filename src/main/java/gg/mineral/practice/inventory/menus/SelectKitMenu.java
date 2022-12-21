@@ -27,7 +27,10 @@ public class SelectKitMenu extends PracticeMenu {
             p.openMenu(new SelectExistingKitMenu(menu, false));
             return true;
         });
-        Runnable runnable = viewer::sendPlayerToKitCreator;
+        Runnable runnable = () -> {
+            viewer.getPlayer().closeInventory();
+            viewer.sendToKitCreator(menu.getSubmitAction());
+        };
         setSlot(6, item2, runnable);
         return true;
     }

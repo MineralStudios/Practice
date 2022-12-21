@@ -59,7 +59,7 @@ public class InventoryListener implements Listener {
 		Profile profile = ProfileManager.getOrCreateProfile(e.getPlayer());
 		boolean canDrop = profile.getPlayer().isOp() && profile.getPlayer().getGameMode().equals(GameMode.CREATIVE);
 
-		if (profile.getPlayerStatus() == PlayerStatus.KIT_EDITOR) {
+		if (profile.isInKitCreator() || profile.isInKitEditor()) {
 			return;
 		}
 

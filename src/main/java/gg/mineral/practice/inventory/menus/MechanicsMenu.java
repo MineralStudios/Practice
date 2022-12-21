@@ -3,24 +3,26 @@ package gg.mineral.practice.inventory.menus;
 import org.bukkit.Material;
 import org.bukkit.inventory.ItemStack;
 
-import gg.mineral.practice.util.items.ItemBuilder;
-import gg.mineral.practice.util.messages.CC;
-import gg.mineral.practice.util.messages.impl.ErrorMessages;
 import gg.mineral.practice.inventory.PracticeMenu;
 import gg.mineral.practice.inventory.SubmitAction;
 import gg.mineral.practice.match.PartyMatch;
 import gg.mineral.practice.match.data.MatchData;
 import gg.mineral.practice.party.Party;
 import gg.mineral.practice.tournaments.Tournament;
+import gg.mineral.practice.util.items.ItemBuilder;
+import gg.mineral.practice.util.messages.CC;
+import gg.mineral.practice.util.messages.impl.ErrorMessages;
+import lombok.Getter;
 
 public class MechanicsMenu extends PracticeMenu {
-	SubmitAction action;
+	@Getter
+	SubmitAction submitAction;
 	final static String TITLE = CC.BLUE + "Game Mechanics";
 
-	public MechanicsMenu(SubmitAction action) {
+	public MechanicsMenu(SubmitAction submitAction) {
 		super(TITLE);
 		setClickCancelled(true);
-		this.action = action;
+		this.submitAction = submitAction;
 	}
 
 	@Override
@@ -101,7 +103,7 @@ public class MechanicsMenu extends PracticeMenu {
 			return true;
 		});
 		setSlot(20, arena, p -> {
-			p.openMenu(new SelectArenaMenu(this, action));
+			p.openMenu(new SelectArenaMenu(this, submitAction));
 			return true;
 		});
 		Runnable deadlyWaterTask = () -> {
@@ -118,7 +120,7 @@ public class MechanicsMenu extends PracticeMenu {
 			viewer.sendDuelRequest(viewer.getDuelReciever());
 		};
 
-		if (action == SubmitAction.P_SPLIT) {
+		if (submitAction == SubmitAction.P_SPLIT) {
 			submitTask = () -> {
 				viewer.getPlayer().closeInventory();
 				Party p = viewer.getParty();
@@ -136,7 +138,7 @@ public class MechanicsMenu extends PracticeMenu {
 				PartyMatch m = new PartyMatch(p, viewer.getMatchData());
 				m.start();
 			};
-		} else if (action == SubmitAction.TOURNAMENT) {
+		} else if (submitAction == SubmitAction.TOURNAMENT) {
 			submitTask = () -> {
 				viewer.getPlayer().closeInventory();
 				Tournament tournament = new Tournament(viewer);
@@ -151,9 +153,5 @@ public class MechanicsMenu extends PracticeMenu {
 		};
 		setSlot(27, resetMeta, resetTask);
 		return true;
-	}
-
-	public SubmitAction getAction() {
-		return action;
 	}
 }

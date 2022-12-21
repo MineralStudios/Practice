@@ -25,7 +25,7 @@ public class SelectQueuetypeMenu extends PracticeMenu {
                 ItemStack item = new ItemBuilder(q.getDisplayItem())
                         .name(q.getDisplayName()).build();
                 add(item, p -> {
-                    p.openMenu(new SelectGametypeMenu(q, false, true));
+                    p.openMenu(new SelectGametypeMenu(q, SelectGametypeMenu.Type.KIT_EDITOR));
                     return true;
                 });
             } catch (NullPointerException e) {

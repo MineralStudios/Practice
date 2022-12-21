@@ -23,8 +23,7 @@ public class QueueEntryManager {
         }
 
         if (entry == null) {
-            entry = new QueueEntry(q, g);
-            register(entry);
+            register(entry = new QueueEntry(q, g));
         }
 
         return entry;

@@ -20,7 +20,6 @@ public class SelectModeMenu extends PracticeMenu {
 
 	@Override
 	public boolean update() {
-		viewer.setPreviousSubmitAction(action);
 		ItemStack item = new ItemBuilder(Material.GREEN_RECORD)
 				.name("Simple Mode").lore().build();
 		ItemStack item2 = new ItemBuilder(Material.GOLD_RECORD)

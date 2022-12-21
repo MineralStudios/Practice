@@ -6,7 +6,6 @@ import java.util.UUID;
 
 import org.bukkit.Bukkit;
 import org.bukkit.GameMode;
-import org.bukkit.Location;
 import org.bukkit.craftbukkit.v1_8_R3.entity.CraftPlayer;
 import org.bukkit.entity.ArmorStand;
 import org.bukkit.entity.Player;
@@ -25,6 +24,8 @@ import gg.mineral.practice.inventory.menus.SelectGametypeMenu;
 import gg.mineral.practice.inventory.menus.SelectModeMenu;
 import gg.mineral.practice.inventory.menus.SelectQueuetypeMenu;
 import gg.mineral.practice.kit.Kit;
+import gg.mineral.practice.kit.KitCreator;
+import gg.mineral.practice.kit.KitEditor;
 import gg.mineral.practice.managers.KitEditorManager;
 import gg.mineral.practice.managers.MatchManager;
 import gg.mineral.practice.managers.PartyManager;
@@ -98,9 +99,9 @@ public class Profile {
 	@Getter
 	Party party;
 	@Getter
-	QueueEntry kitEditorData;
-	@Setter
-	SubmitAction previousSubmitAction;
+	KitEditor kitEditor;
+	@Getter
+	KitCreator kitCreator;
 	@Getter
 	Tournament tournament;
 	@Getter
@@ -255,12 +256,13 @@ public class Profile {
 		}.runTaskLater(PracticePlugin.INSTANCE, 20);
 
 		inventory.setItem(1, ItemStacks.LIST_PLAYERS, p -> p.getPlayer().performCommand("p list"));
+		inventory.setItem(3, ItemStacks.OPEN_PARTY, p -> p.getPlayer().performCommand("p open"));
 		inventory.setItem(4, ItemStacks.DUEL, p -> p.getPlayer().performCommand("duel"));
 		inventory.setItem(5, ItemStacks.PARTY_SPLIT, p -> {
 			p.openMenu(new SelectModeMenu(SubmitAction.P_SPLIT));
 			return true;
 		});
-		inventory.setItem(3, ItemStacks.OPEN_PARTY, p -> p.getPlayer().performCommand("p open"));
+
 		getPlayer().updateInventory();
 	}
 
@@ -285,7 +287,7 @@ public class Profile {
 					.name(CC.SECONDARY + CC.B + queuetype.getDisplayName()).build();
 			inventory.setItem(queuetype.getSlotNumber(), item,
 					p -> {
-						p.openMenu(new SelectGametypeMenu(queuetype, true, false));
+						p.openMenu(new SelectGametypeMenu(queuetype, SelectGametypeMenu.Type.QUEUE));
 						return true;
 					});
 		}
@@ -547,64 +549,49 @@ public class Profile {
 	}
 
 	public void leaveKitEditor() {
+		new DefaultScoreboard(this).setBoard();
 		setInventoryClickCancelled(true);
+		this.kitEditor = null;
 		teleportToLobby();
 		this.setInventoryForLobby();
 	}
 
 	public void leaveKitCreator() {
+		new DefaultScoreboard(this).setBoard();
 		this.player.setGameMode(GameMode.SURVIVAL);
 		leaveKitEditor();
-		openMenu(new MechanicsMenu(previousSubmitAction));
+		openMenu(new MechanicsMenu(kitCreator.getSubmitAction()));
+		this.kitCreator = null;
 	}
 
-	public void saveKit() {
-		if (kitEditorData == null) {
-			return;
-		}
+	public void sendToKitEditor(QueueEntry queueEntry) {
 
-		kitEditorData.saveKit(this);
-	}
-
-	public void sendPlayerToKitEditor(QueueEntry queueEntry) {
-		getPlayer().closeInventory();
-
-		Location location = KitEditorManager.getLocation();
-
-		if (location == null) {
+		if (KitEditorManager.getLocation() == null) {
 			message(ErrorMessages.KIT_EDITOR_LOCATION_NOT_SET);
 			return;
 		}
 
-		PlayerUtil.teleport(this.getPlayer(), location);
-		setInventoryClickCancelled(false);
-		getInventory().clear();
-		setPlayerStatus(PlayerStatus.KIT_EDITOR);
-		kitEditorData = queueEntry;
-		getInventory().setContents(queueEntry.getGametype().getKit().getContents());
+		this.kitEditor = new KitEditor(queueEntry, this);
+		kitEditor.start();
 	}
 
-	public void saveCreatedKit() {
-		matchData.setKit(new Kit(getInventory().getContents(), getInventory().getArmorContents()));
-		getPlayer().closeInventory();
-		ChatMessages.KIT_SAVED.send(getPlayer());
-	}
+	public void sendToKitCreator(SubmitAction submitAction) {
 
-	public void sendPlayerToKitCreator() {
-		getPlayer().closeInventory();
-
-		Location location = KitEditorManager.getLocation();
-
-		if (location == null) {
+		if (KitEditorManager.getLocation() == null) {
 			message(ErrorMessages.KIT_EDITOR_LOCATION_NOT_SET);
 			return;
 		}
 
-		PlayerUtil.teleport(this.getPlayer(), location);
-		setInventoryClickCancelled(false);
-		getInventory().clear();
-		setPlayerStatus(PlayerStatus.KIT_CREATOR);
-		this.player.setGameMode(GameMode.CREATIVE);
+		this.kitCreator = new KitCreator(this, submitAction);
+		kitCreator.start();
+	}
+
+	public boolean isInKitEditor() {
+		return kitEditor != null;
+	}
+
+	public boolean isInKitCreator() {
+		return kitCreator != null;
 	}
 
 	public boolean equals(Profile p) {
@@ -633,13 +620,6 @@ public class Profile {
 
 					for (Player player : playersInWorld) {
 						getPlayer().showPlayer(player);
-					}
-
-					break;
-				case KIT_EDITOR:
-				case KIT_CREATOR:
-					for (Player player : playersInWorld) {
-						getPlayer().hidePlayer(player, false);
 					}
 
 					break;

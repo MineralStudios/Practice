@@ -50,8 +50,8 @@ public class InteractListener implements Listener {
 			return;
 		}
 
-		if (profile.getPlayerStatus() == PlayerStatus.KIT_CREATOR
-				|| profile.getPlayerStatus() == PlayerStatus.KIT_EDITOR) {
+		if (profile.isInKitCreator()
+				|| profile.isInKitEditor()) {
 			e.setCancelled(true);
 
 			if (e.getClickedBlock() == null) {
@@ -63,22 +63,16 @@ public class InteractListener implements Listener {
 				return;
 			}
 
-			if (profile.getPlayerStatus() == PlayerStatus.KIT_CREATOR) {
-
-				if (e.getClickedBlock().getType() == Material.WOODEN_DOOR) {
-					profile.leaveKitCreator();
-					return;
-				}
-
-				return;
-			}
-
 			if (e.getClickedBlock().getType() == Material.CHEST) {
 				profile.openMenu(new AddItemsMenu());
 				return;
 			}
 
 			if (e.getClickedBlock().getType() == Material.WOODEN_DOOR) {
+				if (profile.isInKitCreator()) {
+					profile.leaveKitCreator();
+				}
+
 				profile.leaveKitEditor();
 				return;
 			}
