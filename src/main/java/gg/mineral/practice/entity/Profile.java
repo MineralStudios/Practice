@@ -197,9 +197,9 @@ public class Profile {
 
 		setPlayerStatus(PlayerStatus.QUEUEING);
 		getInventory().setInventoryForQueue();
-		QueueSearchTask.addPlayer(this, queueEntry);
 		message(ChatMessages.JOINED_QUEUE.clone().replace("%queue%", queueEntry.getQueuetype().getDisplayName())
 				.replace("%gametype%", queueEntry.getGametype().getDisplayName()));
+		QueueSearchTask.addPlayer(this, queueEntry);
 	}
 
 	public void teleportToLobby() {
