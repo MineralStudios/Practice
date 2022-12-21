@@ -399,7 +399,7 @@ public class Profile extends Spectator {
 	}
 
 	public boolean isInEvent() {
-		return this.tournament != null;
+		return this.event != null;
 	}
 
 	public void removeFromTournament() {
