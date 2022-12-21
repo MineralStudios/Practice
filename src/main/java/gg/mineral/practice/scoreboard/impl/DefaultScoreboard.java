@@ -26,7 +26,6 @@ public class DefaultScoreboard {
 			Scoreboard board = new Scoreboard(profile.getPlayer());
 
 			board.updateTitle(CC.PRIMARY + CC.B + "Mineral");
-			profile.setScoreboard(this);
 
 			taskID = Bukkit.getServer().getScheduler().scheduleSyncRepeatingTask(PracticePlugin.INSTANCE, () -> {
 				if (profile.getScoreboard() != null
