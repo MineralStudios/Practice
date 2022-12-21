@@ -5,6 +5,9 @@ import gg.mineral.practice.entity.Profile;
 import gg.mineral.practice.scoreboard.Scoreboard;
 
 public class SpectatorScoreboard extends DefaultScoreboard {
+
+    public static final DefaultScoreboard INSTANCE = new SpectatorScoreboard();
+
     @Override
     public void updateBoard(Scoreboard board, Profile profile) {
 

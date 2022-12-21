@@ -143,11 +143,11 @@ public class Match implements Spectatable {
 
 	public void setScoreboard(Profile p) {
 		if (data.getBoxing()) {
-			p.setScoreboard(new BoxingScoreboard());
+			p.setScoreboard(BoxingScoreboard.INSTANCE);
 			return;
 		}
 
-		p.setScoreboard(new InMatchScoreboard());
+		p.setScoreboard(InMatchScoreboard.INSTANCE);
 	}
 
 	public void updateVisiblity(Match match, Profile profile) {
@@ -318,8 +318,8 @@ public class Match implements Spectatable {
 		}
 
 		resetPearlCooldown(attacker, victim);
-		attacker.setScoreboard(new MatchEndScoreboard());
-		victim.setScoreboard(new DefaultScoreboard());
+		attacker.setScoreboard(MatchEndScoreboard.INSTANCE);
+		victim.setScoreboard(DefaultScoreboard.INSTANCE);
 		MatchManager.remove(this);
 
 		victim.heal();
@@ -329,7 +329,7 @@ public class Match implements Spectatable {
 		giveQueueAgainItem(attacker);
 
 		Bukkit.getServer().getScheduler().runTaskLater(PracticePlugin.INSTANCE, () -> {
-			attacker.setScoreboard(new DefaultScoreboard());
+			attacker.setScoreboard(DefaultScoreboard.INSTANCE);
 			sendBackToLobby(attacker);
 			nameTag.giveTagAfterMatch(profile1.getPlayer(), profile2.getPlayer());
 		}, getPostMatchTime());

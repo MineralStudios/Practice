@@ -8,6 +8,8 @@ import gg.mineral.practice.util.messages.CC;
 
 public class BoxingScoreboard extends DefaultScoreboard {
 
+        public static final DefaultScoreboard INSTANCE = new BoxingScoreboard();
+
         public BoxingScoreboard() {
                 setUpdateFrequency(10);
         }

@@ -6,6 +6,8 @@ import gg.mineral.practice.scoreboard.Scoreboard;
 
 public class KitCreatorScoreboard extends DefaultScoreboard {
 
+    public static final DefaultScoreboard INSTANCE = new KitCreatorScoreboard();
+
     @Override
     public void updateBoard(Scoreboard board, Profile profile) {
 

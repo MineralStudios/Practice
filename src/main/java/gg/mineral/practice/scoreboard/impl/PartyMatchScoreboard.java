@@ -10,6 +10,9 @@ import gg.mineral.practice.match.Match;
 import gg.mineral.practice.scoreboard.Scoreboard;
 
 public class PartyMatchScoreboard extends DefaultScoreboard {
+
+    public static final DefaultScoreboard INSTANCE = new PartyMatchScoreboard();
+
     @Override
     public void updateBoard(Scoreboard board, Profile profile) {
         Match match = profile.getMatch();

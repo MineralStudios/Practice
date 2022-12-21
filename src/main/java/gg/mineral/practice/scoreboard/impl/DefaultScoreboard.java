@@ -16,6 +16,7 @@ public class DefaultScoreboard {
 	@Getter
 	int updateFrequency = 20;
 	int taskID;
+	public static final DefaultScoreboard INSTANCE = new DefaultScoreboard();
 
 	public void setBoard(Profile profile) {
 

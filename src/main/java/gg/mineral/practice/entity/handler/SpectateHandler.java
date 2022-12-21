@@ -43,7 +43,7 @@ public class SpectateHandler {
         this.following = p;
         p.getSpectateHandler().getFollowers().add(profile);
         profile.getInventory().setInventoryToFollow();
-        profile.setScoreboard(new FollowingScoreboard());
+        profile.setScoreboard(FollowingScoreboard.INSTANCE);
 
         if (following.getPlayerStatus() == PlayerStatus.FIGHTING || following.isInEvent()) {
             spectate(this.following);
@@ -69,7 +69,7 @@ public class SpectateHandler {
         } else {
             profile.getInventory().setInventoryForLobby();
         }
-        profile.setScoreboard(new DefaultScoreboard());
+        profile.setScoreboard(DefaultScoreboard.INSTANCE);
     }
 
     public void stopFollowing() {
@@ -139,7 +139,7 @@ public class SpectateHandler {
 
         profile.getInventory().setInventoryForSpectating();
         profile.setPlayerStatus(PlayerStatus.SPECTATING);
-        profile.setScoreboard(new SpectatorScoreboard());
+        profile.setScoreboard(SpectatorScoreboard.INSTANCE);
     }
 
     private void updateVisiblity() {

@@ -8,6 +8,8 @@ import gg.mineral.practice.scoreboard.Scoreboard;
 
 public class InMatchScoreboard extends DefaultScoreboard {
 
+	public static final DefaultScoreboard INSTANCE = new InMatchScoreboard();
+
 	@Override
 	public void updateBoard(Scoreboard board, Profile profile) {
 		board.updateLines(CC.BOARD_SEPARATOR,

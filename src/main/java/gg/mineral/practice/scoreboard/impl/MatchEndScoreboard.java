@@ -6,6 +6,8 @@ import gg.mineral.practice.scoreboard.Scoreboard;
 
 public class MatchEndScoreboard extends DefaultScoreboard {
 
+    public static final DefaultScoreboard INSTANCE = new MatchEndScoreboard();
+
     @Override
     public void updateBoard(Scoreboard board, Profile profile) {
 

@@ -100,11 +100,11 @@ public class PartyMatch extends Match {
 	@Override
 	public void setScoreboard(Profile p) {
 		if (data.getBoxing()) {
-			p.setScoreboard(new PartyBoxingScoreboard());
+			p.setScoreboard(PartyBoxingScoreboard.INSTANCE);
 			return;
 		}
 
-		p.setScoreboard(new PartyMatchScoreboard());
+		p.setScoreboard(PartyMatchScoreboard.INSTANCE);
 	}
 
 	@Override
@@ -143,7 +143,7 @@ public class PartyMatch extends Match {
 		victim.removePotionEffects();
 		victim.getInventory().clear();
 
-		victim.setScoreboard(new DefaultScoreboard());
+		victim.setScoreboard(DefaultScoreboard.INSTANCE);
 
 		if (victimTeam.size() > 1) {
 			victimTeam.remove(victim);
@@ -173,7 +173,7 @@ public class PartyMatch extends Match {
 			attacker.removePotionEffects();
 			attacker.getInventory().clear();
 
-			attacker.setScoreboard(new MatchEndScoreboard());
+			attacker.setScoreboard(MatchEndScoreboard.INSTANCE);
 
 			Bukkit.getServer().getScheduler().runTaskLater(PracticePlugin.INSTANCE, () -> {
 				attacker.teleportToLobby();
@@ -183,7 +183,7 @@ public class PartyMatch extends Match {
 					attacker.getInventory().setInventoryForLobby();
 				}
 				attacker.removeFromMatch();
-				attacker.setScoreboard(new DefaultScoreboard());
+				attacker.setScoreboard(DefaultScoreboard.INSTANCE);
 			}, getPostMatchTime());
 		}
 

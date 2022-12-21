@@ -9,6 +9,8 @@ import gg.mineral.practice.util.collection.ProfileList;
 import gg.mineral.practice.util.messages.CC;
 
 public class PartyBoxingScoreboard extends DefaultScoreboard {
+    public static final DefaultScoreboard INSTANCE = new PartyBoxingScoreboard();
+
     @Override
     public void updateBoard(Scoreboard board, Profile profile) {
         if (profile.getMatch() == null) {
