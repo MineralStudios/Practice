@@ -319,10 +319,6 @@ public class Profile {
 	}
 
 	public void startPartyOpenCooldown() {
-		if (partyOpenCooldown) {
-			return;
-		}
-
 		partyOpenCooldown = true;
 
 		Bukkit.getServer().getScheduler().runTaskLaterAsynchronously(PracticePlugin.INSTANCE,
