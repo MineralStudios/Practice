@@ -18,9 +18,6 @@ public class DefaultScoreboard {
 	int taskID;
 
 	public void setBoard(Profile profile) {
-		if (profile.getScoreboard() != null) {
-			profile.getScoreboard().remove(profile);
-		}
 
 		try {
 			Scoreboard board = new Scoreboard(profile.getPlayer());

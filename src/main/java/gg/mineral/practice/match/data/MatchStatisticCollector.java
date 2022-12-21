@@ -29,8 +29,10 @@ public class MatchStatisticCollector {
     ItemStack helmet, chestplate, leggings, boots;
     @Getter
     List<String> potionEffectStrings;
+    boolean active = false;
 
     public void start() {
+        active = true;
         hitCount = 0;
         currentCombo = 0;
         longestCombo = 0;

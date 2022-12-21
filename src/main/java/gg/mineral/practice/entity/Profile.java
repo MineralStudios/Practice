@@ -113,6 +113,10 @@ public class Profile {
 	}
 
 	public void setScoreboard(DefaultScoreboard scoreboard) {
+		if (scoreboard != null) {
+			scoreboard.remove(this);
+		}
+
 		this.scoreboard = scoreboard;
 		this.scoreboard.setBoard(this);
 	}

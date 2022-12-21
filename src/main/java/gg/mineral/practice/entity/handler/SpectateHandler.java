@@ -45,7 +45,7 @@ public class SpectateHandler {
         profile.getInventory().setInventoryToFollow();
         profile.setScoreboard(new FollowingScoreboard());
 
-        if (p.getPlayerStatus() == PlayerStatus.FIGHTING || p.isInEvent()) {
+        if (following.getPlayerStatus() == PlayerStatus.FIGHTING || following.isInEvent()) {
             spectate(this.following);
         }
     }
@@ -85,27 +85,28 @@ public class SpectateHandler {
         stopSpectating();
     }
 
-    public void spectate(Profile profile) {
+    public void spectate(Profile toBeSpectated) {
 
-        if (profile.equals(profile)) {
-            profile.message(ErrorMessages.NOT_SPEC_SELF);
+        if (toBeSpectated.equals(this.profile)) {
+            toBeSpectated.message(ErrorMessages.NOT_SPEC_SELF);
             return;
         }
 
-        if (profile.getPlayerStatus() != PlayerStatus.IDLE && profile.getPlayerStatus() != PlayerStatus.FOLLOWING) {
-            profile.message(ErrorMessages.YOU_ARE_NOT_IN_LOBBY);
+        if (this.profile.getPlayerStatus() != PlayerStatus.IDLE
+                && this.profile.getPlayerStatus() != PlayerStatus.FOLLOWING) {
+            toBeSpectated.message(ErrorMessages.YOU_ARE_NOT_IN_LOBBY);
             return;
         }
 
-        this.spectatable = profile.isInEvent() ? profile.getEvent() : profile.getMatch();
+        this.spectatable = toBeSpectated.isInEvent() ? toBeSpectated.getEvent() : toBeSpectated.getMatch();
 
         if (spectatable.isEnded()) {
             return;
         }
 
-        if (!profile.isInEvent()) {
-            if (profile.getPlayerStatus() != PlayerStatus.FIGHTING) {
-                profile.message(ErrorMessages.PLAYER_NOT_IN_MATCH);
+        if (!toBeSpectated.isInEvent()) {
+            if (toBeSpectated.getPlayerStatus() != PlayerStatus.FIGHTING) {
+                toBeSpectated.message(ErrorMessages.PLAYER_NOT_IN_MATCH);
                 return;
             }
 
@@ -119,13 +120,13 @@ public class SpectateHandler {
         profile.getPlayer().setGameMode(GameMode.SPECTATOR);
 
         PlayerUtil.teleport(profile.getPlayer(),
-                profile.isInEvent() ? profile.getEvent().getEventArena().getWaitingLocation()
-                        : profile.getPlayer().getLocation());
+                toBeSpectated.isInEvent() ? toBeSpectated.getEvent().getEventArena().getWaitingLocation()
+                        : toBeSpectated.getPlayer().getLocation());
 
-        if (profile.isInEvent()) {
+        if (toBeSpectated.isInEvent()) {
             ChatMessages.SPECTATING_EVENT.send(profile.getPlayer());
         } else {
-            ChatMessages.SPECTATING.clone().replace("%player%", profile.getName()).send(profile.getPlayer());
+            ChatMessages.SPECTATING.clone().replace("%player%", toBeSpectated.getName()).send(profile.getPlayer());
         }
 
         ChatMessages.STOP_SPECTATING.send(profile.getPlayer());

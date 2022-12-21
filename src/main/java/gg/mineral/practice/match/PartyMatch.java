@@ -151,7 +151,7 @@ public class PartyMatch extends Match {
 
 			victim.getSpectateHandler().spectate(victimTeam.get(0));
 			victim.removeFromMatch();
-			nameTag.giveTagAfterMatch(victim.getPlayer(), victim.getPlayer());
+			// nameTag.giveTagAfterMatch(victim.getPlayer(), victim.getPlayer());
 			return;
 		}
 
@@ -215,7 +215,7 @@ public class PartyMatch extends Match {
 			profile.getPlayer().spigot().sendMessage(winMessage);
 			profile.getPlayer().spigot().sendMessage(loseMessage);
 			profile.getPlayer().sendMessage(CC.SEPARATOR);
-			nameTag.giveTagAfterMatch(profile.getPlayer(), profile.getPlayer());
+			// nameTag.giveTagAfterMatch(profile.getPlayer(), profile.getPlayer());
 		}
 
 		victim.removePotionEffects();
