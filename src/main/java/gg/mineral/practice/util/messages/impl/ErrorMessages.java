@@ -57,9 +57,12 @@ public class ErrorMessages {
 	// Spectate/Follow
 	public static final Message NOT_FOLLOW_SELF = new ErrorMessage("You can not follow yourself.");
 	public static final Message NOT_SPEC_SELF = new ErrorMessage("You can not spectate yourself.");
-	public static final Message NOT_SPEC_OR_FOLLOWING = new ErrorMessage("You are not spectating or following.");
+	public static final Message NOT_FOLLOWING = new ErrorMessage("You are not following anyone.");
+	public static final Message NOT_SPEC = new ErrorMessage("You are not spectating anyone.");
 	// Match
 	public static final Message PLAYER_NOT_IN_MATCH = new ErrorMessage("That player is not in a match.");
+	public static final Message PLAYER_NOT_IN_MATCH_OR_EVENT = new ErrorMessage(
+			"That player is not in a match or event.");
 	public static final Message NOT_IN_MATCH = new ErrorMessage("You are not in a match.");
 	// Inventory
 	public static final Message PLAYER_INVENTORY_NOT_FOUND = new ErrorMessage(

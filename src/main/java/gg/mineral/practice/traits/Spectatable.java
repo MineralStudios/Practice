@@ -7,10 +7,6 @@ import gg.mineral.practice.util.collection.ProfileList;
 
 public interface Spectatable {
 
-    public enum Type {
-        EVENT, MATCH
-    }
-
     ConcurrentLinkedDeque<Profile> spectators = new ConcurrentLinkedDeque<>();
 
     default ConcurrentLinkedDeque<Profile> getSpectators() {

@@ -40,28 +40,28 @@ public class SpectateHandler {
         }
 
         profile.setPlayerStatus(PlayerStatus.FOLLOWING);
-        following = p;
+        this.following = p;
         p.getSpectateHandler().getFollowers().add(profile);
         profile.getInventory().setInventoryToFollow();
         new FollowingScoreboard(profile).setBoard();
 
-        if (p.getPlayerStatus() == PlayerStatus.FIGHTING) {
-            spectate(following);
+        if (p.getPlayerStatus() == PlayerStatus.FIGHTING || p.isInEvent()) {
+            spectate(this.following);
         }
     }
 
     public void stopSpectating() {
+        if (profile.getPlayerStatus() != PlayerStatus.SPECTATING) {
+            profile.message(ErrorMessages.NOT_SPEC);
+            return;
+        }
+
         if (spectatable != null) {
             spectatable.getSpectators().remove(profile);
             spectatable = null;
         }
 
         profile.teleportToLobby();
-
-        if (profile.getPlayerStatus() == PlayerStatus.FOLLOWING) {
-            profile.getInventory().setInventoryToFollow();
-            return;
-        }
 
         profile.getPlayer().setGameMode(GameMode.SURVIVAL);
         if (profile.isInParty()) {
@@ -72,50 +72,23 @@ public class SpectateHandler {
         new DefaultScoreboard(profile).setBoard();
     }
 
-    public void stopSpectatingAndFollowing() {
+    public void stopFollowing() {
 
-        if (profile.getPlayerStatus() != PlayerStatus.SPECTATING
-                && profile.getPlayerStatus() != PlayerStatus.FOLLOWING) {
-            profile.message(ErrorMessages.NOT_SPEC_OR_FOLLOWING);
+        if (profile.getPlayerStatus() != PlayerStatus.FOLLOWING) {
+            profile.message(ErrorMessages.NOT_FOLLOWING);
             return;
         }
 
-        if (spectatable != null) {
-            spectatable.getSpectators().remove(profile);
-            spectatable = null;
-        }
+        following.getSpectateHandler().getFollowers().remove(profile);
+        following = null;
 
-        if (profile.getPlayerStatus() == PlayerStatus.FOLLOWING) {
-            following.getSpectateHandler().getFollowers().remove(profile);
-            following = null;
-            profile.setPlayerStatus(PlayerStatus.IDLE);
-        }
-
-        profile.getPlayer().setGameMode(GameMode.SURVIVAL);
-
-        profile.teleportToLobby();
-        if (profile.isInParty()) {
-            profile.getInventory().setInventoryForParty();
-        } else {
-            profile.getInventory().setInventoryForLobby();
-        }
-        new DefaultScoreboard(profile).setBoard();
+        stopSpectating();
     }
 
-    public void spectate(Profile p) {
+    public void spectate(Profile profile) {
 
-        if (p.equals(profile)) {
+        if (profile.equals(profile)) {
             profile.message(ErrorMessages.NOT_SPEC_SELF);
-            return;
-        }
-
-        if (p.isInEvent()) {
-            spectateEvent(p.getEvent());
-            return;
-        }
-
-        if (p.getPlayerStatus() != PlayerStatus.FIGHTING) {
-            profile.message(ErrorMessages.PLAYER_NOT_IN_MATCH);
             return;
         }
 
@@ -124,35 +97,48 @@ public class SpectateHandler {
             return;
         }
 
-        this.spectatable = p.getMatch();
+        this.spectatable = profile.isInEvent() ? profile.getEvent() : profile.getMatch();
 
         if (spectatable.isEnded()) {
             return;
+        }
+
+        if (!profile.isInEvent()) {
+            if (profile.getPlayerStatus() != PlayerStatus.FIGHTING) {
+                profile.message(ErrorMessages.PLAYER_NOT_IN_MATCH);
+                return;
+            }
+
+            ChatMessage broadcastedMessage = ChatMessages.SPECTATING_YOUR_MATCH.clone().replace("%player%",
+                    profile.getName());
+            ProfileManager.broadcast(getSpectatable().getParticipants(), broadcastedMessage);
         }
 
         spectatable.getSpectators().add(profile);
 
         profile.getPlayer().setGameMode(GameMode.SPECTATOR);
 
-        PlayerUtil.teleport(profile.getPlayer(), p.getPlayer());
-        ChatMessages.SPECTATING.clone().replace("%player%", p.getName()).send(profile.getPlayer());
+        PlayerUtil.teleport(profile.getPlayer(),
+                profile.isInEvent() ? profile.getEvent().getEventArena().getWaitingLocation()
+                        : profile.getPlayer().getLocation());
+
+        if (profile.isInEvent()) {
+            ChatMessages.SPECTATING_EVENT.send(profile.getPlayer());
+        } else {
+            ChatMessages.SPECTATING.clone().replace("%player%", profile.getName()).send(profile.getPlayer());
+        }
 
         ChatMessages.STOP_SPECTATING.send(profile.getPlayer());
 
-        ChatMessage broadcastedMessage = ChatMessages.SPECTATING_YOUR_MATCH.clone().replace("%player%",
-                profile.getName());
-        ProfileManager.broadcast(getSpectatable().getParticipants(), broadcastedMessage);
-
-        profile.getInventory().setInventoryForSpectating();
+        updateVisiblity();
 
         if (profile.getPlayerStatus() == PlayerStatus.FOLLOWING) {
             return;
         }
 
-        new SpectatorScoreboard(profile).setBoard();
+        profile.getInventory().setInventoryForSpectating();
         profile.setPlayerStatus(PlayerStatus.SPECTATING);
-        updateVisiblity();
-
+        new SpectatorScoreboard(profile).setBoard();
     }
 
     private void updateVisiblity() {
@@ -176,36 +162,4 @@ public class SpectateHandler {
             }
         }
     }
-
-    public void spectateEvent(Event eventToSpectate) {
-
-        if (eventToSpectate.isEnded()) {
-            return;
-        }
-
-        if (profile.getPlayerStatus() != PlayerStatus.IDLE && profile.getPlayerStatus() != PlayerStatus.FOLLOWING) {
-            profile.message(ErrorMessages.YOU_ARE_NOT_IN_LOBBY);
-            return;
-        }
-
-        spectatable = eventToSpectate;
-        getSpectatable().getSpectators().add(profile);
-
-        profile.getPlayer().setGameMode(GameMode.SPECTATOR);
-
-        PlayerUtil.teleport(profile.getPlayer(), eventToSpectate.getEventArena().getWaitingLocation());
-        ChatMessages.SPECTATING_EVENT.send(profile.getPlayer());
-        ChatMessages.STOP_SPECTATING.send(profile.getPlayer());
-
-        profile.getInventory().setInventoryForSpectating();
-
-        if (profile.getPlayerStatus() == PlayerStatus.FOLLOWING) {
-            return;
-        }
-
-        profile.setPlayerStatus(PlayerStatus.SPECTATING);
-
-        updateVisiblity();
-    }
-
 }
