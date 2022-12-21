@@ -16,6 +16,7 @@ import org.bukkit.potion.PotionEffect;
 import org.bukkit.potion.PotionEffectType;
 import org.bukkit.scoreboard.Team;
 
+import de.jeezycore.utils.NameTag;
 import gg.mineral.api.collection.GlueList;
 import gg.mineral.practice.PracticePlugin;
 import gg.mineral.practice.entity.Profile;
@@ -51,7 +52,7 @@ import net.minecraft.server.v1_8_R3.EntityHuman;
 import net.minecraft.server.v1_8_R3.EntityItem;
 
 public class Match implements Spectatable {
-	// NameTag nameTag = new NameTag();
+	NameTag nameTag = new NameTag();
 	@Getter
 	ProfileList participants = new ProfileList();
 	@Getter
@@ -130,7 +131,7 @@ public class Match implements Spectatable {
 		p.getMatchStatisticCollector().start();
 		p.giveKit(getKit(p));
 
-		// nameTag.clearTagOnMatchStart(p.getPlayer(), p.getPlayer());
+		nameTag.clearTagOnMatchStart(p.getPlayer(), p.getPlayer());
 
 		setAttributes(p);
 		setPotionEffects(p);
@@ -330,7 +331,7 @@ public class Match implements Spectatable {
 		Bukkit.getServer().getScheduler().runTaskLater(PracticePlugin.INSTANCE, () -> {
 			attacker.setScoreboard(new DefaultScoreboard());
 			sendBackToLobby(attacker);
-			// nameTag.giveTagAfterMatch(profile1.getPlayer(), profile2.getPlayer());
+			nameTag.giveTagAfterMatch(profile1.getPlayer(), profile2.getPlayer());
 		}, getPostMatchTime());
 
 		for (Profile spectator : getSpectators()) {

@@ -68,7 +68,7 @@ public class TournamentMatch extends Match {
             }
 
             attacker.removeFromMatch();
-            // nameTag.giveTagAfterMatch(profile1.getPlayer(), profile2.getPlayer());
+            nameTag.giveTagAfterMatch(profile1.getPlayer(), profile2.getPlayer());
         }, getPostMatchTime());
 
         for (Profile spectator : getSpectators()) {
