@@ -1,10 +1,10 @@
 package gg.mineral.practice.party;
 
 import java.util.Iterator;
+import java.util.concurrent.ConcurrentLinkedQueue;
 
 import gg.mineral.practice.entity.Profile;
 import gg.mineral.practice.managers.PartyManager;
-import gg.mineral.practice.util.collection.ProfileList;
 import gg.mineral.practice.util.messages.ChatMessage;
 import gg.mineral.practice.util.messages.impl.ChatMessages;
 import lombok.Getter;
@@ -18,7 +18,7 @@ public class Party {
 	@Getter
 	boolean open = false;
 	@Getter
-	ProfileList partyMembers = new ProfileList();
+	ConcurrentLinkedQueue<Profile> partyMembers = new ConcurrentLinkedQueue<Profile>();
 
 	public Party(Profile partyLeader) {
 		this.partyLeader = partyLeader;

@@ -25,9 +25,9 @@ public class DefaultScoreboard {
 
 		return Bukkit.getServer().getScheduler().scheduleSyncRepeatingTask(PracticePlugin.INSTANCE, () -> {
 			if (profile.getScoreboard() != null
-					&& profile.getScoreboard().equals(DefaultScoreboard.this))
+					&& profile.getScoreboard().equals(DefaultScoreboard.this)) {
 				updateBoard(board, profile);
-			else {
+			} else {
 				profile.removeScoreboard();
 			}
 		}, 0, getUpdateFrequency());

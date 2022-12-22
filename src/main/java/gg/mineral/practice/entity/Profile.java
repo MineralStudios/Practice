@@ -98,6 +98,7 @@ public class Profile {
 	}
 
 	public void removeScoreboard() {
+		scoreboard = null;
 		Bukkit.getScheduler().cancelTask(scoreboardTaskId);
 	}
 
