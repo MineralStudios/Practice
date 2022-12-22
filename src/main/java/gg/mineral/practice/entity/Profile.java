@@ -30,7 +30,6 @@ import gg.mineral.practice.match.data.MatchStatisticCollector;
 import gg.mineral.practice.party.Party;
 import gg.mineral.practice.queue.QueueEntry;
 import gg.mineral.practice.queue.QueueSearchTask;
-import gg.mineral.practice.scoreboard.Scoreboard;
 import gg.mineral.practice.scoreboard.impl.DefaultScoreboard;
 import gg.mineral.practice.tournaments.Tournament;
 import gg.mineral.practice.util.PlayerUtil;
@@ -50,8 +49,6 @@ public class Profile {
 	Match match;
 	@Getter
 	DefaultScoreboard scoreboard;
-	@Getter
-	Scoreboard board;
 	Integer scoreboardTaskId;
 	@Getter
 	MatchData matchData;
@@ -85,7 +82,6 @@ public class Profile {
 		this.player = (CraftPlayer) player;
 		this.matchData = new MatchData();
 		this.inventory = new PlayerInventory(this);
-		this.board = new Scoreboard(player);
 		pearlCooldown.start();
 	}
 

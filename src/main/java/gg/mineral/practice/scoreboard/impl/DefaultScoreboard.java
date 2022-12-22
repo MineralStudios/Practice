@@ -19,13 +19,18 @@ public class DefaultScoreboard {
 
 	public int setBoard(Profile profile) {
 
-		profile.getBoard().updateTitle(CC.PRIMARY + CC.B + "Mineral");
+		Scoreboard board = new Scoreboard(profile.getPlayer());
+
+		board.updateTitle(CC.PRIMARY + CC.B + "Mineral");
 
 		return Bukkit.getServer().getScheduler().scheduleSyncRepeatingTask(PracticePlugin.INSTANCE, () -> {
 			if (profile.getScoreboard() != null
 					&& profile.getScoreboard().equals(DefaultScoreboard.this))
-				updateBoard(profile.getBoard(), profile);
+				updateBoard(board, profile);
 			else {
+				if (!board.isDeleted()) {
+					board.delete();
+				}
 				profile.removeScoreboard();
 			}
 		}, 0, getUpdateFrequency());
