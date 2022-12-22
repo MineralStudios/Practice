@@ -192,7 +192,7 @@ public class Profile {
 	public void addPlayerToQueue(QueueEntry queueEntry) {
 		this.player.getOpenInventory().close();
 
-		if (playerStatus != PlayerStatus.IDLE) {
+		if (playerStatus != PlayerStatus.IDLE || (playerStatus == PlayerStatus.FIGHTING && !getMatch().isEnded())) {
 			return;
 		}
 
