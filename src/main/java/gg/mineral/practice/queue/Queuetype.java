@@ -56,8 +56,16 @@ public class Queuetype implements SaveableData {
 
 		if (arenaList.isEmpty()) {
 			arenaList = new GlueList<>(arenas);
+		}
 
-			if (arenaList.retainAll(g.getArenas()) && arenaList.isEmpty()) {
+		arenaList.retainAll(g.getArenas());
+
+		if (arenaList.isEmpty()) {
+			arenaList = new GlueList<>(arenas);
+
+			arenaList.retainAll(g.getArenas());
+
+			if (arenaList.isEmpty()) {
 				return null;
 			}
 		}
