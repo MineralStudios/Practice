@@ -115,7 +115,7 @@ public class Profile {
 
 	public void setScoreboard(DefaultScoreboard scoreboard) {
 		this.scoreboard = scoreboard;
-		this.scoreboard.setBoard(this);
+		scoreboardTaskId = this.scoreboard.setBoard(this);
 	}
 
 	public boolean isInParty() {
