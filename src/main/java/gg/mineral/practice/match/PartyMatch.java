@@ -146,9 +146,9 @@ public class PartyMatch extends Match {
 		victim.setScoreboard(DefaultScoreboard.INSTANCE);
 
 		victimTeam.remove(victim);
-		participants.remove(victim);
 
 		if (victimTeam.size() > 0) {
+			participants.remove(victim);
 			victim.getSpectateHandler().spectate(victimTeam.get(0));
 			victim.removeFromMatch();
 			nameTag.giveTagAfterMatch(victim.getPlayer(), victim.getPlayer());
@@ -198,6 +198,8 @@ public class PartyMatch extends Match {
 			profile.getPlayer().sendMessage(CC.SEPARATOR);
 			nameTag.giveTagAfterMatch(profile.getPlayer(), profile.getPlayer());
 		}
+
+		participants.remove(victim);
 
 		victim.removePotionEffects();
 		victim.teleportToLobby();
