@@ -49,6 +49,7 @@ public class Profile {
 	Match match;
 	@Getter
 	DefaultScoreboard scoreboard;
+	Integer scoreboardTaskId;
 	@Getter
 	MatchData matchData;
 	@Getter
@@ -97,7 +98,7 @@ public class Profile {
 	}
 
 	public void removeScoreboard() {
-		scoreboard = null;
+		Bukkit.getScheduler().cancelTask(scoreboardTaskId);
 	}
 
 	public void heal() {
@@ -113,10 +114,6 @@ public class Profile {
 	}
 
 	public void setScoreboard(DefaultScoreboard scoreboard) {
-		if (scoreboard != null) {
-			scoreboard.remove(this);
-		}
-
 		this.scoreboard = scoreboard;
 		this.scoreboard.setBoard(this);
 	}

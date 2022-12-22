@@ -15,25 +15,21 @@ public class DefaultScoreboard {
 	@Setter
 	@Getter
 	int updateFrequency = 20;
-	int taskID;
 	public static final DefaultScoreboard INSTANCE = new DefaultScoreboard();
 
-	public void setBoard(Profile profile) {
+	public int setBoard(Profile profile) {
 
-		try {
-			Scoreboard board = new Scoreboard(profile.getPlayer());
+		Scoreboard board = new Scoreboard(profile.getPlayer());
 
-			board.updateTitle(CC.PRIMARY + CC.B + "Mineral");
+		board.updateTitle(CC.PRIMARY + CC.B + "Mineral");
 
-			taskID = Bukkit.getServer().getScheduler().scheduleSyncRepeatingTask(PracticePlugin.INSTANCE, () -> {
-				if (profile.getScoreboard() != null
-						&& profile.getScoreboard().equals(DefaultScoreboard.this))
-					updateBoard(board, profile);
-				else
-					remove(profile);
-			}, 0, getUpdateFrequency());
-		} catch (Exception e) {
-		}
+		return Bukkit.getServer().getScheduler().scheduleSyncRepeatingTask(PracticePlugin.INSTANCE, () -> {
+			if (profile.getScoreboard() != null
+					&& profile.getScoreboard().equals(DefaultScoreboard.this))
+				updateBoard(board, profile);
+			else
+				profile.removeScoreboard();
+		}, 0, getUpdateFrequency());
 	}
 
 	public void updateBoard(Scoreboard board, Profile profile) {
@@ -42,10 +38,4 @@ public class DefaultScoreboard {
 						+ ProfileManager.count(p -> p.getPlayerStatus() == PlayerStatus.FIGHTING),
 				CC.BOARD_SEPARATOR);
 	}
-
-	public void remove(Profile profile) {
-		Bukkit.getScheduler().cancelTask(taskID);
-		profile.removeScoreboard();
-	}
-
 }
