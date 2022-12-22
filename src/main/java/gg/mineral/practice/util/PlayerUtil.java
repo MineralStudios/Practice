@@ -7,7 +7,8 @@ import org.bukkit.entity.Player;
 public class PlayerUtil {
     public static void teleport(CraftPlayer from, Location to) {
         from.getHandle().playerConnection.checkMovement = false;
-        to.add(to, 0, 0.5, 0);
+        double newY = Math.ceil(to.getY());
+        to.setY(newY);
         from.teleport(to);
     }
 
