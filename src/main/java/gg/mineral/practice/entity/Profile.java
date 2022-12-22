@@ -127,6 +127,10 @@ public class Profile {
 	}
 
 	public void removeFromMatch() {
+		if (playerStatus == PlayerStatus.FIGHTING && !getMatch().isEnded()) {
+			return;
+		}
+
 		setPlayerStatus(PlayerStatus.IDLE);
 		match = null;
 	}

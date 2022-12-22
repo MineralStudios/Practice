@@ -19,6 +19,7 @@ import org.bukkit.scoreboard.Team;
 import de.jeezycore.utils.NameTag;
 import gg.mineral.api.collection.GlueList;
 import gg.mineral.practice.PracticePlugin;
+import gg.mineral.practice.entity.PlayerStatus;
 import gg.mineral.practice.entity.Profile;
 import gg.mineral.practice.gametype.Gametype;
 import gg.mineral.practice.inventory.menus.InventoryStatsMenu;
@@ -329,6 +330,10 @@ public class Match implements Spectatable {
 		giveQueueAgainItem(attacker);
 
 		Bukkit.getServer().getScheduler().runTaskLater(PracticePlugin.INSTANCE, () -> {
+			if (attacker.getPlayerStatus() == PlayerStatus.FIGHTING && !attacker.getMatch().isEnded()) {
+				return;
+			}
+
 			attacker.setScoreboard(DefaultScoreboard.INSTANCE);
 			sendBackToLobby(attacker);
 			nameTag.giveTagAfterMatch(profile1.getPlayer(), profile2.getPlayer());
