@@ -378,7 +378,7 @@ public class Match implements Spectatable {
 		attacker.heal();
 		attacker.removePotionEffects();
 		attacker.getInventory().clear();
-		attacker.getPlayer().hidePlayer(victim.getPlayer());
+		attacker.getPlayer().hidePlayer(victim.getPlayer(), false);
 	}
 
 	public void giveQueueAgainItem(Profile profile) {

@@ -211,6 +211,7 @@ public class Profile {
 		}
 
 		PlayerUtil.teleport(this.getPlayer(), ProfileManager.getSpawnLocation());
+		updateVisiblity();
 
 		if (playerStatus != PlayerStatus.FOLLOWING && playerStatus != PlayerStatus.QUEUEING) {
 			setPlayerStatus(PlayerStatus.IDLE);
@@ -272,32 +273,21 @@ public class Profile {
 	}
 
 	public void setPlayerStatus(PlayerStatus newPlayerStatus) {
+		playerStatus = newPlayerStatus;
+	}
 
+	private void updateVisiblity() {
 		List<org.bukkit.entity.Player> playersInWorld = getPlayer().getWorld().getPlayers();
-
-		if (playerStatus != PlayerStatus.QUEUEING) {
-
-			switch (newPlayerStatus) {
-				case IDLE:
-					if (!this.isPlayersVisible()) {
-						for (Player player : playersInWorld) {
-							getPlayer().hidePlayer(player, false);
-						}
-
-						break;
-					}
-
-					for (Player player : playersInWorld) {
-						getPlayer().showPlayer(player);
-					}
-
-					break;
-				default:
-
+		if (!this.isPlayersVisible()) {
+			for (Player player : playersInWorld) {
+				getPlayer().hidePlayer(player, false);
 			}
+			return;
 		}
 
-		playerStatus = newPlayerStatus;
+		for (Player player : playersInWorld) {
+			getPlayer().showPlayer(player);
+		}
 	}
 
 	public void resetMatchData() {
