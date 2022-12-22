@@ -32,6 +32,10 @@ public class MatchStatisticCollector {
     boolean active = false;
 
     public void start() {
+        if (active) {
+            throw new IllegalStateException("Already started");
+        }
+
         active = true;
         hitCount = 0;
         currentCombo = 0;
@@ -52,6 +56,11 @@ public class MatchStatisticCollector {
     }
 
     public void end() {
+        if (!active) {
+            throw new IllegalStateException("Not been started yet.");
+        }
+
+        active = false;
         this.potionsRemaining = profile.getInventory().getNumber(Material.POTION, (short) 16421);
         this.soupsRemaining = profile.getInventory().getNumber(Material.MUSHROOM_SOUP);
         this.remainingHealth = profile.getPlayer().isDead() ? 0 : (int) profile.getPlayer().getHealth();
@@ -75,6 +84,9 @@ public class MatchStatisticCollector {
     }
 
     public void increaseHitCount() {
+        if (!active) {
+            return;
+        }
         hitCount++;
         currentCombo++;
 
@@ -91,14 +103,23 @@ public class MatchStatisticCollector {
     }
 
     public void resetCombo() {
+        if (!active) {
+            return;
+        }
         currentCombo = 0;
     }
 
     public void clearHitCount() {
+        if (!active) {
+            return;
+        }
         hitCount = 0;
     }
 
     public void thrownPotion(boolean missed) {
+        if (!active) {
+            return;
+        }
         potionsThrown++;
 
         if (missed) {
@@ -107,10 +128,16 @@ public class MatchStatisticCollector {
     }
 
     public void stolenPotion() {
+        if (!active) {
+            return;
+        }
         potionsStolen++;
     }
 
     public void click() {
+        if (!active) {
+            return;
+        }
         if (System.currentTimeMillis() - clickCounterStart > 1000) {
             clickCounterStart = System.currentTimeMillis();
             highestCps = Math.max(clicks, highestCps);
