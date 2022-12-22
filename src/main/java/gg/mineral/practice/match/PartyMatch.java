@@ -145,10 +145,10 @@ public class PartyMatch extends Match {
 
 		victim.setScoreboard(DefaultScoreboard.INSTANCE);
 
-		if (victimTeam.size() > 1) {
-			victimTeam.remove(victim);
-			participants.remove(victim);
+		victimTeam.remove(victim);
+		participants.remove(victim);
 
+		if (victimTeam.size() > 0) {
 			victim.getSpectateHandler().spectate(victimTeam.get(0));
 			victim.removeFromMatch();
 			nameTag.giveTagAfterMatch(victim.getPlayer(), victim.getPlayer());
@@ -161,30 +161,11 @@ public class PartyMatch extends Match {
 
 		Profile attackerTeamLeader = attackerTeamIterator.next();
 
+		attackerEndMatch(attackerTeamLeader, attackerInventoryStatsMenus);
+
 		while (attackerTeamIterator.hasNext()) {
 			Profile attacker = attackerTeamIterator.next();
-			attacker.getMatchStatisticCollector().end();
-
-			attackerInventoryStatsMenus
-					.add(setInventoryStats(attacker, attacker.getMatchStatisticCollector()));
-
-			attacker.setPearlCooldown(0);
-			attacker.heal();
-			attacker.removePotionEffects();
-			attacker.getInventory().clear();
-
-			attacker.setScoreboard(MatchEndScoreboard.INSTANCE);
-
-			Bukkit.getServer().getScheduler().runTaskLater(PracticePlugin.INSTANCE, () -> {
-				attacker.teleportToLobby();
-				if (attacker.isInParty()) {
-					attacker.getInventory().setInventoryForParty();
-				} else {
-					attacker.getInventory().setInventoryForLobby();
-				}
-				attacker.removeFromMatch();
-				attacker.setScoreboard(DefaultScoreboard.INSTANCE);
-			}, getPostMatchTime());
+			attackerEndMatch(attacker, attackerInventoryStatsMenus);
 		}
 
 		ProfileManager.setTeamInventoryStats(attackerTeamLeader, attackerInventoryStatsMenus);
@@ -245,6 +226,31 @@ public class PartyMatch extends Match {
 	@Override
 	public List<Profile> getTeam(Profile p) {
 		return team1RemainingPlayers.contains(p) ? team1RemainingPlayers : team2RemainingPlayers;
+	}
+
+	private void attackerEndMatch(Profile attacker, List<InventoryStatsMenu> attackerInventoryStatsMenus) {
+		attacker.getMatchStatisticCollector().end();
+
+		attackerInventoryStatsMenus
+				.add(setInventoryStats(attacker, attacker.getMatchStatisticCollector()));
+
+		attacker.setPearlCooldown(0);
+		attacker.heal();
+		attacker.removePotionEffects();
+		attacker.getInventory().clear();
+
+		attacker.setScoreboard(MatchEndScoreboard.INSTANCE);
+
+		Bukkit.getServer().getScheduler().runTaskLater(PracticePlugin.INSTANCE, () -> {
+			attacker.teleportToLobby();
+			if (attacker.isInParty()) {
+				attacker.getInventory().setInventoryForParty();
+			} else {
+				attacker.getInventory().setInventoryForLobby();
+			}
+			attacker.removeFromMatch();
+			attacker.setScoreboard(DefaultScoreboard.INSTANCE);
+		}, getPostMatchTime());
 	}
 
 	@Override
