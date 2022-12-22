@@ -1,10 +1,16 @@
 package gg.mineral.practice.match;
 
+import java.util.Collection;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Queue;
+import java.util.concurrent.ConcurrentLinkedQueue;
 
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
+import org.bukkit.Material;
+import org.bukkit.craftbukkit.v1_8_R3.entity.CraftItem;
+import org.bukkit.entity.Item;
 import org.bukkit.scoreboard.Team;
 
 import gg.mineral.api.collection.GlueList;
@@ -23,16 +29,20 @@ import gg.mineral.practice.util.PlayerUtil;
 import gg.mineral.practice.util.collection.ProfileList;
 import gg.mineral.practice.util.messages.CC;
 import gg.mineral.practice.util.messages.impl.Strings;
+import gg.mineral.practice.util.world.WorldUtil;
 import lombok.Getter;
 import net.md_5.bungee.api.chat.ClickEvent;
 import net.md_5.bungee.api.chat.ComponentBuilder;
 import net.md_5.bungee.api.chat.HoverEvent;
 import net.md_5.bungee.api.chat.TextComponent;
+import net.minecraft.server.v1_8_R3.EntityHuman;
+import net.minecraft.server.v1_8_R3.EntityItem;
 
 public class PartyMatch extends Match {
 	@Getter
 	ProfileList team1RemainingPlayers, team2RemainingPlayers;
 	List<InventoryStatsMenu> team1InventoryStatsMenus = new GlueList<>(), team2InventoryStatsMenus = new GlueList<>();
+	Queue<Item> itemRemovalQueue = new ConcurrentLinkedQueue<>();
 	@Getter
 	int team1HitCount = 0, team2HitCount = 0, team1RequiredHitCount, team2RequiredHitCount;
 
@@ -146,6 +156,9 @@ public class PartyMatch extends Match {
 		victim.setScoreboard(DefaultScoreboard.INSTANCE);
 
 		victimTeam.remove(victim);
+		Collection<Item> items = data.getArena().getLocation1().getWorld().getEntitiesByClass(Item.class);
+
+		addToItemsToRemovalQueue(victim, items);
 
 		if (victimTeam.size() > 0) {
 			participants.remove(victim);
@@ -161,11 +174,11 @@ public class PartyMatch extends Match {
 
 		Profile attackerTeamLeader = attackerTeamIterator.next();
 
-		attackerEndMatch(attackerTeamLeader, attackerInventoryStatsMenus);
+		attackerEndMatch(attackerTeamLeader, attackerInventoryStatsMenus, items);
 
 		while (attackerTeamIterator.hasNext()) {
 			Profile attacker = attackerTeamIterator.next();
-			attackerEndMatch(attacker, attackerInventoryStatsMenus);
+			attackerEndMatch(attacker, attackerInventoryStatsMenus, items);
 		}
 
 		ProfileManager.setTeamInventoryStats(attackerTeamLeader, attackerInventoryStatsMenus);
@@ -225,12 +238,46 @@ public class PartyMatch extends Match {
 
 	}
 
+	public void addToItemsToRemovalQueue(Profile profile, Collection<Item> items) {
+		for (Item item : items) {
+			EntityHuman lastHolder = ((EntityItem) ((CraftItem) item).getHandle()).lastHolder;
+
+			if (lastHolder == null) {
+				continue;
+			}
+
+			if (lastHolder.getBukkitEntity().getUniqueId() == profile.getUUID()) {
+				itemRemovalQueue.add(item);
+			}
+		}
+	}
+
+	@Override
+	public void clearWorld() {
+		Bukkit.getServer().getScheduler().runTaskLater(PracticePlugin.INSTANCE, () -> {
+			if (world != null) {
+				WorldUtil.deleteWorld(world);
+				return;
+			}
+
+			for (Item item : itemRemovalQueue) {
+				item.remove();
+			}
+
+			for (Location location : buildLog) {
+				location.getBlock().setType(Material.AIR);
+			}
+		}, getPostMatchTime() + 1);
+	}
+
 	@Override
 	public List<Profile> getTeam(Profile p) {
 		return team1RemainingPlayers.contains(p) ? team1RemainingPlayers : team2RemainingPlayers;
 	}
 
-	private void attackerEndMatch(Profile attacker, List<InventoryStatsMenu> attackerInventoryStatsMenus) {
+	private void attackerEndMatch(Profile attacker, List<InventoryStatsMenu> attackerInventoryStatsMenus,
+			Collection<Item> items) {
+
 		attacker.getMatchStatisticCollector().end();
 
 		attackerInventoryStatsMenus
@@ -238,6 +285,7 @@ public class PartyMatch extends Match {
 
 		attacker.setPearlCooldown(0);
 		attacker.heal();
+		addToItemsToRemovalQueue(attacker, items);
 		attacker.removePotionEffects();
 		attacker.getInventory().clear();
 
