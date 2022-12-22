@@ -192,15 +192,13 @@ public class Profile {
 	public void addPlayerToQueue(QueueEntry queueEntry) {
 		this.player.getOpenInventory().close();
 
-		if (playerStatus != PlayerStatus.IDLE || (playerStatus == PlayerStatus.FIGHTING && !getMatch().isEnded())) {
-			return;
+		if (playerStatus == PlayerStatus.IDLE || (playerStatus == PlayerStatus.FIGHTING && getMatch().isEnded())) {
+			setPlayerStatus(PlayerStatus.QUEUEING);
+			getInventory().setInventoryForQueue();
+			message(ChatMessages.JOINED_QUEUE.clone().replace("%queue%", queueEntry.getQueuetype().getDisplayName())
+					.replace("%gametype%", queueEntry.getGametype().getDisplayName()));
+			QueueSearchTask.addPlayer(this, queueEntry);
 		}
-
-		setPlayerStatus(PlayerStatus.QUEUEING);
-		getInventory().setInventoryForQueue();
-		message(ChatMessages.JOINED_QUEUE.clone().replace("%queue%", queueEntry.getQueuetype().getDisplayName())
-				.replace("%gametype%", queueEntry.getGametype().getDisplayName()));
-		QueueSearchTask.addPlayer(this, queueEntry);
 	}
 
 	public void teleportToLobby() {
