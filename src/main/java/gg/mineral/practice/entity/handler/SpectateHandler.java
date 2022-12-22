@@ -88,13 +88,13 @@ public class SpectateHandler {
     public void spectate(Profile toBeSpectated) {
 
         if (toBeSpectated.equals(this.profile)) {
-            toBeSpectated.message(ErrorMessages.NOT_SPEC_SELF);
+            this.profile.message(ErrorMessages.NOT_SPEC_SELF);
             return;
         }
 
         if (this.profile.getPlayerStatus() != PlayerStatus.IDLE
                 && this.profile.getPlayerStatus() != PlayerStatus.FOLLOWING) {
-            toBeSpectated.message(ErrorMessages.YOU_ARE_NOT_IN_LOBBY);
+            this.profile.message(ErrorMessages.YOU_ARE_NOT_IN_LOBBY);
             return;
         }
 
@@ -106,7 +106,7 @@ public class SpectateHandler {
 
         if (!toBeSpectated.isInEvent()) {
             if (toBeSpectated.getPlayerStatus() != PlayerStatus.FIGHTING) {
-                toBeSpectated.message(ErrorMessages.PLAYER_NOT_IN_MATCH);
+                this.profile.message(ErrorMessages.PLAYER_NOT_IN_MATCH);
                 return;
             }
 

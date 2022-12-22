@@ -149,8 +149,8 @@ public class PartyMatch extends Match {
 
 		if (victimTeam.size() > 0) {
 			participants.remove(victim);
-			victim.getSpectateHandler().spectate(victimTeam.get(0));
 			victim.removeFromMatch();
+			victim.getSpectateHandler().spectate(victimTeam.get(0));
 			nameTag.giveTagAfterMatch(victim.getPlayer(), victim.getPlayer());
 			return;
 		}
