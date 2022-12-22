@@ -30,7 +30,7 @@ public class DefaultScoreboard {
 			} else {
 				profile.removeScoreboard();
 			}
-		}, 0, getUpdateFrequency());
+		}, 1, getUpdateFrequency());
 	}
 
 	public void updateBoard(Scoreboard board, Profile profile) {
