@@ -3,6 +3,7 @@ package gg.mineral.practice.listeners;
 import org.bukkit.Instrument;
 import org.bukkit.Note;
 import org.bukkit.entity.Arrow;
+import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.entity.EntityCombustByEntityEvent;
@@ -20,12 +21,12 @@ public class DamageListener implements Listener {
 
 	@EventHandler
 	public void onEntityDamage(EntityDamageEvent e) {
-		if (!(e.getEntity() instanceof org.bukkit.entity.Player)) {
+		if (!(e.getEntity() instanceof Player)) {
 			e.setCancelled(true);
 			return;
 		}
 
-		org.bukkit.entity.Player player = (org.bukkit.entity.Player) e.getEntity();
+		Player player = (Player) e.getEntity();
 
 		Profile victim = ProfileManager
 				.getProfile(
@@ -55,26 +56,30 @@ public class DamageListener implements Listener {
 
 	@EventHandler
 	public void onEntityDamageByEntity(EntityDamageByEntityEvent e) {
-		if (!(e.getEntity() instanceof org.bukkit.entity.Player)) {
+		if (!(e.getEntity() instanceof Player)) {
 			e.setCancelled(true);
 			return;
 		}
 
-		org.bukkit.entity.Player bukkitVictim = (org.bukkit.entity.Player) e.getEntity();
+		Player bukkitVictim = (Player) e.getEntity();
 
 		if (e.getDamager() instanceof Arrow) {
 			Arrow arrow = (Arrow) e.getDamager();
 
-			if (!(arrow.getShooter() instanceof org.bukkit.entity.Player)) {
+			if (!(arrow.getShooter() instanceof Player)) {
 				return;
 			}
 
-			org.bukkit.entity.Player shooter = (org.bukkit.entity.Player) arrow.getShooter();
+			Player shooter = (Player) arrow.getShooter();
 
 			int health = (int) bukkitVictim.getHealth();
 			ChatMessages.HEALTH.clone().replace("%player%", bukkitVictim.getName()).replace("%health%", "" + health)
 					.send(shooter);
 			shooter.playNote(shooter.getLocation(), Instrument.PIANO, new Note(20));
+			return;
+		}
+
+		if (!(e.getDamager() instanceof Player)) {
 			return;
 		}
 
