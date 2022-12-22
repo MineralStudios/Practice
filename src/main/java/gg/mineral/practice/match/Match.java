@@ -66,7 +66,7 @@ public class Match implements Spectatable {
 	@Getter
 	GlueList<Location> buildLog = new GlueList<>();
 	@Getter
-	int postMatchTime = 80;
+	int postMatchTime = 60;
 	org.bukkit.World world = null;
 
 	public Match(Profile profile1, Profile profile2, MatchData matchData) {
