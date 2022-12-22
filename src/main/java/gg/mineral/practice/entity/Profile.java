@@ -115,6 +115,9 @@ public class Profile {
 	}
 
 	public void setScoreboard(DefaultScoreboard scoreboard) {
+		if (scoreboard != null) {
+			removeScoreboard();
+		}
 		this.scoreboard = scoreboard;
 		scoreboardTaskId = this.scoreboard.setBoard(this);
 	}
