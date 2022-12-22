@@ -28,8 +28,10 @@ public class DefaultScoreboard {
 					&& profile.getScoreboard().equals(DefaultScoreboard.this))
 				updateBoard(board, profile);
 			else {
+				if (!board.isDeleted()) {
+					board.delete();
+				}
 				profile.removeScoreboard();
-				board.delete();
 			}
 		}, 0, getUpdateFrequency());
 	}
