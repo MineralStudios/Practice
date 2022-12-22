@@ -115,7 +115,7 @@ public class Profile {
 	}
 
 	public void setScoreboard(DefaultScoreboard scoreboard) {
-		if (scoreboard != null) {
+		if (this.scoreboard != null) {
 			removeScoreboard();
 		}
 		this.scoreboard = scoreboard;
