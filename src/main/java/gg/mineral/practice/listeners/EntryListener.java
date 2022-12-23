@@ -20,7 +20,6 @@ public class EntryListener implements Listener {
 		Profile profile = ProfileManager.getOrCreateProfile(event.getPlayer());
 		profile.getPlayer().setGameMode(GameMode.SURVIVAL);
 		profile.heal();
-		profile.getInventory().clear();
 		profile.getInventory().setInventoryForLobby();
 		profile.removePotionEffects();
 

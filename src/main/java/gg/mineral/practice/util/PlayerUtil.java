@@ -12,6 +12,13 @@ public class PlayerUtil {
         from.teleport(to);
     }
 
+    public static void teleportNoGlitch(CraftPlayer from, Location to) {
+        from.getHandle().playerConnection.checkMovement = false;
+        double newY = Math.ceil(to.getY());
+        to.setY(newY + 0.5);
+        from.teleport(to);
+    }
+
     public static void teleport(CraftPlayer from, Player to) {
         teleport(from, to.getLocation());
     }
