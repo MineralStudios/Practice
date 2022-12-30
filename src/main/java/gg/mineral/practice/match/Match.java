@@ -4,8 +4,6 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.concurrent.CompletableFuture;
 
-import de.jeezycore.db.MineralsSQL;
-import de.jeezycore.utils.UUIDChecker;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.Material;
@@ -18,7 +16,6 @@ import org.bukkit.potion.PotionEffect;
 import org.bukkit.potion.PotionEffectType;
 import org.bukkit.scoreboard.Team;
 
-import de.jeezycore.utils.NameTag;
 import gg.mineral.api.collection.GlueList;
 import gg.mineral.practice.PracticePlugin;
 import gg.mineral.practice.entity.PlayerStatus;
@@ -35,6 +32,7 @@ import gg.mineral.practice.scoreboard.impl.DefaultScoreboard;
 import gg.mineral.practice.scoreboard.impl.InMatchScoreboard;
 import gg.mineral.practice.scoreboard.impl.MatchEndScoreboard;
 import gg.mineral.practice.traits.Spectatable;
+import gg.mineral.practice.util.CoreConnector;
 import gg.mineral.practice.util.PlayerUtil;
 import gg.mineral.practice.util.collection.ProfileList;
 import gg.mineral.practice.util.items.ItemBuilder;
@@ -55,7 +53,7 @@ import net.minecraft.server.v1_8_R3.EntityHuman;
 import net.minecraft.server.v1_8_R3.EntityItem;
 
 public class Match implements Spectatable {
-	NameTag nameTag = new NameTag();
+
 	@Getter
 	ProfileList participants = new ProfileList();
 	@Getter
@@ -71,9 +69,6 @@ public class Match implements Spectatable {
 	@Getter
 	int postMatchTime = 60;
 	org.bukkit.World world = null;
-
-	MineralsSQL mineralsSQL = new MineralsSQL();
-	UUIDChecker uuidChecker = new UUIDChecker();
 
 	int mineralsAmount = 20;
 
@@ -139,7 +134,9 @@ public class Match implements Spectatable {
 		p.getMatchStatisticCollector().start();
 		p.giveKit(getKit(p));
 
-		nameTag.clearTagOnMatchStart(p.getPlayer(), p.getPlayer());
+		if (CoreConnector.connected()) {
+			CoreConnector.INSTANCE.getNameTagAPI().clearTagOnMatchStart(p.getPlayer(), p.getPlayer());
+		}
 
 		setAttributes(p);
 		setPotionEffects(p);
@@ -344,9 +341,15 @@ public class Match implements Spectatable {
 
 			attacker.setScoreboard(DefaultScoreboard.INSTANCE);
 			sendBackToLobby(attacker);
-			nameTag.giveTagAfterMatch(profile1.getPlayer(), profile2.getPlayer());
-			uuidChecker.check(attacker.getPlayer().getDisplayName());
-			mineralsSQL.addMinerals(attacker.getPlayer(), UUIDChecker.uuid, mineralsAmount, "&7You &2successfully &7earned &9"+mineralsAmount+" &fminerals&7.");
+
+			if (CoreConnector.connected()) {
+				CoreConnector.INSTANCE.getNameTagAPI().giveTagAfterMatch(profile1.getPlayer(), profile2.getPlayer());
+				CoreConnector.INSTANCE.getUuidChecker().check(attacker.getPlayer().getDisplayName());
+				CoreConnector.INSTANCE.getMineralsSQL().addMinerals(attacker.getPlayer(),
+						de.jeezycore.utils.UUIDChecker.uuid, mineralsAmount,
+						"&7You &2successfully &7earned &9" + mineralsAmount + " &fminerals&7.");
+			}
+
 		}, getPostMatchTime());
 
 		for (Profile spectator : getSpectators()) {
