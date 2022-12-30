@@ -4,6 +4,8 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.concurrent.CompletableFuture;
 
+import de.jeezycore.db.MineralsSQL;
+import de.jeezycore.utils.UUIDChecker;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.Material;
@@ -69,6 +71,11 @@ public class Match implements Spectatable {
 	@Getter
 	int postMatchTime = 60;
 	org.bukkit.World world = null;
+
+	MineralsSQL mineralsSQL = new MineralsSQL();
+	UUIDChecker uuidChecker = new UUIDChecker();
+
+	int mineralsAmount = 20;
 
 	public Match(Profile profile1, Profile profile2, MatchData matchData) {
 		this(matchData);
@@ -316,6 +323,7 @@ public class Match implements Spectatable {
 
 		if (data.isRanked()) {
 			updateElo(attacker, victim);
+			mineralsAmount = 100;
 		}
 
 		resetPearlCooldown(attacker, victim);
@@ -337,6 +345,8 @@ public class Match implements Spectatable {
 			attacker.setScoreboard(DefaultScoreboard.INSTANCE);
 			sendBackToLobby(attacker);
 			nameTag.giveTagAfterMatch(profile1.getPlayer(), profile2.getPlayer());
+			uuidChecker.check(attacker.getPlayer().getDisplayName());
+			mineralsSQL.addMinerals(attacker.getPlayer(), UUIDChecker.uuid, mineralsAmount, "&7You &2successfully &7earned &9"+mineralsAmount+" &fminerals&7.");
 		}, getPostMatchTime());
 
 		for (Profile spectator : getSpectators()) {
