@@ -5,7 +5,6 @@ import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.player.PlayerInitialSpawnEvent;
 import org.bukkit.event.player.PlayerJoinEvent;
-import org.bukkit.event.player.PlayerLoginEvent;
 import org.bukkit.event.player.PlayerQuitEvent;
 
 import gg.mineral.practice.entity.Profile;
@@ -58,10 +57,5 @@ public class EntryListener implements Listener {
 	@EventHandler
 	public void onPlayerInitialSpawn(PlayerInitialSpawnEvent e) {
 		e.setSpawnLocation(ProfileManager.getSpawnLocation());
-	}
-
-	@EventHandler
-	public void onPlayerLogin(PlayerLoginEvent e) {
-		ProfileManager.getOrCreateProfile(e.getPlayer());
 	}
 }

@@ -30,6 +30,8 @@ import gg.mineral.practice.match.data.MatchStatisticCollector;
 import gg.mineral.practice.party.Party;
 import gg.mineral.practice.queue.QueueEntry;
 import gg.mineral.practice.queue.QueueSearchTask;
+import gg.mineral.practice.scoreboard.Scoreboard;
+import gg.mineral.practice.scoreboard.ScoreboardHandler;
 import gg.mineral.practice.scoreboard.impl.DefaultScoreboard;
 import gg.mineral.practice.tournaments.Tournament;
 import gg.mineral.practice.util.PlayerUtil;
@@ -48,7 +50,10 @@ public class Profile {
 	@Getter
 	Match match;
 	@Getter
-	DefaultScoreboard scoreboard;
+	@Setter
+	Scoreboard scoreboard;
+	@Getter
+	ScoreboardHandler scoreboardHandler;
 	Integer scoreboardTaskId;
 	@Getter
 	MatchData matchData;
@@ -82,6 +87,14 @@ public class Profile {
 		this.player = (CraftPlayer) player;
 		this.matchData = new MatchData();
 		this.inventory = new PlayerInventory(this);
+		this.scoreboardHandler = new ScoreboardHandler(player);
+
+		scoreboardTaskId = Bukkit.getServer().getScheduler().scheduleSyncRepeatingTask(PracticePlugin.INSTANCE, () -> {
+			if (getScoreboard() != null) {
+				getScoreboard().updateBoard(scoreboardHandler, this);
+			}
+		}, 0, 10);
+
 		pearlCooldown.start();
 	}
 
@@ -98,8 +111,9 @@ public class Profile {
 	}
 
 	public void removeScoreboard() {
-		scoreboard = null;
 		Bukkit.getScheduler().cancelTask(scoreboardTaskId);
+		scoreboard = null;
+		scoreboardHandler.delete();
 	}
 
 	public void heal() {
@@ -112,14 +126,6 @@ public class Profile {
 	public void setMatch(Match match) {
 		this.match = match;
 		setPlayerStatus(PlayerStatus.FIGHTING);
-	}
-
-	public void setScoreboard(DefaultScoreboard scoreboard) {
-		if (this.scoreboard != null) {
-			removeScoreboard();
-		}
-		this.scoreboard = scoreboard;
-		scoreboardTaskId = this.scoreboard.setBoard(this);
 	}
 
 	public boolean isInParty() {

@@ -1,20 +1,22 @@
 package gg.mineral.practice.scoreboard.impl;
 
-import gg.mineral.practice.util.collection.ProfileList;
-import gg.mineral.practice.util.messages.CC;
-
 import java.util.List;
 
 import gg.mineral.practice.entity.Profile;
 import gg.mineral.practice.match.Match;
 import gg.mineral.practice.scoreboard.Scoreboard;
+import gg.mineral.practice.scoreboard.ScoreboardHandler;
+import gg.mineral.practice.util.collection.ProfileList;
+import gg.mineral.practice.util.messages.CC;
 
-public class PartyMatchScoreboard extends DefaultScoreboard {
+public class PartyMatchScoreboard
+        implements Scoreboard {
 
-    public static final DefaultScoreboard INSTANCE = new PartyMatchScoreboard();
+    public static final Scoreboard INSTANCE = new PartyMatchScoreboard();
 
     @Override
-    public void updateBoard(Scoreboard board, Profile profile) {
+    public void updateBoard(ScoreboardHandler board, Profile profile) {
+        board.updateTitle(CC.PRIMARY + CC.B + "Mineral");
         Match match = profile.getMatch();
 
         if (match == null) {
