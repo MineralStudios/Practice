@@ -2,7 +2,6 @@ package gg.mineral.practice.queue;
 
 import java.util.List;
 
-import org.bukkit.Material;
 import org.bukkit.inventory.ItemStack;
 
 import gg.mineral.api.collection.GlueList;
@@ -13,6 +12,7 @@ import gg.mineral.practice.gametype.Gametype;
 import gg.mineral.practice.managers.ArenaManager;
 import gg.mineral.practice.managers.QueuetypeManager;
 import gg.mineral.practice.util.SaveableData;
+import gg.mineral.practice.util.items.ItemStacks;
 import gg.mineral.server.combat.KnockbackProfile;
 import gg.mineral.server.combat.KnockbackProfileList;
 import it.unimi.dsi.fastutil.objects.Object2IntOpenHashMap;
@@ -142,7 +142,7 @@ public class Queuetype implements SaveableData {
 	@Override
 	public void load() {
 		this.displayItem = config.getItemstack(path + "DisplayItem",
-				new ItemStack(Material.DIAMOND_SWORD));
+				ItemStacks.DEFAULT_QUEUETYPE_DISPLAY_ITEM);
 		this.displayName = config.getString(path + "DisplayName", getName());
 		this.slotNumber = config.getInt(path + "Slot", 8);
 		this.ranked = config.getBoolean(path + "Elo", false);
@@ -163,7 +163,7 @@ public class Queuetype implements SaveableData {
 
 	@Override
 	public void setDefaults() {
-		this.displayItem = new ItemStack(Material.DIAMOND_SWORD);
+		this.displayItem = ItemStacks.DEFAULT_QUEUETYPE_DISPLAY_ITEM;
 		this.displayName = getName();
 		this.slotNumber = 8;
 		this.ranked = false;

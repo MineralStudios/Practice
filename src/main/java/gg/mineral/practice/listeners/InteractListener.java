@@ -10,7 +10,6 @@ import org.bukkit.event.Listener;
 import org.bukkit.event.block.Action;
 import org.bukkit.event.entity.EntityInteractEvent;
 import org.bukkit.event.player.PlayerInteractEvent;
-import org.bukkit.inventory.ItemStack;
 import org.bukkit.scheduler.BukkitRunnable;
 
 import gg.mineral.practice.PracticePlugin;
@@ -19,6 +18,7 @@ import gg.mineral.practice.entity.Profile;
 import gg.mineral.practice.inventory.menus.AddItemsMenu;
 import gg.mineral.practice.inventory.menus.SaveLoadKitsMenu;
 import gg.mineral.practice.managers.ProfileManager;
+import gg.mineral.practice.util.items.ItemStacks;
 import gg.mineral.practice.util.messages.impl.ChatMessages;
 
 public class InteractListener implements Listener {
@@ -113,7 +113,7 @@ public class InteractListener implements Listener {
 							return;
 						}
 
-						profile.getInventory().setItemInHand(new ItemStack(Material.BOWL));
+						profile.getInventory().setItemInHand(ItemStacks.EMPTY_BOWL);
 
 						if (profile.getPlayer().getHealth() <= 14.0) {
 							profile.getPlayer().setHealth(profile.getPlayer().getHealth() + 6.0);

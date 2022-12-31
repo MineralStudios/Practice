@@ -1,6 +1,5 @@
 package gg.mineral.practice.listeners;
 
-import org.bukkit.Material;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
@@ -9,12 +8,14 @@ import org.bukkit.inventory.ItemStack;
 import org.bukkit.potion.PotionEffect;
 import org.bukkit.potion.PotionEffectType;
 
+import gg.mineral.practice.util.items.ItemStacks;
+
 public class ComsumeListener implements Listener {
 	@EventHandler
 	public void onConsume(final PlayerItemConsumeEvent e) {
 		switch (e.getItem().getType()) {
 			case POTION:
-				e.setReplacement(new ItemStack(Material.AIR));
+				e.setReplacement(ItemStacks.AIR);
 				break;
 			case GOLDEN_APPLE:
 				final ItemStack goldenHead = e.getItem();

@@ -1,9 +1,6 @@
 package gg.mineral.practice.inventory.menus;
 
-import org.bukkit.Material;
-import org.bukkit.inventory.ItemStack;
-
-import gg.mineral.practice.util.items.ItemBuilder;
+import gg.mineral.practice.util.items.ItemStacks;
 import gg.mineral.practice.util.messages.CC;
 import gg.mineral.practice.entity.PlayerStatus;
 import gg.mineral.practice.entity.Profile;
@@ -24,12 +21,12 @@ public class OtherPartiesMenu extends PracticeMenu {
     public boolean update() {
         clear();
 
-        for (Party p : PartyManager.getParties()) {
-            if (p.getPartyLeader().getPlayerStatus() == PlayerStatus.IDLE && !p.equals(viewer.getParty())) {
-                Profile partyLeader = p.getPartyLeader();
-                ItemStack skull = new ItemBuilder(Material.SKULL_ITEM)
-                        .name(partyLeader.getName()).build();
-                add(skull, pr -> pr.getPlayer().performCommand("duel " + partyLeader.getName()));
+        for (Party party : PartyManager.getParties()) {
+            if (party.getPartyLeader().getPlayerStatus() == PlayerStatus.IDLE && !party.equals(viewer.getParty())) {
+                Profile partyLeader = party.getPartyLeader();
+                add(ItemStacks.OTHER_PARTY
+                        .name(partyLeader.getName()).build(),
+                        partyRequest -> partyRequest.getPlayer().performCommand("duel " + partyLeader.getName()));
             }
         }
 

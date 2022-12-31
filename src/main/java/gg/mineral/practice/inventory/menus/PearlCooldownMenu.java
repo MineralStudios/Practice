@@ -1,10 +1,6 @@
 package gg.mineral.practice.inventory.menus;
 
-import org.bukkit.DyeColor;
-import org.bukkit.Material;
-import org.bukkit.inventory.ItemStack;
-
-import gg.mineral.practice.util.items.ItemBuilder;
+import gg.mineral.practice.util.items.ItemStacks;
 import gg.mineral.practice.util.messages.CC;
 import gg.mineral.practice.inventory.PracticeMenu;
 
@@ -20,32 +16,28 @@ public class PearlCooldownMenu extends PracticeMenu {
 
     @Override
     public boolean update() {
-        ItemStack item = new ItemBuilder(new ItemStack(Material.WOOL, 1, DyeColor.RED.getData()))
-                .name("SUBTRACT 1").build();
-        ItemStack item2 = new ItemBuilder(new ItemStack(Material.WOOL, 1, DyeColor.GREEN.getData()))
-                .name("ADD 1").build();
-        ItemStack item3 = new ItemBuilder(Material.STONE_SWORD)
-                .name("Pearl Cooldown: " + viewer.getMatchData().getPearlCooldown())
-                .lore(CC.ACCENT + "Click To Apply Changes").build();
-        PearlCooldownMenu pMenu = this;
-        Runnable subtractTask = () -> {
+
+        setSlot(2, ItemStacks.SUBTRACT_1, () -> {
             if (viewer.getMatchData().getPearlCooldown() >= 1) {
                 viewer.getMatchData().setPearlCooldown(viewer.getMatchData().getPearlCooldown() - 1);
             }
-            viewer.openMenu(pMenu);
-        };
-        setSlot(2, item, subtractTask);
-        Runnable addTask = () -> {
+            viewer.openMenu(PearlCooldownMenu.this);
+        });
+
+        setSlot(4, ItemStacks.CLICK_TO_APPLY_CHANGES
+                .name("Pearl Cooldown: " + viewer.getMatchData().getPearlCooldown())
+                .build(), p -> {
+                    p.openMenu(menu);
+                    return true;
+                });
+
+        setSlot(6, ItemStacks.ADD_1, () -> {
             if (viewer.getMatchData().getPearlCooldown() >= 1) {
                 viewer.getMatchData().setPearlCooldown(viewer.getMatchData().getPearlCooldown() + 1);
             }
-            viewer.openMenu(pMenu);
-        };
-        setSlot(6, item2, addTask);
-        setSlot(4, item3, p -> {
-            p.openMenu(menu);
-            return true;
+            viewer.openMenu(PearlCooldownMenu.this);
         });
+
         return true;
     }
 }

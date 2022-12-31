@@ -1,9 +1,9 @@
 package gg.mineral.practice.managers;
 
-import org.bukkit.Material;
 import org.bukkit.inventory.ItemStack;
 
 import gg.mineral.api.config.FileConfiguration;
+import gg.mineral.practice.util.items.ItemStacks;
 
 public class PlayerSettingsManager {
 	final static FileConfiguration config = new FileConfiguration("playeroptions.yml", "plugins/Practice");
@@ -58,14 +58,14 @@ public class PlayerSettingsManager {
 
 	public static void load() {
 		slot = config.getInt("Options.Slot", 3);
-		displayItem = config.getItemstack("Options.DisplayItem", new ItemStack(Material.COMPASS));
+		displayItem = config.getItemstack("Options.DisplayItem", ItemStacks.DEFAULT_OPTIONS_DISPLAY_ITEM);
 		displayName = config.getString("Options.DisplayName", "Settings");
 		enabled = config.getBoolean("Options.Enable", true);
 	}
 
 	public void setDefaults() {
 		slot = 3;
-		displayItem = new ItemStack(Material.COMPASS);
+		displayItem = ItemStacks.DEFAULT_OPTIONS_DISPLAY_ITEM;
 		displayName = "Settings";
 		enabled = true;
 	}

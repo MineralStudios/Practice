@@ -1,9 +1,7 @@
 package gg.mineral.practice.inventory.menus;
 
-import org.bukkit.Material;
-
 import gg.mineral.practice.inventory.PracticeMenu;
-import gg.mineral.practice.util.items.ItemBuilder;
+import gg.mineral.practice.util.items.ItemStacks;
 import gg.mineral.practice.util.messages.CC;
 
 public class SettingsMenu extends PracticeMenu {
@@ -16,16 +14,13 @@ public class SettingsMenu extends PracticeMenu {
 	@Override
 	public boolean update() {
 		setSlot(0,
-				new ItemBuilder(Material.GOLDEN_CARROT)
-						.name("Toggle Player Visibility").build(),
+				ItemStacks.TOGGLE_PLAYER_VISIBILITY,
 				p -> p.getPlayer().performCommand("toggleplayervisibility"));
 		setSlot(1,
-				new ItemBuilder(Material.WOOD_SWORD)
-						.name("Toggle Duel Requests").build(),
+				ItemStacks.TOGGLE_DUEL_REQUESTS,
 				p -> p.getPlayer().performCommand("toggleduelrequests"));
 		setSlot(2,
-				new ItemBuilder(Material.NETHER_STAR)
-						.name("Toggle Party Requests").build(),
+				ItemStacks.TOGGLE_PARTY_REQUESTS,
 				p -> p.getPlayer().performCommand("togglepartyrequests"));
 		return true;
 	}

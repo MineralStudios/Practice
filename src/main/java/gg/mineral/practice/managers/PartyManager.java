@@ -2,12 +2,12 @@ package gg.mineral.practice.managers;
 
 import java.util.UUID;
 
-import org.bukkit.Material;
 import org.bukkit.inventory.ItemStack;
 
 import gg.mineral.api.collection.GlueList;
 import gg.mineral.api.config.FileConfiguration;
 import gg.mineral.practice.party.Party;
+import gg.mineral.practice.util.items.ItemStacks;
 import lombok.Getter;
 
 public class PartyManager {
@@ -81,14 +81,14 @@ public class PartyManager {
 
 	public static void load() {
 		slot = config.getInt("Parties.Slot", 4);
-		displayItem = config.getItemstack("Parties.DisplayItem", new ItemStack(Material.NETHER_STAR));
+		displayItem = config.getItemstack("Parties.DisplayItem", ItemStacks.DEFAULT_PARTY_DISPLAY_ITEM);
 		displayName = config.getString("Parties.DisplayName", "Parties");
 		enabled = config.getBoolean("Parties.Enable", true);
 	}
 
 	public static void setDefaults() {
 		slot = 4;
-		displayItem = new ItemStack(Material.NETHER_STAR);
+		displayItem = ItemStacks.DEFAULT_PARTY_DISPLAY_ITEM;
 		displayName = "Parties";
 		enabled = true;
 	}

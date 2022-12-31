@@ -6,17 +6,15 @@ import java.util.List;
 import org.bukkit.Material;
 import org.bukkit.inventory.ItemStack;
 
-import gg.mineral.api.collection.GlueList;
 import gg.mineral.practice.util.messages.CC;
 import gg.mineral.practice.inventory.PracticeMenu;
 
 public class AddItemsMenu extends PracticeMenu {
-	static List<Material> EXCLUDED = new GlueList<>(Arrays.asList(Material.DIAMOND_HELMET, Material.DIAMOND_CHESTPLATE,
+	static List<Material> EXCLUDED = Arrays.asList(Material.DIAMOND_HELMET, Material.DIAMOND_CHESTPLATE,
 			Material.DIAMOND_LEGGINGS, Material.DIAMOND_BOOTS, Material.MUSHROOM_SOUP, Material.POTION,
-			Material.GOLDEN_APPLE, Material.ENDER_PEARL, Material.WATER_BUCKET, Material.LAVA_BUCKET));
+			Material.GOLDEN_APPLE, Material.ENDER_PEARL, Material.WATER_BUCKET, Material.LAVA_BUCKET);
 
-	static List<Material> INCLUDED = new GlueList<>(
-			Arrays.asList(Material.COOKED_BEEF, Material.GOLDEN_CARROT, Material.GRILLED_PORK));
+	static List<Material> INCLUDED = Arrays.asList(Material.COOKED_BEEF, Material.GOLDEN_CARROT, Material.GRILLED_PORK);
 
 	final static String TITLE = CC.BLUE + "Add Items";
 
@@ -44,20 +42,16 @@ public class AddItemsMenu extends PracticeMenu {
 				continue;
 			}
 
-			Runnable runnable = () -> viewer.getInventory().addItem(is);
-
 			if (INCLUDED.contains(i)) {
-				for (Material m : INCLUDED) {
-					ItemStack item = new ItemStack(m, 64);
-
-					runnable = () -> viewer.getInventory().addItem(is);
-
-					add(item, runnable);
+				for (Material material : INCLUDED) {
+					ItemStack item = new ItemStack(material, 64);
+					add(item, () -> viewer.getInventory().addItem(item));
 				}
+
 				return true;
 			}
 
-			add(is, runnable);
+			add(is, () -> viewer.getInventory().addItem(is));
 		}
 
 		return true;

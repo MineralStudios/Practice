@@ -2,7 +2,6 @@ package gg.mineral.practice.arena;
 
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
-import org.bukkit.Material;
 import org.bukkit.World;
 import org.bukkit.WorldCreator;
 import org.bukkit.inventory.ItemStack;
@@ -10,6 +9,7 @@ import org.bukkit.inventory.ItemStack;
 import gg.mineral.api.config.FileConfiguration;
 import gg.mineral.practice.managers.ArenaManager;
 import gg.mineral.practice.util.SaveableData;
+import gg.mineral.practice.util.items.ItemStacks;
 import gg.mineral.practice.util.world.VoidWorldGenerator;
 import gg.mineral.practice.util.world.WorldUtil;
 import lombok.Getter;
@@ -99,7 +99,7 @@ public class Arena implements SaveableData {
 		location2.setDirection(config.getVector(path + "Spawn.2.Direction", null));
 		this.waitingLocation = new Location(world, config.getInt(path + "Spawn.Waiting.x", 0),
 				config.getInt(path + "Spawn.Waiting.y", 70), config.getInt(path + "Spawn.Waiting.z", 0));
-		this.displayItem = config.getItemstack(path + "DisplayItem", new ItemStack(Material.WOOL));
+		this.displayItem = config.getItemstack(path + "DisplayItem", ItemStacks.DEFAULT_ARENA_DISPLAY_ITEM);
 		this.displayName = config.getString(path + "DisplayName", getName());
 	}
 
@@ -112,7 +112,7 @@ public class Arena implements SaveableData {
 				70, 0);
 		this.waitingLocation = new Location(world, 0,
 				70, 0);
-		this.displayItem = new ItemStack(Material.WOOL);
+		this.displayItem = ItemStacks.DEFAULT_ARENA_DISPLAY_ITEM;
 		this.displayName = getName();
 	}
 }

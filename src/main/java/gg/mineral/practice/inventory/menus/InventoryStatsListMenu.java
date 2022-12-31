@@ -2,11 +2,8 @@ package gg.mineral.practice.inventory.menus;
 
 import java.util.List;
 
-import org.bukkit.Material;
-import org.bukkit.inventory.ItemStack;
-
 import gg.mineral.practice.inventory.PracticeMenu;
-import gg.mineral.practice.util.items.ItemBuilder;
+import gg.mineral.practice.util.items.ItemStacks;
 import gg.mineral.practice.util.messages.CC;
 
 public class InventoryStatsListMenu extends PracticeMenu {
@@ -24,10 +21,7 @@ public class InventoryStatsListMenu extends PracticeMenu {
     public boolean update() {
 
         for (InventoryStatsMenu inventoryStatsMenu : list) {
-            ItemStack item = new ItemBuilder(Material.CHEST)
-                    .name(inventoryStatsMenu.getTitle()).build();
-
-            add(item, p -> {
+            add(ItemStacks.INVENTORY_STATS.name(inventoryStatsMenu.getTitle()).build(), p -> {
                 p.openMenu(inventoryStatsMenu);
                 return true;
             });

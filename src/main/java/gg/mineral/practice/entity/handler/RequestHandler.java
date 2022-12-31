@@ -29,7 +29,6 @@ public class RequestHandler {
     Profile duelRequestReciever;
 
     public void sendDuelRequest(Profile receiver) {
-        profile.getPlayer().closeInventory();
 
         if (receiver.getPlayerStatus() != PlayerStatus.IDLE) {
             profile.message(ErrorMessages.PLAYER_NOT_IN_LOBBY);

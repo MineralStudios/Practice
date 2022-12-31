@@ -35,7 +35,6 @@ import gg.mineral.practice.traits.Spectatable;
 import gg.mineral.practice.util.CoreConnector;
 import gg.mineral.practice.util.PlayerUtil;
 import gg.mineral.practice.util.collection.ProfileList;
-import gg.mineral.practice.util.items.ItemBuilder;
 import gg.mineral.practice.util.items.ItemStacks;
 import gg.mineral.practice.util.math.Countdown;
 import gg.mineral.practice.util.math.MathUtil;
@@ -456,40 +455,33 @@ public class Match implements Spectatable {
 		menu.setSlot(38, matchStatisticCollector.getLeggings());
 		menu.setSlot(39, matchStatisticCollector.getBoots());
 
-		ItemStack potItem = new ItemBuilder(new ItemStack(Material.POTION, 1, (short) 16421))
-				.name("Health Potions Left")
+		menu.setSlot(45, matchStatisticCollector.getRemainingHealth() <= 0 ? ItemStacks.NO_HEALTH
+				: ItemStacks.HEALTH
+						.name("Health: " + matchStatisticCollector.getRemainingHealth())
+						.amount(matchStatisticCollector.getRemainingHealth()).build());
+
+		menu.setSlot(46, ItemStacks.HEALTH_POTIONS_LEFT
 				.lore("Thrown: " + matchStatisticCollector.getPotionsThrown(),
 						"Missed: " + matchStatisticCollector.getPotionsMissed(),
 						"Stolen: " + matchStatisticCollector.getPotionsStolen(),
 						"Accuracy: " + matchStatisticCollector.getPotionAccuracy() + "%")
-				.amount(Math.max(matchStatisticCollector.getPotionsRemaining(), 1)).build();
-		ItemStack soupItem = new ItemBuilder(Material.MUSHROOM_SOUP)
-				.name("Soup Left")
-				.amount(Math.max(matchStatisticCollector.getSoupsRemaining(), 1)).build();
-		ItemStack healthItem = matchStatisticCollector.getRemainingHealth() == 0 ? ItemStacks.NO_HEALTH
-				: new ItemBuilder(
-						new ItemStack(Material.POTION, matchStatisticCollector.getRemainingHealth(), (short) 8193))
-						.name("Health: " + matchStatisticCollector.getRemainingHealth()).build();
+				.amount(Math.max(matchStatisticCollector.getPotionsRemaining(), 1)).build());
 
-		ItemStack hits = new ItemBuilder(Material.BLAZE_ROD)
+		menu.setSlot(47, ItemStacks.SOUP_LEFT
+				.amount(Math.max(matchStatisticCollector.getSoupsRemaining(), 1)).build());
+
+		menu.setSlot(48, ItemStacks.HITS
 				.name(profile.getMatchStatisticCollector().getHitCount() + " Hits")
 				.lore("Longest Combo: " + matchStatisticCollector.getLongestCombo(),
 						"Average Combo: " + matchStatisticCollector.getAverageCombo(),
 						"W Tap Accuracy: " + matchStatisticCollector.getWTapAccuracy() + "%")
-				.build();
-		ItemStack clicks = new ItemBuilder(Material.GHAST_TEAR)
-				.name("Highest CPS: " + matchStatisticCollector.getHighestCps())
-				.lore().build();
-		ItemStack effects = new ItemBuilder(Material.BLAZE_POWDER)
-				.name("Potion Effects")
-				.lore(matchStatisticCollector.getPotionEffectStringArray()).build();
+				.build());
 
-		menu.setSlot(45, healthItem);
-		menu.setSlot(46, potItem);
-		menu.setSlot(47, soupItem);
-		menu.setSlot(48, hits);
-		menu.setSlot(49, clicks);
-		menu.setSlot(50, effects);
+		menu.setSlot(49, ItemStacks.CLICKS
+				.name("Highest CPS: " + matchStatisticCollector.getHighestCps()).build());
+
+		menu.setSlot(50, ItemStacks.POTION_EFFECTS
+				.lore(matchStatisticCollector.getPotionEffectStringArray()).build());
 
 		if (!(this instanceof PartyMatch)) {
 			ProfileManager.setInventoryStats(profile, menu);

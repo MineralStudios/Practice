@@ -1,9 +1,6 @@
 package gg.mineral.practice.inventory.menus;
 
-import org.bukkit.Material;
-import org.bukkit.inventory.ItemStack;
-
-import gg.mineral.practice.util.items.ItemBuilder;
+import gg.mineral.practice.util.items.ItemStacks;
 import gg.mineral.practice.util.messages.CC;
 import gg.mineral.practice.inventory.PracticeMenu;
 import gg.mineral.server.combat.KnockbackProfile;
@@ -21,20 +18,17 @@ public class SelectKnockbackMenu extends PracticeMenu {
 
     @Override
     public boolean update() {
-        for (KnockbackProfile k : KnockbackProfileList.getKnockbackProfiles()) {
-            try {
-                ItemStack item = new ItemBuilder(Material.GOLD_SWORD)
-                        .name(k.getName()).build();
+        for (KnockbackProfile knockback : KnockbackProfileList.getKnockbackProfiles()) {
 
-                Runnable runnable = () -> {
-                    viewer.getMatchData().setKnockback(k);
-                    viewer.openMenu(menu);
-                };
-
-                add(item, runnable);
-            } catch (NullPointerException e) {
+            if (knockback == null) {
                 continue;
             }
+
+            add(ItemStacks.KNOCKBACK
+                    .name(knockback.getName()).build(), () -> {
+                        viewer.getMatchData().setKnockback(knockback);
+                        viewer.openMenu(menu);
+                    });
         }
 
         return true;

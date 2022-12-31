@@ -4,7 +4,6 @@ import java.util.List;
 import java.util.UUID;
 import java.util.concurrent.CompletableFuture;
 
-import org.bukkit.Material;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.inventory.ItemStack;
 
@@ -22,6 +21,7 @@ import gg.mineral.practice.managers.QueuetypeManager;
 import gg.mineral.practice.queue.Queuetype;
 import gg.mineral.practice.util.SaveableData;
 import gg.mineral.practice.util.collection.LeaderboardMap;
+import gg.mineral.practice.util.items.ItemStacks;
 import it.unimi.dsi.fastutil.objects.Object2IntOpenHashMap;
 import lombok.Getter;
 
@@ -291,7 +291,7 @@ public class Gametype implements SaveableData {
 	@Override
 	public void load() {
 		this.regeneration = config.getBoolean(path + "Regen", true);
-		this.displayItem = config.getItemstack(path + "DisplayItem", new ItemStack(Material.DIAMOND_SWORD));
+		this.displayItem = config.getItemstack(path + "DisplayItem", ItemStacks.DEFAULT_GAMETYPE_DISPLAY_ITEM);
 		this.displayName = config.getString(path + "DisplayName", getName());
 		this.noDamageTicks = config.getInt(path + "NoDamageTicks", 20);
 		this.deadlyWater = config.getBoolean(path + "DeadlyWater", false);
@@ -343,7 +343,7 @@ public class Gametype implements SaveableData {
 				if (o instanceof ItemStack)
 					armour.add((ItemStack) o);
 				else
-					armour.add(new ItemStack(Material.AIR));
+					armour.add(ItemStacks.AIR);
 			}
 		}
 
@@ -357,7 +357,7 @@ public class Gametype implements SaveableData {
 				if (o instanceof ItemStack)
 					items.add((ItemStack) o);
 				else
-					items.add(new ItemStack(Material.AIR));
+					items.add(ItemStacks.AIR);
 			}
 		}
 
@@ -368,7 +368,7 @@ public class Gametype implements SaveableData {
 	@Override
 	public void setDefaults() {
 		this.regeneration = true;
-		this.displayItem = new ItemStack(Material.DIAMOND_SWORD);
+		this.displayItem = ItemStacks.DEFAULT_GAMETYPE_DISPLAY_ITEM;
 		this.displayName = getName();
 		this.noDamageTicks = 20;
 		this.deadlyWater = false;

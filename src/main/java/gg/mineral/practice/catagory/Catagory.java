@@ -1,6 +1,5 @@
 package gg.mineral.practice.catagory;
 
-import org.bukkit.Material;
 import org.bukkit.inventory.ItemStack;
 
 import gg.mineral.api.collection.GlueList;
@@ -10,6 +9,7 @@ import gg.mineral.practice.managers.CatagoryManager;
 import gg.mineral.practice.managers.QueuetypeManager;
 import gg.mineral.practice.queue.Queuetype;
 import gg.mineral.practice.util.SaveableData;
+import gg.mineral.practice.util.items.ItemStacks;
 import lombok.Getter;
 
 public class Catagory implements SaveableData {
@@ -94,7 +94,7 @@ public class Catagory implements SaveableData {
 	@Override
 	public void load() {
 		this.displayItem = config.getItemstack(path + "DisplayItem",
-				new ItemStack(Material.DIAMOND_SWORD));
+				ItemStacks.DEFAULT_CATAGORY_DISPLAY_ITEM);
 		this.displayName = config.getString(path + "DisplayName", getName());
 
 		for (Queuetype q : QueuetypeManager.getQueuetypes()) {
@@ -106,7 +106,7 @@ public class Catagory implements SaveableData {
 
 	@Override
 	public void setDefaults() {
-		this.displayItem = new ItemStack(Material.DIAMOND_SWORD);
+		this.displayItem = ItemStacks.DEFAULT_CATAGORY_DISPLAY_ITEM;
 		this.displayName = getName();
 
 		for (Queuetype q : QueuetypeManager.getQueuetypes()) {

@@ -2,10 +2,10 @@ package gg.mineral.practice.managers;
 
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
-import org.bukkit.Material;
 import org.bukkit.inventory.ItemStack;
 
 import gg.mineral.api.config.FileConfiguration;
+import gg.mineral.practice.util.items.ItemStacks;
 import lombok.Getter;
 
 public class KitEditorManager {
@@ -62,7 +62,7 @@ public class KitEditorManager {
 
 	public static void load() {
 		displayName = config.getString("KitEditor.DisplayName", "Kit Editor");
-		displayItem = config.getItemstack("KitEditor.DisplayItem", new ItemStack(Material.BOOK));
+		displayItem = config.getItemstack("KitEditor.DisplayItem", ItemStacks.DEFAULT_KIT_EDITOR_DISPLAY_ITEM);
 		slot = config.getInt("KitEditor.Slot", 0);
 		enabled = config.getBoolean("KitEditor.Enable", true);
 		location = new Location(Bukkit.getWorld(config.getString("KitEditor.Location.World", null)),
@@ -73,7 +73,7 @@ public class KitEditorManager {
 
 	public static void setDefaults() {
 		slot = 0;
-		displayItem = new ItemStack(Material.BOOK);
+		displayItem = ItemStacks.DEFAULT_KIT_EDITOR_DISPLAY_ITEM;
 		displayName = "Kit Editor";
 		enabled = true;
 	}
