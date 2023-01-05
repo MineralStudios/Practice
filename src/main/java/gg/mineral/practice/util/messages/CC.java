@@ -29,4 +29,5 @@ public class CC {
     public static final String SPLITTER = GRAY + "┃";
     public static final String BOARD_SEPARATOR = GRAY + S + "--------------------";
     public static final String SEPARATOR = GRAY + S + "-------------------------------------";
+    public static final String SPACER = "";
 }
