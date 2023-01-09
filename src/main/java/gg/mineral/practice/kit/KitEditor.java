@@ -21,22 +21,33 @@ public class KitEditor {
     Profile profile;
 
     public void save() {
-        ItemStack[] cont = profile.getInventory().getContents();
+        ItemStack[] newKitContents = profile.getInventory().getContents();
 
-        queueEntry.getCustomKits().put(profile.getUUID(), cont);
+        queueEntry.getCustomKits().put(profile.getUUID(), newKitContents);
         FileConfiguration config = ProfileManager.getPlayerConfig();
         String path = profile.getName() + ".KitData." + queueEntry.getGametype().getName() + "."
                 + queueEntry.getQueuetype().getName() + ".";
 
-        for (int f = 0; f < cont.length; f++) {
-            ItemStack item = cont[f];
+        for (int f = 0; f < newKitContents.length; f++) {
+            ItemStack newItem = newKitContents[f];
+            ItemStack oldItem = queueEntry.getGametype().getKit().getContents()[f];
 
-            if (item == null) {
+            boolean newItemNull = newItem == null;
+
+            if (newItemNull && oldItem == null) {
+                continue;
+            }
+
+            if (newItemNull) {
                 config.set(path + f, "empty");
                 continue;
             }
 
-            config.set(path + f, item);
+            if (newItem.isSimilar(oldItem)) {
+                continue;
+            }
+
+            config.set(path + f, newItem);
         }
 
         config.save();

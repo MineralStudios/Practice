@@ -5,7 +5,6 @@ import java.util.UUID;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.inventory.ItemStack;
 
-import gg.mineral.api.collection.GlueList;
 import gg.mineral.practice.entity.Profile;
 import gg.mineral.practice.gametype.Gametype;
 import gg.mineral.practice.managers.ProfileManager;
@@ -41,25 +40,27 @@ public class QueueEntry {
 			return null;
 		}
 
-		GlueList<ItemStack> items = new GlueList<>();
+		kit = getGametype().getKit().getContents().clone();
 
 		for (String key : cs.getKeys(false)) {
 			Object o = cs.get(key);
 
+			int index = Integer.valueOf(key);
+
 			if (o == null) {
-				items.add(null);
+				kit[index] = null;
 				continue;
 			}
 
 			if (o instanceof ItemStack) {
-				items.add((ItemStack) o);
+				kit[index] = (ItemStack) o;
 				continue;
 			}
 
-			items.add(null);
+			kit[index] = null;
 		}
 
-		getCustomKits().put(profile.getUUID(), kit = items.toArray(new ItemStack[0]));
+		getCustomKits().put(profile.getUUID(), kit);
 
 		return kit;
 	}
