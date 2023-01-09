@@ -19,36 +19,36 @@ public class JoinCommand extends PlayerCommand {
 
     @Override
     public void execute(org.bukkit.entity.Player player, String[] args) {
-        Profile p = ProfileManager.getOrCreateProfile(player);
+        Profile profile = ProfileManager.getOrCreateProfile(player);
 
         if (args.length < 1) {
-            p.message(UsageMessages.JOIN);
+            profile.message(UsageMessages.JOIN);
             return;
         }
 
-        if (p.isInTournament()) {
-            p.message(ErrorMessages.ALREADY_IN_TOURNAMENT);
+        if (profile.isInTournament()) {
+            profile.message(ErrorMessages.ALREADY_IN_TOURNAMENT);
             return;
         }
 
-        if (p.getPlayerStatus() != PlayerStatus.IDLE) {
-            p.message(ErrorMessages.YOU_ARE_NOT_IN_LOBBY);
+        if (profile.getPlayerStatus() != PlayerStatus.IDLE) {
+            profile.message(ErrorMessages.YOU_ARE_NOT_IN_LOBBY);
             return;
         }
 
         Event event = EventManager.getEventByName(args[0]);
 
         if (event != null) {
-            event.addPlayer(p);
+            event.addPlayer(profile);
         }
 
         Tournament tournament = TournamentManager.getTournamentByName(args[0]);
 
         if (tournament == null) {
-            p.message(ErrorMessages.TOURNAMENT_NOT_EXIST);
+            profile.message(ErrorMessages.TOURNAMENT_NOT_EXIST);
             return;
         }
 
-        tournament.addPlayer(p);
+        tournament.addPlayer(profile);
     }
 }

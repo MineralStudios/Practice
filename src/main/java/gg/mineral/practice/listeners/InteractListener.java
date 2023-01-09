@@ -71,6 +71,7 @@ public class InteractListener implements Listener {
 			if (e.getClickedBlock().getType() == Material.WOODEN_DOOR) {
 				if (profile.isInKitCreator()) {
 					profile.leaveKitCreator();
+					return;
 				}
 
 				profile.leaveKitEditor();

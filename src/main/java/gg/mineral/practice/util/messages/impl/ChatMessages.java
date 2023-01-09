@@ -175,9 +175,6 @@ public class ChatMessages {
 			VISIBILITY_TOGGLED = new ChatMessage(
 					"Your player visibility has now been %toggled%.",
 					CC.YELLOW).highlightText(CC.GOLD, "%toggled%"),
-			STOP_SPECTATING = new ChatMessage(
-					"Please type /stopspectating to stop spectating.",
-					CC.YELLOW).highlightText(CC.GOLD, "/stopspectating"),
 			KIT_SAVED = new ChatMessage(
 					"Your kit has been saved.",
 					CC.YELLOW);
@@ -191,6 +188,15 @@ public class ChatMessages {
 					"You are now queued for %queue% %gametype%.",
 					CC.AQUA)
 					.highlightText(CC.D_AQUA, "%queue%", "%gametype%"),
+			STOP_SPECTATING = new ChatMessage(
+					"Please type /stopspectating to stop spectating.",
+					CC.YELLOW).highlightText(CC.GOLD, "/stopspectating"),
+			LEAVE_KIT_EDITOR = new ChatMessage(
+					"Please type /leave to leave the kit editor.",
+					CC.YELLOW).highlightText(CC.GOLD, "/leave"),
+			LEAVE_KIT_CREATOR = new ChatMessage(
+					"Please type /leave to leave the kit creator.",
+					CC.YELLOW).highlightText(CC.GOLD, "/leave"),
 			LEFT_QUEUE = new ChatMessage("You are no longer queued", CC.AQUA).highlightText(CC.D_AQUA, "%queue%",
 					"%gametype%"),
 			HEALTH = new ChatMessage("%player% now has %health% health remaining.", CC.AQUA).highlightText(CC.D_AQUA,

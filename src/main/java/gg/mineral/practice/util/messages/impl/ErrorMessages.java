@@ -80,7 +80,9 @@ public class ErrorMessages {
 					"There was not enough players to start the event.");
 	// Kit Editor
 	public static final Message KIT_EDITOR_LOCATION_NOT_SET = new ErrorMessage(
-			"A kit editor location has not been set, use /kiteditor setlocation to set the location.");
+			"A kit editor location has not been set, use /kiteditor setlocation to set the location."),
+			NOT_IN_KIT_EDITOR_OR_CREATOR = new ErrorMessage(
+					"You are not in the kit editor of kit creator.");
 	// Other
 	public static final Message INVALID_SLOT = new ErrorMessage("You did not input a valid slot."),
 			INVALID_NUMBER = new ErrorMessage("You did not input a valid number.");

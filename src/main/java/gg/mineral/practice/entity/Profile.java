@@ -247,6 +247,8 @@ public class Profile {
 			return;
 		}
 
+		message(ChatMessages.LEAVE_KIT_EDITOR);
+
 		this.kitEditor = new KitEditor(queueEntry, this);
 		kitEditor.start();
 	}
@@ -257,6 +259,8 @@ public class Profile {
 			message(ErrorMessages.KIT_EDITOR_LOCATION_NOT_SET);
 			return;
 		}
+
+		message(ChatMessages.LEAVE_KIT_CREATOR);
 
 		this.kitCreator = new KitCreator(this, submitAction);
 		kitCreator.start();

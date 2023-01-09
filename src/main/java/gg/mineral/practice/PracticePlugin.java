@@ -18,6 +18,7 @@ import gg.mineral.practice.commands.config.SettingsConfigCommand;
 import gg.mineral.practice.commands.duel.AcceptCommand;
 import gg.mineral.practice.commands.duel.DuelCommand;
 import gg.mineral.practice.commands.events.EventCommand;
+import gg.mineral.practice.commands.kit.LeaveCommand;
 import gg.mineral.practice.commands.party.PartyCommand;
 import gg.mineral.practice.commands.settings.SettingsCommand;
 import gg.mineral.practice.commands.settings.ToggleDuelRequestsCommand;
@@ -95,7 +96,7 @@ public class PracticePlugin extends JavaPlugin {
 				new ToggleDuelRequestsCommand(), new TogglePartyRequestsCommand(), new CatagoryCommand(),
 				new SettingsCommand(),
 				new StopSpectatingCommand(), new TournamentCommand(), new JoinCommand(), new EventCommand(),
-				new ViewTeamInventoryCommand());
+				new ViewTeamInventoryCommand(), new LeaveCommand());
 
 		registerListeners(new BuildListener(), new InteractListener(), new ComsumeListener(), new InventoryListener(),
 				new DeathListener(), new DamageListener(), new EntryListener(), new HealthListener(),
