@@ -9,7 +9,7 @@ public class DeathListener implements Listener {
 
     @EventHandler
     public void onPlayerDeath(PlayerDeathEvent e) {
-        e.setDropItems(false);
+        // e.setDropItems(false);
         e.setDeathMessage(null);
         e.getEntity().kickPlayer(CC.RED + "Player death is not allowed.");
     }

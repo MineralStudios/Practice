@@ -1,5 +1,6 @@
 package gg.mineral.practice.listeners;
 
+import org.bukkit.Bukkit;
 import org.bukkit.Instrument;
 import org.bukkit.Note;
 import org.bukkit.entity.Arrow;
@@ -11,6 +12,9 @@ import org.bukkit.event.entity.EntityDamageByEntityEvent;
 import org.bukkit.event.entity.EntityDamageEvent;
 import org.bukkit.event.entity.EntityDamageEvent.DamageCause;
 
+import gg.mineral.practice.bukkit.events.PlayerDamageByArrowEvent;
+import gg.mineral.practice.bukkit.events.PlayerDamageByPlayerEvent;
+import gg.mineral.practice.bukkit.events.PlayerDamageEvent;
 import gg.mineral.practice.entity.PlayerStatus;
 import gg.mineral.practice.entity.Profile;
 import gg.mineral.practice.managers.ProfileManager;
@@ -26,7 +30,38 @@ public class DamageListener implements Listener {
 			return;
 		}
 
-		Player player = (Player) e.getEntity();
+		PlayerDamageEvent playerDamageEvent = new PlayerDamageEvent(e);
+		Bukkit.getPluginManager().callEvent(playerDamageEvent);
+
+		e.setCancelled(playerDamageEvent.isCancelled());
+	}
+
+	@EventHandler
+	public void onEntityDamageByEntity(EntityDamageByEntityEvent e) {
+		if (!(e.getEntity() instanceof Player)) {
+			e.setCancelled(true);
+			return;
+		}
+
+		PlayerDamageEvent event;
+
+		if (e.getDamager() instanceof Arrow) {
+			event = new PlayerDamageByArrowEvent(
+					(Arrow) e.getDamager(), e);
+		} else if (e.getDamager() instanceof Player) {
+			event = new PlayerDamageByPlayerEvent(
+					(Player) e.getDamager(), e);
+		} else {
+			return;
+		}
+
+		Bukkit.getPluginManager().callEvent(event);
+		e.setCancelled(event.isCancelled());
+	}
+
+	@EventHandler
+	public void onPlayerDamage(PlayerDamageEvent e) {
+		Player player = e.getPlayer();
 
 		Profile victim = ProfileManager
 				.getProfile(
@@ -55,34 +90,7 @@ public class DamageListener implements Listener {
 	}
 
 	@EventHandler
-	public void onEntityDamageByEntity(EntityDamageByEntityEvent e) {
-		if (!(e.getEntity() instanceof Player)) {
-			e.setCancelled(true);
-			return;
-		}
-
-		Player bukkitVictim = (Player) e.getEntity();
-
-		if (e.getDamager() instanceof Arrow) {
-			Arrow arrow = (Arrow) e.getDamager();
-
-			if (!(arrow.getShooter() instanceof Player)) {
-				return;
-			}
-
-			Player shooter = (Player) arrow.getShooter();
-
-			int health = (int) bukkitVictim.getHealth();
-			ChatMessages.HEALTH.clone().replace("%player%", bukkitVictim.getName()).replace("%health%", "" + health)
-					.send(shooter);
-			shooter.playNote(shooter.getLocation(), Instrument.PIANO, new Note(20));
-			return;
-		}
-
-		if (!(e.getDamager() instanceof Player)) {
-			return;
-		}
-
+	public void onPlayerDamageByPlayer(PlayerDamageByPlayerEvent e) {
 		Profile attacker = ProfileManager
 				.getProfile(p -> p.getUUID().equals(e.getDamager().getUniqueId())
 						&& p.getPlayerStatus() == PlayerStatus.FIGHTING);
@@ -98,7 +106,7 @@ public class DamageListener implements Listener {
 		}
 
 		Profile victim = ProfileManager
-				.getProfile(p -> p.getUUID().equals(bukkitVictim.getUniqueId())
+				.getProfile(p -> p.getUUID().equals(e.getPlayer().getUniqueId())
 						&& p.getPlayerStatus() == PlayerStatus.FIGHTING);
 
 		if (victim == null) {
@@ -117,6 +125,22 @@ public class DamageListener implements Listener {
 		}
 
 		e.setCancelled(attacker.getMatch().incrementTeamHitCount(attacker, victim));
+	}
+
+	@EventHandler
+	public void onPlayerDamageByArrow(PlayerDamageByArrowEvent e) {
+		Arrow arrow = e.getDamager();
+
+		if (!(arrow.getShooter() instanceof Player)) {
+			return;
+		}
+
+		Player shooter = (Player) arrow.getShooter();
+
+		int health = (int) e.getPlayer().getHealth();
+		ChatMessages.HEALTH.clone().replace("%player%", e.getPlayer().getName()).replace("%health%", "" + health)
+				.send(shooter);
+		shooter.playNote(shooter.getLocation(), Instrument.PIANO, new Note(20));
 	}
 
 	@EventHandler
