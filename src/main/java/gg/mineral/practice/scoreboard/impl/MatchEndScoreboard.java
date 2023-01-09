@@ -15,6 +15,8 @@ public class MatchEndScoreboard
         board.updateTitle(CC.PRIMARY + CC.B + "Mineral");
         board.updateLines(CC.BOARD_SEPARATOR,
                 CC.ACCENT + "Match Ended",
+                CC.SPACER,
+                CC.SECONDARY + "mineral.gg",
                 CC.BOARD_SEPARATOR);
     }
 }

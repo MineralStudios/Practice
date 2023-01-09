@@ -12,12 +12,15 @@ import gg.mineral.practice.util.messages.CC;
 public class DefaultScoreboard implements Scoreboard {
 	public static final Scoreboard INSTANCE = new DefaultScoreboard();
 
+
 	@Override
 	public void updateBoard(ScoreboardHandler board, Profile profile) {
 		board.updateTitle(CC.PRIMARY + CC.B + "Mineral");
 		board.updateLines(CC.BOARD_SEPARATOR, CC.ACCENT + "Online: " + CC.SECONDARY + Bukkit.getOnlinePlayers().size(),
 				CC.ACCENT + "In Game: " + CC.SECONDARY
 						+ ProfileManager.count(p -> p.getPlayerStatus() == PlayerStatus.FIGHTING),
+				CC.SPACER,
+				CC.SECONDARY + "mineral.gg",
 				CC.BOARD_SEPARATOR);
 	}
 }
