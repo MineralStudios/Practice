@@ -222,6 +222,10 @@ public class ChatMessages {
 					"%player%"),
 			POTS = new ChatMessage("You have %pots% health potions in your inventory.", CC.AQUA)
 					.highlightText(CC.D_AQUA, "%pots%"),
+			KILLED_BY_PLAYER = new ChatMessage("%victim% has been killed by %attacker%.", CC.AQUA)
+					.highlightText(CC.D_AQUA, "%victim%", "%attacker%"),
+			DIED = new ChatMessage("%victim% has died", CC.AQUA)
+					.highlightText(CC.D_AQUA, "%victim%"),
 			DUEL_REQUEST_SENT = new ChatMessage(
 					"You have send a duel request to %player%. They have 30 seconds to accept.", CC.AQUA)
 					.highlightText(CC.D_AQUA, "%player%"),

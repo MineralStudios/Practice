@@ -30,32 +30,26 @@ public class DamageListener implements Listener {
 			return;
 		}
 
-		PlayerDamageEvent playerDamageEvent = new PlayerDamageEvent(e);
-		Bukkit.getPluginManager().callEvent(playerDamageEvent);
-
-		e.setCancelled(playerDamageEvent.isCancelled());
-	}
-
-	@EventHandler
-	public void onEntityDamageByEntity(EntityDamageByEntityEvent e) {
-		if (!(e.getEntity() instanceof Player)) {
-			e.setCancelled(true);
-			return;
-		}
-
 		PlayerDamageEvent event;
 
-		if (e.getDamager() instanceof Arrow) {
-			event = new PlayerDamageByArrowEvent(
-					(Arrow) e.getDamager(), e);
-		} else if (e.getDamager() instanceof Player) {
-			event = new PlayerDamageByPlayerEvent(
-					(Player) e.getDamager(), e);
+		if (e instanceof EntityDamageByEntityEvent) {
+			EntityDamageByEntityEvent entityDamageByEntityEvent = (EntityDamageByEntityEvent) e;
+
+			if (entityDamageByEntityEvent.getDamager() instanceof Arrow) {
+				event = new PlayerDamageByArrowEvent(
+						(Arrow) entityDamageByEntityEvent.getDamager(), e);
+			} else if (entityDamageByEntityEvent.getDamager() instanceof Player) {
+				event = new PlayerDamageByPlayerEvent(
+						(Player) entityDamageByEntityEvent.getDamager(), e);
+			} else {
+				event = new PlayerDamageEvent(e);
+			}
 		} else {
-			return;
+			event = new PlayerDamageEvent(e);
 		}
 
 		Bukkit.getPluginManager().callEvent(event);
+
 		e.setCancelled(event.isCancelled());
 	}
 
@@ -87,6 +81,12 @@ public class DamageListener implements Listener {
 			e.setCancelled(true);
 			return;
 		}
+
+		if (e instanceof PlayerDamageByPlayerEvent) {
+			return;
+		}
+
+		victim.setKiller(null);
 	}
 
 	@EventHandler
@@ -124,7 +124,12 @@ public class DamageListener implements Listener {
 			return;
 		}
 
-		e.setCancelled(attacker.getMatch().incrementTeamHitCount(attacker, victim));
+		if (attacker.getMatch().incrementTeamHitCount(attacker, victim)) {
+			e.setCancelled(true);
+			return;
+		}
+
+		victim.setKiller(attacker);
 	}
 
 	@EventHandler

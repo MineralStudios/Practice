@@ -29,6 +29,8 @@ import gg.mineral.practice.util.CoreConnector;
 import gg.mineral.practice.util.PlayerUtil;
 import gg.mineral.practice.util.collection.ProfileList;
 import gg.mineral.practice.util.messages.CC;
+import gg.mineral.practice.util.messages.ChatMessage;
+import gg.mineral.practice.util.messages.impl.ChatMessages;
 import gg.mineral.practice.util.messages.impl.Strings;
 import gg.mineral.practice.util.world.WorldUtil;
 import lombok.Getter;
@@ -160,6 +162,13 @@ public class PartyMatch extends Match {
 		Collection<Item> items = data.getArena().getLocation1().getWorld().getEntitiesByClass(Item.class);
 
 		addToItemsToRemovalQueue(victim, items);
+
+		for (Profile profile : participants) {
+			boolean hasKiller = victim.getKiller() == null;
+			ChatMessage message = hasKiller ? ChatMessages.DIED : ChatMessages.KILLED_BY_PLAYER;
+			message = message.clone().replace("%victim%", victim.getName());
+			profile.message(hasKiller ? message.replace("%attacker%", victim.getKiller().getName()) : message);
+		}
 
 		if (victimTeam.size() > 0) {
 			participants.remove(victim);

@@ -81,6 +81,9 @@ public class Profile {
 	@Getter
 	Event event;
 	@Getter
+	@Setter
+	Profile killer;
+	@Getter
 	PearlCooldown pearlCooldown = new PearlCooldown(this);
 
 	public Profile(org.bukkit.entity.Player player) {
