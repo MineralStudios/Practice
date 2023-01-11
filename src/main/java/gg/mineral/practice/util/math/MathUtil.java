@@ -32,6 +32,11 @@ public class MathUtil {
 		return mod == 0 ? val : val + multiple - mod;
 	}
 
+	public static int roundUpToNearestWholeNumber(double val) {
+		int intVal = (int) val;
+		return val - intVal == 0 ? intVal : intVal + 1;
+	}
+
 	public static String convertTicksToMinutes(final int ticks) {
 		final long minute = ticks / 1200L;
 		final long second = ticks / 20L - minute * 60L;
