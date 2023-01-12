@@ -159,11 +159,7 @@ public class PracticeMenu {
 		Page page = pageMap.get(pageNumber);
 
 		if (page == null) {
-			if (pageNumber == 0) {
-				pageMap.put(pageNumber, page = new Page(pageNumber));
-			}
-
-			return;
+			pageMap.put(pageNumber, page = new Page(pageNumber));
 		}
 
 		page.open(viewer, needsUpdate);
@@ -182,9 +178,9 @@ public class PracticeMenu {
 	}
 
 	public Predicate<Profile> getTask(int slot) {
-		boolean firstPage = slot < 45;
-		int slotOnPage = firstPage ? slot : slot % 45;
-		int pageNumber = firstPage ? 0 : slot / 45;
+		boolean firstPage = slot < 54;
+		int slotOnPage = firstPage ? slot : slot % 54;
+		int pageNumber = firstPage ? 0 : slot / 54;
 
 		Page page = pageMap.get(pageNumber);
 
@@ -235,13 +231,13 @@ public class PracticeMenu {
 				switch (i) {
 					case 48:
 						setSlot(i, ItemStacks.PREVIOUS_PAGE, p -> {
-							p.getOpenMenu().open(p, Math.max(0, pageNumber - 1));
+							PracticeMenu.this.open(p, Math.max(0, pageNumber - 1));
 							return true;
 						});
 						break;
 					case 50:
 						setSlot(i, ItemStacks.NEXT_PAGE, p -> {
-							p.getOpenMenu().open(p, pageNumber + 1);
+							PracticeMenu.this.open(p, Math.min(pageNumber + 1, pageMap.size() - 1));
 							return true;
 						});
 						break;
@@ -268,7 +264,7 @@ public class PracticeMenu {
 
 		public void open(Profile profile, boolean updated) {
 
-			if (size == 45) {
+			if (pageMap.size() > 1) {
 				addNavigationBar();
 			}
 
