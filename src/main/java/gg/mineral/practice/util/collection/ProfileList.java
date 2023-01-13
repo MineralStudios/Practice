@@ -47,7 +47,7 @@ public class ProfileList extends GlueList<Profile> {
         }
 
         for (Profile profile : this) {
-            if (p.equals(profile)) {
+            if (p.getUUID().equals(profile.getUUID())) {
                 return true;
             }
         }
