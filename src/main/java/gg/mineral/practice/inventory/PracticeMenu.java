@@ -164,6 +164,8 @@ public class PracticeMenu {
 
 		page.open(viewer, needsUpdate);
 
+		openPage = page;
+
 		viewer.setOpenMenu(this);
 	}
 
@@ -178,17 +180,11 @@ public class PracticeMenu {
 	}
 
 	public Predicate<Profile> getTask(int slot) {
-		boolean firstPage = slot < 54;
-		int slotOnPage = firstPage ? slot : slot % 54;
-		int pageNumber = firstPage ? 0 : slot / 54;
-
-		Page page = pageMap.get(pageNumber);
-
-		if (page == null) {
+		if (openPage == null) {
 			return null;
 		}
 
-		return page.getTask(slotOnPage);
+		return openPage.getTask(slot);
 	}
 
 	public void clear() {
