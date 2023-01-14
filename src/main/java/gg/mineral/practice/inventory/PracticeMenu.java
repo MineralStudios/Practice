@@ -38,28 +38,40 @@ public class PracticeMenu {
 	}
 
 	public void setSlot(int slot, ItemStack item) {
-		boolean firstPage = slot < 45;
-		int slotOnPage = firstPage ? slot : slot % 45;
-		int pageNumber = firstPage ? 0 : slot / 45;
+		int pageSize = pageMap.size() > 1 ? 45 : 54;
+		boolean firstPage = slot < pageSize;
+		int slotOnPage = firstPage ? slot : slot % pageSize;
+		int pageNumber = firstPage ? 0 : slot / pageSize;
 
 		Page page = pageMap.get(pageNumber);
 
 		if (page == null) {
 			pageMap.put(pageNumber, page = new Page(pageNumber));
+			int newPageSize = pageMap.size() > 1 ? 45 : 54;
+
+			if (pageSize != newPageSize) {
+				slotOnPage = slot % newPageSize;
+			}
 		}
 
 		page.setSlot(slotOnPage, item);
 	}
 
 	public void setSlot(int slot, ItemStack item, Predicate<Profile> d) {
-		boolean firstPage = slot < 45;
-		int slotOnPage = firstPage ? slot : slot % 45;
-		int pageNumber = firstPage ? 0 : slot / 45;
+		int pageSize = pageMap.size() > 1 ? 45 : 54;
+		boolean firstPage = slot < pageSize;
+		int slotOnPage = firstPage ? slot : slot % pageSize;
+		int pageNumber = firstPage ? 0 : slot / pageSize;
 
 		Page page = pageMap.get(pageNumber);
 
 		if (page == null) {
 			pageMap.put(pageNumber, page = new Page(pageNumber));
+			int newPageSize = pageMap.size() > 1 ? 45 : 54;
+
+			if (pageSize != newPageSize) {
+				slotOnPage = slot % newPageSize;
+			}
 		}
 
 		page.setSlot(slotOnPage, item, d);
@@ -74,12 +86,14 @@ public class PracticeMenu {
 
 	public void add(ItemStack item) {
 		Page page = findUnusedPage();
-		page.add(item);
+		int slot = page.findUnusedSlot();
+		page.setSlot(slot, item);
 	}
 
 	public void add(ItemStack item, Predicate<Profile> d) {
 		Page page = findUnusedPage();
-		page.add(item, d);
+		int slot = page.findUnusedSlot();
+		page.setSlot(slot, item, d);
 	}
 
 	public void add(ItemStack item, Runnable d) {
@@ -94,9 +108,10 @@ public class PracticeMenu {
 	}
 
 	public ItemStack getItemBySlot(int slot) {
-		boolean firstPage = slot < 45;
-		int slotOnPage = firstPage ? slot : slot % 45;
-		int pageNumber = firstPage ? 0 : slot / 45;
+		int pageSize = pageMap.size() > 1 ? 45 : 54;
+		boolean firstPage = slot < pageSize;
+		int slotOnPage = firstPage ? slot : slot % pageSize;
+		int pageNumber = firstPage ? 0 : slot / pageSize;
 
 		Page page = pageMap.get(pageNumber);
 
@@ -219,11 +234,13 @@ public class PracticeMenu {
 		}
 
 		public boolean full() {
-			return size >= 45 && items.size() >= 45;
+			int pageSize = pageMap.size() > 1 ? 45 : 54;
+			return size >= pageSize && items.size() >= pageSize;
 		}
 
 		public void addNavigationBar() {
 			for (int i = 45; i <= 53; i++) {
+
 				switch (i) {
 					case 48:
 						setSlot(i, ItemStacks.PREVIOUS_PAGE, p -> {
@@ -273,6 +290,15 @@ public class PracticeMenu {
 
 		public void setSlot(int slot, ItemStack item) {
 
+			if (slot == 0 || slot == 9) {
+				if (pageNumber == 1) {
+					System.out.println("Page Size: " + (pageMap.size() > 1 ? 45 : 54));
+					System.out.println("Slot: " + slot);
+					System.out.println("Page: " + pageNumber);
+					Thread.dumpStack();
+				}
+			}
+
 			if (item == null || slot < 0) {
 				return;
 			}
@@ -296,23 +322,6 @@ public class PracticeMenu {
 			});
 		}
 
-		public void add(ItemStack item) {
-			setSlot(findUnusedSlot(), item);
-		}
-
-		public void add(ItemStack item, Predicate<Profile> d) {
-			int slot = findUnusedSlot();
-			dataMap.put(slot, d);
-			setSlot(slot, item);
-		}
-
-		public void add(ItemStack item, Runnable d) {
-			add(item, p -> {
-				d.run();
-				return true;
-			});
-		}
-
 		public ItemStack getItemBySlot(int slot) {
 			return items.get(slot);
 		}
@@ -330,7 +339,7 @@ public class PracticeMenu {
 			return items.containsValue(item);
 		}
 
-		private Integer findUnusedSlot() {
+		public Integer findUnusedSlot() {
 			for (int i = 0; i <= size; i++) {
 				if (items.get(i) == null) {
 					return i;

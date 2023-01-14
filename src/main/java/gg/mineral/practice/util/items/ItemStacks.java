@@ -68,8 +68,10 @@ public class ItemStacks {
                         new ItemStack(Material.WOOL, 1, DyeColor.RED.getData()))
                         .name("Previous Page").build();
         public static final ItemStack AIR = new ItemStack(Material.AIR);
-        public static final ItemStack BLACK_STAINED_GLASS = new ItemStack(Material.STAINED_GLASS_PANE, 1,
-                        DyeColor.BLACK.getData());
+        public static final ItemStack BLACK_STAINED_GLASS = new ItemBuilder(
+                        new ItemStack(Material.STAINED_GLASS_PANE, 1,
+                                        DyeColor.BLACK.getData()))
+                        .name(null).build();
         public static final ItemStack DEFAULT_ARENA_DISPLAY_ITEM = new ItemStack(Material.WOOL);
         public static final ItemStack DEFAULT_CATAGORY_DISPLAY_ITEM = new ItemStack(Material.DIAMOND_SWORD);
         public static final ItemStack DEFAULT_GAMETYPE_DISPLAY_ITEM = new ItemStack(Material.DIAMOND_SWORD);
