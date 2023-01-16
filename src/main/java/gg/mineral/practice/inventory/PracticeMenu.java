@@ -47,10 +47,9 @@ public class PracticeMenu {
 
 		if (page == null) {
 			pageMap.put(pageNumber, page = new Page(pageNumber));
-			int newPageSize = pageMap.size() > 1 ? 45 : 54;
 
-			if (pageSize != newPageSize) {
-				slotOnPage = slot % newPageSize;
+			if (pageMap.size() > 1) {
+				slotOnPage = slot % 45;
 			}
 		}
 
@@ -67,10 +66,9 @@ public class PracticeMenu {
 
 		if (page == null) {
 			pageMap.put(pageNumber, page = new Page(pageNumber));
-			int newPageSize = pageMap.size() > 1 ? 45 : 54;
 
-			if (pageSize != newPageSize) {
-				slotOnPage = slot % newPageSize;
+			if (pageMap.size() > 1) {
+				slotOnPage = slot % 45;
 			}
 		}
 
@@ -244,13 +242,21 @@ public class PracticeMenu {
 				switch (i) {
 					case 48:
 						setSlot(i, ItemStacks.PREVIOUS_PAGE, p -> {
-							PracticeMenu.this.open(p, Math.max(0, pageNumber - 1));
+							if (pageNumber == 0) {
+								return true;
+							}
+
+							PracticeMenu.this.open(p, pageNumber - 1);
 							return true;
 						});
 						break;
 					case 50:
 						setSlot(i, ItemStacks.NEXT_PAGE, p -> {
-							PracticeMenu.this.open(p, Math.min(pageNumber + 1, pageMap.size() - 1));
+							if (pageNumber == pageMap.size() - 1) {
+								return true;
+							}
+
+							PracticeMenu.this.open(p, pageNumber + 1);
 							return true;
 						});
 						break;
@@ -289,15 +295,6 @@ public class PracticeMenu {
 		}
 
 		public void setSlot(int slot, ItemStack item) {
-
-			if (slot == 0 || slot == 9) {
-				if (pageNumber == 1) {
-					System.out.println("Page Size: " + (pageMap.size() > 1 ? 45 : 54));
-					System.out.println("Slot: " + slot);
-					System.out.println("Page: " + pageNumber);
-					Thread.dumpStack();
-				}
-			}
 
 			if (item == null || slot < 0) {
 				return;
