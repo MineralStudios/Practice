@@ -12,6 +12,7 @@ import gg.mineral.api.collection.GlueList;
 import gg.mineral.practice.PracticePlugin;
 import gg.mineral.practice.entity.PlayerStatus;
 import gg.mineral.practice.entity.Profile;
+import gg.mineral.practice.inventory.menus.QueueManagerMenu;
 import gg.mineral.practice.inventory.menus.SelectGametypeMenu;
 import gg.mineral.practice.inventory.menus.SelectModeMenu;
 import gg.mineral.practice.inventory.menus.SelectQueuetypeMenu;
@@ -254,7 +255,7 @@ public class PlayerInventory extends CraftInventoryPlayer {
                     .build();
             setItem(KitEditorManager.getSlot(), editor,
                     p -> {
-                        p.openMenu(new SelectQueuetypeMenu());
+                        p.openMenu(new SelectQueuetypeMenu(SelectGametypeMenu.Type.KIT_EDITOR));
                         return true;
                     });
         }
@@ -286,6 +287,17 @@ public class PlayerInventory extends CraftInventoryPlayer {
                     holder.removeFromQueue();
                     setInventoryForLobby();
                 });
+
+        setItem(4, ItemStacks.QUEUE_MANAGER,
+                () -> {
+                    holder.openMenu(new QueueManagerMenu());
+                });
+
+        setItem(8, ItemStacks.QUEUE,
+                () -> {
+                    holder.openMenu(new SelectQueuetypeMenu(SelectGametypeMenu.Type.QUEUE));
+                });
+
         holder.getPlayer().updateInventory();
     }
 

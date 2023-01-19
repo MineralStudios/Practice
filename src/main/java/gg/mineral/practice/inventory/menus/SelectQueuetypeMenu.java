@@ -11,10 +11,12 @@ import gg.mineral.practice.queue.Queuetype;
 public class SelectQueuetypeMenu extends PracticeMenu {
 
     final static String TITLE = CC.BLUE + "Select Queue";
+    SelectGametypeMenu.Type type;
 
-    public SelectQueuetypeMenu() {
+    public SelectQueuetypeMenu(SelectGametypeMenu.Type type) {
         super(TITLE);
         setClickCancelled(true);
+        this.type = type;
     }
 
     @Override
@@ -25,7 +27,7 @@ public class SelectQueuetypeMenu extends PracticeMenu {
                 ItemStack item = new ItemBuilder(q.getDisplayItem())
                         .name(q.getDisplayName()).build();
                 add(item, p -> {
-                    p.openMenu(new SelectGametypeMenu(q, SelectGametypeMenu.Type.KIT_EDITOR));
+                    p.openMenu(new SelectGametypeMenu(q, type));
                     return true;
                 });
             } catch (NullPointerException e) {

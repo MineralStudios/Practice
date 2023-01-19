@@ -22,6 +22,10 @@ public class ItemStacks {
                         .name(CC.SECONDARY + CC.B + "Leave Party").build();
         public static final ItemStack LEAVE_QUEUE = new ItemBuilder(new ItemStack(351, 1, (short) 1))
                         .name(CC.SECONDARY + CC.B + "Leave Queue").build();
+        public static final ItemStack QUEUE_MANAGER = new ItemBuilder(Material.ITEM_FRAME)
+                        .name(CC.SECONDARY + CC.B + "Queue Manager").build();
+        public static final ItemStack QUEUE = new ItemBuilder(Material.COMPASS)
+                        .name(CC.SECONDARY + CC.B + "Queue").build();
         public static final ItemStack QUEUE_AGAIN = new ItemBuilder(Material.PAPER)
                         .name(CC.SECONDARY + CC.B + "Queue Again").build();
         public static final ItemStack LIST_PLAYERS = new ItemBuilder(Material.PAPER)
