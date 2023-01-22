@@ -11,6 +11,7 @@ import gg.mineral.practice.queue.QueueEntry;
 import gg.mineral.practice.scoreboard.impl.KitEditorScoreboard;
 import gg.mineral.practice.util.PlayerUtil;
 import gg.mineral.practice.util.messages.impl.ChatMessages;
+import it.unimi.dsi.fastutil.ints.Int2ObjectOpenHashMap;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 
@@ -20,13 +21,15 @@ public class KitEditor {
     QueueEntry queueEntry;
     Profile profile;
 
-    public void save() {
+    public void save(int loadoutSlot) {
         ItemStack[] newKitContents = profile.getInventory().getContents();
 
-        queueEntry.getCustomKits().put(profile.getUUID(), newKitContents);
+        Int2ObjectOpenHashMap<ItemStack[]> kitLoadouts = queueEntry.getCustomKits().get(profile.getUUID());
+        kitLoadouts.put(loadoutSlot, newKitContents);
+        queueEntry.getCustomKits().put(profile.getUUID(), kitLoadouts);
         FileConfiguration config = ProfileManager.getPlayerConfig();
         String path = profile.getName() + ".KitData." + queueEntry.getGametype().getName() + "."
-                + queueEntry.getQueuetype().getName() + ".";
+                + queueEntry.getQueuetype().getName() + "." + loadoutSlot;
 
         for (int f = 0; f < newKitContents.length; f++) {
             ItemStack newItem = newKitContents[f];
@@ -68,4 +71,23 @@ public class KitEditor {
 
         profile.getInventory().setContents(queueEntry.getGametype().getKit().getContents());
     }
+
+    public void delete(int loadoutSlot) {
+        ItemStack[] newKitContents = profile.getInventory().getContents();
+
+        Int2ObjectOpenHashMap<ItemStack[]> kitLoadouts = queueEntry.getCustomKits().get(profile.getUUID());
+        kitLoadouts.put(loadoutSlot, newKitContents);
+        queueEntry.getCustomKits().put(profile.getUUID(), kitLoadouts);
+        FileConfiguration config = ProfileManager.getPlayerConfig();
+        String path = profile.getName() + ".KitData." + queueEntry.getGametype().getName() + "."
+                + queueEntry.getQueuetype().getName() + "." + loadoutSlot;
+
+        config.set(path, null);
+
+        config.save();
+
+        profile.getPlayer().closeInventory();
+        ChatMessages.KIT_DELETED.send(profile.getPlayer());
+    }
+
 }

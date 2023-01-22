@@ -46,7 +46,7 @@ public class SelectArenaMenu extends PracticeMenu {
 
             ItemStack item;
             try {
-                item = new ItemBuilder(a.getDisplayItem())
+                item = new ItemBuilder(a.getDisplayItem().clone())
                         .name(a.getDisplayName()).build();
             } catch (Exception e) {
                 continue;

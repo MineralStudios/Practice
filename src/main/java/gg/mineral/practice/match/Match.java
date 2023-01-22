@@ -2,6 +2,7 @@ package gg.mineral.practice.match;
 
 import java.util.Arrays;
 import java.util.List;
+import java.util.Map.Entry;
 import java.util.concurrent.CompletableFuture;
 
 import org.bukkit.Bukkit;
@@ -43,6 +44,7 @@ import gg.mineral.practice.util.messages.impl.ErrorMessages;
 import gg.mineral.practice.util.messages.impl.Strings;
 import gg.mineral.practice.util.messages.impl.TextComponents;
 import gg.mineral.practice.util.world.WorldUtil;
+import it.unimi.dsi.fastutil.ints.Int2ObjectOpenHashMap;
 import lombok.Getter;
 import net.md_5.bungee.api.chat.ClickEvent;
 import net.md_5.bungee.api.chat.ComponentBuilder;
@@ -88,15 +90,24 @@ public class Match implements Spectatable {
 		}
 	}
 
-	public Kit getKit(Profile p) {
-		Kit kit = new Kit(data.getKit());
-		ItemStack[] customKit = data.getQueueEntry() != null ? data.getQueueEntry().getCustomKit(p) : null;
+	public Kit getKit(Profile p, int loadoutSlot) {
+		ItemStack[] customKit = data.getQueueEntry() != null ? data.getQueueEntry().getCustomKits(p).get(loadoutSlot)
+				: null;
+		return getKit(customKit);
+	}
+
+	public Kit getKit(ItemStack[] customKit) {
+		Kit kit = getKit();
 
 		if (customKit != null) {
 			kit.setContents(customKit);
 		}
 
 		return kit;
+	}
+
+	public Kit getKit() {
+		return new Kit(data.getKit());
 	}
 
 	public void setAttributes(Profile p) {
@@ -131,18 +142,46 @@ public class Match implements Spectatable {
 
 		p.setMatch(this);
 		p.getMatchStatisticCollector().start();
-		p.giveKit(getKit(p));
+		p.setKitLoaded(false);
 
 		if (CoreConnector.connected()) {
 			CoreConnector.INSTANCE.getNameTagAPI().clearTagOnMatchStart(p.getPlayer(), p.getPlayer());
 		}
 
+		giveLoadoutSelection(p);
 		setAttributes(p);
 		setPotionEffects(p);
 		setVisibility(p);
 		setDisplayNames(p);
 		setScoreboard(p);
 		handleFollowers(p);
+	}
+
+	public void giveLoadoutSelection(Profile p) {
+		if (data.getQueueEntry() == null) {
+			p.giveKit(getKit());
+		}
+
+		Int2ObjectOpenHashMap<ItemStack[]> map = data.getQueueEntry().getCustomKits(p);
+
+		if (map.size() < 2) {
+			p.giveKit(getKit(map.values().iterator().next()));
+		}
+
+		for (Entry<Integer, ItemStack[]> entry : data.getQueueEntry().getCustomKits(p).int2ObjectEntrySet()) {
+			p.getInventory().setItem(entry.getKey(),
+					ItemStacks.LOAD_KIT.name(CC.B + CC.GOLD + "Load Kit #" + entry.getKey()).build(), profile -> {
+						p.giveKit(getKit(entry.getValue()));
+						return true;
+					});
+		}
+
+	}
+
+	public void onMatchStart(Profile p) {
+		if (!p.isKitLoaded()) {
+			p.giveKit(getKit());
+		}
 	}
 
 	public void setScoreboard(Profile p) {

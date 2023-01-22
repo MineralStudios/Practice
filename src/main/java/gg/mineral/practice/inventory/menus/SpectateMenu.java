@@ -1,9 +1,9 @@
 package gg.mineral.practice.inventory.menus;
 
-import org.bukkit.Material;
 import org.bukkit.inventory.ItemStack;
 
 import gg.mineral.practice.util.items.ItemBuilder;
+import gg.mineral.practice.util.items.ItemStacks;
 import gg.mineral.practice.util.messages.CC;
 import gg.mineral.practice.inventory.PracticeMenu;
 import gg.mineral.practice.managers.MatchManager;
@@ -24,9 +24,9 @@ public class SpectateMenu extends PracticeMenu {
         clear();
         for (Match m : MatchManager.getMatches()) {
             QueueEntry queueEntry = m.getData().getQueueEntry();
-            Material item = queueEntry == null ? Material.WOOD_AXE
-                    : m.getData().getQueueEntry().getGametype().getDisplayItem().getType();
-            ItemStack skull = new ItemBuilder(item)
+            ItemStack item = queueEntry == null ? ItemStacks.WOOD_AXE
+                    : m.getData().getQueueEntry().getGametype().getDisplayItem();
+            ItemStack skull = new ItemBuilder(item.clone())
                     .name(CC.SECONDARY + m.getProfile1().getName() + " vs " + m.getProfile2().getName()).lore()
                     .build();
             add(skull, p -> p.getPlayer().performCommand("spec " + m.getParticipants().get(0).getName()));

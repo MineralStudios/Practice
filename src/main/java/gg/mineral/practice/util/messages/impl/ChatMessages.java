@@ -177,6 +177,9 @@ public class ChatMessages {
 					CC.YELLOW).highlightText(CC.GOLD, "%toggled%"),
 			KIT_SAVED = new ChatMessage(
 					"Your kit has been saved.",
+					CC.YELLOW),
+			KIT_DELETED = new ChatMessage(
+					"Your kit has been deleted.",
 					CC.YELLOW);
 
 	// Info

@@ -1,5 +1,7 @@
 package gg.mineral.practice.util;
 
+import org.bukkit.Bukkit;
+
 import gg.mineral.practice.PracticePlugin;
 
 public class CoreConnector {
@@ -10,7 +12,7 @@ public class CoreConnector {
     }
 
     static {
-        if (Package.getPackage("de.jeezycore") != null) {
+        if (Bukkit.getPluginManager().isPluginEnabled("JeezyCore")) {
             INSTANCE = new CoreLoader();
 
         } else {

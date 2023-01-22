@@ -24,6 +24,7 @@ public class PracticeMenu {
 	@Getter
 	Boolean clickCancelled = false;
 	protected Profile viewer;
+	@Getter
 	Page openPage;
 	Int2ObjectOpenHashMap<Page> pageMap = new Int2ObjectOpenHashMap<>();
 

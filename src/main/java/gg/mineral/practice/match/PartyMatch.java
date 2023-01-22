@@ -164,7 +164,7 @@ public class PartyMatch extends Match {
 		addToItemsToRemovalQueue(victim, items);
 
 		for (Profile profile : participants) {
-			boolean hasKiller = victim.getKiller() == null;
+			boolean hasKiller = victim.getKiller() != null;
 			ChatMessage message = hasKiller ? ChatMessages.DIED : ChatMessages.KILLED_BY_PLAYER;
 			message = message.clone().replace("%victim%", victim.getName());
 			profile.message(hasKiller ? message.replace("%attacker%", victim.getKiller().getName()) : message);

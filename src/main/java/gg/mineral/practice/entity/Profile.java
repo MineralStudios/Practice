@@ -85,6 +85,9 @@ public class Profile {
 	Profile killer;
 	@Getter
 	PearlCooldown pearlCooldown = new PearlCooldown(this);
+	@Getter
+	@Setter
+	boolean kitLoaded = false;
 
 	public Profile(org.bukkit.entity.Player player) {
 		this.player = (CraftPlayer) player;
@@ -168,6 +171,7 @@ public class Profile {
 	public void giveKit(Kit kit) {
 		getInventory().setContents(kit.getContents());
 		getInventory().setArmorContents(kit.getArmourContents());
+		kitLoaded = true;
 	}
 
 	public void removePotionEffects() {

@@ -1,13 +1,16 @@
 package gg.mineral.practice.queue;
 
+import java.util.List;
 import java.util.UUID;
 
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.inventory.ItemStack;
 
+import gg.mineral.api.collection.GlueList;
 import gg.mineral.practice.entity.Profile;
 import gg.mineral.practice.gametype.Gametype;
 import gg.mineral.practice.managers.ProfileManager;
+import it.unimi.dsi.fastutil.ints.Int2ObjectOpenHashMap;
 import it.unimi.dsi.fastutil.objects.Object2ObjectOpenHashMap;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
@@ -19,28 +22,15 @@ public class QueueEntry {
 	@Getter
 	final Gametype gametype;
 	@Getter
-	Object2ObjectOpenHashMap<UUID, ItemStack[]> customKits = new Object2ObjectOpenHashMap<>();
+	Object2ObjectOpenHashMap<UUID, Int2ObjectOpenHashMap<ItemStack[]>> customKits = new Object2ObjectOpenHashMap<>();
 
 	public boolean equals(QueueEntry queueEntry) {
 		return this.queuetype.equals(queueEntry.getQueuetype()) && this.gametype.equals(queueEntry.getGametype());
 	}
 
-	public ItemStack[] getCustomKit(Profile profile) {
-		ItemStack[] kit = getCustomKits().get(profile.getUUID());
+	private ItemStack[] getCustomKit(Profile profile, ConfigurationSection cs) {
 
-		if (kit != null) {
-			return kit;
-		}
-
-		ConfigurationSection cs = ProfileManager.getPlayerConfig()
-				.getConfigurationSection(profile.getName() + ".KitData."
-						+ getGametype().getName() + "." + getQueuetype().getName());
-
-		if (cs == null) {
-			return null;
-		}
-
-		kit = getGametype().getKit().getContents().clone();
+		ItemStack[] kit = getGametype().getKit().getContents().clone();
 
 		for (String key : cs.getKeys(false)) {
 			Object o = cs.get(key);
@@ -60,8 +50,38 @@ public class QueueEntry {
 			kit[index] = null;
 		}
 
-		getCustomKits().put(profile.getUUID(), kit);
-
 		return kit;
+	}
+
+	public Int2ObjectOpenHashMap<ItemStack[]> getCustomKits(Profile profile) {
+		Int2ObjectOpenHashMap<ItemStack[]> kitLoadouts = getCustomKits().get(profile.getUUID());
+
+		if (kitLoadouts != null) {
+			return kitLoadouts;
+		}
+
+		ConfigurationSection cs = ProfileManager.getPlayerConfig()
+				.getConfigurationSection(profile.getName() + ".KitData."
+						+ getGametype().getName() + "." + getQueuetype().getName());
+
+		if (cs == null) {
+			return null;
+		}
+
+		kitLoadouts = new Int2ObjectOpenHashMap<>();
+
+		for (String key : cs.getKeys(false)) {
+			ConfigurationSection cs1 = cs.getConfigurationSection(key);
+
+			if (cs1 == null) {
+				continue;
+			}
+
+			kitLoadouts.put((int) Integer.valueOf(key), getCustomKit(profile, cs1));
+		}
+
+		getCustomKits().put(profile.getUUID(), kitLoadouts);
+
+		return kitLoadouts;
 	}
 }

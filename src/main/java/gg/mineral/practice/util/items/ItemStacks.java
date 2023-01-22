@@ -49,8 +49,12 @@ public class ItemStacks {
                         .name("Submit").build();
         public static final ItemStack RESET_SETTINGS = new ItemBuilder(Material.PAPER)
                         .name("Reset Settings").build();
-        public static final ItemStack SAVE_KIT = new ItemBuilder(new ItemStack(160, 1, (short) 13))
+        public static final ItemStack SAVE_KIT = new ItemBuilder(
+                        new ItemStack(Material.WOOL, 1, DyeColor.GREEN.getData()))
                         .name("Save Kit").build();
+        public static final ItemStack DELETE_KIT = new ItemBuilder(
+                        new ItemStack(Material.WOOL, 1, DyeColor.RED.getData()))
+                        .name("Delete Kit").build();
         public static final ItemStack CHOOSE_EXISTING_KIT = new ItemBuilder(Material.LEATHER_CHESTPLATE)
                         .name("Choose Existing Kit").build();
         public static final ItemStack CHOOSE_CUSTOM_KIT = new ItemBuilder(Material.GOLD_CHESTPLATE)
@@ -84,7 +88,9 @@ public class ItemStacks {
         public static final ItemStack DEFAULT_OPTIONS_DISPLAY_ITEM = new ItemStack(Material.COMPASS);
         public static final ItemStack DEFAULT_PARTY_DISPLAY_ITEM = new ItemStack(Material.NETHER_STAR);
         public static final ItemStack DEFAULT_QUEUETYPE_DISPLAY_ITEM = new ItemStack(Material.DIAMOND_SWORD);
+        public static final ItemStack WOOD_AXE = new ItemStack(Material.WOOD_AXE);
         // Item Builders
+        public static final ItemBuilder LOAD_KIT = new ItemBuilder(Material.BOOK);
         public static final ItemBuilder CLICK_TO_APPLY_CHANGES = new ItemBuilder(Material.STONE_SWORD)
                         .lore(CC.ACCENT + "Click To Apply Changes");
         public static final ItemBuilder INVENTORY_STATS = new ItemBuilder(Material.ENDER_CHEST);

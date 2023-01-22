@@ -1,5 +1,6 @@
 package gg.mineral.practice.inventory.menus;
 
+import java.util.List;
 import java.util.Map.Entry;
 
 import org.bukkit.inventory.ItemStack;
@@ -45,16 +46,24 @@ public class SelectGametypeMenu extends PracticeMenu {
 			ItemBuilder itemBuild = new ItemBuilder(g.getDisplayItem())
 					.name(g.getDisplayName());
 
+			QueueEntry queueEntry = QueueEntryManager.newEntry(queuetype, g);
+
 			if (type == Type.QUEUE) {
-				itemBuild.lore(CC.ACCENT + "In Queue: " + QueueSearchTask.getNumberInQueue(queuetype, g),
-						CC.ACCENT + "In Game: " + MatchManager.getInGameCount(queuetype, g));
+				List<QueueEntry> queueEntries = QueueSearchTask.getQueueEntries(viewer);
+
+				if (queueEntries != null && queueEntries.contains(queueEntry)) {
+					itemBuild.lore(CC.RED + "Click to leave queue.");
+				} else {
+
+					itemBuild.lore(CC.ACCENT + "In Queue: " + QueueSearchTask.getNumberInQueue(queuetype, g),
+							CC.ACCENT + "In Game: " + MatchManager.getInGameCount(queuetype, g));
+				}
 			} else {
 				itemBuild.lore();
 			}
 			ItemStack item = itemBuild.build();
 
 			Runnable runnable = () -> {
-				QueueEntry queueEntry = QueueEntryManager.newEntry(queuetype, g);
 
 				if (type == Type.KIT_EDITOR) {
 					viewer.getPlayer().closeInventory();
@@ -63,6 +72,7 @@ public class SelectGametypeMenu extends PracticeMenu {
 				}
 
 				viewer.addPlayerToQueue(queueEntry);
+				getOpenPage().open(viewer, true);
 			};
 
 			setSlot(entry.getValue(), item, runnable);

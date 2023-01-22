@@ -14,8 +14,24 @@ public class SaveLoadKitsMenu extends PracticeMenu {
 
     @Override
     public boolean update() {
-        setSlot(4, ItemStacks.SAVE_KIT,
-                viewer.isInKitCreator() ? viewer.getKitCreator()::save : viewer.getKitEditor()::save);
+        if (viewer.isInKitCreator()) {
+            setSlot(4, ItemStacks.SAVE_KIT,
+                    () -> viewer.getKitCreator().save());
+            return true;
+        }
+
+        for (int i = 0; i <= 8; i++) {
+            final Integer slot = Integer.valueOf(i);
+            setSlot(slot, ItemStacks.SAVE_KIT,
+                    () -> viewer.getKitEditor().save(slot));
+        }
+
+        for (int i = 9; i <= 17; i++) {
+            final Integer slot = Integer.valueOf(i);
+            setSlot(slot, ItemStacks.DELETE_KIT,
+                    () -> viewer.getKitEditor().delete(slot));
+        }
+
         return true;
     }
 }

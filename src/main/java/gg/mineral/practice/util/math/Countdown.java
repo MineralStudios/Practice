@@ -48,6 +48,7 @@ public class Countdown {
 
 		for (int i = 0; i < match.getParticipants().size(); i++) {
 			Profile profile = match.getParticipants().get(i);
+			match.onMatchStart(profile);
 			profile.setInMatchCountdown(false);
 			profile.message(ChatMessages.MATCH_STARTED);
 		}
