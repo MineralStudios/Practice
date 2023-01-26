@@ -8,10 +8,13 @@ import org.bukkit.event.entity.PotionSplashEvent;
 import org.bukkit.potion.PotionEffect;
 import org.bukkit.potion.PotionEffectType;
 
+import gg.mineral.api.event.PlayerThrowPearlEvent;
+import gg.mineral.practice.entity.PlayerStatus;
 import gg.mineral.practice.entity.Profile;
 import gg.mineral.practice.managers.ProfileManager;
+import gg.mineral.practice.util.messages.impl.ChatMessages;
 
-public class PotionListener implements Listener {
+public class ProjectileListener implements Listener {
     @EventHandler
     public void onPotionSplash(final PotionSplashEvent e) {
         if (!(e.getEntity().getShooter() instanceof Player)) {
@@ -42,5 +45,24 @@ public class PotionListener implements Listener {
             shooterProfile.getMatchStatisticCollector().thrownPotion(e.getIntensity((LivingEntity) shooter) <= 0.5);
             break;
         }
+    }
+
+    @EventHandler
+    public void onThrowPearl(final PlayerThrowPearlEvent e) {
+        Profile profile = ProfileManager.getOrCreateProfile(e.getPlayer());
+
+        if (profile.isInMatchCountdown() || profile.getPlayerStatus() != PlayerStatus.FIGHTING) {
+            e.setCancelled(true);
+            return;
+        }
+
+        if (profile.getPearlCooldown().isActive()) {
+            e.setCancelled(true);
+            ChatMessages.PEARL.clone().replace("%time%", "" + profile.getPearlCooldown().getTimeRemaining())
+                    .send(profile.getPlayer());
+            return;
+        }
+
+        profile.getPearlCooldown().setTimeRemaining(profile.getMatch().getData().getPearlCooldown());
     }
 }

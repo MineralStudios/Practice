@@ -19,7 +19,6 @@ import gg.mineral.practice.inventory.menus.AddItemsMenu;
 import gg.mineral.practice.inventory.menus.SaveLoadKitsMenu;
 import gg.mineral.practice.managers.ProfileManager;
 import gg.mineral.practice.util.items.ItemStacks;
-import gg.mineral.practice.util.messages.impl.ChatMessages;
 
 public class InteractListener implements Listener {
 
@@ -82,29 +81,6 @@ public class InteractListener implements Listener {
 		}
 
 		if (e.getMaterial() != null) {
-			if (e.getMaterial() == Material.ENDER_PEARL) {
-
-				if (profile.getPlayerStatus() != PlayerStatus.FIGHTING) {
-					return;
-				}
-
-				if (profile.isInMatchCountdown()) {
-					e.setCancelled(true);
-					return;
-				}
-
-				if (profile.getPearlCooldown().isActive()) {
-					e.setCancelled(true);
-					ChatMessages.PEARL.clone().replace("%time%", "" + profile.getPearlCooldown().getTimeRemaining())
-							.send(profile.getPlayer());
-					return;
-				}
-
-				profile.getPearlCooldown().setTimeRemaining(profile.getMatch().getData().getPearlCooldown());
-				e.setCancelled(false);
-
-				return;
-			}
 
 			if (e.getMaterial() == Material.MUSHROOM_SOUP) {
 				new BukkitRunnable() {
