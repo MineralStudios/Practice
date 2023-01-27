@@ -24,12 +24,17 @@ public class KitEditor {
     public void save(int loadoutSlot) {
         ItemStack[] newKitContents = profile.getInventory().getContents();
 
-        Int2ObjectOpenHashMap<ItemStack[]> kitLoadouts = queueEntry.getCustomKits().get(profile.getUUID());
+        Int2ObjectOpenHashMap<ItemStack[]> kitLoadouts = queueEntry.getCustomKits(profile);
+
+        if (kitLoadouts == null) {
+            kitLoadouts = new Int2ObjectOpenHashMap<>();
+        }
+
         kitLoadouts.put(loadoutSlot, newKitContents);
         queueEntry.getCustomKits().put(profile.getUUID(), kitLoadouts);
         FileConfiguration config = ProfileManager.getPlayerConfig();
         String path = profile.getName() + ".KitData." + queueEntry.getGametype().getName() + "."
-                + queueEntry.getQueuetype().getName() + "." + loadoutSlot;
+                + queueEntry.getQueuetype().getName() + "." + loadoutSlot + ".";
 
         for (int f = 0; f < newKitContents.length; f++) {
             ItemStack newItem = newKitContents[f];
@@ -55,7 +60,6 @@ public class KitEditor {
 
         config.save();
 
-        profile.getPlayer().closeInventory();
         ChatMessages.KIT_SAVED.send(profile.getPlayer());
     }
 
@@ -73,10 +77,13 @@ public class KitEditor {
     }
 
     public void delete(int loadoutSlot) {
-        ItemStack[] newKitContents = profile.getInventory().getContents();
+        Int2ObjectOpenHashMap<ItemStack[]> kitLoadouts = queueEntry.getCustomKits(profile);
 
-        Int2ObjectOpenHashMap<ItemStack[]> kitLoadouts = queueEntry.getCustomKits().get(profile.getUUID());
-        kitLoadouts.put(loadoutSlot, newKitContents);
+        if (kitLoadouts == null) {
+            return;
+        }
+
+        kitLoadouts.remove(loadoutSlot);
         queueEntry.getCustomKits().put(profile.getUUID(), kitLoadouts);
         FileConfiguration config = ProfileManager.getPlayerConfig();
         String path = profile.getName() + ".KitData." + queueEntry.getGametype().getName() + "."
@@ -86,7 +93,6 @@ public class KitEditor {
 
         config.save();
 
-        profile.getPlayer().closeInventory();
         ChatMessages.KIT_DELETED.send(profile.getPlayer());
     }
 

@@ -1,8 +1,11 @@
 package gg.mineral.practice.inventory.menus;
 
+import java.util.List;
+
 import org.bukkit.inventory.ItemStack;
 
 import gg.mineral.practice.catagory.Catagory;
+import gg.mineral.practice.entity.PlayerStatus;
 import gg.mineral.practice.gametype.Gametype;
 import gg.mineral.practice.managers.MatchManager;
 import gg.mineral.practice.managers.QueueEntryManager;
@@ -24,18 +27,27 @@ public class SelectCategorizedGametypeMenu extends SelectGametypeMenu {
 	@Override
 	public boolean update() {
 		for (Gametype g : c.getGametypes()) {
-			ItemBuilder itemBuild = new ItemBuilder(g.getDisplayItem())
+			ItemBuilder itemBuild = new ItemBuilder(g.getDisplayItem().clone())
 					.name(g.getDisplayName());
+
+			QueueEntry queueEntry = QueueEntryManager.newEntry(queuetype, g);
+
 			if (type == Type.QUEUE) {
-				itemBuild.lore(CC.ACCENT + "In Queue: " + QueueSearchTask.getNumberInQueue(queuetype, g),
-						CC.ACCENT + "In Game: " + MatchManager.getInGameCount(queuetype, g));
+				List<QueueEntry> queueEntries = QueueSearchTask.getQueueEntries(viewer);
+
+				if (queueEntries != null && queueEntries.contains(queueEntry)) {
+					itemBuild.lore(CC.RED + "Click to leave queue.");
+				} else {
+
+					itemBuild.lore(CC.ACCENT + "In Queue: " + QueueSearchTask.getNumberInQueue(queuetype, g),
+							CC.ACCENT + "In Game: " + MatchManager.getInGameCount(queuetype, g));
+				}
 			} else {
 				itemBuild.lore();
 			}
 			ItemStack item = itemBuild.build();
 
-			Runnable runnable = () -> {
-				QueueEntry queueEntry = QueueEntryManager.newEntry(queuetype, g);
+			setSlot(queuetype.getGametypes().getInt(g), item, () -> {
 
 				if (type == Type.KIT_EDITOR) {
 					viewer.getPlayer().closeInventory();
@@ -43,12 +55,25 @@ public class SelectCategorizedGametypeMenu extends SelectGametypeMenu {
 					return;
 				}
 
-				viewer.addPlayerToQueue(queueEntry);
-			};
+				List<QueueEntry> queueEntries = QueueSearchTask.getQueueEntries(viewer);
 
-			setSlot(queuetype.getGametypes().getInt(g), item, runnable);
+				if (queueEntries != null && queueEntries.contains(queueEntry)) {
+					viewer.removeFromQueue(queueEntry);
+				} else {
+					viewer.addPlayerToQueue(queueEntry);
+				}
+
+				if (viewer.getPlayerStatus() == PlayerStatus.QUEUEING) {
+					reload();
+				}
+			});
 		}
 
 		return true;
+	}
+
+	@Override
+	public void onClose() {
+		viewer.openMenu(new SelectGametypeMenu(queuetype, type));
 	}
 }

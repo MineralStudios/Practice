@@ -29,13 +29,13 @@ public class InteractListener implements Listener {
 
 		Action action = e.getAction();
 
-		if (profile.isInMatchCountdown() || (action == Action.PHYSICAL
-				&& e.getPlayer().getLocation().getBlock().getRelative(BlockFace.DOWN).getType() == Material.SOIL)) {
+		if (action == Action.PHYSICAL
+				&& e.getPlayer().getLocation().getBlock().getRelative(BlockFace.DOWN).getType() == Material.SOIL) {
 			e.setCancelled(true);
 			return;
 		}
 
-		if (action == Action.LEFT_CLICK_AIR || action == Action.LEFT_CLICK_BLOCK) {
+		if (!profile.isInMatchCountdown() && (action == Action.LEFT_CLICK_AIR || action == Action.LEFT_CLICK_BLOCK)) {
 			profile.getMatchStatisticCollector().click();
 		}
 
@@ -46,6 +46,11 @@ public class InteractListener implements Listener {
 		Predicate<Profile> predicate = profile.getInventory().getTask(profile.getInventory().getHeldItemSlot());
 
 		if (predicate != null && predicate.test(profile)) {
+			return;
+		}
+
+		if (profile.isInMatchCountdown()) {
+			e.setCancelled(true);
 			return;
 		}
 

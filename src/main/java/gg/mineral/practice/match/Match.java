@@ -45,6 +45,7 @@ import gg.mineral.practice.util.messages.impl.Strings;
 import gg.mineral.practice.util.messages.impl.TextComponents;
 import gg.mineral.practice.util.world.WorldUtil;
 import it.unimi.dsi.fastutil.ints.Int2ObjectOpenHashMap;
+import it.unimi.dsi.fastutil.objects.ObjectIterator;
 import lombok.Getter;
 import net.md_5.bungee.api.chat.ClickEvent;
 import net.md_5.bungee.api.chat.ComponentBuilder;
@@ -158,17 +159,30 @@ public class Match implements Spectatable {
 	}
 
 	public void giveLoadoutSelection(Profile p) {
-		if (data.getQueueEntry() == null) {
-			p.giveKit(getKit());
-		}
 
-		Int2ObjectOpenHashMap<ItemStack[]> map = data.getQueueEntry().getCustomKits(p);
+		Int2ObjectOpenHashMap<ItemStack[]> map = data.getQueueEntry() == null ? null
+				: data.getQueueEntry().getCustomKits(p);
+
+		if (map == null ? true : map.isEmpty()) {
+			p.giveKit(getKit());
+			return;
+		}
 
 		if (map.size() < 2) {
-			p.giveKit(getKit(map.values().iterator().next()));
+			ObjectIterator<ItemStack[]> iter = map.values().iterator();
+
+			if (iter.hasNext()) {
+				p.giveKit(getKit(iter.next()));
+				return;
+			}
+
+			p.giveKit(getKit());
+			return;
 		}
 
-		for (Entry<Integer, ItemStack[]> entry : data.getQueueEntry().getCustomKits(p).int2ObjectEntrySet()) {
+		p.getInventory().clear();
+
+		for (Entry<Integer, ItemStack[]> entry : map.int2ObjectEntrySet()) {
 			p.getInventory().setItem(entry.getKey(),
 					ItemStacks.LOAD_KIT.name(CC.B + CC.GOLD + "Load Kit #" + entry.getKey()).build(), profile -> {
 						p.giveKit(getKit(entry.getValue()));

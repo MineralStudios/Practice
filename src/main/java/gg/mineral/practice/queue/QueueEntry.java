@@ -71,7 +71,9 @@ public class QueueEntry {
 		kitLoadouts = new Int2ObjectOpenHashMap<>();
 
 		for (String key : cs.getKeys(false)) {
-			ConfigurationSection cs1 = cs.getConfigurationSection(key);
+			ConfigurationSection cs1 = ProfileManager.getPlayerConfig()
+					.getConfigurationSection(profile.getName() + ".KitData."
+							+ getGametype().getName() + "." + getQueuetype().getName() + "." + key);
 
 			if (cs1 == null) {
 				continue;

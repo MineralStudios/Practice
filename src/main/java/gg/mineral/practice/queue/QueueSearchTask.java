@@ -40,7 +40,9 @@ public class QueueSearchTask {
 		}
 
 		queueEntries.remove(queueEntry);
-		map.put(profile, queueEntries);
+
+		map.put(profile, queueEntries.isEmpty() ? null : queueEntries);
+
 		return queueEntries.isEmpty();
 	}
 

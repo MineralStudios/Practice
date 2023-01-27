@@ -27,6 +27,9 @@ public class PracticeMenu {
 	@Getter
 	Page openPage;
 	Int2ObjectOpenHashMap<Page> pageMap = new Int2ObjectOpenHashMap<>();
+	@Setter
+	@Getter
+	boolean closed = true;
 
 	public PracticeMenu(String title) {
 		this.title = title;
@@ -106,6 +109,10 @@ public class PracticeMenu {
 		return false;
 	}
 
+	public void onClose() {
+
+	}
+
 	public ItemStack getItemBySlot(int slot) {
 		int pageSize = pageMap.size() > 1 ? 45 : 54;
 		boolean firstPage = slot < pageSize;
@@ -164,6 +171,7 @@ public class PracticeMenu {
 	protected boolean needsUpdate = true;
 
 	public void open(Profile viewer, int pageNumber) {
+		closed = false;
 		this.viewer = viewer;
 
 		if (needsUpdate) {
@@ -185,6 +193,11 @@ public class PracticeMenu {
 
 	public void open(Profile viewer) {
 		open(viewer, 0);
+	}
+
+	public void reload() {
+		needsUpdate = true;
+		open(viewer, openPage.pageNumber);
 	}
 
 	public void setContents(ItemStack[] contents) {

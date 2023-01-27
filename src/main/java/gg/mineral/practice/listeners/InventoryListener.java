@@ -2,6 +2,7 @@ package gg.mineral.practice.listeners;
 
 import java.util.function.Predicate;
 
+import org.bukkit.Bukkit;
 import org.bukkit.GameMode;
 import org.bukkit.Material;
 import org.bukkit.event.EventHandler;
@@ -11,6 +12,7 @@ import org.bukkit.event.inventory.InventoryCloseEvent;
 import org.bukkit.event.player.PlayerDropItemEvent;
 import org.bukkit.event.player.PlayerPickupItemEvent;
 
+import gg.mineral.practice.PracticePlugin;
 import gg.mineral.practice.entity.PlayerStatus;
 import gg.mineral.practice.entity.Profile;
 import gg.mineral.practice.inventory.PracticeMenu;
@@ -51,7 +53,16 @@ public class InventoryListener implements Listener {
 	@EventHandler
 	public void onInventoryClose(InventoryCloseEvent e) {
 		Profile profile = ProfileManager.getOrCreateProfile((org.bukkit.entity.Player) e.getPlayer());
+		final PracticeMenu oldMenu = profile.getOpenMenu();
 		profile.setOpenMenu(null);
+
+		if (oldMenu != null && !oldMenu.isClosed()) {
+			oldMenu.setClosed(true);
+
+			Bukkit.getScheduler().scheduleSyncDelayedTask(PracticePlugin.INSTANCE, () -> {
+				oldMenu.onClose();
+			}, 1);
+		}
 	}
 
 	@EventHandler

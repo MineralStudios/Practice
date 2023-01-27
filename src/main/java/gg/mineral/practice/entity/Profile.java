@@ -65,8 +65,8 @@ public class Profile {
 	MatchStatisticCollector matchStatisticCollector = new MatchStatisticCollector(this);
 	@Getter
 	boolean playersVisible = true, partyOpenCooldown = false, inMatchCountdown = false;
-	@Getter
 	@Setter
+	@Getter
 	PracticeMenu openMenu;
 	@Getter
 	PlayerStatus playerStatus = PlayerStatus.IDLE;
@@ -209,6 +209,8 @@ public class Profile {
 	public void removeFromQueue(QueueEntry queueEntry) {
 		if (QueueSearchTask.removePlayer(this, queueEntry)) {
 			removeFromQueue();
+			player.closeInventory();
+			getInventory().setInventoryForLobby();
 		}
 	}
 

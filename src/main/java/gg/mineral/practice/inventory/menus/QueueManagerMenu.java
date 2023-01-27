@@ -1,7 +1,10 @@
 package gg.mineral.practice.inventory.menus;
 
+import java.util.List;
+
 import org.bukkit.inventory.ItemStack;
 
+import gg.mineral.practice.entity.PlayerStatus;
 import gg.mineral.practice.gametype.Gametype;
 import gg.mineral.practice.inventory.PracticeMenu;
 import gg.mineral.practice.queue.QueueEntry;
@@ -19,7 +22,14 @@ public class QueueManagerMenu extends PracticeMenu {
 
     @Override
     public boolean update() {
-        for (QueueEntry queueEntry : QueueSearchTask.getQueueEntries(viewer)) {
+        clear();
+        List<QueueEntry> queueEntries = QueueSearchTask.getQueueEntries(viewer);
+
+        if (queueEntries == null) {
+            return false;
+        }
+
+        for (QueueEntry queueEntry : queueEntries) {
             Gametype g = queueEntry.getGametype();
             ItemStack item = new ItemBuilder(g.getDisplayItem())
                     .name(queueEntry.getQueuetype().getDisplayName() + " " + g.getDisplayName())
@@ -27,7 +37,11 @@ public class QueueManagerMenu extends PracticeMenu {
 
             add(item, p -> {
                 p.removeFromQueue(queueEntry);
-                p.openMenu(this);
+
+                if (p.getPlayerStatus() == PlayerStatus.QUEUEING) {
+                    reload();
+                }
+
                 return true;
             });
         }

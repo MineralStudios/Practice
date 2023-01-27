@@ -6,6 +6,7 @@ import java.util.Map.Entry;
 import org.bukkit.inventory.ItemStack;
 
 import gg.mineral.practice.catagory.Catagory;
+import gg.mineral.practice.entity.PlayerStatus;
 import gg.mineral.practice.gametype.Gametype;
 import gg.mineral.practice.inventory.PracticeMenu;
 import gg.mineral.practice.managers.MatchManager;
@@ -43,7 +44,7 @@ public class SelectGametypeMenu extends PracticeMenu {
 				continue;
 			}
 
-			ItemBuilder itemBuild = new ItemBuilder(g.getDisplayItem())
+			ItemBuilder itemBuild = new ItemBuilder(g.getDisplayItem().clone())
 					.name(g.getDisplayName());
 
 			QueueEntry queueEntry = QueueEntryManager.newEntry(queuetype, g);
@@ -63,7 +64,7 @@ public class SelectGametypeMenu extends PracticeMenu {
 			}
 			ItemStack item = itemBuild.build();
 
-			Runnable runnable = () -> {
+			setSlot(entry.getValue(), item, () -> {
 
 				if (type == Type.KIT_EDITOR) {
 					viewer.getPlayer().closeInventory();
@@ -71,11 +72,18 @@ public class SelectGametypeMenu extends PracticeMenu {
 					return;
 				}
 
-				viewer.addPlayerToQueue(queueEntry);
-				getOpenPage().open(viewer, true);
-			};
+				List<QueueEntry> queueEntries = QueueSearchTask.getQueueEntries(viewer);
 
-			setSlot(entry.getValue(), item, runnable);
+				if (queueEntries != null && queueEntries.contains(queueEntry)) {
+					viewer.removeFromQueue(queueEntry);
+				} else {
+					viewer.addPlayerToQueue(queueEntry);
+				}
+
+				if (viewer.getPlayerStatus() == PlayerStatus.QUEUEING) {
+					reload();
+				}
+			});
 		}
 
 		for (Entry<Catagory, Integer> entry : queuetype.getCatagories().object2IntEntrySet()) {
