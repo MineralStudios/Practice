@@ -63,6 +63,7 @@ public class MatchStatisticCollector {
         }
 
         active = false;
+        this.alive = alive;
         this.potionsRemaining = profile.getInventory().getNumber(Material.POTION, (short) 16421);
         this.soupsRemaining = profile.getInventory().getNumber(Material.MUSHROOM_SOUP);
         this.remainingHealth = profile.getPlayer().isDead() ? 0 : (int) profile.getPlayer().getHealth();
