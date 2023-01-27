@@ -9,6 +9,7 @@ import org.bukkit.event.block.BlockBurnEvent;
 import org.bukkit.event.block.BlockIgniteEvent;
 import org.bukkit.event.block.BlockIgniteEvent.IgniteCause;
 import org.bukkit.event.block.BlockPlaceEvent;
+import org.bukkit.event.hanging.HangingPlaceEvent;
 import org.bukkit.event.player.PlayerBucketEmptyEvent;
 
 import gg.mineral.practice.entity.PlayerStatus;
@@ -49,6 +50,11 @@ public class BuildListener implements Listener {
 
 	@EventHandler
 	public void onBlockBurn(BlockBurnEvent e) {
+		e.setCancelled(true);
+	}
+
+	@EventHandler
+	public void onFramePlace(HangingPlaceEvent e) {
 		e.setCancelled(true);
 	}
 

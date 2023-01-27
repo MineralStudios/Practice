@@ -1,17 +1,24 @@
 package gg.mineral.practice.util.items;
 
 import java.util.Arrays;
+import java.util.List;
+
 import org.bukkit.Material;
-import org.bukkit.enchantments.Enchantment;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
-import org.bukkit.inventory.meta.SkullMeta;
+
+import gg.mineral.api.collection.GlueList;
 
 public class ItemBuilder {
-    private final ItemStack item;
+    private Material material;
+    private int durability, amount;
+    private String name;
+    private List<String> lore = new GlueList<>();
 
     public ItemBuilder(ItemStack item) {
-        this.item = item;
+        this.material = item.getType();
+        this.durability = item.getDurability();
+        this.amount = item.getAmount();
     }
 
     public ItemBuilder(Material material) {
@@ -23,46 +30,31 @@ public class ItemBuilder {
     }
 
     public ItemBuilder amount(int amount) {
-        item.setAmount(amount);
+        this.amount = amount;
         return this;
     }
 
     public ItemBuilder durability(int durability) {
-        item.setDurability((short) durability);
+        this.durability = durability;
         return this;
     }
 
     public ItemBuilder name(String name) {
-        ItemMeta meta = item.getItemMeta();
-        meta.setDisplayName(name);
-        item.setItemMeta(meta);
+        this.name = name;
         return this;
     }
 
     public ItemBuilder lore(String... lore) {
-        ItemMeta meta = item.getItemMeta();
-        meta.setLore(Arrays.asList(lore));
-        item.setItemMeta(meta);
-        return this;
-    }
-
-    public ItemBuilder enchant(Enchantment enchantment, int level) {
-        item.addUnsafeEnchantment(enchantment, level);
-        return this;
-    }
-
-    public ItemBuilder skullOwner(String playerName) {
-        if (item.getType() != Material.SKULL_ITEM) {
-            throw new IllegalStateException("Non-skull items can't have a skull owner");
-        }
-
-        SkullMeta meta = (SkullMeta) item.getItemMeta();
-        meta.setOwner(playerName);
-        item.setItemMeta(meta);
+        this.lore.addAll(Arrays.asList(lore));
         return this;
     }
 
     public ItemStack build() {
-        return item;
+        ItemStack newItemStack = new ItemStack(material, amount, (short) durability);
+        ItemMeta meta = newItemStack.getItemMeta();
+        meta.setDisplayName(name);
+        meta.setLore(lore);
+        newItemStack.setItemMeta(meta);
+        return newItemStack;
     }
 }
