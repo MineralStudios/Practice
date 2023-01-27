@@ -353,8 +353,8 @@ public class Match implements Spectatable {
 	}
 
 	public void end(Profile attacker, Profile victim) {
-		attacker.getMatchStatisticCollector().end();
-		victim.getMatchStatisticCollector().end();
+		attacker.getMatchStatisticCollector().end(true);
+		victim.getMatchStatisticCollector().end(false);
 
 		deathAnimation(attacker, victim);
 
@@ -508,7 +508,7 @@ public class Match implements Spectatable {
 		menu.setSlot(38, matchStatisticCollector.getLeggings());
 		menu.setSlot(39, matchStatisticCollector.getBoots());
 
-		menu.setSlot(45, matchStatisticCollector.getRemainingHealth() <= 0 ? ItemStacks.NO_HEALTH
+		menu.setSlot(45, !matchStatisticCollector.isAlive() ? ItemStacks.NO_HEALTH
 				: ItemStacks.HEALTH
 						.name("Health: " + matchStatisticCollector.getRemainingHealth())
 						.amount(matchStatisticCollector.getRemainingHealth()).build());

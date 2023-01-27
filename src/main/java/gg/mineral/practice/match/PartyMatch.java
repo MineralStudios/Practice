@@ -126,7 +126,7 @@ public class PartyMatch extends Match {
 			return;
 		}
 
-		victim.getMatchStatisticCollector().end();
+		victim.getMatchStatisticCollector().end(false);
 
 		ProfileList attackerTeam, victimTeam;
 		List<InventoryStatsMenu> attackerInventoryStatsMenus = new GlueList<>(),
@@ -295,7 +295,7 @@ public class PartyMatch extends Match {
 	private void attackerEndMatch(Profile attacker, List<InventoryStatsMenu> attackerInventoryStatsMenus,
 			Collection<Item> items) {
 
-		attacker.getMatchStatisticCollector().end();
+		attacker.getMatchStatisticCollector().end(true);
 
 		attackerInventoryStatsMenus
 				.add(setInventoryStats(attacker, attacker.getMatchStatisticCollector()));

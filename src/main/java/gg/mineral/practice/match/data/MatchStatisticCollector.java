@@ -30,6 +30,8 @@ public class MatchStatisticCollector {
     @Getter
     List<String> potionEffectStrings;
     boolean active = false;
+    @Getter
+    boolean alive = false;
 
     public void start() {
         if (active) {
@@ -55,7 +57,7 @@ public class MatchStatisticCollector {
         potionEffectStrings = new GlueList<String>();
     }
 
-    public void end() {
+    public void end(boolean alive) {
         if (!active) {
             throw new IllegalStateException("Not been started yet.");
         }

@@ -27,8 +27,8 @@ public class TournamentMatch extends Match {
 
     @Override
     public void end(Profile attacker, Profile victim) {
-        attacker.getMatchStatisticCollector().end();
-        victim.getMatchStatisticCollector().end();
+        attacker.getMatchStatisticCollector().end(true);
+        victim.getMatchStatisticCollector().end(false);
 
         deathAnimation(attacker, victim);
 

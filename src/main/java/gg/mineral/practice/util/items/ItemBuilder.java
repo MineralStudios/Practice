@@ -7,13 +7,11 @@ import org.bukkit.Material;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
 
-import gg.mineral.api.collection.GlueList;
-
 public class ItemBuilder {
     private Material material;
     private int durability, amount;
     private String name;
-    private List<String> lore = new GlueList<>();
+    private List<String> lore = null;
 
     public ItemBuilder(ItemStack item) {
         this.material = item.getType();
@@ -45,7 +43,7 @@ public class ItemBuilder {
     }
 
     public ItemBuilder lore(String... lore) {
-        this.lore.addAll(Arrays.asList(lore));
+        this.lore = Arrays.asList(lore);
         return this;
     }
 
@@ -55,6 +53,8 @@ public class ItemBuilder {
         meta.setDisplayName(name);
         meta.setLore(lore);
         newItemStack.setItemMeta(meta);
+        lore = null;
+        name = null;
         return newItemStack;
     }
 }
