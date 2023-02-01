@@ -16,12 +16,12 @@ public class SelectKnockbackMenu extends PracticeMenu {
 
     @Override
     public boolean update() {
-        setSlot(2, ItemStacks.CHOOSE_EXISTING_KIT, p -> {
+        setSlot(2, ItemStacks.CHOOSE_EXISTING_KNOCKBACK, p -> {
             p.openMenu(new SelectExistingKnockbackMenu(menu));
             return true;
         });
 
-        setSlot(6, ItemStacks.CHOOSE_CUSTOM_KIT, p -> {
+        setSlot(6, ItemStacks.CREATE_CUSTOM_KNOCKBACK, p -> {
             p.openMenu(new CreateCustomKnockbackMenu(menu));
             return true;
         });

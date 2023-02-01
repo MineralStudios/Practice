@@ -62,6 +62,11 @@ public class ItemStacks {
                                         .name("Delete Kit").build(),
                         CHOOSE_EXISTING_KIT = new ItemBuilder(Material.LEATHER_CHESTPLATE).name("Choose Existing Kit")
                                         .build(),
+                        CHOOSE_EXISTING_KNOCKBACK = new ItemBuilder(Material.GOLD_SWORD)
+                                        .name("Choose Existing Knockback")
+                                        .build(),
+                        CREATE_CUSTOM_KNOCKBACK = new ItemBuilder(Material.STONE_SWORD).name("Create Custom Knockback")
+                                        .build(),
                         CHOOSE_CUSTOM_KIT = new ItemBuilder(Material.GOLD_CHESTPLATE).name("Create Custom Kit").build(),
                         SIMPLE_MODE = new ItemBuilder(Material.GREEN_RECORD).name("Simple Mode").lore().build(),
                         ADVANCED_MODE = new ItemBuilder(Material.GOLD_RECORD).name("Advanced Mode").lore().build(),
