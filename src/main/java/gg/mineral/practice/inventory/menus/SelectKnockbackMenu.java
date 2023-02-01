@@ -3,8 +3,6 @@ package gg.mineral.practice.inventory.menus;
 import gg.mineral.practice.util.items.ItemStacks;
 import gg.mineral.practice.util.messages.CC;
 import gg.mineral.practice.inventory.PracticeMenu;
-import gg.mineral.server.combat.KnockbackProfile;
-import gg.mineral.server.combat.KnockbackProfileList;
 
 public class SelectKnockbackMenu extends PracticeMenu {
     MechanicsMenu menu;
@@ -18,18 +16,15 @@ public class SelectKnockbackMenu extends PracticeMenu {
 
     @Override
     public boolean update() {
-        for (KnockbackProfile knockback : KnockbackProfileList.getKnockbackProfiles()) {
+        setSlot(2, ItemStacks.CHOOSE_EXISTING_KIT, p -> {
+            p.openMenu(new SelectExistingKnockbackMenu(menu));
+            return true;
+        });
 
-            if (knockback == null) {
-                continue;
-            }
-
-            add(ItemStacks.KNOCKBACK
-                    .name(knockback.getName()).build(), () -> {
-                        viewer.getMatchData().setKnockback(knockback);
-                        viewer.openMenu(menu);
-                    });
-        }
+        setSlot(6, ItemStacks.CHOOSE_CUSTOM_KIT, p -> {
+            p.openMenu(new CreateCustomKnockbackMenu(menu));
+            return true;
+        });
 
         return true;
     }

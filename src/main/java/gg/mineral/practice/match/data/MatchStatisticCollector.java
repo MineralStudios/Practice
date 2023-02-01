@@ -34,33 +34,18 @@ public class MatchStatisticCollector {
     boolean alive = false;
 
     public void start() {
-        if (active) {
+        if (active)
             throw new IllegalStateException("Already started");
-        }
 
         active = true;
-        hitCount = 0;
-        currentCombo = 0;
-        longestCombo = 0;
-        averageCombo = 0;
-        highestCps = 0;
-        wTapCount = 0;
-        wTapAccuracy = 0;
-        potionsThrown = 0;
-        potionsMissed = 0;
-        potionsStolen = 0;
-        potionsRemaining = 0;
-        potionAccuracy = 0;
-        soupsRemaining = 0;
-        clicks = 0;
+        currentCombo = hitCount = longestCombo = averageCombo = highestCps = wTapCount = wTapAccuracy = potionsThrown = potionsMissed = potionsStolen = potionsRemaining = potionAccuracy = soupsRemaining = clicks = 0;
         clickCounterStart = System.currentTimeMillis();
         potionEffectStrings = new GlueList<String>();
     }
 
     public void end(boolean alive) {
-        if (!active) {
+        if (!active)
             throw new IllegalStateException("Not been started yet.");
-        }
 
         active = false;
         this.alive = alive;
@@ -87,15 +72,14 @@ public class MatchStatisticCollector {
     }
 
     public void increaseHitCount() {
-        if (!active) {
+        if (!active)
             return;
-        }
+
         hitCount++;
         currentCombo++;
 
-        if (profile.getPlayer().getHandle().isExtraKnockback()) {
+        if (profile.getPlayer().getHandle().isExtraKnockback())
             wTapCount++;
-        }
 
         if (currentCombo > 1) {
             averageCombo += currentCombo;
@@ -106,41 +90,40 @@ public class MatchStatisticCollector {
     }
 
     public void resetCombo() {
-        if (!active) {
+        if (!active)
             return;
-        }
+
         currentCombo = 0;
     }
 
     public void clearHitCount() {
-        if (!active) {
+        if (!active)
             return;
-        }
+
         hitCount = 0;
     }
 
     public void thrownPotion(boolean missed) {
-        if (!active) {
+        if (!active)
             return;
-        }
+
         potionsThrown++;
 
-        if (missed) {
+        if (missed)
             potionsMissed++;
-        }
     }
 
     public void stolenPotion() {
-        if (!active) {
+        if (!active)
             return;
-        }
+
         potionsStolen++;
     }
 
     public void click() {
-        if (!active) {
+        if (!active)
             return;
-        }
+
         if (System.currentTimeMillis() - clickCounterStart > 1000) {
             clickCounterStart = System.currentTimeMillis();
             highestCps = Math.max(clicks, highestCps);

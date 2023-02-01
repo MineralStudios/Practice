@@ -51,28 +51,28 @@ public class MechanicsMenu extends PracticeMenu {
 				.lore(CC.ACCENT + matchData.getHunger())
 				.build(), () -> {
 					matchData.setHunger(!matchData.getHunger());
-					viewer.openMenu(MechanicsMenu.this);
+					reload();
 				});
 
 		setSlot(14, ItemStacks.TOGGLE_BUILD
 				.lore(CC.ACCENT + matchData.getBuild())
 				.build(), () -> {
 					matchData.setBuild(!matchData.getBuild());
-					viewer.openMenu(MechanicsMenu.this);
+					reload();
 				});
 
 		setSlot(15, ItemStacks.TOGGLE_DAMAGE
 				.lore(CC.ACCENT + matchData.getDamage())
 				.build(), () -> {
 					matchData.setDamage(!matchData.getDamage());
-					viewer.openMenu(MechanicsMenu.this);
+					reload();
 				});
 
 		setSlot(16, ItemStacks.TOGGLE_GRIEFING
 				.lore(CC.ACCENT + matchData.getGriefing())
 				.build(), () -> {
 					matchData.setGriefing(!matchData.getGriefing());
-					viewer.openMenu(MechanicsMenu.this);
+					reload();
 				});
 
 		setSlot(19, ItemStacks.PEARL_COOLDOWN
@@ -93,19 +93,26 @@ public class MechanicsMenu extends PracticeMenu {
 				.lore(CC.ACCENT + matchData.getDeadlyWater())
 				.build(), () -> {
 					matchData.setDeadlyWater(!matchData.getDeadlyWater());
-					viewer.openMenu(MechanicsMenu.this);
+					reload();
 				});
 
 		setSlot(22, ItemStacks.REGENERATION
 				.lore(CC.ACCENT + matchData.getRegeneration())
 				.build(), () -> {
 					matchData.setRegeneration(!matchData.getRegeneration());
-					viewer.openMenu(MechanicsMenu.this);
+					reload();
+				});
+
+		setSlot(23, ItemStacks.BOXING
+				.lore(CC.ACCENT + matchData.getBoxing())
+				.build(), () -> {
+					matchData.setBoxing(!matchData.getBoxing());
+					reload();
 				});
 
 		setSlot(27, ItemStacks.RESET_SETTINGS, () -> {
 			viewer.resetMatchData();
-			viewer.openMenu(MechanicsMenu.this);
+			reload();
 		});
 
 		setSlot(31, ItemStacks.SUBMIT, () -> {

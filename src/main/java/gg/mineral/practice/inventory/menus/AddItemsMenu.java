@@ -12,9 +12,8 @@ import gg.mineral.practice.inventory.PracticeMenu;
 public class AddItemsMenu extends PracticeMenu {
 	static List<Material> EXCLUDED = Arrays.asList(Material.DIAMOND_HELMET, Material.DIAMOND_CHESTPLATE,
 			Material.DIAMOND_LEGGINGS, Material.DIAMOND_BOOTS, Material.MUSHROOM_SOUP, Material.POTION,
-			Material.GOLDEN_APPLE, Material.ENDER_PEARL, Material.WATER_BUCKET, Material.LAVA_BUCKET);
-
-	static List<Material> INCLUDED = Arrays.asList(Material.COOKED_BEEF, Material.GOLDEN_CARROT, Material.GRILLED_PORK);
+			Material.GOLDEN_APPLE, Material.ENDER_PEARL, Material.WATER_BUCKET, Material.LAVA_BUCKET),
+			INCLUDED = Arrays.asList(Material.COOKED_BEEF, Material.GOLDEN_CARROT, Material.GRILLED_PORK);
 
 	final static String TITLE = CC.BLUE + "Add Items";
 
@@ -28,19 +27,16 @@ public class AddItemsMenu extends PracticeMenu {
 
 		for (ItemStack is : viewer.getKitEditor().getQueueEntry().getGametype().getKit().getContents()) {
 
-			if (is == null) {
+			if (is == null)
 				continue;
-			}
 
 			Material i = is.getType();
 
-			if (EXCLUDED.contains(i)) {
+			if (EXCLUDED.contains(i))
 				continue;
-			}
 
-			if (contains(is)) {
+			if (contains(is))
 				continue;
-			}
 
 			if (INCLUDED.contains(i)) {
 				for (Material material : INCLUDED) {

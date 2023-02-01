@@ -24,9 +24,8 @@ public class LeaderboardMenu extends PracticeMenu {
     public boolean update() {
         for (Gametype gametype : GametypeManager.getGametypes()) {
 
-            if (gametype.isInCatagory()) {
+            if (gametype.isInCatagory())
                 continue;
-            }
 
             ItemStack item = new ItemBuilder(gametype.getDisplayItem())
                     .name(gametype.getDisplayName()).build();

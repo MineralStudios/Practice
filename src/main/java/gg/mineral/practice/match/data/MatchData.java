@@ -38,13 +38,11 @@ public class MatchData {
 
 	public MatchData() {
 
-		if (!GametypeManager.getGametypes().isEmpty()) {
+		if (!GametypeManager.getGametypes().isEmpty())
 			setGametype(GametypeManager.getGametypes().get(0));
-		}
 
-		if (!ArenaManager.getArenas().isEmpty()) {
+		if (!ArenaManager.getArenas().isEmpty())
 			this.arena = ArenaManager.getArenas().get(0);
-		}
 
 		this.knockback = KnockbackProfileList.getDefaultKnockbackProfile();
 	}
@@ -92,6 +90,8 @@ public class MatchData {
 		sb.append(CC.GREEN + "Deadly Water: " + deadlyWater);
 		sb.append(newLine);
 		sb.append(CC.GREEN + "Regeneration: " + regeneration);
+		sb.append(newLine);
+		sb.append(CC.GREEN + "Boxing: " + boxing);
 		sb.append(newLine);
 		sb.append(CC.GREEN + "Pearl Cooldown: " + pearlCooldown + " seconds");
 		return sb.toString();
