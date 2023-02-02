@@ -53,8 +53,6 @@ public class ItemBuilder {
         meta.setDisplayName(name);
         meta.setLore(lore);
         newItemStack.setItemMeta(meta);
-        lore = null;
-        name = null;
         return newItemStack;
     }
 }

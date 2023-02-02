@@ -21,7 +21,7 @@ public class MatchData {
 	Kit kit;
 	@Setter
 	@Getter
-	KnockbackProfile knockback;
+	KnockbackProfile knockback, customKnockback;
 	@Getter
 	Gametype gametype;
 	@Setter
