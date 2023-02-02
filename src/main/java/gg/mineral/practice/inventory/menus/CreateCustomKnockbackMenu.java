@@ -84,17 +84,17 @@ public class CreateCustomKnockbackMenu extends PracticeMenu {
             reload();
         });
 
-        setSlot(18, ItemStacks.FRICTION);
+        setSlot(18, ItemStacks.FRICTION.name("Friction: " + kb.getFriction()).build());
 
-        setSlot(19, ItemStacks.HORIZONTAL);
+        setSlot(19, ItemStacks.HORIZONTAL.name("Horizontal: " + kb.getHorizontal()).build());
 
-        setSlot(20, ItemStacks.EXTRA_HORIZONTAL);
+        setSlot(20, ItemStacks.EXTRA_HORIZONTAL.name("Extra Horizontal: " + kb.getExtraHorizontal()).build());
 
-        setSlot(21, ItemStacks.VERTICAL);
+        setSlot(21, ItemStacks.VERTICAL.name("Vertical: " + kb.getVertical()).build());
 
-        setSlot(22, ItemStacks.EXTRA_VERTICAL);
+        setSlot(22, ItemStacks.EXTRA_VERTICAL.name("Extra Vertical: " + kb.getExtraVertical()).build());
 
-        setSlot(23, ItemStacks.VERTICAL_LIMIT);
+        setSlot(23, ItemStacks.VERTICAL_LIMIT.name("Vertical Limit: " + kb.getVerticalLimit()).build());
 
         setSlot(27, ItemStacks.SUBTRACT_0_001, () -> {
             kb.setFriction(kb.getFriction() - 0.001);

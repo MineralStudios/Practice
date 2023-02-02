@@ -46,12 +46,6 @@ public class ItemStacks {
                                         .name("ADD 0.01").build(),
                         ADD_0_001 = new ItemBuilder(new ItemStack(Material.WOOL, 1, DyeColor.LIME.getData()))
                                         .name("ADD 0.001").build(),
-                        FRICTION = new ItemStack(Material.SLIME_BLOCK),
-                        HORIZONTAL = new ItemStack(Material.DIODE),
-                        EXTRA_HORIZONTAL = new ItemStack(Material.REDSTONE_COMPARATOR),
-                        VERTICAL = new ItemStack(Material.ARROW),
-                        EXTRA_VERTICAL = new ItemStack(Material.BLAZE_ROD),
-                        VERTICAL_LIMIT = new ItemStack(Material.BEDROCK),
                         VIEW_OPPONENT_INVENTORY = new ItemBuilder(Material.LEVER).name("View Opponent Inventory")
                                         .build(),
                         SUBMIT = new ItemBuilder(Material.STICK).name("Submit").build(),
@@ -129,6 +123,12 @@ public class ItemStacks {
                         SOUP_LEFT = new ItemBuilder(Material.MUSHROOM_SOUP).name("Soup Left"),
                         HEALTH = new ItemBuilder(new ItemStack(Material.POTION, (short) 8193)),
                         HITS = new ItemBuilder(Material.BLAZE_ROD), CLICKS = new ItemBuilder(Material.GHAST_TEAR),
-                        POTION_EFFECTS = new ItemBuilder(Material.BLAZE_POWDER).name("Potion Effects");
+                        POTION_EFFECTS = new ItemBuilder(Material.BLAZE_POWDER).name("Potion Effects"),
+                        FRICTION = new ItemBuilder(Material.SLIME_BLOCK),
+                        HORIZONTAL = new ItemBuilder(Material.DIODE),
+                        EXTRA_HORIZONTAL = new ItemBuilder(Material.REDSTONE_COMPARATOR),
+                        VERTICAL = new ItemBuilder(Material.ARROW),
+                        EXTRA_VERTICAL = new ItemBuilder(Material.BLAZE_ROD),
+                        VERTICAL_LIMIT = new ItemBuilder(Material.BEDROCK);
 
 }

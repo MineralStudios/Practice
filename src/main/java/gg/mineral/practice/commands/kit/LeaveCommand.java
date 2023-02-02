@@ -26,5 +26,7 @@ public class LeaveCommand extends PlayerCommand {
         }
 
         profile.leaveKitEditor();
+
     }
+
 }
