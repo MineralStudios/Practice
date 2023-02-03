@@ -21,6 +21,7 @@ public class SelectModeMenu extends PracticeMenu {
 
 		setSlot(2, ItemStacks.SIMPLE_MODE, interaction -> {
 			Profile p = interaction.getProfile();
+			p.resetMatchData();
 			p.openMenu(new SelectExistingKitMenu(new SelectArenaMenu(action), true));
 		});
 
