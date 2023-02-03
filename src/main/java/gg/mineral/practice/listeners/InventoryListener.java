@@ -1,12 +1,13 @@
 package gg.mineral.practice.listeners;
 
-import java.util.function.Predicate;
+import java.util.function.Consumer;
 
 import org.bukkit.Bukkit;
 import org.bukkit.GameMode;
 import org.bukkit.Material;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
+import org.bukkit.event.inventory.ClickType;
 import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.event.inventory.InventoryCloseEvent;
 import org.bukkit.event.player.PlayerDropItemEvent;
@@ -15,6 +16,7 @@ import org.bukkit.event.player.PlayerPickupItemEvent;
 import gg.mineral.practice.PracticePlugin;
 import gg.mineral.practice.entity.PlayerStatus;
 import gg.mineral.practice.entity.Profile;
+import gg.mineral.practice.inventory.Interaction;
 import gg.mineral.practice.inventory.PracticeMenu;
 import gg.mineral.practice.managers.ProfileManager;
 
@@ -26,6 +28,8 @@ public class InventoryListener implements Listener {
 		PracticeMenu menu = profile.getOpenMenu();
 
 		boolean canClick = profile.getPlayer().isOp() && profile.getPlayer().getGameMode().equals(GameMode.CREATIVE);
+
+		ClickType clickType = e.getClick();
 
 		e.setCancelled(e.getCurrentItem() == null ? false : e.getCurrentItem().getType() == Material.TNT);
 
@@ -41,13 +45,13 @@ public class InventoryListener implements Listener {
 			e.setCancelled(menu.getClickCancelled());
 		}
 
-		Predicate<Profile> predicate = menu.getTask(e.getSlot());
+		Consumer<Interaction> predicate = menu.getTask(e.getSlot());
 
 		if (predicate == null) {
 			return;
 		}
 
-		predicate.test(profile);
+		predicate.accept(new Interaction(profile, clickType));
 	}
 
 	@EventHandler

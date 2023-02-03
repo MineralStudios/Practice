@@ -142,6 +142,7 @@ public class Match implements Spectatable {
 	public void prepareForMatch(Profile p) {
 
 		p.setMatch(this);
+		p.getRequestHandler().getRecievedDuelRequests().clear();
 		p.getMatchStatisticCollector().start();
 		p.setKitLoaded(false);
 

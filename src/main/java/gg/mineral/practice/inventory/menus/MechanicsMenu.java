@@ -1,5 +1,6 @@
 package gg.mineral.practice.inventory.menus;
 
+import gg.mineral.practice.entity.Profile;
 import gg.mineral.practice.inventory.PracticeMenu;
 import gg.mineral.practice.inventory.SubmitAction;
 import gg.mineral.practice.match.PartyMatch;
@@ -28,23 +29,23 @@ public class MechanicsMenu extends PracticeMenu {
 
 		setSlot(10, ItemStacks.SELECT_KIT
 				.lore(CC.ACCENT + matchData.getKit().getName())
-				.build(), p -> {
+				.build(), interaction -> {
+					Profile p = interaction.getProfile();
 					p.openMenu(new SelectKitMenu(this));
-					return true;
 				});
 
 		setSlot(11, ItemStacks.CHANGE_KNOCKBACK
 				.lore(CC.ACCENT + matchData.getKnockback().getName())
-				.build(), p -> {
+				.build(), interaction -> {
+					Profile p = interaction.getProfile();
 					p.openMenu(new SelectKnockbackMenu(this));
-					return true;
 				});
 
 		setSlot(12, ItemStacks.HIT_DELAY
 				.lore(CC.ACCENT + matchData.getNoDamageTicks() + " Ticks")
-				.build(), p -> {
+				.build(), interaction -> {
+					Profile p = interaction.getProfile();
 					p.openMenu(new HitDelayMenu(this));
-					return true;
 				});
 
 		setSlot(13, ItemStacks.TOGGLE_HUNGER
@@ -77,16 +78,16 @@ public class MechanicsMenu extends PracticeMenu {
 
 		setSlot(19, ItemStacks.PEARL_COOLDOWN
 				.lore(CC.ACCENT + matchData.getPearlCooldown() + " Seconds")
-				.build(), p -> {
+				.build(), interaction -> {
+					Profile p = interaction.getProfile();
 					p.openMenu(new PearlCooldownMenu(this));
-					return true;
 				});
 
 		setSlot(20, ItemStacks.ARENA
 				.lore(CC.ACCENT + matchData.getArena().getName())
-				.build(), p -> {
+				.build(), interaction -> {
+					Profile p = interaction.getProfile();
 					p.openMenu(new SelectArenaMenu(this, submitAction));
-					return true;
 				});
 
 		setSlot(21, ItemStacks.DEADLY_WATER

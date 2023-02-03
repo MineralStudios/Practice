@@ -1,13 +1,14 @@
 package gg.mineral.practice.match.data;
 
+import gg.mineral.api.knockback.Knockback;
 import gg.mineral.practice.arena.Arena;
 import gg.mineral.practice.gametype.Gametype;
 import gg.mineral.practice.kit.Kit;
 import gg.mineral.practice.managers.ArenaManager;
 import gg.mineral.practice.managers.GametypeManager;
+import gg.mineral.practice.match.CustomKnockback;
 import gg.mineral.practice.queue.QueueEntry;
 import gg.mineral.practice.util.messages.CC;
-import gg.mineral.server.combat.KnockbackProfile;
 import gg.mineral.server.combat.KnockbackProfileList;
 import lombok.Getter;
 import lombok.Setter;
@@ -21,7 +22,10 @@ public class MatchData {
 	Kit kit;
 	@Setter
 	@Getter
-	KnockbackProfile knockback, customKnockback;
+	Knockback knockback;
+	@Setter
+	@Getter
+	CustomKnockback customKnockback;
 	@Getter
 	Gametype gametype;
 	@Setter

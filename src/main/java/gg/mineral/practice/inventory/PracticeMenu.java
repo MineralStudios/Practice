@@ -1,7 +1,7 @@
 package gg.mineral.practice.inventory;
 
 import java.util.Map;
-import java.util.function.Predicate;
+import java.util.function.Consumer;
 
 import org.bukkit.Bukkit;
 import org.bukkit.Material;
@@ -60,7 +60,7 @@ public class PracticeMenu {
 		page.setSlot(slotOnPage, item);
 	}
 
-	public void setSlot(int slot, ItemStack item, Predicate<Profile> d) {
+	public void setSlot(int slot, ItemStack item, Consumer<Interaction> d) {
 		int pageSize = pageMap.size() > 1 ? 45 : 54;
 		boolean firstPage = slot < pageSize;
 		int slotOnPage = firstPage ? slot : slot % pageSize;
@@ -82,7 +82,6 @@ public class PracticeMenu {
 	public void setSlot(int slot, ItemStack item, Runnable d) {
 		setSlot(slot, item, p -> {
 			d.run();
-			return true;
 		});
 	}
 
@@ -92,7 +91,7 @@ public class PracticeMenu {
 		page.setSlot(slot, item);
 	}
 
-	public void add(ItemStack item, Predicate<Profile> d) {
+	public void add(ItemStack item, Consumer<Interaction> d) {
 		Page page = findUnusedPage();
 		int slot = page.findUnusedSlot();
 		page.setSlot(slot, item, d);
@@ -101,7 +100,6 @@ public class PracticeMenu {
 	public void add(ItemStack item, Runnable d) {
 		add(item, p -> {
 			d.run();
-			return true;
 		});
 	}
 
@@ -206,7 +204,7 @@ public class PracticeMenu {
 		}
 	}
 
-	public Predicate<Profile> getTask(int slot) {
+	public Consumer<Interaction> getTask(int slot) {
 		if (openPage == null) {
 			return null;
 		}
@@ -221,7 +219,7 @@ public class PracticeMenu {
 	}
 
 	public class Page {
-		Int2ObjectOpenHashMap<Predicate<Profile>> dataMap = new Int2ObjectOpenHashMap<>();
+		Int2ObjectOpenHashMap<Consumer<Interaction>> dataMap = new Int2ObjectOpenHashMap<>();
 		Int2ObjectOpenHashMap<ItemStack> items = new Int2ObjectOpenHashMap<>();
 		int size = 9, pageNumber;
 
@@ -236,7 +234,7 @@ public class PracticeMenu {
 			this.pageNumber = page.pageNumber;
 		}
 
-		public Predicate<Profile> getTask(int i) {
+		public Consumer<Interaction> getTask(int i) {
 			return dataMap.get(i);
 		}
 
@@ -255,23 +253,23 @@ public class PracticeMenu {
 
 				switch (i) {
 					case 48:
-						setSlot(i, ItemStacks.PREVIOUS_PAGE, p -> {
+						setSlot(i, ItemStacks.PREVIOUS_PAGE, interaction -> {
+							Profile p = interaction.getProfile();
 							if (pageNumber == 0) {
-								return true;
+								return;
 							}
 
 							PracticeMenu.this.open(p, pageNumber - 1);
-							return true;
 						});
 						break;
 					case 50:
-						setSlot(i, ItemStacks.NEXT_PAGE, p -> {
+						setSlot(i, ItemStacks.NEXT_PAGE, interaction -> {
+							Profile p = interaction.getProfile();
 							if (pageNumber == pageMap.size() - 1) {
-								return true;
+								return;
 							}
 
 							PracticeMenu.this.open(p, pageNumber + 1);
-							return true;
 						});
 						break;
 					default:
@@ -321,7 +319,7 @@ public class PracticeMenu {
 			}
 		}
 
-		public void setSlot(int slot, ItemStack item, Predicate<Profile> d) {
+		public void setSlot(int slot, ItemStack item, Consumer<Interaction> d) {
 			dataMap.put(slot, d);
 			setSlot(slot, item);
 		}
@@ -329,7 +327,6 @@ public class PracticeMenu {
 		public void setSlot(int slot, ItemStack item, Runnable d) {
 			setSlot(slot, item, p -> {
 				d.run();
-				return true;
 			});
 		}
 

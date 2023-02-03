@@ -4,6 +4,7 @@ import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
 
 import gg.mineral.practice.catagory.Catagory;
+import gg.mineral.practice.entity.Profile;
 import gg.mineral.practice.gametype.Gametype;
 import gg.mineral.practice.inventory.PracticeMenu;
 import gg.mineral.practice.managers.CatagoryManager;
@@ -47,9 +48,9 @@ public class LeaderboardMenu extends PracticeMenu {
             ItemMeta meta = item.getItemMeta();
             meta.setLore(null);
             item.setItemMeta(meta);
-            add(item, p -> {
+            add(item, interaction -> {
+                Profile p = interaction.getProfile();
                 p.openMenu(new CatagorizedLeaderboardMenu(c));
-                return true;
             });
         }
 

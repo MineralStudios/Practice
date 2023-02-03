@@ -27,7 +27,10 @@ public class InventoryStatsMenu extends PracticeMenu {
     public boolean update() {
         if (opponent != null) {
             setSlot(53, ItemStacks.VIEW_OPPONENT_INVENTORY,
-                    p -> p.getPlayer().performCommand("viewinventory " + opponent));
+                    interaction -> {
+                        Profile p = interaction.getProfile();
+                        p.getPlayer().performCommand("viewinventory " + opponent);
+                    });
         }
 
         return true;

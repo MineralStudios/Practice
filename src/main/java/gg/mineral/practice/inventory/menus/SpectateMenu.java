@@ -2,13 +2,14 @@ package gg.mineral.practice.inventory.menus;
 
 import org.bukkit.inventory.ItemStack;
 
-import gg.mineral.practice.util.items.ItemBuilder;
-import gg.mineral.practice.util.items.ItemStacks;
-import gg.mineral.practice.util.messages.CC;
+import gg.mineral.practice.entity.Profile;
 import gg.mineral.practice.inventory.PracticeMenu;
 import gg.mineral.practice.managers.MatchManager;
 import gg.mineral.practice.match.Match;
 import gg.mineral.practice.queue.QueueEntry;
+import gg.mineral.practice.util.items.ItemBuilder;
+import gg.mineral.practice.util.items.ItemStacks;
+import gg.mineral.practice.util.messages.CC;
 
 public class SpectateMenu extends PracticeMenu {
 
@@ -29,7 +30,10 @@ public class SpectateMenu extends PracticeMenu {
             ItemStack skull = new ItemBuilder(item.clone())
                     .name(CC.SECONDARY + m.getProfile1().getName() + " vs " + m.getProfile2().getName()).lore()
                     .build();
-            add(skull, p -> p.getPlayer().performCommand("spec " + m.getParticipants().get(0).getName()));
+            add(skull, interaction -> {
+                Profile p = interaction.getProfile();
+                p.getPlayer().performCommand("spec " + m.getParticipants().get(0).getName());
+            });
         }
 
         return true;

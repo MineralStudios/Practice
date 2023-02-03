@@ -1,8 +1,9 @@
 package gg.mineral.practice.inventory.menus;
 
+import gg.mineral.practice.entity.Profile;
+import gg.mineral.practice.inventory.PracticeMenu;
 import gg.mineral.practice.util.items.ItemStacks;
 import gg.mineral.practice.util.messages.CC;
-import gg.mineral.practice.inventory.PracticeMenu;
 
 public class SelectKitMenu extends PracticeMenu {
     MechanicsMenu menu;
@@ -16,9 +17,9 @@ public class SelectKitMenu extends PracticeMenu {
 
     @Override
     public boolean update() {
-        setSlot(2, ItemStacks.CHOOSE_EXISTING_KIT, p -> {
+        setSlot(2, ItemStacks.CHOOSE_EXISTING_KIT, interaction -> {
+            Profile p = interaction.getProfile();
             p.openMenu(new SelectExistingKitMenu(menu, false));
-            return true;
         });
 
         setSlot(6, ItemStacks.CHOOSE_CUSTOM_KIT, () -> {

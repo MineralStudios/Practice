@@ -3,6 +3,7 @@ package gg.mineral.practice.inventory.menus;
 import org.bukkit.inventory.ItemStack;
 
 import gg.mineral.practice.catagory.Catagory;
+import gg.mineral.practice.entity.Profile;
 import gg.mineral.practice.gametype.Gametype;
 import gg.mineral.practice.inventory.PracticeMenu;
 import gg.mineral.practice.managers.CatagoryManager;
@@ -50,9 +51,9 @@ public class SelectExistingKitMenu extends PracticeMenu {
         for (Catagory c : CatagoryManager.getCatagories()) {
             ItemStack item = new ItemBuilder(c.getDisplayItem())
                     .name(c.getDisplayName()).build();
-            add(item, p -> {
+            add(item, interaction -> {
+                Profile p = interaction.getProfile();
                 p.openMenu(new SelectCategorizedExistingKitMenu(c, menu, simple));
-                return true;
             });
         }
 

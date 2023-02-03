@@ -2,6 +2,7 @@ package gg.mineral.practice.inventory.menus;
 
 import java.util.List;
 
+import gg.mineral.practice.entity.Profile;
 import gg.mineral.practice.inventory.PracticeMenu;
 import gg.mineral.practice.util.items.ItemStacks;
 import gg.mineral.practice.util.messages.CC;
@@ -21,9 +22,9 @@ public class InventoryStatsListMenu extends PracticeMenu {
     public boolean update() {
 
         for (InventoryStatsMenu inventoryStatsMenu : list) {
-            add(ItemStacks.INVENTORY_STATS.name(inventoryStatsMenu.getTitle()).build(), p -> {
+            add(ItemStacks.INVENTORY_STATS.name(inventoryStatsMenu.getTitle()).build(), interaction -> {
+                Profile p = interaction.getProfile();
                 p.openMenu(inventoryStatsMenu);
-                return true;
             });
         }
         return true;

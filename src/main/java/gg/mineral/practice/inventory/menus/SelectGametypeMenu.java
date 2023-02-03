@@ -7,6 +7,7 @@ import org.bukkit.inventory.ItemStack;
 
 import gg.mineral.practice.catagory.Catagory;
 import gg.mineral.practice.entity.PlayerStatus;
+import gg.mineral.practice.entity.Profile;
 import gg.mineral.practice.gametype.Gametype;
 import gg.mineral.practice.inventory.PracticeMenu;
 import gg.mineral.practice.managers.MatchManager;
@@ -92,9 +93,9 @@ public class SelectGametypeMenu extends PracticeMenu {
 					.name(c.getDisplayName());
 			itemBuild.lore();
 			ItemStack item = itemBuild.build();
-			setSlot(entry.getValue(), item, p -> {
+			setSlot(entry.getValue(), item, interaction -> {
+				Profile p = interaction.getProfile();
 				p.openMenu(new SelectCategorizedGametypeMenu(queuetype, c, type));
-				return true;
 			});
 		}
 

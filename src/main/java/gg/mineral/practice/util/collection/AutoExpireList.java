@@ -22,6 +22,10 @@ public class AutoExpireList<K> implements Iterable<K> {
         map.remove(e);
     }
 
+    public void clear() {
+        map.clear();
+    }
+
     public Iterator<Entry<K, Long>> entryIterator() {
         return map.entrySet().iterator();
     }

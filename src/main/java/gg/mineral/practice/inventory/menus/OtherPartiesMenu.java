@@ -26,7 +26,10 @@ public class OtherPartiesMenu extends PracticeMenu {
                 Profile partyLeader = party.getPartyLeader();
                 add(ItemStacks.OTHER_PARTY
                         .name(partyLeader.getName()).build(),
-                        partyRequest -> partyRequest.getPlayer().performCommand("duel " + partyLeader.getName()));
+                        interaction -> {
+                            Profile p = interaction.getProfile();
+                            p.getPlayer().performCommand("duel " + partyLeader.getName());
+                        });
             }
         }
 

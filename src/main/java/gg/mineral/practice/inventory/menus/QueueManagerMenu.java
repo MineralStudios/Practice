@@ -5,6 +5,7 @@ import java.util.List;
 import org.bukkit.inventory.ItemStack;
 
 import gg.mineral.practice.entity.PlayerStatus;
+import gg.mineral.practice.entity.Profile;
 import gg.mineral.practice.gametype.Gametype;
 import gg.mineral.practice.inventory.PracticeMenu;
 import gg.mineral.practice.queue.QueueEntry;
@@ -35,14 +36,13 @@ public class QueueManagerMenu extends PracticeMenu {
                     .name(queueEntry.getQueuetype().getDisplayName() + " " + g.getDisplayName())
                     .lore(CC.RED + "Click to leave queue.").build();
 
-            add(item, p -> {
+            add(item, interaction -> {
+                Profile p = interaction.getProfile();
                 p.removeFromQueue(queueEntry);
 
                 if (p.getPlayerStatus() == PlayerStatus.QUEUEING) {
                     reload();
                 }
-
-                return true;
             });
         }
         return true;

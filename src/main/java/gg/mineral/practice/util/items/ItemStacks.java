@@ -34,18 +34,6 @@ public class ItemStacks {
                         OPEN_PARTY = new ItemBuilder(Material.SKULL_ITEM).name(CC.SECONDARY + CC.B + "Open Party")
                                         .build(),
                         NO_HEALTH = new ItemBuilder(Material.SKULL_ITEM).name("Health: 0").build(),
-                        SUBTRACT_1 = new ItemBuilder(new ItemStack(Material.WOOL, 1, DyeColor.RED.getData()))
-                                        .name("SUBTRACT 1").build(),
-                        SUBTRACT_0_01 = new ItemBuilder(new ItemStack(Material.WOOL, 1, DyeColor.RED.getData()))
-                                        .name("SUBTRACT 0.01").build(),
-                        SUBTRACT_0_001 = new ItemBuilder(new ItemStack(Material.WOOL, 1, DyeColor.YELLOW.getData()))
-                                        .name("SUBTRACT 0.001").build(),
-                        ADD_1 = new ItemBuilder(new ItemStack(Material.WOOL, 1, DyeColor.GREEN.getData())).name("ADD 1")
-                                        .build(),
-                        ADD_0_01 = new ItemBuilder(new ItemStack(Material.WOOL, 1, DyeColor.GREEN.getData()))
-                                        .name("ADD 0.01").build(),
-                        ADD_0_001 = new ItemBuilder(new ItemStack(Material.WOOL, 1, DyeColor.LIME.getData()))
-                                        .name("ADD 0.001").build(),
                         VIEW_OPPONENT_INVENTORY = new ItemBuilder(Material.LEVER).name("View Opponent Inventory")
                                         .build(),
                         SUBMIT = new ItemBuilder(Material.STICK).name("Submit").build(),
@@ -124,11 +112,23 @@ public class ItemStacks {
                         HEALTH = new ItemBuilder(new ItemStack(Material.POTION, (short) 8193)),
                         HITS = new ItemBuilder(Material.BLAZE_ROD), CLICKS = new ItemBuilder(Material.GHAST_TEAR),
                         POTION_EFFECTS = new ItemBuilder(Material.BLAZE_POWDER).name("Potion Effects"),
-                        FRICTION = new ItemBuilder(Material.SLIME_BLOCK),
-                        HORIZONTAL = new ItemBuilder(Material.DIODE),
-                        EXTRA_HORIZONTAL = new ItemBuilder(Material.REDSTONE_COMPARATOR),
-                        VERTICAL = new ItemBuilder(Material.ARROW),
-                        EXTRA_VERTICAL = new ItemBuilder(Material.BLAZE_ROD),
-                        VERTICAL_LIMIT = new ItemBuilder(Material.BEDROCK);
+                        FRICTION = new ItemBuilder(Material.SOUL_SAND).lore("Left click to increase.",
+                                        "Right click to decrease.", "Drop the item to reset."),
+                        HORIZONTAL = new ItemBuilder(Material.DIODE).lore("Left click to increase.",
+                                        "Right click to decrease.", "Drop the item to reset."),
+                        EXTRA_HORIZONTAL = new ItemBuilder(Material.REDSTONE_COMPARATOR).lore("Left click to increase.",
+                                        "Right click to decrease.", "Drop the item to reset."),
+                        VERTICAL = new ItemBuilder(Material.ARROW).lore("Left click to increase.",
+                                        "Right click to decrease.", "Drop the item to reset."),
+                        EXTRA_VERTICAL = new ItemBuilder(Material.BLAZE_ROD).lore("Left click to increase.",
+                                        "Right click to decrease.", "Drop the item to reset."),
+                        VERTICAL_LIMIT = new ItemBuilder(Material.BEDROCK).lore("Left click to increase.",
+                                        "Right click to decrease.", "Drop the item to reset."),
+                        SUBTRACT_1 = new ItemBuilder(new ItemStack(Material.WOOL, 1, DyeColor.RED.getData()))
+                                        .lore("Left click to increase.", "Right click to decrease.",
+                                                        "Drop the item to reset."),
+                        ADD_1 = new ItemBuilder(new ItemStack(Material.WOOL, 1, DyeColor.GREEN.getData()))
+                                        .lore("Left click to increase.", "Right click to decrease.",
+                                                        "Drop the item to reset.");
 
 }
