@@ -1,7 +1,7 @@
 package gg.mineral.practice.commands.party;
 
 import java.util.Iterator;
-import java.util.Map.Entry;
+import it.unimi.dsi.fastutil.objects.Object2LongMap.Entry;
 
 import gg.mineral.practice.commands.PlayerCommand;
 import gg.mineral.practice.entity.PlayerStatus;
@@ -210,7 +210,7 @@ public class PartyCommand extends PlayerCommand {
 					return;
 				}
 
-				Iterator<Entry<Party, Long>> it = profile.getRequestHandler().getRecievedPartyRequests()
+				Iterator<Entry<Party>> it = profile.getRequestHandler().getRecievedPartyRequests()
 						.entryIterator();
 
 				while (it.hasNext()) {

@@ -1,7 +1,7 @@
 package gg.mineral.practice.commands.duel;
 
 import java.util.Iterator;
-import java.util.Map.Entry;
+import it.unimi.dsi.fastutil.objects.Object2LongMap.Entry;
 
 import gg.mineral.practice.commands.PlayerCommand;
 import gg.mineral.practice.entity.PlayerStatus;
@@ -24,6 +24,10 @@ public class AcceptCommand extends PlayerCommand {
 	public void execute(org.bukkit.entity.Player pl, String[] args) {
 		Profile profile = ProfileManager.getOrCreateProfile(pl);
 
+		if (profile.getPlayerStatus() == PlayerStatus.QUEUEING) {
+			profile.removeFromQueue();
+		}
+
 		if (profile.getPlayerStatus() != PlayerStatus.IDLE) {
 			profile.message(ErrorMessages.YOU_ARE_NOT_IN_LOBBY);
 			return;
@@ -41,12 +45,16 @@ public class AcceptCommand extends PlayerCommand {
 			return;
 		}
 
+		if (duelSender.getPlayerStatus() == PlayerStatus.QUEUEING) {
+			duelSender.removeFromQueue();
+		}
+
 		if (duelSender.getPlayerStatus() != PlayerStatus.IDLE) {
 			profile.message(ErrorMessages.DUEL_SENDER_NOT_IN_LOBBY);
 			return;
 		}
 
-		Iterator<Entry<DuelRequest, Long>> it = profile.getRequestHandler().getRecievedDuelRequests().entryIterator();
+		Iterator<Entry<DuelRequest>> it = profile.getRequestHandler().getRecievedDuelRequests().entryIterator();
 
 		while (it.hasNext()) {
 			DuelRequest duelRequest = it.next().getKey();
