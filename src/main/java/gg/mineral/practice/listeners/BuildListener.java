@@ -1,6 +1,7 @@
 package gg.mineral.practice.listeners;
 
 import org.bukkit.GameMode;
+import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
@@ -34,7 +35,9 @@ public class BuildListener implements Listener {
 
 		Match match = profile.getMatch();
 
-		if (match.getBuildLog().contains(e.getBlock().getLocation())) {
+		Location location = e.getBlock().getLocation();
+
+		if (match.getBuildLog().contains(location)) {
 			e.setCancelled(!match.getData().getBuild());
 			return;
 		}

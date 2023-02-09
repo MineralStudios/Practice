@@ -6,11 +6,12 @@ import java.util.UUID;
 
 import org.bukkit.Bukkit;
 import org.bukkit.GameMode;
+import org.bukkit.Location;
 import org.bukkit.craftbukkit.v1_8_R3.entity.CraftPlayer;
-import org.bukkit.entity.ArmorStand;
 import org.bukkit.entity.Player;
 import org.bukkit.potion.PotionEffect;
 
+import gg.mineral.api.collection.GlueList;
 import gg.mineral.practice.PracticePlugin;
 import gg.mineral.practice.entity.handler.RequestHandler;
 import gg.mineral.practice.entity.handler.SpectateHandler;
@@ -39,6 +40,7 @@ import gg.mineral.practice.util.math.PearlCooldown;
 import gg.mineral.practice.util.messages.Message;
 import gg.mineral.practice.util.messages.impl.ChatMessages;
 import gg.mineral.practice.util.messages.impl.ErrorMessages;
+import gg.mineral.practice.util.world.BlockUtil;
 import lombok.Getter;
 import lombok.Setter;
 
@@ -88,6 +90,8 @@ public class Profile {
 	@Getter
 	@Setter
 	boolean kitLoaded = false;
+	@Getter
+	List<Location> fakeBlockLocations = new GlueList<>();
 
 	public Profile(org.bukkit.entity.Player player) {
 		this.player = (CraftPlayer) player;
@@ -325,21 +329,14 @@ public class Profile {
 		pearlCooldown.setTimeRemaining(i);
 	}
 
-	ArmorStand matchCountdownEntity;
+	List<Runnable> revert = new GlueList<Runnable>();
 
-	public void setInMatchCountdown(boolean c) {
-		inMatchCountdown = c;
+	public void setInMatchCountdown(boolean inMatchCountdown) {
+		this.inMatchCountdown = inMatchCountdown;
 
-		if (c) {
-			matchCountdownEntity = player.getWorld().spawn(getPlayer().getLocation(), ArmorStand.class);
-			matchCountdownEntity.setVisible(false);
-			matchCountdownEntity.setPassenger(player);
+		if (!inMatchCountdown) {
+			BlockUtil.clearFakeBlocks(this);
 			return;
-		}
-
-		if (matchCountdownEntity != null) {
-			matchCountdownEntity.remove();
-			matchCountdownEntity = null;
 		}
 
 		this.player.setSaturation(20);

@@ -35,7 +35,8 @@ public class InteractListener implements Listener {
 			return;
 		}
 
-		if (!profile.isInMatchCountdown() && (action == Action.LEFT_CLICK_AIR || action == Action.LEFT_CLICK_BLOCK)) {
+		if (profile.getPlayerStatus() == PlayerStatus.FIGHTING && !profile.isInMatchCountdown()
+				&& (action == Action.LEFT_CLICK_AIR || action == Action.LEFT_CLICK_BLOCK)) {
 			profile.getMatchStatisticCollector().click();
 		}
 
