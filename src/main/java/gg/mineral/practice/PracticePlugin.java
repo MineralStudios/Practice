@@ -103,6 +103,11 @@ public class PracticePlugin extends JavaPlugin {
 				new MovementListener(), new ProjectileListener());
 	}
 
+	@Override
+	public void onDisable() {
+		Bukkit.getServer().getScheduler().cancelTasks(this);
+	}
+
 	public void registerCommands(Command... cmds) {
 		for (Command c : cmds) {
 			MinecraftServer.getServer().server.getCommandMap().registerOverride(c.getName(), "Practice", c);

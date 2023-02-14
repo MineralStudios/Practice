@@ -6,7 +6,6 @@ import java.util.UUID;
 
 import org.bukkit.Bukkit;
 import org.bukkit.GameMode;
-import org.bukkit.Location;
 import org.bukkit.craftbukkit.v1_8_R3.entity.CraftPlayer;
 import org.bukkit.entity.Player;
 import org.bukkit.potion.PotionEffect;
@@ -36,10 +35,12 @@ import gg.mineral.practice.scoreboard.ScoreboardHandler;
 import gg.mineral.practice.scoreboard.impl.DefaultScoreboard;
 import gg.mineral.practice.tournaments.Tournament;
 import gg.mineral.practice.util.PlayerUtil;
+import gg.mineral.practice.util.collection.Registry;
 import gg.mineral.practice.util.math.PearlCooldown;
 import gg.mineral.practice.util.messages.Message;
 import gg.mineral.practice.util.messages.impl.ChatMessages;
 import gg.mineral.practice.util.messages.impl.ErrorMessages;
+import gg.mineral.practice.util.world.BlockData;
 import gg.mineral.practice.util.world.BlockUtil;
 import lombok.Getter;
 import lombok.Setter;
@@ -56,7 +57,7 @@ public class Profile {
 	Scoreboard scoreboard;
 	@Getter
 	ScoreboardHandler scoreboardHandler;
-	Integer scoreboardTaskId;
+	Integer scoreboardTaskId, fakeBlockTaskId;
 	@Getter
 	MatchData matchData;
 	@Getter
@@ -91,7 +92,7 @@ public class Profile {
 	@Setter
 	boolean kitLoaded = false;
 	@Getter
-	List<Location> fakeBlockLocations = new GlueList<>();
+	Registry<BlockData, String> fakeBlocks = new Registry<>(BlockData::toString);
 
 	public Profile(org.bukkit.entity.Player player) {
 		this.player = (CraftPlayer) player;
@@ -104,6 +105,12 @@ public class Profile {
 				getScoreboard().updateBoard(scoreboardHandler, this);
 			}
 		}, 0, 10);
+
+		fakeBlockTaskId = Bukkit.getServer().getScheduler().scheduleSyncRepeatingTask(PracticePlugin.INSTANCE, () -> {
+			fakeBlocks.getRegisteredObjects().forEach(blockData -> {
+				blockData.update(this.getPlayer());
+			});
+		}, 0, 3);
 
 		pearlCooldown.start();
 	}
