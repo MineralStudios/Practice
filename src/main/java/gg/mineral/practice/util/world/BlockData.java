@@ -19,6 +19,20 @@ public class BlockData {
     @Getter
     byte data;
 
+    public BlockData clone() {
+        return new BlockData(location.clone(), type, data);
+    }
+
+    public BlockData setType(Material type) {
+        this.type = type;
+        return this;
+    }
+
+    public BlockData translate(int x, int y, int z) {
+        location.add(x, y, z);
+        return this;
+    }
+
     public void update(Player player) {
         player.sendBlockChange(location, type, data);
     }

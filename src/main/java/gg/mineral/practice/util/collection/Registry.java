@@ -1,7 +1,9 @@
 package gg.mineral.practice.util.collection;
 
 import java.util.Collection;
+import java.util.Iterator;
 import java.util.Map;
+import java.util.Map.Entry;
 import java.util.function.Function;
 
 import it.unimi.dsi.fastutil.objects.Object2ObjectOpenHashMap;
@@ -14,6 +16,10 @@ public class Registry<T, Q> {
 
     public Collection<T> getRegisteredObjects() {
         return keyValueMap.values();
+    }
+
+    public Iterator<Entry<Q, T>> iterator() {
+        return keyValueMap.entrySet().iterator();
     }
 
     public void clear() {

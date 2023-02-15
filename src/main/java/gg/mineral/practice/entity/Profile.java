@@ -10,7 +10,6 @@ import org.bukkit.craftbukkit.v1_8_R3.entity.CraftPlayer;
 import org.bukkit.entity.Player;
 import org.bukkit.potion.PotionEffect;
 
-import gg.mineral.api.collection.GlueList;
 import gg.mineral.practice.PracticePlugin;
 import gg.mineral.practice.entity.handler.RequestHandler;
 import gg.mineral.practice.entity.handler.SpectateHandler;
@@ -41,7 +40,6 @@ import gg.mineral.practice.util.messages.Message;
 import gg.mineral.practice.util.messages.impl.ChatMessages;
 import gg.mineral.practice.util.messages.impl.ErrorMessages;
 import gg.mineral.practice.util.world.BlockData;
-import gg.mineral.practice.util.world.BlockUtil;
 import lombok.Getter;
 import lombok.Setter;
 
@@ -67,7 +65,7 @@ public class Profile {
 	@Getter
 	MatchStatisticCollector matchStatisticCollector = new MatchStatisticCollector(this);
 	@Getter
-	boolean playersVisible = true, partyOpenCooldown = false, inMatchCountdown = false;
+	boolean playersVisible = true, partyOpenCooldown = false;
 	@Setter
 	@Getter
 	PracticeMenu openMenu;
@@ -90,7 +88,7 @@ public class Profile {
 	PearlCooldown pearlCooldown = new PearlCooldown(this);
 	@Getter
 	@Setter
-	boolean kitLoaded = false;
+	boolean kitLoaded = false, inMatchCountdown = false;
 	@Getter
 	Registry<BlockData, String> fakeBlocks = new Registry<>(BlockData::toString);
 
@@ -334,20 +332,6 @@ public class Profile {
 
 	public void setPearlCooldown(int i) {
 		pearlCooldown.setTimeRemaining(i);
-	}
-
-	List<Runnable> revert = new GlueList<Runnable>();
-
-	public void setInMatchCountdown(boolean inMatchCountdown) {
-		this.inMatchCountdown = inMatchCountdown;
-
-		if (!inMatchCountdown) {
-			BlockUtil.clearFakeBlocks(this);
-			return;
-		}
-
-		this.player.setSaturation(20);
-		this.player.setFoodLevel(20);
 	}
 
 	public void startPartyOpenCooldown() {

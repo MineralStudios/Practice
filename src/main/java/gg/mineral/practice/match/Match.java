@@ -43,6 +43,8 @@ import gg.mineral.practice.util.messages.CC;
 import gg.mineral.practice.util.messages.impl.ErrorMessages;
 import gg.mineral.practice.util.messages.impl.Strings;
 import gg.mineral.practice.util.messages.impl.TextComponents;
+import gg.mineral.practice.util.world.BlockData;
+import gg.mineral.practice.util.world.BlockUtil;
 import gg.mineral.practice.util.world.WorldUtil;
 import it.unimi.dsi.fastutil.ints.Int2ObjectOpenHashMap;
 import it.unimi.dsi.fastutil.objects.ObjectIterator;
@@ -117,6 +119,8 @@ public class Match implements Spectatable {
 		p.getPlayer().setKnockback(data.getKnockback());
 		p.getPlayer().setAllowFlight(false);
 		p.getInventory().setInventoryClickCancelled(false);
+		p.getPlayer().setSaturation(20);
+		p.getPlayer().setFoodLevel(20);
 	}
 
 	public void setPotionEffects(Profile p) {
@@ -159,6 +163,28 @@ public class Match implements Spectatable {
 		handleFollowers(p);
 	}
 
+	public void encapsulate(Profile profile) {
+
+		BlockData blockData = new BlockData(profile.getPlayer().getLocation(), Material.BEDROCK,
+				(byte) 0);
+
+		int radius = 2;
+
+		for (int x = -radius; x <= radius; x++) {
+			for (int z = -radius; z <= radius; z++) {
+				if (x == -radius || x == radius || z == -radius || z == radius) {
+					for (int i = 0; i <= 2; i++) {
+						BlockUtil.sendFakeBlock(profile,
+								blockData.clone().setType(Material.IRON_FENCE).translate(x, i, z));
+					}
+				}
+
+				BlockUtil.sendFakeBlock(profile, blockData.clone().translate(x, -1, z));
+				BlockUtil.sendFakeBlock(profile, blockData.clone().translate(x, 3, z));
+			}
+		}
+	}
+
 	public void giveLoadoutSelection(Profile p) {
 
 		Int2ObjectOpenHashMap<ItemStack[]> map = data.getQueueEntry() == null ? null
@@ -193,10 +219,16 @@ public class Match implements Spectatable {
 
 	}
 
+	public void onCountdownStart(Profile p) {
+		encapsulate(p);
+	}
+
 	public void onMatchStart(Profile p) {
 		if (!p.isKitLoaded()) {
 			p.giveKit(getKit());
 		}
+
+		BlockUtil.clearFakeBlocks(p);
 	}
 
 	public void setScoreboard(Profile p) {
@@ -236,16 +268,15 @@ public class Match implements Spectatable {
 	}
 
 	public void handleOpponentMessages() {
-		String s1 = "Opponent: " + profile2.getName();
-		String s2 = "Opponent: " + profile1.getName();
+		handleOpponentMessages(profile1, profile2);
+		handleOpponentMessages(profile2, profile1);
+	}
 
-		if (data.isRanked()) {
-			s1 += " (Elo: " + data.getQueueEntry().getGametype().getElo(profile2) + ")";
-			s2 += " (Elo: " + data.getQueueEntry().getGametype().getElo(profile1) + ")";
-		}
+	public void handleOpponentMessages(Profile profile1, Profile profile2) {
+		StringBuilder sb = new StringBuilder("Opponent: " + profile2.getName())
+				.append(data.isRanked() ? " (Elo: " + data.getQueueEntry().getGametype().getElo(profile2) + ")" : "");
 
-		profile1.getPlayer().sendMessage(CC.ACCENT + s1);
-		profile2.getPlayer().sendMessage(CC.ACCENT + s2);
+		profile1.getPlayer().sendMessage(CC.ACCENT + sb.toString());
 	}
 
 	public void setWorldParameters(World world) {

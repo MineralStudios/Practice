@@ -27,6 +27,7 @@ public class Countdown {
 			for (int i = 0; i < match.getParticipants().size(); i++) {
 				Profile profile = match.getParticipants().get(i);
 				profile.setInMatchCountdown(true);
+				match.onCountdownStart(profile);
 			}
 		}, 4L);
 

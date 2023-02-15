@@ -92,7 +92,7 @@ public class Arena implements SaveableData {
 	public void load() {
 		this.world = Bukkit.createWorld(new WorldCreator(config.getString(path + "Spawn.World", "PracticeSpawn")));
 		this.location1 = new Location(world, config.getInt(path + "Spawn.1.x", 0),
-				config.getInt(path + "Spawn.1.y", 70) + 3, config.getInt(path + "Spawn.1.z", 0));
+				config.getInt(path + "Spawn.1.y", 70), config.getInt(path + "Spawn.1.z", 0));
 		this.location2 = new Location(world, config.getInt(path + "Spawn.2.x", 0),
 				config.getInt(path + "Spawn.2.y", 70), config.getInt(path + "Spawn.2.z", 0));
 		location1.setDirection(config.getVector(path + "Spawn.1.Direction", null));
