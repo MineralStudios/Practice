@@ -47,7 +47,6 @@ import gg.mineral.practice.util.world.BlockData;
 import gg.mineral.practice.util.world.BlockUtil;
 import gg.mineral.practice.util.world.WorldUtil;
 import it.unimi.dsi.fastutil.ints.Int2ObjectOpenHashMap;
-import it.unimi.dsi.fastutil.objects.ObjectIterator;
 import lombok.Getter;
 import net.md_5.bungee.api.chat.ClickEvent;
 import net.md_5.bungee.api.chat.ComponentBuilder;
@@ -71,10 +70,8 @@ public class Match implements Spectatable {
 	@Getter
 	GlueList<Location> buildLog = new GlueList<>();
 	@Getter
-	int postMatchTime = 60;
+	static int postMatchTime = 60;
 	org.bukkit.World world = null;
-
-	int mineralsAmount = 20;
 
 	public Match(Profile profile1, Profile profile2, MatchData matchData) {
 		this(matchData);
@@ -191,19 +188,6 @@ public class Match implements Spectatable {
 				: data.getQueueEntry().getCustomKits(p);
 
 		if (map == null ? true : map.isEmpty()) {
-			p.giveKit(getKit());
-			return;
-		}
-
-		if (map.size() < 2) {
-			ObjectIterator<ItemStack[]> iter = map.values().iterator();
-
-			if (iter.hasNext()) {
-				p.giveKit(getKit(iter.next()));
-				return;
-			}
-
-			p.giveKit(getKit());
 			return;
 		}
 
@@ -404,7 +388,7 @@ public class Match implements Spectatable {
 
 		if (data.isRanked()) {
 			updateElo(attacker, victim);
-			mineralsAmount = 100;
+
 		}
 
 		resetPearlCooldown(attacker, victim);
@@ -429,6 +413,7 @@ public class Match implements Spectatable {
 			if (CoreConnector.connected()) {
 				CoreConnector.INSTANCE.getNameTagAPI().giveTagAfterMatch(profile1.getPlayer(), profile2.getPlayer());
 				CoreConnector.INSTANCE.getUuidChecker().check(attacker.getPlayer().getDisplayName());
+				int mineralsAmount = data.isRanked() ? 100 : 20;
 				CoreConnector.INSTANCE.getMineralsSQL().addMinerals(attacker.getPlayer(),
 						de.jeezycore.utils.UUIDChecker.uuid, mineralsAmount,
 						"&7You &2successfully &7earned &9" + mineralsAmount + " &fminerals&7.");
