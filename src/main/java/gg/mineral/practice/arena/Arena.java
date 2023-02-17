@@ -115,4 +115,10 @@ public class Arena implements SaveableData {
 		this.displayItem = ItemStacks.DEFAULT_ARENA_DISPLAY_ITEM;
 		this.displayName = getName();
 	}
+
+	@Override
+	public void delete() {
+		config.remove("Arena." + getName());
+		config.save();
+	}
 }

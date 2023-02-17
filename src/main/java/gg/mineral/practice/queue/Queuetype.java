@@ -175,4 +175,10 @@ public class Queuetype implements SaveableData {
 		this.slotNumber = 8;
 		this.ranked = false;
 	}
+
+	@Override
+	public void delete() {
+		config.remove("Queuetype." + getName());
+		config.save();
+	}
 }

@@ -19,6 +19,7 @@ public class QueuetypeManager {
 
 	public static void remove(Queuetype queuetype) {
 		queuetypes.remove(queuetype);
+		queuetype.delete();
 	}
 
 	public static Queuetype getQueuetypeByName(String string) {

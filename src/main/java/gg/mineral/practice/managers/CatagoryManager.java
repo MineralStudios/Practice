@@ -20,6 +20,7 @@ public class CatagoryManager {
 
 	public static void remove(Catagory catagory) {
 		catagories.remove(catagory);
+		catagory.delete();
 
 		for (Queuetype queuetype : QueuetypeManager.getQueuetypes()) {
 			queuetype.getCatagories().removeInt(catagory);

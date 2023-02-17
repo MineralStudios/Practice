@@ -386,4 +386,10 @@ public class Gametype implements SaveableData {
 		this.kit = new Kit(this.getName(), new ItemStack[0], new ItemStack[0]);
 		this.leaderboardMap = new LeaderboardMap();
 	}
+
+	@Override
+	public void delete() {
+		config.remove("Gametype." + getName());
+		config.save();
+	}
 }

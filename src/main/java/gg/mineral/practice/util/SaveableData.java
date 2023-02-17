@@ -5,5 +5,7 @@ public interface SaveableData {
 
     public void load();
 
+    public void delete();
+
     public void setDefaults();
 }

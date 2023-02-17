@@ -115,4 +115,10 @@ public class Catagory implements SaveableData {
 			}
 		}
 	}
+
+	@Override
+	public void delete() {
+		config.remove("Catagory." + getName());
+		config.save();
+	}
 }

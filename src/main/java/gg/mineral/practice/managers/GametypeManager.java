@@ -21,6 +21,7 @@ public class GametypeManager {
 
 	public static void remove(Gametype gametype) {
 		gametypes.remove(gametype);
+		gametype.delete();
 
 		for (Catagory catagory : CatagoryManager.getCatagories()) {
 			catagory.getGametypes().remove(gametype);

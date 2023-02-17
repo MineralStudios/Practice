@@ -21,6 +21,7 @@ public class ArenaManager {
 
 	public static void remove(Arena arena) {
 		arenas.remove(arena);
+		arena.delete();
 
 		for (Gametype gametype : GametypeManager.getGametypes()) {
 			gametype.getArenas().remove(arena);
