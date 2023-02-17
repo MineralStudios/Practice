@@ -187,11 +187,11 @@ public class Match implements Spectatable {
 		Int2ObjectOpenHashMap<ItemStack[]> map = data.getQueueEntry() == null ? null
 				: data.getQueueEntry().getCustomKits(p);
 
+		p.getInventory().clear();
+
 		if (map == null ? true : map.isEmpty()) {
 			return;
 		}
-
-		p.getInventory().clear();
 
 		for (Entry<Integer, ItemStack[]> entry : map.int2ObjectEntrySet()) {
 			p.getInventory().setItem(entry.getKey(),

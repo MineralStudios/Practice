@@ -244,6 +244,12 @@ public class PlayerInventory extends CraftInventoryPlayer {
                     .name(CC.SECONDARY + CC.B + queuetype.getDisplayName()).build();
             setItem(queuetype.getSlotNumber(), item,
                     p -> {
+
+                        if (queuetype.isCommunity()) {
+                            p.message(ErrorMessages.COMING_SOON);
+                            return true;
+                        }
+
                         p.openMenu(new SelectGametypeMenu(queuetype, SelectGametypeMenu.Type.QUEUE));
                         return true;
                     });

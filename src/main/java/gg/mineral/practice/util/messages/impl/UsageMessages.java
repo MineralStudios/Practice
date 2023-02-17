@@ -67,6 +67,8 @@ public class UsageMessages {
 			"/queuetype setdisplay <Queuetype> <DisplayName>");
 	public static final UsageMessage QUEUETYPE_RANKED = new UsageMessage(
 			"/queuetype ranked <Queuetype> <True/False>");
+	public static final UsageMessage QUEUETYPE_COMMUNITY = new UsageMessage(
+			"/queuetype community <Queuetype> <True/False>");
 	public static final UsageMessage QUEUETYPE_SLOT = new UsageMessage("/queuetype slot <Queuetype> <Slot>");
 	public static final UsageMessage QUEUETYPE_KB = new UsageMessage(
 			"/queuetype kb <Queuetype> <KnockbackProfile>");

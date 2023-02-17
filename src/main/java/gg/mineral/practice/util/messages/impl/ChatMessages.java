@@ -133,7 +133,10 @@ public class ChatMessages {
 					"The display item for the %queuetype% queuetype has been set to the item in your hand.", CC.YELLOW)
 					.highlightText(CC.GOLD, "%queuetype%", "the item in your hand"),
 			QUEUETYPE_RANKED_SET = new ChatMessage(
-					"Event mode for the %queuetype% queuetype has been set to the %toggled%.", CC.YELLOW)
+					"Ranked for the %queuetype% queuetype has been set to the %toggled%.", CC.YELLOW)
+					.highlightText(CC.GOLD, "%queuetype%", "%toggled%"),
+			QUEUETYPE_COMMUNITY_SET = new ChatMessage(
+					"Community for the %queuetype% queuetype has been set to the %toggled%.", CC.YELLOW)
 					.highlightText(CC.GOLD, "%queuetype%", "%toggled%"),
 			QUEUETYPE_SLOT_SET = new ChatMessage(
 					"The slot for the %queuetype% queuetype has been set to the %slot% slot.",
@@ -417,6 +420,9 @@ public class ChatMessages {
 					CC.SECONDARY),
 			QUEUETYPE_RANKED = new ListElementMessage(
 					"/queuetype ranked <Queuetype> <True/False>",
+					CC.SECONDARY),
+			QUEUETYPE_COMMUNITY = new ListElementMessage(
+					"/queuetype community <Queuetype> <True/False>",
 					CC.SECONDARY),
 			QUEUETYPE_SLOT = new ListElementMessage("/queuetype slot <Queuetype> <Slot>",
 					CC.SECONDARY),

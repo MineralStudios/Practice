@@ -85,5 +85,6 @@ public class ErrorMessages {
 					"You are not in the kit editor of kit creator.");
 	// Other
 	public static final Message INVALID_SLOT = new ErrorMessage("You did not input a valid slot."),
-			INVALID_NUMBER = new ErrorMessage("You did not input a valid number.");
+			INVALID_NUMBER = new ErrorMessage("You did not input a valid number."),
+			COMING_SOON = new ErrorMessage("This feature is not yet released, it will be completed soon.");
 }

@@ -37,6 +37,7 @@ public class QueuetypeCommand extends PlayerCommand {
 				ChatMessages.QUEUETYPE_CREATE.send(player);
 				ChatMessages.QUEUETYPE_DISPLAY.send(player);
 				ChatMessages.QUEUETYPE_RANKED.send(player);
+				ChatMessages.QUEUETYPE_COMMUNITY.send(player);
 				ChatMessages.QUEUETYPE_SLOT.send(player);
 				ChatMessages.QUEUETYPE_KB.send(player);
 				ChatMessages.QUEUETYPE_LIST.send(player);
@@ -115,6 +116,36 @@ public class QueuetypeCommand extends PlayerCommand {
 				}
 
 				ChatMessages.QUEUETYPE_RANKED_SET.clone().replace("%toggled%", toggled).send(player);
+				return;
+			case "community":
+				if (args.length < 3) {
+					UsageMessages.QUEUETYPE_RANKED.send(player);
+					return;
+				}
+
+				queuetypeName = args[1];
+				queuetype = QueuetypeManager.getQueuetypeByName(queuetypeName);
+
+				if (queuetype == null) {
+					ErrorMessages.QUEUETYPE_DOES_NOT_EXIST.send(player);
+					return;
+				}
+
+				toggled = args[2].toLowerCase();
+
+				switch (toggled) {
+					case "false":
+						queuetype.setCommunity(false);
+						break;
+					case "true":
+						queuetype.setCommunity(true);
+						break;
+					default:
+						UsageMessages.QUEUETYPE_COMMUNITY.send(player);
+						return;
+				}
+
+				ChatMessages.QUEUETYPE_COMMUNITY_SET.clone().replace("%toggled%", toggled).send(player);
 				return;
 			case "slot":
 				if (args.length < 3) {

@@ -30,7 +30,7 @@ public class Queuetype implements SaveableData {
 	@Getter
 	Integer slotNumber;
 	@Getter
-	boolean ranked;
+	boolean ranked, community;
 	final String path;
 	@Getter
 	KnockbackProfile knockback = null;
@@ -93,6 +93,11 @@ public class Queuetype implements SaveableData {
 		save();
 	}
 
+	public void setCommunity(boolean community) {
+		this.community = community;
+		save();
+	}
+
 	public void setKnockback(KnockbackProfile knockback) {
 		this.knockback = knockback;
 		save();
@@ -125,6 +130,7 @@ public class Queuetype implements SaveableData {
 	public void save() {
 		config.set("Queuetype." + getName() + ".DisplayName", displayName);
 		config.set("Queue." + getName() + ".Elo", ranked);
+		config.set("Queue." + getName() + ".Community", community);
 		config.set("Queue." + getName() + ".Slot", slotNumber);
 		config.set("Queue." + getName() + ".DisplayItem", displayItem);
 
@@ -146,6 +152,7 @@ public class Queuetype implements SaveableData {
 		this.displayName = config.getString(path + "DisplayName", getName());
 		this.slotNumber = config.getInt(path + "Slot", 8);
 		this.ranked = config.getBoolean(path + "Elo", false);
+		this.community = config.getBoolean(path + "Community", false);
 		String kbprofile = config.getString(path + "Knockback", "");
 
 		if (!kbprofile.isEmpty()) {
