@@ -115,7 +115,8 @@ public class QueuetypeCommand extends PlayerCommand {
 						return;
 				}
 
-				ChatMessages.QUEUETYPE_RANKED_SET.clone().replace("%toggled%", toggled).send(player);
+				ChatMessages.QUEUETYPE_RANKED_SET.clone().replace("%queuetype%", queuetypeName)
+						.replace("%toggled%", toggled).send(player);
 				return;
 			case "community":
 				if (args.length < 3) {
@@ -145,7 +146,8 @@ public class QueuetypeCommand extends PlayerCommand {
 						return;
 				}
 
-				ChatMessages.QUEUETYPE_COMMUNITY_SET.clone().replace("%toggled%", toggled).send(player);
+				ChatMessages.QUEUETYPE_COMMUNITY_SET.clone().replace("%queuetype%", queuetypeName)
+						.replace("%toggled%", toggled).send(player);
 				return;
 			case "slot":
 				if (args.length < 3) {
