@@ -81,6 +81,8 @@ public class MatchData {
 		sb.append(newLine);
 		sb.append(CC.GREEN + "Kit: " + kit.getName());
 		sb.append(newLine);
+		sb.append(CC.GREEN + "Knockback: " + knockback.getName());
+		sb.append(newLine);
 		sb.append(CC.GREEN + "Hit Delay: " + noDamageTicks);
 		sb.append(newLine);
 		sb.append(CC.GREEN + "Hunger: " + hunger);
