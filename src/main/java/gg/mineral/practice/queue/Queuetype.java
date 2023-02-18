@@ -128,7 +128,7 @@ public class Queuetype implements SaveableData {
 
 	@Override
 	public void save() {
-		config.set("Queuetype." + getName() + ".DisplayName", displayName);
+		config.set("Queue." + getName() + ".DisplayName", displayName);
 		config.set("Queue." + getName() + ".Elo", ranked);
 		config.set("Queue." + getName() + ".Community", community);
 		config.set("Queue." + getName() + ".Slot", slotNumber);
@@ -178,7 +178,7 @@ public class Queuetype implements SaveableData {
 
 	@Override
 	public void delete() {
-		config.remove("Queuetype." + getName());
+		config.remove("Queue." + getName());
 		config.save();
 	}
 }
