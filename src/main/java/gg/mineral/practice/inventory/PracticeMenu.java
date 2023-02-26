@@ -16,7 +16,7 @@ import it.unimi.dsi.fastutil.ints.Int2ObjectOpenHashMap;
 import lombok.Getter;
 import lombok.Setter;
 
-public class PracticeMenu {
+public class PracticeMenu implements Menu {
 	@Setter
 	@Getter
 	String title;

@@ -1,12 +1,10 @@
 package gg.mineral.practice.queue;
 
-import java.util.List;
 import java.util.UUID;
 
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.inventory.ItemStack;
 
-import gg.mineral.api.collection.GlueList;
 import gg.mineral.practice.entity.Profile;
 import gg.mineral.practice.gametype.Gametype;
 import gg.mineral.practice.managers.ProfileManager;
@@ -56,17 +54,15 @@ public class QueueEntry {
 	public Int2ObjectOpenHashMap<ItemStack[]> getCustomKits(Profile profile) {
 		Int2ObjectOpenHashMap<ItemStack[]> kitLoadouts = getCustomKits().get(profile.getUUID());
 
-		if (kitLoadouts != null) {
+		if (kitLoadouts != null)
 			return kitLoadouts;
-		}
 
 		ConfigurationSection cs = ProfileManager.getPlayerConfig()
 				.getConfigurationSection(profile.getName() + ".KitData."
 						+ getGametype().getName() + "." + getQueuetype().getName());
 
-		if (cs == null) {
+		if (cs == null)
 			return null;
-		}
 
 		kitLoadouts = new Int2ObjectOpenHashMap<>();
 
@@ -75,9 +71,8 @@ public class QueueEntry {
 					.getConfigurationSection(profile.getName() + ".KitData."
 							+ getGametype().getName() + "." + getQueuetype().getName() + "." + key);
 
-			if (cs1 == null) {
+			if (cs1 == null)
 				continue;
-			}
 
 			kitLoadouts.put((int) Integer.valueOf(key), getCustomKit(profile, cs1));
 		}
