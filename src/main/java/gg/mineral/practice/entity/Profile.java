@@ -14,6 +14,7 @@ import gg.mineral.practice.PracticePlugin;
 import gg.mineral.practice.entity.handler.RequestHandler;
 import gg.mineral.practice.entity.handler.SpectateHandler;
 import gg.mineral.practice.events.Event;
+import gg.mineral.practice.inventory.Menu;
 import gg.mineral.practice.inventory.PlayerInventory;
 import gg.mineral.practice.inventory.PracticeMenu;
 import gg.mineral.practice.inventory.SubmitAction;
@@ -68,7 +69,7 @@ public class Profile {
 	boolean playersVisible = true, partyOpenCooldown = false;
 	@Setter
 	@Getter
-	PracticeMenu openMenu;
+	Menu openMenu;
 	@Getter
 	PlayerStatus playerStatus = PlayerStatus.IDLE;
 	@Getter

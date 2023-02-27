@@ -17,7 +17,7 @@ import gg.mineral.practice.PracticePlugin;
 import gg.mineral.practice.entity.PlayerStatus;
 import gg.mineral.practice.entity.Profile;
 import gg.mineral.practice.inventory.Interaction;
-import gg.mineral.practice.inventory.PracticeMenu;
+import gg.mineral.practice.inventory.Menu;
 import gg.mineral.practice.managers.ProfileManager;
 
 public class InventoryListener implements Listener {
@@ -25,7 +25,7 @@ public class InventoryListener implements Listener {
 	@EventHandler
 	public void onInventoryClick(InventoryClickEvent e) {
 		Profile profile = ProfileManager.getOrCreateProfile((org.bukkit.entity.Player) e.getWhoClicked());
-		PracticeMenu menu = profile.getOpenMenu();
+		Menu menu = profile.getOpenMenu();
 
 		boolean canClick = profile.getPlayer().isOp() && profile.getPlayer().getGameMode().equals(GameMode.CREATIVE);
 
@@ -38,6 +38,10 @@ public class InventoryListener implements Listener {
 		}
 
 		if (menu == null) {
+			return;
+		}
+
+		if (!e.getInventory().equals(menu.getInventory())) {
 			return;
 		}
 
@@ -57,10 +61,10 @@ public class InventoryListener implements Listener {
 	@EventHandler
 	public void onInventoryClose(InventoryCloseEvent e) {
 		Profile profile = ProfileManager.getOrCreateProfile((org.bukkit.entity.Player) e.getPlayer());
-		final PracticeMenu oldMenu = profile.getOpenMenu();
+		final Menu oldMenu = profile.getOpenMenu();
 		profile.setOpenMenu(null);
 
-		if (oldMenu != null && !oldMenu.isClosed()) {
+		if (oldMenu != null && !oldMenu.isClosed() && e.getInventory().equals(oldMenu.getInventory())) {
 			oldMenu.setClosed(true);
 
 			Bukkit.getScheduler().scheduleSyncDelayedTask(PracticePlugin.INSTANCE, () -> {

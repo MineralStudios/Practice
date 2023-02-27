@@ -21,7 +21,6 @@ public class PracticeMenu implements Menu {
 	@Getter
 	String title;
 	@Setter
-	@Getter
 	Boolean clickCancelled = false;
 	protected Profile viewer;
 	@Getter
@@ -165,7 +164,6 @@ public class PracticeMenu implements Menu {
 		return page;
 	}
 
-	protected Inventory inv;
 	protected boolean needsUpdate = true;
 
 	public void open(Profile viewer, int pageNumber) {
@@ -291,7 +289,6 @@ public class PracticeMenu implements Menu {
 		}
 
 		protected Inventory inv;
-		protected boolean needsUpdate = true;
 
 		public void open(Profile profile, boolean updated) {
 
@@ -357,5 +354,15 @@ public class PracticeMenu implements Menu {
 			return -1;
 		}
 
+	}
+
+	@Override
+	public boolean getClickCancelled() {
+		return clickCancelled;
+	}
+
+	@Override
+	public Inventory getInventory() {
+		return openPage == null ? null : openPage.inv;
 	}
 }
