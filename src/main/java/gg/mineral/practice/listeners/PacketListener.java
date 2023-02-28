@@ -12,6 +12,7 @@ import io.netty.channel.ChannelDuplexHandler;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.channel.ChannelPipeline;
 import io.netty.channel.ChannelPromise;
+import net.minecraft.server.v1_8_R3.PacketPlayInCustomPayload;
 
 public class PacketListener implements Listener {
 
@@ -31,7 +32,6 @@ public class PacketListener implements Listener {
 
             @Override
             public void channelRead(ChannelHandlerContext channelHandlerContext, Object packet) throws Exception {
-
                 super.channelRead(channelHandlerContext, packet);
             }
 

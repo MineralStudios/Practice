@@ -3,8 +3,6 @@ package gg.mineral.practice.inventory.menus;
 import java.math.RoundingMode;
 import java.text.DecimalFormat;
 
-import org.bukkit.event.inventory.ClickType;
-
 import gg.mineral.practice.entity.Profile;
 import gg.mineral.practice.inventory.PracticeMenu;
 import gg.mineral.practice.match.CustomKnockback;
@@ -41,36 +39,21 @@ public class CreateCustomKnockbackMenu extends PracticeMenu {
         String verticalLimitStr = "Vertical Limit: " + DECIMAL_FORMAT.format(kb.getVerticalLimit());
 
         setSlot(0, ItemStacks.FRICTION.name(frictionStr).build(), interaction -> {
-            if (interaction.getClickType() == ClickType.LEFT) {
-                kb.knockbackFriction += 0.005;
-            } else if (interaction.getClickType() == ClickType.RIGHT) {
-                kb.knockbackFriction -= 0.005;
-            } else if (interaction.getClickType() == ClickType.DROP) {
-                kb.knockbackFriction = CustomKnockback.origKnockbackFriction;
-            }
-            reload();
+            interaction.getProfile().openMenu(new ConfigureKnockbackValueMenu(this, value -> {
+                kb.knockbackFriction = value;
+            }));
         });
 
         setSlot(1, ItemStacks.HORIZONTAL.name(horizontalStr).build(), interaction -> {
-            if (interaction.getClickType() == ClickType.LEFT) {
-                kb.knockbackHorizontal += 0.005;
-            } else if (interaction.getClickType() == ClickType.RIGHT) {
-                kb.knockbackHorizontal -= 0.005;
-            } else if (interaction.getClickType() == ClickType.DROP) {
-                kb.knockbackHorizontal = CustomKnockback.origKnockbackHorizontal;
-            }
-            reload();
+            interaction.getProfile().openMenu(new ConfigureKnockbackValueMenu(this, value -> {
+                kb.knockbackHorizontal = value;
+            }));
         });
 
         setSlot(2, ItemStacks.VERTICAL.name(verticalStr).build(), interaction -> {
-            if (interaction.getClickType() == ClickType.LEFT) {
-                kb.knockbackVertical += 0.005;
-            } else if (interaction.getClickType() == ClickType.RIGHT) {
-                kb.knockbackVertical -= 0.005;
-            } else if (interaction.getClickType() == ClickType.DROP) {
-                kb.knockbackVertical = CustomKnockback.origKnockbackVertical;
-            }
-            reload();
+            interaction.getProfile().openMenu(new ConfigureKnockbackValueMenu(this, value -> {
+                kb.knockbackVertical = value;
+            }));
         });
 
         setSlot(4, ItemStacks.CLICK_TO_APPLY_CHANGES.name("Save Knockback").build(), interaction -> {
@@ -81,38 +64,23 @@ public class CreateCustomKnockbackMenu extends PracticeMenu {
 
         setSlot(6, ItemStacks.EXTRA_HORIZONTAL
                 .name(extraHorizontalStr).build(), interaction -> {
-                    if (interaction.getClickType() == ClickType.LEFT) {
-                        kb.knockbackExtraHorizontal += 0.005;
-                    } else if (interaction.getClickType() == ClickType.RIGHT) {
-                        kb.knockbackExtraHorizontal -= 0.005;
-                    } else if (interaction.getClickType() == ClickType.DROP) {
-                        kb.knockbackExtraHorizontal = CustomKnockback.origKnockbackExtraHorizontal;
-                    }
-                    reload();
+                    interaction.getProfile().openMenu(new ConfigureKnockbackValueMenu(this, value -> {
+                        kb.knockbackExtraHorizontal = value;
+                    }));
                 });
 
         setSlot(7, ItemStacks.EXTRA_VERTICAL.name(extraVerticalStr)
                 .build(), interaction -> {
-                    if (interaction.getClickType() == ClickType.LEFT) {
-                        kb.knockbackExtraVertical += 0.005;
-                    } else if (interaction.getClickType() == ClickType.RIGHT) {
-                        kb.knockbackExtraVertical -= 0.005;
-                    } else if (interaction.getClickType() == ClickType.DROP) {
-                        kb.knockbackExtraVertical = CustomKnockback.origKnockbackExtraVertical;
-                    }
-                    reload();
+                    interaction.getProfile().openMenu(new ConfigureKnockbackValueMenu(this, value -> {
+                        kb.knockbackExtraVertical = value;
+                    }));
                 });
 
         setSlot(8, ItemStacks.VERTICAL_LIMIT.name(verticalLimitStr)
                 .build(), interaction -> {
-                    if (interaction.getClickType() == ClickType.LEFT) {
-                        kb.knockbackVerticalLimit += 0.005;
-                    } else if (interaction.getClickType() == ClickType.RIGHT) {
-                        kb.knockbackVerticalLimit -= 0.005;
-                    } else if (interaction.getClickType() == ClickType.DROP) {
-                        kb.knockbackVerticalLimit = CustomKnockback.origKnockbackVerticalLimit;
-                    }
-                    reload();
+                    interaction.getProfile().openMenu(new ConfigureKnockbackValueMenu(this, value -> {
+                        kb.knockbackVerticalLimit = value;
+                    }));
                 });
 
         return true;

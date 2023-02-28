@@ -74,7 +74,12 @@ public class ItemStacks {
                         DEFAULT_OPTIONS_DISPLAY_ITEM = new ItemStack(Material.COMPASS),
                         DEFAULT_PARTY_DISPLAY_ITEM = new ItemStack(Material.NETHER_STAR),
                         DEFAULT_QUEUETYPE_DISPLAY_ITEM = new ItemStack(Material.DIAMOND_SWORD),
-                        WOOD_AXE = new ItemStack(Material.WOOD_AXE);
+                        WOOD_AXE = new ItemStack(Material.WOOD_AXE),
+                        APPLY = new ItemBuilder(new ItemStack(Material.WOOL, 1, DyeColor.GREEN.getData())).name(" ")
+                                        .lore(CC.GREEN + "Click To Apply Changes", " ").build(),
+                        CANCEL = new ItemBuilder(new ItemStack(Material.WOOL, 1, DyeColor.RED.getData())).name(" ")
+                                        .lore(CC.RED + "Click To Cancel Changes", " ").build();
+
         // Item Builders
         public static final ItemBuilder LOAD_KIT = new ItemBuilder(Material.ENCHANTED_BOOK),
                         CLICK_TO_APPLY_CHANGES = new ItemBuilder(Material.STONE_SWORD)
@@ -112,23 +117,15 @@ public class ItemStacks {
                         HEALTH = new ItemBuilder(new ItemStack(Material.POTION, (short) 8193)),
                         HITS = new ItemBuilder(Material.BLAZE_ROD), CLICKS = new ItemBuilder(Material.GHAST_TEAR),
                         POTION_EFFECTS = new ItemBuilder(Material.BLAZE_POWDER).name("Potion Effects"),
-                        FRICTION = new ItemBuilder(Material.SOUL_SAND).lore("Left click to increase.",
-                                        "Right click to decrease.", "Drop the item to reset."),
-                        HORIZONTAL = new ItemBuilder(Material.DIODE).lore("Left click to increase.",
-                                        "Right click to decrease.", "Drop the item to reset."),
-                        EXTRA_HORIZONTAL = new ItemBuilder(Material.REDSTONE_COMPARATOR).lore("Left click to increase.",
-                                        "Right click to decrease.", "Drop the item to reset."),
-                        VERTICAL = new ItemBuilder(Material.ARROW).lore("Left click to increase.",
-                                        "Right click to decrease.", "Drop the item to reset."),
-                        EXTRA_VERTICAL = new ItemBuilder(Material.BLAZE_ROD).lore("Left click to increase.",
-                                        "Right click to decrease.", "Drop the item to reset."),
-                        VERTICAL_LIMIT = new ItemBuilder(Material.BEDROCK).lore("Left click to increase.",
-                                        "Right click to decrease.", "Drop the item to reset."),
+                        FRICTION = new ItemBuilder(Material.SOUL_SAND).lore("Click to change value."),
+                        HORIZONTAL = new ItemBuilder(Material.DIODE).lore("Click to change value."),
+                        EXTRA_HORIZONTAL = new ItemBuilder(Material.REDSTONE_COMPARATOR).lore("Click to change value."),
+                        VERTICAL = new ItemBuilder(Material.ARROW).lore("Click to change value."),
+                        EXTRA_VERTICAL = new ItemBuilder(Material.BLAZE_ROD).lore("Click to change value."),
+                        VERTICAL_LIMIT = new ItemBuilder(Material.BEDROCK).lore("Click to change value."),
                         SUBTRACT_1 = new ItemBuilder(new ItemStack(Material.WOOL, 1, DyeColor.RED.getData()))
-                                        .lore("Left click to increase.", "Right click to decrease.",
-                                                        "Drop the item to reset."),
+                                        .lore("Click to change value."),
                         ADD_1 = new ItemBuilder(new ItemStack(Material.WOOL, 1, DyeColor.GREEN.getData()))
-                                        .lore("Left click to increase.", "Right click to decrease.",
-                                                        "Drop the item to reset.");
+                                        .lore("Click to change value.");
 
 }

@@ -16,7 +16,6 @@ import gg.mineral.practice.entity.handler.SpectateHandler;
 import gg.mineral.practice.events.Event;
 import gg.mineral.practice.inventory.Menu;
 import gg.mineral.practice.inventory.PlayerInventory;
-import gg.mineral.practice.inventory.PracticeMenu;
 import gg.mineral.practice.inventory.SubmitAction;
 import gg.mineral.practice.inventory.menus.MechanicsMenu;
 import gg.mineral.practice.kit.Kit;
@@ -114,7 +113,7 @@ public class Profile {
 		pearlCooldown.start();
 	}
 
-	public void openMenu(PracticeMenu m) {
+	public void openMenu(Menu m) {
 		m.open(this);
 	}
 

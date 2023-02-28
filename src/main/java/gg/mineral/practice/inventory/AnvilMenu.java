@@ -7,7 +7,6 @@ import org.bukkit.Material;
 import org.bukkit.craftbukkit.v1_8_R3.entity.CraftPlayer;
 import org.bukkit.craftbukkit.v1_8_R3.event.CraftEventFactory;
 import org.bukkit.entity.Player;
-import org.bukkit.event.inventory.InventoryDragEvent;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
 
@@ -22,6 +21,8 @@ import net.minecraft.server.v1_8_R3.Container;
 import net.minecraft.server.v1_8_R3.ContainerAnvil;
 import net.minecraft.server.v1_8_R3.EntityHuman;
 import net.minecraft.server.v1_8_R3.EntityPlayer;
+import net.minecraft.server.v1_8_R3.ICrafting;
+import net.minecraft.server.v1_8_R3.IInventory;
 import net.minecraft.server.v1_8_R3.PacketPlayOutCloseWindow;
 import net.minecraft.server.v1_8_R3.PacketPlayOutOpenWindow;
 
@@ -34,7 +35,9 @@ public class AnvilMenu implements Menu {
     @Setter
     @Getter
     boolean closed = true;
-    Profile viewer;
+    protected Profile viewer;
+    @Getter
+    String text;
 
     /**
      * The container id of the inventory, used for NMS methods
@@ -51,12 +54,6 @@ public class AnvilMenu implements Menu {
         handleInventoryCloseEvent(viewer.getPlayer());
         setActiveContainerDefault(viewer.getPlayer());
         sendPacketCloseWindow(viewer.getPlayer(), containerId);
-    }
-
-    public void onInventoryDrag(InventoryDragEvent event) {
-        if (event.getInventory().equals(inventory)) {
-            event.setCancelled(clickCancelled);
-        }
     }
 
     /**
@@ -166,6 +163,19 @@ public class AnvilMenu implements Menu {
         }
 
         public void b(EntityHuman entityhuman) {
+        }
+
+        public void e() {
+        }
+
+        public void a(String s) {
+            text = s;
+        }
+
+        public void a(IInventory iinventory) {
+        }
+
+        public void addSlotListener(ICrafting icrafting) {
         }
     }
 
