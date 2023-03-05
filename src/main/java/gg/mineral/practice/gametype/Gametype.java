@@ -29,7 +29,7 @@ public class Gametype implements SaveableData {
 	final FileConfiguration config = GametypeManager.getConfig();
 
 	@Getter
-	Boolean regeneration, deadlyWater, griefing, build, looting, damage, hunger, boxing, event = false;
+	Boolean regeneration, deadlyWater, griefing, build, looting, damage, hunger, boxing, event, botsEnabled;
 	@Getter
 	boolean inCatagory;
 	@Getter
@@ -156,6 +156,11 @@ public class Gametype implements SaveableData {
 		save();
 	}
 
+	public void setBotsEnabled(Boolean bots) {
+		this.botsEnabled = bots;
+		save();
+	}
+
 	public void setPearlCooldown(Integer pearlCooldown) {
 		this.pearlCooldown = pearlCooldown;
 		save();
@@ -227,6 +232,7 @@ public class Gametype implements SaveableData {
 	public void save() {
 		config.set(path + "Regen", regeneration);
 		config.set(path + "Event", event);
+		config.set(path + "Bots", botsEnabled);
 		if (eventArena != null) {
 			config.set(path + "EventArena", eventArena.getName());
 		}
@@ -303,6 +309,7 @@ public class Gametype implements SaveableData {
 		this.boxing = config.getBoolean(path + "Boxing", false);
 		this.inCatagory = config.getBoolean(path + "InCatagory", false);
 		this.event = config.getBoolean(path + "Event", false);
+		this.botsEnabled = config.getBoolean(path + "Bots", false);
 		this.eventArena = ArenaManager.getArenaByName(config.getString(path + "EventArena", ""));
 
 		if (inCatagory) {
@@ -380,6 +387,7 @@ public class Gametype implements SaveableData {
 		this.boxing = false;
 		this.inCatagory = false;
 		this.event = false;
+		this.botsEnabled = false;
 		this.eventArena = null;
 		this.pearlCooldown = 10;
 

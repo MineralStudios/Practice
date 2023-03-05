@@ -10,6 +10,7 @@ import org.bukkit.event.player.PlayerQuitEvent;
 import gg.mineral.practice.entity.Profile;
 import gg.mineral.practice.managers.ProfileManager;
 import gg.mineral.practice.scoreboard.impl.DefaultScoreboard;
+import gg.mineral.server.fakeplayer.FakePlayer;
 
 public class EntryListener implements Listener {
 
@@ -19,6 +20,11 @@ public class EntryListener implements Listener {
 		Profile profile = ProfileManager.getOrCreateProfile(event.getPlayer());
 		profile.getPlayer().setGameMode(GameMode.SURVIVAL);
 		profile.heal();
+
+		if (profile.getPlayer().getHandle() instanceof FakePlayer) {
+			return;
+		}
+
 		profile.getInventory().setInventoryForLobby();
 		profile.removePotionEffects();
 

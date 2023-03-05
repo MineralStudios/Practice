@@ -52,6 +52,7 @@ public class GametypeCommand extends PlayerCommand {
 				ChatMessages.GAMETYPE_DAMAGE.send(player);
 				ChatMessages.GAMETYPE_HUNGER.send(player);
 				ChatMessages.GAMETYPE_BOXING.send(player);
+				ChatMessages.GAMETYPE_BOTS.send(player);
 				ChatMessages.GAMETYPE_REGEN.send(player);
 				ChatMessages.GAMETYPE_EPEARL.send(player);
 				ChatMessages.GAMETYPE_ARENA_FOR_ALL.send(player);
@@ -173,6 +174,37 @@ public class GametypeCommand extends PlayerCommand {
 				gametype.setNoDamageTicks(ndt);
 				ChatMessages.GAMETYPE_DAMAGE_TICKS_SET.clone().replace("%gametype%", gametypeName).replace("%delay%",
 						noDamageTicksStr).send(player);
+				return;
+			case "bots":
+				if (args.length < 3) {
+					UsageMessages.GAMETYPE_BOTS.send(player);
+					return;
+				}
+
+				gametypeName = args[1];
+				gametype = GametypeManager.getGametypeByName(gametypeName);
+
+				if (gametype == null) {
+					ErrorMessages.GAMETYPE_DOES_NOT_EXIST.send(player);
+					return;
+				}
+
+				toggled = args[2].toLowerCase();
+
+				switch (toggled) {
+					case "false":
+						gametype.setBotsEnabled(false);
+						break;
+					case "true":
+						gametype.setBotsEnabled(true);
+						break;
+					default:
+						UsageMessages.GAMETYPE_BOTS.send(player);
+						return;
+				}
+
+				ChatMessages.GAMETYPE_BOTS_SET.clone().replace("%gametype%", gametypeName)
+						.replace("%toggled%", toggled).send(player);
 				return;
 			case "regen":
 				if (args.length < 3) {

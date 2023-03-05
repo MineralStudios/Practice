@@ -49,6 +49,9 @@ public class ChatMessages {
 			GAMETYPE_REGEN_SET = new ChatMessage(
 					"Regeneration for the %gametype% gametype has been set to %toggled%.", CC.YELLOW)
 					.highlightText(CC.GOLD, "%gametype%", "%toggled%"),
+			GAMETYPE_BOTS_SET = new ChatMessage(
+					"Bots for the %gametype% gametype has been set to %toggled%.", CC.YELLOW)
+					.highlightText(CC.GOLD, "%gametype%", "%toggled%"),
 			GAMETYPE_GRIEFING_SET = new ChatMessage(
 					"Griefing for the %gametype% gametype has been set to %toggled%.", CC.YELLOW)
 					.highlightText(CC.GOLD, "%gametype%", "%toggled%"),
@@ -137,6 +140,9 @@ public class ChatMessages {
 					.highlightText(CC.GOLD, "%queuetype%", "%toggled%"),
 			QUEUETYPE_COMMUNITY_SET = new ChatMessage(
 					"Community for the %queuetype% queuetype has been set to the %toggled%.", CC.YELLOW)
+					.highlightText(CC.GOLD, "%queuetype%", "%toggled%"),
+			QUEUETYPE_BOTS_SET = new ChatMessage(
+					"Bots for the %queuetype% queuetype has been set to the %toggled%.", CC.YELLOW)
 					.highlightText(CC.GOLD, "%queuetype%", "%toggled%"),
 			QUEUETYPE_SLOT_SET = new ChatMessage(
 					"The slot for the %queuetype% queuetype has been set to the %slot% slot.",
@@ -339,6 +345,8 @@ public class ChatMessages {
 					CC.SECONDARY),
 			GAMETYPE_REGEN = new ListElementMessage("/gametype regen <Gametype> <True/False>",
 					CC.SECONDARY),
+			GAMETYPE_BOTS = new ListElementMessage("/gametype bots <Gametype> <True/False>",
+					CC.SECONDARY),
 			GAMETYPE_GRIEFING = new ListElementMessage(
 					"/gametype griefing <Gametype> <True/False>",
 					CC.SECONDARY),
@@ -423,6 +431,9 @@ public class ChatMessages {
 					CC.SECONDARY),
 			QUEUETYPE_COMMUNITY = new ListElementMessage(
 					"/queuetype community <Queuetype> <True/False>",
+					CC.SECONDARY),
+			QUEUETYPE_BOTS = new ListElementMessage(
+					"/queuetype bots <Queuetype> <True/False>",
 					CC.SECONDARY),
 			QUEUETYPE_SLOT = new ListElementMessage("/queuetype slot <Queuetype> <Slot>",
 					CC.SECONDARY),

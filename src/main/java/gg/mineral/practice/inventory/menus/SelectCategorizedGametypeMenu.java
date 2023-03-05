@@ -60,7 +60,11 @@ public class SelectCategorizedGametypeMenu extends SelectGametypeMenu {
 				if (queueEntries != null && queueEntries.contains(queueEntry)) {
 					viewer.removeFromQueue(queueEntry);
 				} else {
-					viewer.addPlayerToQueue(queueEntry);
+					if (queueEntry.getGametype().getBotsEnabled() && queueEntry.getQueuetype().getBotsEnabled()) {
+						viewer.openMenu(new SelectOpponentTypeMenu(queueEntry, this));
+					} else {
+						viewer.addPlayerToQueue(queueEntry);
+					}
 				}
 
 				if (viewer.getPlayerStatus() == PlayerStatus.QUEUEING) {

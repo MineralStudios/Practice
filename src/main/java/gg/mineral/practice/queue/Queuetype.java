@@ -30,6 +30,8 @@ public class Queuetype implements SaveableData {
 	@Getter
 	Integer slotNumber;
 	@Getter
+	Boolean botsEnabled;
+	@Getter
 	boolean ranked, community;
 	final String path;
 	@Getter
@@ -93,6 +95,11 @@ public class Queuetype implements SaveableData {
 		save();
 	}
 
+	public void setBotsEnabled(Boolean bots) {
+		this.botsEnabled = bots;
+		save();
+	}
+
 	public void setCommunity(boolean community) {
 		this.community = community;
 		save();
@@ -128,18 +135,19 @@ public class Queuetype implements SaveableData {
 
 	@Override
 	public void save() {
-		config.set("Queue." + getName() + ".DisplayName", displayName);
-		config.set("Queue." + getName() + ".Elo", ranked);
-		config.set("Queue." + getName() + ".Community", community);
-		config.set("Queue." + getName() + ".Slot", slotNumber);
-		config.set("Queue." + getName() + ".DisplayItem", displayItem);
+		config.set(path + "DisplayName", displayName);
+		config.set(path + "Elo", ranked);
+		config.set(path + "Community", community);
+		config.set(path + "Slot", slotNumber);
+		config.set(path + "DisplayItem", displayItem);
+		config.set(path + "Bots", botsEnabled);
 
 		if (knockback != null) {
-			config.set("Queue." + getName() + ".Knockback", knockback.getName());
+			config.set(path + "Knockback", knockback.getName());
 		}
 
 		for (Arena arena : arenas) {
-			config.set("Queue." + getName() + ".Arenas." + arena.getName(), true);
+			config.set(path + "Arenas." + arena.getName(), true);
 		}
 
 		config.save();
@@ -153,6 +161,7 @@ public class Queuetype implements SaveableData {
 		this.slotNumber = config.getInt(path + "Slot", 8);
 		this.ranked = config.getBoolean(path + "Elo", false);
 		this.community = config.getBoolean(path + "Community", false);
+		this.botsEnabled = config.getBoolean(path + "Bots", false);
 		String kbprofile = config.getString(path + "Knockback", "");
 
 		if (!kbprofile.isEmpty()) {
@@ -174,6 +183,7 @@ public class Queuetype implements SaveableData {
 		this.displayName = getName();
 		this.slotNumber = 8;
 		this.ranked = false;
+		this.botsEnabled = false;
 	}
 
 	@Override

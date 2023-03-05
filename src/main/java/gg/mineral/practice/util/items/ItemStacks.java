@@ -52,6 +52,8 @@ public class ItemStacks {
                         CHOOSE_CUSTOM_KIT = new ItemBuilder(Material.GOLD_CHESTPLATE).name("Create Custom Kit").build(),
                         SIMPLE_MODE = new ItemBuilder(Material.GREEN_RECORD).name("Simple Mode").lore().build(),
                         ADVANCED_MODE = new ItemBuilder(Material.GOLD_RECORD).name("Advanced Mode").lore().build(),
+                        BOT_MODE = new ItemBuilder(Material.RECORD_12).name("Bot").lore().build(),
+                        PLAYER_MODE = new ItemBuilder(Material.RECORD_7).name("Player").lore().build(),
                         TOGGLE_PLAYER_VISIBILITY = new ItemBuilder(Material.GOLDEN_CARROT)
                                         .name("Toggle Player Visibility").build(),
                         TOGGLE_DUEL_REQUESTS = new ItemBuilder(Material.WOOD_SWORD).name("Toggle Duel Requests")

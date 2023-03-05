@@ -7,22 +7,30 @@ import org.bukkit.event.Listener;
 import org.bukkit.event.player.PlayerJoinEvent;
 import org.bukkit.event.player.PlayerQuitEvent;
 
+import gg.mineral.server.fakeplayer.FakePlayer;
 import io.netty.channel.Channel;
 import io.netty.channel.ChannelDuplexHandler;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.channel.ChannelPipeline;
 import io.netty.channel.ChannelPromise;
-import net.minecraft.server.v1_8_R3.PacketPlayInCustomPayload;
 
 public class PacketListener implements Listener {
 
     @EventHandler
     public void onJoin(PlayerJoinEvent event) {
+        if (((CraftPlayer) event.getPlayer()).getHandle() instanceof FakePlayer) {
+            return;
+        }
+
         injectPlayer(event.getPlayer());
     }
 
     @EventHandler
     public void onLeave(PlayerQuitEvent event) {
+        if (((CraftPlayer) event.getPlayer()).getHandle() instanceof FakePlayer) {
+            return;
+        }
+
         removePlayer(event.getPlayer());
     }
 

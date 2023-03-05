@@ -28,6 +28,7 @@ public class UsageMessages {
 	public static final UsageMessage GAMETYPE_DAMAGE_TICKS = new UsageMessage(
 			"/gametype nodamageticks <Gametype> <Ticks>");
 	public static final UsageMessage GAMETYPE_REGEN = new UsageMessage("/gametype regen <Gametype> <True/False>");
+	public static final UsageMessage GAMETYPE_BOTS = new UsageMessage("/gametype bots <Gametype> <True/False>");
 	public static final UsageMessage GAMETYPE_GRIEFING = new UsageMessage(
 			"/gametype griefing <Gametype> <True/False>");
 	public static final UsageMessage GAMETYPE_QUEUE = new UsageMessage(
@@ -72,6 +73,8 @@ public class UsageMessages {
 	public static final UsageMessage QUEUETYPE_SLOT = new UsageMessage("/queuetype slot <Queuetype> <Slot>");
 	public static final UsageMessage QUEUETYPE_KB = new UsageMessage(
 			"/queuetype kb <Queuetype> <KnockbackProfile>");
+	public static final UsageMessage QUEUETYPE_BOTS = new UsageMessage(
+			"/queuetype bots <Queuetype> <True/False>");
 	public static final UsageMessage QUEUETYPE_ARENA = new UsageMessage(
 			"/queuetype arena <Queuetype> <Arena> <True/False>");
 	public static final UsageMessage QUEUETYPE_DELETE = new UsageMessage("/queuetype delete <Queuetype>");
