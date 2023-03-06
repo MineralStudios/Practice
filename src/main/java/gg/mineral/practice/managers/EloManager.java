@@ -11,7 +11,7 @@ import gg.mineral.practice.sql.SQLManager;
 import gg.mineral.practice.util.collection.LeaderboardMap;
 
 public class EloManager {
-	final static String TABLE = "Elo";
+	final static String TABLE = "elo";
 
 	static {
 		try {
