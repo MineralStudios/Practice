@@ -33,9 +33,10 @@ public class SelectOpponentTypeMenu extends PracticeMenu {
             Profile p = interaction.getProfile();
             FakePlayer fakePlayer = new FakePlayer((CraftWorld) p.getPlayer().getWorld(), "Bot");
             fakePlayer.spawn();
-            fakePlayer.startAiming(100F, 100F);
+            fakePlayer.startAiming(20F);
             fakePlayer.startAttacking(20);
             fakePlayer.startMoving(FakePlayer.Direction.FORWARDS);
+            fakePlayer.startStrafing();
             fakePlayer.setSprintResetAccuracy(1.0F);
             fakePlayer.startSprinting();
             Profile fakeProfile = ProfileManager.getOrCreateProfile(fakePlayer.getBukkitEntity());
