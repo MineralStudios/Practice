@@ -80,7 +80,19 @@ public class ItemStacks {
                         APPLY = new ItemBuilder(new ItemStack(Material.WOOL, 1, DyeColor.GREEN.getData())).name(" ")
                                         .lore(CC.GREEN + "Click To Apply Changes", " ").build(),
                         CANCEL = new ItemBuilder(new ItemStack(Material.WOOL, 1, DyeColor.RED.getData())).name(" ")
-                                        .lore(CC.RED + "Click To Cancel Changes", " ").build();
+                                        .lore(CC.RED + "Click To Cancel Changes", " ").build(),
+                        EASY = new ItemBuilder(new ItemStack(Material.WOOL, 1, DyeColor.GREEN.getData())).name("Easy")
+                                        .build(),
+                        MEDIUM = new ItemBuilder(new ItemStack(Material.WOOL, 1, DyeColor.YELLOW.getData()))
+                                        .name("Medium")
+                                        .build(),
+                        HARD = new ItemBuilder(new ItemStack(Material.WOOL, 1, DyeColor.ORANGE.getData())).name("Hard")
+                                        .build(),
+                        EXPERT = new ItemBuilder(new ItemStack(Material.WOOL, 1, DyeColor.RED.getData())).name("Expert")
+                                        .build(),
+                        HACKER = new ItemBuilder(new ItemStack(Material.WOOL, 1, DyeColor.PURPLE.getData()))
+                                        .name("Hacker")
+                                        .build();
 
         // Item Builders
         public static final ItemBuilder LOAD_KIT = new ItemBuilder(Material.ENCHANTED_BOOK),
