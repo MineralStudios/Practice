@@ -18,7 +18,8 @@ public class PacketListener implements Listener {
 
     @EventHandler
     public void onJoin(PlayerJoinEvent event) {
-        if (((CraftPlayer) event.getPlayer()).getHandle() instanceof FakePlayer) {
+
+        if (FakePlayer.isFakePlayer(((CraftPlayer) event.getPlayer()).getHandle())) {
             return;
         }
 
@@ -27,7 +28,7 @@ public class PacketListener implements Listener {
 
     @EventHandler
     public void onLeave(PlayerQuitEvent event) {
-        if (((CraftPlayer) event.getPlayer()).getHandle() instanceof FakePlayer) {
+        if (FakePlayer.isFakePlayer(((CraftPlayer) event.getPlayer()).getHandle())) {
             return;
         }
 

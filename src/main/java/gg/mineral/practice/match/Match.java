@@ -3,14 +3,15 @@ package gg.mineral.practice.match;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Map.Entry;
+import java.util.Queue;
 import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.ConcurrentLinkedQueue;
 
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.World;
 import org.bukkit.craftbukkit.v1_8_R3.CraftWorld;
-import org.bukkit.craftbukkit.v1_8_R3.entity.CraftItem;
 import org.bukkit.entity.Item;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.potion.PotionEffect;
@@ -52,8 +53,6 @@ import net.md_5.bungee.api.chat.ClickEvent;
 import net.md_5.bungee.api.chat.ComponentBuilder;
 import net.md_5.bungee.api.chat.HoverEvent;
 import net.md_5.bungee.api.chat.TextComponent;
-import net.minecraft.server.v1_8_R3.EntityHuman;
-import net.minecraft.server.v1_8_R3.EntityItem;
 
 public class Match implements Spectatable {
 
@@ -71,6 +70,8 @@ public class Match implements Spectatable {
 	GlueList<Location> buildLog = new GlueList<>();
 	@Getter
 	static int postMatchTime = 60;
+	@Getter
+	Queue<Item> itemRemovalQueue = new ConcurrentLinkedQueue<>();
 	org.bukkit.World world = null;
 
 	public Match(Profile profile1, Profile profile2, MatchData matchData) {
@@ -488,25 +489,30 @@ public class Match implements Spectatable {
 		}
 	}
 
+	public void clearItems() {
+		boolean arenaInUse = false;
+
+		for (Match match : MatchManager.getMatches()) {
+			if (!match.isEnded() && match.getData().getArena().equals(data.getArena())) {
+				arenaInUse = true;
+				break;
+			}
+		}
+
+		for (Item item : arenaInUse ? itemRemovalQueue
+				: data.getArena().getLocation1().getWorld().getEntitiesByClass(Item.class)) {
+			item.remove();
+		}
+
+	}
+
 	public void clearWorld() {
+		clearItems();
+
 		Bukkit.getServer().getScheduler().runTaskLater(PracticePlugin.INSTANCE, () -> {
 			if (world != null) {
 				WorldUtil.deleteWorld(world);
 				return;
-			}
-
-			for (Item item : data.getArena().getLocation1().getWorld().getEntitiesByClass(Item.class)) {
-				EntityHuman lastHolder = ((EntityItem) ((CraftItem) item).getHandle()).lastHolder;
-
-				if (lastHolder == null) {
-					continue;
-				}
-
-				for (Profile participant : participants) {
-					if (lastHolder.getBukkitEntity().getUniqueId() == participant.getUUID()) {
-						item.remove();
-					}
-				}
 			}
 
 			for (Location location : buildLog) {

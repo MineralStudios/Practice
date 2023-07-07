@@ -21,7 +21,7 @@ public class EntryListener implements Listener {
 		profile.getPlayer().setGameMode(GameMode.SURVIVAL);
 		profile.heal();
 
-		if (profile.getPlayer().getHandle() instanceof FakePlayer) {
+		if (FakePlayer.isFakePlayer(profile.getPlayer().getHandle())) {
 			return;
 		}
 

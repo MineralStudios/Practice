@@ -4,8 +4,7 @@ import org.bukkit.craftbukkit.v1_8_R3.CraftWorld;
 
 import gg.mineral.practice.entity.Profile;
 import gg.mineral.practice.inventory.PracticeMenu;
-import gg.mineral.practice.managers.ProfileManager;
-import gg.mineral.practice.match.Match;
+import gg.mineral.practice.match.BotMatch;
 import gg.mineral.practice.match.data.MatchData;
 import gg.mineral.practice.queue.QueueEntry;
 import gg.mineral.practice.util.items.ItemStacks;
@@ -28,42 +27,15 @@ public class SelectBotDifficultyMenu extends PracticeMenu {
         setSlot(0, ItemStacks.EASY, interaction -> {
             Profile p = interaction.getProfile();
 
-            FakePlayer fakePlayer = new FakePlayer((CraftWorld) p.getPlayer().getWorld(), "Easy Bot");
-            fakePlayer.spawn();
-            fakePlayer.startAiming(0.5F, 0.5F);
+            FakePlayer fakePlayer = new FakePlayer();
+            fakePlayer.spawn((CraftWorld) p.getPlayer().getWorld(), "EasyBot");
+            fakePlayer.startAiming(0.15F, 1.5F);
             fakePlayer.startAttacking(6);
-            fakePlayer.startMoving(FakePlayer.Direction.FORWARDS);
-            fakePlayer.startStrafing();
-            fakePlayer.setSprintResetAccuracy(0.8F);
-            fakePlayer.startSprinting();
-            Profile fakeProfile = ProfileManager.getOrCreateProfile(fakePlayer.getBukkitEntity());
+            fakePlayer.setLatency(50);
+            fakePlayer.setSprintResetAccuracy(0.5F);
+            fakePlayer.setRange(1.7F, 2.8F);
 
-            Match m = new Match(p, fakeProfile, new MatchData(queueEntry)) {
-                @Override
-                public void end(Profile victim) {
-                    super.end(victim);
-
-                    if (victim.getPlayer().getHandle() instanceof FakePlayer) {
-                        FakePlayer fakePlayer = (FakePlayer) victim.getPlayer().getHandle();
-                        fakePlayer.destroy();
-                    }
-                }
-
-                @Override
-                public void end(Profile attacker, Profile victim) {
-                    super.end(attacker, victim);
-
-                    if (attacker.getPlayer().getHandle() instanceof FakePlayer) {
-                        FakePlayer fakePlayer = (FakePlayer) attacker.getPlayer().getHandle();
-                        fakePlayer.destroy();
-                    }
-
-                    if (victim.getPlayer().getHandle() instanceof FakePlayer) {
-                        FakePlayer fakePlayer = (FakePlayer) victim.getPlayer().getHandle();
-                        fakePlayer.destroy();
-                    }
-                }
-            };
+            BotMatch m = new BotMatch(p, fakePlayer, new MatchData(queueEntry));
 
             m.start();
         });
@@ -71,42 +43,15 @@ public class SelectBotDifficultyMenu extends PracticeMenu {
         setSlot(1, ItemStacks.MEDIUM, interaction -> {
             Profile p = interaction.getProfile();
 
-            FakePlayer fakePlayer = new FakePlayer((CraftWorld) p.getPlayer().getWorld(), "Medium Bot");
-            fakePlayer.spawn();
-            fakePlayer.startAiming(0.7F, 0.7F);
-            fakePlayer.startAttacking(9);
-            fakePlayer.startMoving(FakePlayer.Direction.FORWARDS);
-            fakePlayer.startStrafing();
-            fakePlayer.setSprintResetAccuracy(0.9F);
-            fakePlayer.startSprinting();
-            Profile fakeProfile = ProfileManager.getOrCreateProfile(fakePlayer.getBukkitEntity());
+            FakePlayer fakePlayer = new FakePlayer();
+            fakePlayer.spawn((CraftWorld) p.getPlayer().getWorld(), "MediumBot");
+            fakePlayer.startAiming(0.3F, 3F);
+            fakePlayer.startAttacking(10);
+            fakePlayer.setLatency(50);
+            fakePlayer.setRange(2.3F, 2.9F);
+            fakePlayer.setSprintResetAccuracy(0.75F);
 
-            Match m = new Match(p, fakeProfile, new MatchData(queueEntry)) {
-                @Override
-                public void end(Profile victim) {
-                    super.end(victim);
-
-                    if (victim.getPlayer().getHandle() instanceof FakePlayer) {
-                        FakePlayer fakePlayer = (FakePlayer) victim.getPlayer().getHandle();
-                        fakePlayer.destroy();
-                    }
-                }
-
-                @Override
-                public void end(Profile attacker, Profile victim) {
-                    super.end(attacker, victim);
-
-                    if (attacker.getPlayer().getHandle() instanceof FakePlayer) {
-                        FakePlayer fakePlayer = (FakePlayer) attacker.getPlayer().getHandle();
-                        fakePlayer.destroy();
-                    }
-
-                    if (victim.getPlayer().getHandle() instanceof FakePlayer) {
-                        FakePlayer fakePlayer = (FakePlayer) victim.getPlayer().getHandle();
-                        fakePlayer.destroy();
-                    }
-                }
-            };
+            BotMatch m = new BotMatch(p, fakePlayer, new MatchData(queueEntry));
 
             m.start();
         });
@@ -114,42 +59,15 @@ public class SelectBotDifficultyMenu extends PracticeMenu {
         setSlot(2, ItemStacks.HARD, interaction -> {
             Profile p = interaction.getProfile();
 
-            FakePlayer fakePlayer = new FakePlayer((CraftWorld) p.getPlayer().getWorld(), "Hard Bot");
-            fakePlayer.spawn();
-            fakePlayer.startAiming(1F, 1F);
-            fakePlayer.startAttacking(12);
-            fakePlayer.startMoving(FakePlayer.Direction.FORWARDS);
-            fakePlayer.startStrafing();
-            fakePlayer.setSprintResetAccuracy(1.0F);
-            fakePlayer.startSprinting();
-            Profile fakeProfile = ProfileManager.getOrCreateProfile(fakePlayer.getBukkitEntity());
+            FakePlayer fakePlayer = new FakePlayer();
+            fakePlayer.spawn((CraftWorld) p.getPlayer().getWorld(), "HardBot");
+            fakePlayer.startAiming(0.5F, 5F);
+            fakePlayer.startAttacking(13);
+            fakePlayer.setLatency(50);
+            fakePlayer.setSprintResetAccuracy(0.95F);
+            fakePlayer.setRange(2.6F, 3.0F);
 
-            Match m = new Match(p, fakeProfile, new MatchData(queueEntry)) {
-                @Override
-                public void end(Profile victim) {
-                    super.end(victim);
-
-                    if (victim.getPlayer().getHandle() instanceof FakePlayer) {
-                        FakePlayer fakePlayer = (FakePlayer) victim.getPlayer().getHandle();
-                        fakePlayer.destroy();
-                    }
-                }
-
-                @Override
-                public void end(Profile attacker, Profile victim) {
-                    super.end(attacker, victim);
-
-                    if (attacker.getPlayer().getHandle() instanceof FakePlayer) {
-                        FakePlayer fakePlayer = (FakePlayer) attacker.getPlayer().getHandle();
-                        fakePlayer.destroy();
-                    }
-
-                    if (victim.getPlayer().getHandle() instanceof FakePlayer) {
-                        FakePlayer fakePlayer = (FakePlayer) victim.getPlayer().getHandle();
-                        fakePlayer.destroy();
-                    }
-                }
-            };
+            BotMatch m = new BotMatch(p, fakePlayer, new MatchData(queueEntry));
 
             m.start();
         });
@@ -157,42 +75,15 @@ public class SelectBotDifficultyMenu extends PracticeMenu {
         setSlot(3, ItemStacks.EXPERT, interaction -> {
             Profile p = interaction.getProfile();
 
-            FakePlayer fakePlayer = new FakePlayer((CraftWorld) p.getPlayer().getWorld(), "Expert Bot");
-            fakePlayer.spawn();
-            fakePlayer.startAiming(5F, 5F);
-            fakePlayer.startAttacking(15);
-            fakePlayer.startMoving(FakePlayer.Direction.FORWARDS);
-            fakePlayer.startStrafing();
+            FakePlayer fakePlayer = new FakePlayer();
+            fakePlayer.spawn((CraftWorld) p.getPlayer().getWorld(), "ExpertBot");
+            fakePlayer.startAiming(1F, 10F);
+            fakePlayer.startAttacking(16);
+            fakePlayer.setLatency(50);
             fakePlayer.setSprintResetAccuracy(1.0F);
-            fakePlayer.startSprinting();
-            Profile fakeProfile = ProfileManager.getOrCreateProfile(fakePlayer.getBukkitEntity());
+            fakePlayer.setRange(2.9F, 3.0F);
 
-            Match m = new Match(p, fakeProfile, new MatchData(queueEntry)) {
-                @Override
-                public void end(Profile victim) {
-                    super.end(victim);
-
-                    if (victim.getPlayer().getHandle() instanceof FakePlayer) {
-                        FakePlayer fakePlayer = (FakePlayer) victim.getPlayer().getHandle();
-                        fakePlayer.destroy();
-                    }
-                }
-
-                @Override
-                public void end(Profile attacker, Profile victim) {
-                    super.end(attacker, victim);
-
-                    if (attacker.getPlayer().getHandle() instanceof FakePlayer) {
-                        FakePlayer fakePlayer = (FakePlayer) attacker.getPlayer().getHandle();
-                        fakePlayer.destroy();
-                    }
-
-                    if (victim.getPlayer().getHandle() instanceof FakePlayer) {
-                        FakePlayer fakePlayer = (FakePlayer) victim.getPlayer().getHandle();
-                        fakePlayer.destroy();
-                    }
-                }
-            };
+            BotMatch m = new BotMatch(p, fakePlayer, new MatchData(queueEntry));
 
             m.start();
         });
@@ -200,43 +91,16 @@ public class SelectBotDifficultyMenu extends PracticeMenu {
         setSlot(4, ItemStacks.HACKER, interaction -> {
             Profile p = interaction.getProfile();
 
-            FakePlayer fakePlayer = new FakePlayer((CraftWorld) p.getPlayer().getWorld(), "Hacker Bot");
-            fakePlayer.spawn();
-            fakePlayer.startAiming(10F, 10F);
+            FakePlayer fakePlayer = new FakePlayer();
+            fakePlayer.spawn((CraftWorld) p.getPlayer().getWorld(), "HackerBot");
+            fakePlayer.startAiming(1F, 10F);
             fakePlayer.startAttacking(20);
             fakePlayer.setReach(3.5f);
-            fakePlayer.startMoving(FakePlayer.Direction.FORWARDS);
-            fakePlayer.startStrafing();
+            fakePlayer.setLatency(50);
             fakePlayer.setSprintResetAccuracy(1.0F);
-            fakePlayer.startSprinting();
-            Profile fakeProfile = ProfileManager.getOrCreateProfile(fakePlayer.getBukkitEntity());
+            fakePlayer.setRange(3.3F, 3.5F);
 
-            Match m = new Match(p, fakeProfile, new MatchData(queueEntry)) {
-                @Override
-                public void end(Profile victim) {
-                    super.end(victim);
-
-                    if (victim.getPlayer().getHandle() instanceof FakePlayer) {
-                        FakePlayer fakePlayer = (FakePlayer) victim.getPlayer().getHandle();
-                        fakePlayer.destroy();
-                    }
-                }
-
-                @Override
-                public void end(Profile attacker, Profile victim) {
-                    super.end(attacker, victim);
-
-                    if (attacker.getPlayer().getHandle() instanceof FakePlayer) {
-                        FakePlayer fakePlayer = (FakePlayer) attacker.getPlayer().getHandle();
-                        fakePlayer.destroy();
-                    }
-
-                    if (victim.getPlayer().getHandle() instanceof FakePlayer) {
-                        FakePlayer fakePlayer = (FakePlayer) victim.getPlayer().getHandle();
-                        fakePlayer.destroy();
-                    }
-                }
-            };
+            BotMatch m = new BotMatch(p, fakePlayer, new MatchData(queueEntry));
 
             m.start();
         });

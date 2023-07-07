@@ -83,6 +83,7 @@ public class InventoryListener implements Listener {
 		}
 
 		if (profile.getPlayerStatus() == PlayerStatus.FIGHTING) {
+			profile.getMatch().getItemRemovalQueue().add(e.getItemDrop());
 			return;
 		}
 
