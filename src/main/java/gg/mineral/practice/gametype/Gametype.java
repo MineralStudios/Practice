@@ -24,12 +24,14 @@ import gg.mineral.practice.util.collection.LeaderboardMap;
 import gg.mineral.practice.util.items.ItemStacks;
 import it.unimi.dsi.fastutil.objects.Object2IntOpenHashMap;
 import lombok.Getter;
+import lombok.Setter;
 
 public class Gametype implements SaveableData {
 	final FileConfiguration config = GametypeManager.getConfig();
 
 	@Getter
 	Boolean regeneration, deadlyWater, griefing, build, looting, damage, hunger, boxing, event, botsEnabled;
+	@Setter
 	@Getter
 	boolean inCatagory;
 	@Getter
@@ -97,11 +99,14 @@ public class Gametype implements SaveableData {
 	}
 
 	public void addToCatagory(Catagory c) {
+		this.inCatagory = true;
+		this.catagoryName = c.getName();
 		c.addGametype(this);
 		save();
 	}
 
 	public void removeFromCatagory(Catagory c) {
+		this.inCatagory = false;
 		c.removeGametype(this);
 		save();
 	}
