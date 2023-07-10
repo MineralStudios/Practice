@@ -17,6 +17,7 @@ import gg.mineral.practice.util.messages.CC;
 
 public class SelectCategorizedGametypeMenu extends SelectGametypeMenu {
 	Catagory c;
+	boolean bots = false;
 
 	public SelectCategorizedGametypeMenu(Queuetype q, Catagory c, Type type) {
 		super(q, type);
@@ -61,6 +62,7 @@ public class SelectCategorizedGametypeMenu extends SelectGametypeMenu {
 					viewer.removeFromQueue(queueEntry);
 				} else {
 					if (queueEntry.getGametype().getBotsEnabled() && queueEntry.getQueuetype().getBotsEnabled()) {
+						this.bots = true;
 						viewer.openMenu(new SelectOpponentTypeMenu(queueEntry, this));
 					} else {
 						viewer.addPlayerToQueue(queueEntry);
@@ -78,6 +80,8 @@ public class SelectCategorizedGametypeMenu extends SelectGametypeMenu {
 
 	@Override
 	public void onClose() {
+		if (bots)
+			return;
 		viewer.openMenu(new SelectGametypeMenu(queuetype, type));
 	}
 }
