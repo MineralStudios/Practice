@@ -6,23 +6,30 @@ import org.bukkit.inventory.meta.ItemMeta;
 import gg.mineral.practice.catagory.Catagory;
 import gg.mineral.practice.gametype.Gametype;
 import gg.mineral.practice.inventory.PracticeMenu;
+import gg.mineral.practice.queue.Queuetype;
 import gg.mineral.practice.util.items.ItemBuilder;
+import gg.mineral.practice.util.items.ItemStacks;
 import gg.mineral.practice.util.messages.CC;
 
 public class CatagorizedLeaderboardMenu extends PracticeMenu {
     Catagory catagory;
+    Queuetype queuetype;
 
-    public CatagorizedLeaderboardMenu(Catagory catagory) {
+    public CatagorizedLeaderboardMenu(Queuetype queuetype, Catagory catagory) {
         super(CC.BLUE + catagory.getDisplayName());
         this.catagory = catagory;
+        this.queuetype = queuetype;
+        setClickCancelled(true);
     }
 
     @Override
     public boolean update() {
+        setSlot(4, ItemStacks.LEADERBOARD);
+
         for (Gametype gametype : catagory.getGametypes()) {
-            ItemBuilder itemBuild = new ItemBuilder(gametype.getDisplayItem())
-                    .name(gametype.getDisplayName());
-            ItemStack item = itemBuild.build();
+
+            ItemStack item = new ItemBuilder(gametype.getDisplayItem())
+                    .name(gametype.getDisplayName()).build();
             ItemMeta meta = item.getItemMeta();
 
             try {
@@ -32,8 +39,7 @@ public class CatagorizedLeaderboardMenu extends PracticeMenu {
             }
 
             item.setItemMeta(meta);
-
-            add(item);
+            setSlot(queuetype.getGametypes().getInt(gametype) + 18, item);
         }
 
         return true;

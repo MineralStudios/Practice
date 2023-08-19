@@ -24,8 +24,7 @@ public class Countdown {
 		BukkitScheduler scheduler = Bukkit.getServer().getScheduler();
 
 		scheduler.scheduleSyncDelayedTask(PracticePlugin.INSTANCE, () -> {
-			for (int i = 0; i < match.getParticipants().size(); i++) {
-				Profile profile = match.getParticipants().get(i);
+			for (Profile profile : match.getParticipants()) {
 				profile.setInMatchCountdown(true);
 				match.onCountdownStart(profile);
 			}
@@ -47,8 +46,7 @@ public class Countdown {
 
 	public void cancel() {
 
-		for (int i = 0; i < match.getParticipants().size(); i++) {
-			Profile profile = match.getParticipants().get(i);
+		for (Profile profile : match.getParticipants()) {
 			match.onMatchStart(profile);
 			profile.setInMatchCountdown(false);
 			profile.message(ChatMessages.MATCH_STARTED);

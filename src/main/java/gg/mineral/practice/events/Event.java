@@ -1,6 +1,7 @@
 package gg.mineral.practice.events;
 
 import java.util.Iterator;
+import java.util.concurrent.ConcurrentLinkedDeque;
 
 import org.bukkit.scheduler.BukkitRunnable;
 
@@ -25,6 +26,8 @@ import net.md_5.bungee.api.chat.ClickEvent;
 public class Event implements Spectatable {
 
     GlueList<Match> matches = new GlueList<>();
+    @Getter
+    ConcurrentLinkedDeque<Profile> spectators = new ConcurrentLinkedDeque<>();
 
     MatchData matchData;
     int round = 1;
@@ -64,7 +67,7 @@ public class Event implements Spectatable {
     public void startRound() {
 
         if (participants.size() == 1) {
-            Profile winner = participants.get(0);
+            Profile winner = participants.getFirst();
             winner.removeFromEvent();
 
             for (Profile spectator : getSpectators()) {
@@ -105,7 +108,7 @@ public class Event implements Spectatable {
         }
 
         if (started && participants.size() == 1) {
-            Profile winner = participants.get(0);
+            Profile winner = participants.getFirst();
             winner.removeFromEvent();
 
             for (Profile spectator : getSpectators()) {
@@ -142,7 +145,7 @@ public class Event implements Spectatable {
                 started = true;
 
                 if (participants.size() == 1) {
-                    Profile winner = participants.get(0);
+                    Profile winner = participants.getFirst();
                     winner.removeFromEvent();
 
                     for (Profile spectator : getSpectators()) {
@@ -187,8 +190,7 @@ public class Event implements Spectatable {
             return;
         }
 
-        for (int i = 0; i < participants.size(); i++) {
-            Profile participant = participants.get(i);
+        for (Profile participant : participants) {
             participant.getPlayer().hidePlayer(profile.getPlayer(), false);
             profile.getPlayer().hidePlayer(participant.getPlayer(), false);
         }

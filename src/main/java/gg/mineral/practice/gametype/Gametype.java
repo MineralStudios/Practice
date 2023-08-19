@@ -1,8 +1,11 @@
 package gg.mineral.practice.gametype;
 
 import java.util.List;
+import java.util.Map;
 import java.util.UUID;
+import java.util.Map.Entry;
 import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.ConcurrentLinkedQueue;
 
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.inventory.ItemStack;
@@ -23,6 +26,7 @@ import gg.mineral.practice.util.SaveableData;
 import gg.mineral.practice.util.collection.LeaderboardMap;
 import gg.mineral.practice.util.items.ItemStacks;
 import it.unimi.dsi.fastutil.objects.Object2IntOpenHashMap;
+import it.unimi.dsi.fastutil.objects.Object2ObjectOpenHashMap;
 import lombok.Getter;
 import lombok.Setter;
 
@@ -37,18 +41,18 @@ public class Gametype implements SaveableData {
 	@Getter
 	ItemStack displayItem;
 	@Getter
-	String displayName;
+	String displayName, catagoryName;
 	@Getter
 	final String name;
 	@Getter
 	int noDamageTicks, pearlCooldown;
 	@Getter
-	List<Arena> arenas = new GlueList<>();
+	ConcurrentLinkedQueue<Arena> arenas = new ConcurrentLinkedQueue<>();
 	@Getter
 	Arena eventArena;
 	@Getter
 	Kit kit;
-	String path, catagoryName;
+	String path;
 	LeaderboardMap leaderboardMap;
 	Object2IntOpenHashMap<Profile> eloMap = new Object2IntOpenHashMap<>();
 
@@ -60,18 +64,29 @@ public class Gametype implements SaveableData {
 	public Integer getElo(Profile profile) {
 		Integer elo = eloMap.get(profile);
 
-		return elo == null ? EloManager.get(this, profile.getUUID()).whenComplete((value, ex) -> {
-			eloMap.put(profile, value);
-		}).join() : elo;
+		return elo == null
+				? EloManager.get(this, profile.getUUID()).whenComplete((value, ex) -> eloMap.put(profile, value)).join()
+				: elo;
 	}
 
 	public CompletableFuture<Object2IntOpenHashMap<UUID>> getEloMap(Profile... profiles) {
 		return CompletableFuture.supplyAsync(() -> {
 			Object2IntOpenHashMap<UUID> map = new Object2IntOpenHashMap<UUID>();
 
+			Map<UUID, CompletableFuture<Integer>> futures = new Object2ObjectOpenHashMap<>();
+
 			for (Profile profile : profiles) {
-				map.put(profile.getUUID(), getElo(profile));
+				Integer elo = eloMap.get(profile);
+
+				if (elo != null)
+					map.put(profile.getUUID(), elo);
+
+				futures.put(profile.getUUID(), EloManager.get(this, profile.getUUID())
+						.whenComplete((value, ex) -> eloMap.put(profile, value)));
 			}
+
+			for (Entry<UUID, CompletableFuture<Integer>> entry : futures.entrySet())
+				map.put(entry.getKey(), entry.getValue().join());
 
 			return map;
 		});
@@ -229,6 +244,9 @@ public class Gametype implements SaveableData {
 		for (gg.mineral.practice.util.collection.LeaderboardMap.Entry entry : leaderboardMap.getEntries()) {
 			lore.add(entry.getKey() + ": " + entry.getValue());
 		}
+
+		if (lore.isEmpty())
+			lore.add("No Data");
 
 		return lore;
 	}

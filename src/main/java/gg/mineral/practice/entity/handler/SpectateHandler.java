@@ -2,7 +2,6 @@ package gg.mineral.practice.entity.handler;
 
 import org.bukkit.GameMode;
 
-import gg.mineral.api.collection.GlueList;
 import gg.mineral.practice.entity.PlayerStatus;
 import gg.mineral.practice.entity.Profile;
 import gg.mineral.practice.events.Event;
@@ -30,7 +29,7 @@ public class SpectateHandler {
     @Getter
     Profile following;
     @Getter
-    GlueList<Profile> followers = new ProfileList();
+    ProfileList followers = new ProfileList();
 
     public void follow(Profile p) {
 
@@ -100,9 +99,8 @@ public class SpectateHandler {
 
         this.spectatable = toBeSpectated.isInEvent() ? toBeSpectated.getEvent() : toBeSpectated.getMatch();
 
-        if (spectatable.isEnded()) {
+        if (spectatable.isEnded())
             return;
-        }
 
         if (!toBeSpectated.isInEvent()) {
             if (toBeSpectated.getPlayerStatus() != PlayerStatus.FIGHTING) {
@@ -144,7 +142,7 @@ public class SpectateHandler {
 
     private void updateVisiblity() {
         for (Profile profile : getSpectatable().getParticipants()) {
-            profile.getPlayer().showPlayer(profile.getPlayer());
+            this.profile.getPlayer().showPlayer(profile.getPlayer());
         }
 
         if (getSpectatable() instanceof Match) {

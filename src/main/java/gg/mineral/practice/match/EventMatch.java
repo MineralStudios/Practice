@@ -11,7 +11,6 @@ import gg.mineral.practice.managers.MatchManager;
 import gg.mineral.practice.match.data.MatchData;
 import gg.mineral.practice.scoreboard.impl.DefaultScoreboard;
 import gg.mineral.practice.scoreboard.impl.MatchEndScoreboard;
-import gg.mineral.practice.util.CoreConnector;
 import gg.mineral.practice.util.PlayerUtil;
 import gg.mineral.practice.util.messages.CC;
 import gg.mineral.practice.util.messages.impl.Strings;
@@ -77,9 +76,12 @@ public class EventMatch extends Match {
 
             attacker.removeFromMatch();
 
-            if (CoreConnector.connected()) {
-                CoreConnector.INSTANCE.getNameTagAPI().giveTagAfterMatch(profile1.getPlayer(), profile2.getPlayer());
-            }
+            /*
+             * if (CoreConnector.connected()) {
+             * CoreConnector.INSTANCE.getNameTagAPI().giveTagAfterMatch(profile1.getPlayer()
+             * , profile2.getPlayer());
+             * }
+             */
         }, getPostMatchTime());
 
         for (Profile spectator : getSpectators()) {

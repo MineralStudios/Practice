@@ -70,6 +70,8 @@ public class UsageMessages {
 			"/queuetype ranked <Queuetype> <True/False>");
 	public static final UsageMessage QUEUETYPE_COMMUNITY = new UsageMessage(
 			"/queuetype community <Queuetype> <True/False>");
+	public static final UsageMessage QUEUETYPE_UNRANKED = new UsageMessage(
+			"/queuetype unranked <Queuetype> <True/False>");
 	public static final UsageMessage QUEUETYPE_SLOT = new UsageMessage("/queuetype slot <Queuetype> <Slot>");
 	public static final UsageMessage QUEUETYPE_KB = new UsageMessage(
 			"/queuetype kb <Queuetype> <KnockbackProfile>");
@@ -83,6 +85,16 @@ public class UsageMessages {
 	public static final UsageMessage SETTINGS_DISPLAY = new UsageMessage(
 			"/settingsconfig setdisplay <DisplayName>");
 	public static final UsageMessage SETTINGS_SLOT = new UsageMessage("/settingsconfig slot <Slot>");
+	// Spectate Config Command
+	public static final UsageMessage SPECTATE_ENABLE = new UsageMessage("/spectateconfig enable <True/False>");
+	public static final UsageMessage SPECTATE_DISPLAY = new UsageMessage(
+			"/spectateconfig setdisplay <DisplayName>");
+	public static final UsageMessage SPECTATE_SLOT = new UsageMessage("/spectateconfig slot <Slot>");
+	// Leaderboard Config Command
+	public static final UsageMessage LEADERBOARD_ENABLE = new UsageMessage("/leaderboardconfig enable <True/False>");
+	public static final UsageMessage LEADERBOARD_DISPLAY = new UsageMessage(
+			"/leaderboardconfig setdisplay <DisplayName>");
+	public static final UsageMessage LEADERBOARD_SLOT = new UsageMessage("/leaderboardconfig slot <Slot>");
 	// Accept Command
 	public static final UsageMessage ACCEPT = new UsageMessage("/accept <Player>");
 	// Duel Command

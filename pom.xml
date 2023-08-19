@@ -20,6 +20,10 @@
             <id>glowstone-snapshots</id>
             <url>https://repo.glowstone.net/repository/snapshots/</url>
         </repository>
+        <repository>
+            <id>sonatype-snapshots</id>
+            <url>https://oss.sonatype.org/content/repositories/snapshots/</url>
+        </repository>
     </repositories>
 
     <distributionManagement>

@@ -27,12 +27,16 @@ public class SpectateMenu extends PracticeMenu {
             QueueEntry queueEntry = m.getData().getQueueEntry();
             ItemStack item = queueEntry == null ? ItemStacks.WOOD_AXE
                     : m.getData().getQueueEntry().getGametype().getDisplayItem().clone();
+
+            if (m.getProfile1() == null || m.getProfile2() == null)
+                continue;
+
             ItemStack skull = new ItemBuilder(item.clone())
                     .name(CC.SECONDARY + m.getProfile1().getName() + " vs " + m.getProfile2().getName()).lore()
                     .build();
             add(skull, interaction -> {
                 Profile p = interaction.getProfile();
-                p.getPlayer().performCommand("spec " + m.getParticipants().get(0).getName());
+                p.getPlayer().performCommand("spec " + m.getParticipants().getFirst().getName());
             });
         }
 

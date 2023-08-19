@@ -17,9 +17,11 @@ import gg.mineral.practice.inventory.menus.SelectGametypeMenu;
 import gg.mineral.practice.inventory.menus.SelectModeMenu;
 import gg.mineral.practice.inventory.menus.SelectQueuetypeMenu;
 import gg.mineral.practice.managers.KitEditorManager;
+import gg.mineral.practice.managers.LeaderboardManager;
 import gg.mineral.practice.managers.PartyManager;
 import gg.mineral.practice.managers.PlayerSettingsManager;
 import gg.mineral.practice.managers.QueuetypeManager;
+import gg.mineral.practice.managers.SpectateManager;
 import gg.mineral.practice.queue.Queuetype;
 import gg.mineral.practice.util.items.ItemBuilder;
 import gg.mineral.practice.util.items.ItemStacks;
@@ -203,22 +205,49 @@ public class PlayerInventory extends CraftInventoryPlayer {
     public void setInventoryForParty() {
         setInventoryClickCancelled(true);
         clear();
-        setItem(0, ItemStacks.WAIT_TO_LEAVE, (Runnable) () -> holder.message(ErrorMessages.CAN_NOT_LEAVE_YET));
+        setItem(8, ItemStacks.WAIT_TO_LEAVE, (Runnable) () -> holder.message(ErrorMessages.CAN_NOT_LEAVE_YET));
 
         new BukkitRunnable() {
             @Override
             public void run() {
-                setItem(0, ItemStacks.LEAVE_PARTY, p -> p.getPlayer().performCommand("p leave"));
+                setItem(8, ItemStacks.LEAVE_PARTY, p -> p.getPlayer().performCommand("p leave"));
             }
         }.runTaskLater(PracticePlugin.INSTANCE, 20);
 
-        setItem(1, ItemStacks.LIST_PLAYERS, p -> p.getPlayer().performCommand("p list"));
+        setItem(7, ItemStacks.LIST_PLAYERS, p -> p.getPlayer().performCommand("p list"));
         setItem(3, ItemStacks.OPEN_PARTY, p -> p.getPlayer().performCommand("p open"));
         setItem(4, ItemStacks.DUEL, p -> p.getPlayer().performCommand("duel"));
         setItem(5, ItemStacks.PARTY_SPLIT, p -> {
             p.openMenu(new SelectModeMenu(SubmitAction.P_SPLIT));
             return true;
         });
+
+        GlueList<Queuetype> list = QueuetypeManager.getQueuetypes();
+
+        for (int i = 0; i < list.size(); i++) {
+            Queuetype queuetype = list.get(i);
+
+            if (!queuetype.isUnranked())
+                continue;
+
+            ItemStack item = new ItemBuilder(queuetype.getDisplayItem())
+                    .name(CC.SECONDARY + CC.B + queuetype.getDisplayName()).build();
+            setItem(queuetype.getSlotNumber(), item,
+                    p -> {
+                        if (!p.getParty().getPartyLeader().equals(p)) {
+                            p.message(ErrorMessages.PLAYER_NOT_IN_PARTY_OR_PARTY_LEADER);
+                            return true;
+                        }
+
+                        if (p.getParty().getPartyMembers().size() != 2) {
+                            p.message(ErrorMessages.PARTY_NOT_CORRECT_SIZE);
+                            return true;
+                        }
+
+                        p.openMenu(new SelectGametypeMenu(queuetype, SelectGametypeMenu.Type.UNRANKED));
+                        return true;
+                    });
+        }
 
         holder.getPlayer().updateInventory();
     }
@@ -247,6 +276,11 @@ public class PlayerInventory extends CraftInventoryPlayer {
 
                         if (queuetype.isCommunity()) {
                             p.message(ErrorMessages.COMING_SOON);
+                            return true;
+                        }
+
+                        if (queuetype.isUnranked()) {
+                            p.openMenu(new SelectGametypeMenu(queuetype, SelectGametypeMenu.Type.UNRANKED));
                             return true;
                         }
 
@@ -281,6 +315,23 @@ public class PlayerInventory extends CraftInventoryPlayer {
             setItem(PlayerSettingsManager.getSlot(), settings,
                     p -> p.getPlayer().performCommand("settings"));
         }
+
+        if (SpectateManager.getEnabled()) {
+            ItemStack spectate = new ItemBuilder(SpectateManager.getDisplayItem())
+                    .name(CC.SECONDARY + CC.B + SpectateManager.getDisplayName())
+                    .build();
+            setItem(SpectateManager.getSlot(), spectate,
+                    p -> p.getPlayer().performCommand("spectate"));
+        }
+
+        if (LeaderboardManager.getEnabled()) {
+            ItemStack leaderboard = new ItemBuilder(LeaderboardManager.getDisplayItem())
+                    .name(CC.SECONDARY + CC.B + LeaderboardManager.getDisplayName())
+                    .build();
+            setItem(LeaderboardManager.getSlot(), leaderboard,
+                    p -> p.getPlayer().performCommand("leaderboard"));
+        }
+
         holder.getPlayer().updateInventory();
     }
 
@@ -291,7 +342,11 @@ public class PlayerInventory extends CraftInventoryPlayer {
         setItem(0, ItemStacks.LEAVE_QUEUE,
                 () -> {
                     holder.removeFromQueue();
-                    setInventoryForLobby();
+                    if (holder.isInParty()) {
+                        setInventoryForParty();
+                    } else {
+                        setInventoryForLobby();
+                    }
                 });
 
         setItem(4, ItemStacks.QUEUE_MANAGER,

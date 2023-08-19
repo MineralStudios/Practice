@@ -18,9 +18,8 @@ public class HealthListener implements Listener {
 				.getProfile(p -> p.getUUID().equals(e.getEntity().getUniqueId())
 						&& p.getPlayerStatus() == PlayerStatus.FIGHTING);
 
-		if (profile == null) {
+		if (profile == null)
 			return;
-		}
 
 		if (!profile.getMatch().getData().getRegeneration()) {
 			if (e.getRegainReason() == RegainReason.SATIATED || e.getRegainReason() == RegainReason.REGEN) {

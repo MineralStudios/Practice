@@ -1,6 +1,8 @@
 package gg.mineral.practice.queue;
 
 import java.util.List;
+import java.util.Random;
+import java.util.concurrent.ConcurrentLinkedQueue;
 
 import org.bukkit.inventory.ItemStack;
 
@@ -11,6 +13,7 @@ import gg.mineral.practice.catagory.Catagory;
 import gg.mineral.practice.gametype.Gametype;
 import gg.mineral.practice.managers.ArenaManager;
 import gg.mineral.practice.managers.QueuetypeManager;
+import gg.mineral.practice.match.data.MatchData;
 import gg.mineral.practice.util.SaveableData;
 import gg.mineral.practice.util.items.ItemStacks;
 import gg.mineral.server.combat.KnockbackProfile;
@@ -32,14 +35,14 @@ public class Queuetype implements SaveableData {
 	@Getter
 	Boolean botsEnabled;
 	@Getter
-	boolean ranked, community;
+	boolean ranked, community, unranked;
 	final String path;
 	@Getter
 	KnockbackProfile knockback = null;
 	@Getter
 	Object2IntOpenHashMap<Gametype> gametypes = new Object2IntOpenHashMap<>();
 	@Getter
-	List<Arena> arenas = new GlueList<>();
+	ConcurrentLinkedQueue<Arena> arenas = new ConcurrentLinkedQueue<>();
 	@Getter
 	Object2IntOpenHashMap<Catagory> catagories = new Object2IntOpenHashMap<>();
 
@@ -48,31 +51,68 @@ public class Queuetype implements SaveableData {
 		this.path = "Queue." + getName() + ".";
 	}
 
-	List<Arena> arenaList = new GlueList<>();
+	ConcurrentLinkedQueue<Arena> arenaQueue = new ConcurrentLinkedQueue<>();
 
-	public synchronized Arena nextArena(Gametype g) {
+	public List<Arena> getCommonArenas(Gametype gametype) {
+		List<Arena> commonArenas = new GlueList<>(this.arenas);
+		commonArenas.retainAll(gametype.getArenas());
+		return commonArenas;
+	}
 
+	public Gametype randomGametype() {
+		List<Gametype> list = new GlueList<>(gametypes.keySet());
+		Random rand = new Random();
+		return list.get(rand.nextInt(list.size()));
+	}
+
+	// Helper method to filter available arenas based on a Gametype
+	private List<Arena> filterArenasByGametype(Gametype g) {
+		List<Arena> filteredArenas = new GlueList<>(this.arenas);
+		filteredArenas.retainAll(g.getArenas());
+		return filteredArenas;
+	}
+
+	public Arena nextArena(Gametype g) {
+		// Return early if there are no arenas
 		if (arenas.isEmpty() || g.getArenas().isEmpty()) {
 			return null;
 		}
 
-		if (arenaList.isEmpty()) {
-			arenaList = new GlueList<>(arenas);
+		if (arenaQueue.isEmpty()) {
+			arenaQueue.addAll(filterArenasByGametype(g));
 		}
 
-		arenaList.retainAll(g.getArenas());
-
-		if (arenaList.isEmpty()) {
-			arenaList = new GlueList<>(arenas);
-
-			arenaList.retainAll(g.getArenas());
-
-			if (arenaList.isEmpty()) {
-				return null;
-			}
+		if (arenaQueue.isEmpty()) {
+			return null;
 		}
 
-		return arenaList.remove(0);
+		return arenaQueue.poll();
+	}
+
+	public Arena nextArena(MatchData matchData, Gametype g) {
+		Random rand = new Random();
+
+		// If there are no enabled arenas in the MatchData, revert to the other method
+		if (matchData.getEnabledArenas().isEmpty()) {
+			return nextArena(g);
+		}
+
+		// Filter arenas based on Gametype and MatchData
+		List<Arena> filteredArenas = filterArenasByGametype(g);
+		filteredArenas.retainAll(matchData.getEnabledArenas());
+
+		if (filteredArenas.isEmpty()) {
+			return nextArena(g);
+		}
+
+		// Select a random arena from the filtered list
+		int randomIndex = rand.nextInt(filteredArenas.size());
+		Arena selectedArena = filteredArenas.get(randomIndex);
+
+		// Remove the selected arena from the main queue to avoid repetition
+		arenaQueue.remove(selectedArena);
+
+		return selectedArena;
 	}
 
 	public void setDisplayName(String displayName) {
@@ -102,6 +142,11 @@ public class Queuetype implements SaveableData {
 
 	public void setCommunity(boolean community) {
 		this.community = community;
+		save();
+	}
+
+	public void setUnranked(boolean unranked) {
+		this.unranked = unranked;
 		save();
 	}
 
@@ -138,6 +183,7 @@ public class Queuetype implements SaveableData {
 		config.set(path + "DisplayName", displayName);
 		config.set(path + "Elo", ranked);
 		config.set(path + "Community", community);
+		config.set(path + "Unranked", unranked);
 		config.set(path + "Slot", slotNumber);
 		config.set(path + "DisplayItem", displayItem);
 		config.set(path + "Bots", botsEnabled);
@@ -161,6 +207,7 @@ public class Queuetype implements SaveableData {
 		this.slotNumber = config.getInt(path + "Slot", 8);
 		this.ranked = config.getBoolean(path + "Elo", false);
 		this.community = config.getBoolean(path + "Community", false);
+		this.unranked = config.getBoolean(path + "Unranked", false);
 		this.botsEnabled = config.getBoolean(path + "Bots", false);
 		String kbprofile = config.getString(path + "Knockback", "");
 

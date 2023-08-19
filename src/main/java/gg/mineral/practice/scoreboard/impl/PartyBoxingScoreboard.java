@@ -1,12 +1,9 @@
 package gg.mineral.practice.scoreboard.impl;
 
-import java.util.List;
-
 import gg.mineral.practice.entity.Profile;
 import gg.mineral.practice.match.PartyMatch;
 import gg.mineral.practice.scoreboard.Scoreboard;
 import gg.mineral.practice.scoreboard.ScoreboardHandler;
-import gg.mineral.practice.util.collection.ProfileList;
 import gg.mineral.practice.util.messages.CC;
 
 public class PartyBoxingScoreboard
@@ -28,13 +25,11 @@ public class PartyBoxingScoreboard
         int requiredHitCount = isTeam1 ? match.getTeam1RequiredHitCount() : match.getTeam2RequiredHitCount();
         int opponentRequiredHitCount = isTeam1 ? match.getTeam2RequiredHitCount() : match.getTeam1RequiredHitCount();
 
-        List<Profile> team = match.getTeam(profile);
-        ProfileList opponents = new ProfileList(match.getParticipants());
-        opponents.removeAll(team);
-
         board.updateLines(CC.BOARD_SEPARATOR,
-                CC.ACCENT + "Your Team\'s' Hits: " + CC.SECONDARY + hitCount + "/" + requiredHitCount,
-                CC.ACCENT + "Their Team\'s' Hits: " + CC.SECONDARY + opponentHitCount + "/" + opponentRequiredHitCount,
+                CC.ACCENT + "Your Hits: " + CC.SECONDARY + hitCount + "/" + requiredHitCount,
+                CC.ACCENT + "Their Hits: " + CC.SECONDARY + opponentHitCount + "/" + opponentRequiredHitCount,
+                CC.SPACER,
+                CC.SECONDARY + "mineral.gg",
                 CC.BOARD_SEPARATOR);
     }
 }

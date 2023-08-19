@@ -64,7 +64,7 @@ public class Tournament {
         }
 
         if (started && players.size() == 1) {
-            Profile winner = players.get(0);
+            Profile winner = players.getFirst();
             winner.removeFromTournament();
 
             TournamentManager.remove(this);
@@ -91,18 +91,17 @@ public class Tournament {
 
         ProfileManager.broadcast(ProfileManager.getProfiles(), messageToBroadcast);
 
-        Tournament tournament = this;
         new BukkitRunnable() {
             @Override
             public void run() {
                 started = true;
 
                 if (players.size() == 1) {
-                    Profile winner = players.get(0);
+                    Profile winner = players.getFirst();
                     winner.removeFromTournament();
 
                     ErrorMessages.TOURNAMENT_NOT_ENOUGH_PLAYERS.send(winner.getPlayer());
-                    TournamentManager.remove(tournament);
+                    TournamentManager.remove(Tournament.this);
                     ended = true;
                     return;
                 }
@@ -115,7 +114,7 @@ public class Tournament {
     public void startRound() {
 
         if (players.size() == 1) {
-            Profile winner = players.get(0);
+            Profile winner = players.getFirst();
             winner.removeFromTournament();
             ended = true;
             TournamentManager.remove(this);

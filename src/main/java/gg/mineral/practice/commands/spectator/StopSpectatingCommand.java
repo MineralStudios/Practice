@@ -14,6 +14,6 @@ public class StopSpectatingCommand extends PlayerCommand {
     @Override
     public void execute(org.bukkit.entity.Player pl, String[] args) {
         Profile profile = ProfileManager.getOrCreateProfile(pl);
-        profile.getSpectateHandler().stopFollowing();
+        profile.getSpectateHandler().stopSpectating();
     }
 }

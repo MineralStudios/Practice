@@ -10,7 +10,7 @@ import gg.mineral.practice.util.messages.impl.ErrorMessages;
 public class EventCommand extends PlayerCommand {
 
     public EventCommand() {
-        super("event");
+        super("event", "practice.event");
     }
 
     @Override

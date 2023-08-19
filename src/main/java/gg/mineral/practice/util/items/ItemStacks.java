@@ -2,6 +2,7 @@ package gg.mineral.practice.util.items;
 
 import org.bukkit.DyeColor;
 import org.bukkit.Material;
+import org.bukkit.SkullType;
 import org.bukkit.inventory.ItemStack;
 
 import gg.mineral.practice.util.messages.CC;
@@ -29,6 +30,8 @@ public class ItemStacks {
                         LIST_PLAYERS = new ItemBuilder(Material.PAPER).name(CC.SECONDARY + CC.B + "List Players")
                                         .build(),
                         DUEL = new ItemBuilder(Material.WOOD_AXE).name(CC.SECONDARY + CC.B + "Duel").build(),
+                        LEADERBOARD = new ItemBuilder(Material.MAP).name(CC.SECONDARY + CC.B + "Leaderboard")
+                                        .build(),
                         PARTY_SPLIT = new ItemBuilder(Material.GOLD_AXE).name(CC.SECONDARY + CC.B + "Party Split")
                                         .build(),
                         OPEN_PARTY = new ItemBuilder(Material.SKULL_ITEM).name(CC.SECONDARY + CC.B + "Open Party")
@@ -60,6 +63,15 @@ public class ItemStacks {
                                         .build(),
                         TOGGLE_PARTY_REQUESTS = new ItemBuilder(Material.NETHER_STAR).name("Toggle Party Requests")
                                         .build(),
+                        TOGGLE_SCOREBOARD = new ItemBuilder(Material.ITEM_FRAME).name("Toggle Scoreboard")
+                                        .build(),
+
+                        TOGGLE_PRIVATE_MESSAGES = new ItemBuilder(Material.BOOK_AND_QUILL)
+                                        .name("Toggle Private Messages")
+                                        .build(),
+                        CHANGE_TIME = new ItemBuilder(Material.WATCH)
+                                        .name("Change Time")
+                                        .build(),
                         NEXT_PAGE = new ItemBuilder(new ItemStack(Material.WOOL, 1, DyeColor.LIME.getData()))
                                         .name("Next Page").build(),
                         PREVIOUS_PAGE = new ItemBuilder(new ItemStack(Material.WOOL, 1, DyeColor.RED.getData()))
@@ -74,13 +86,26 @@ public class ItemStacks {
                         EMPTY_BOWL = new ItemStack(Material.BOWL),
                         DEFAULT_KIT_EDITOR_DISPLAY_ITEM = new ItemStack(Material.BOOK),
                         DEFAULT_OPTIONS_DISPLAY_ITEM = new ItemStack(Material.COMPASS),
+                        DEFAULT_SPECTATE_DISPLAY_ITEM = new ItemStack(Material.HOPPER),
+                        DEFAULT_LEADERBOARD_DISPLAY_ITEM = new ItemStack(Material.SKULL_ITEM, 1,
+                                        (short) SkullType.PLAYER.ordinal()),
                         DEFAULT_PARTY_DISPLAY_ITEM = new ItemStack(Material.NETHER_STAR),
                         DEFAULT_QUEUETYPE_DISPLAY_ITEM = new ItemStack(Material.DIAMOND_SWORD),
                         WOOD_AXE = new ItemStack(Material.WOOD_AXE),
                         APPLY = new ItemBuilder(new ItemStack(Material.WOOL, 1, DyeColor.GREEN.getData())).name(" ")
                                         .lore(CC.GREEN + "Click To Apply Changes", " ").build(),
+                        DESELECT_ALL = new ItemBuilder(Material.REDSTONE_BLOCK).name(" ")
+                                        .lore(CC.GREEN + "Deselect All", " ").build(),
+                        SELECT_ALL = new ItemBuilder(Material.LAPIS_BLOCK).name(" ")
+                                        .lore(CC.GREEN + "Select All", " ").build(),
                         CANCEL = new ItemBuilder(new ItemStack(Material.WOOL, 1, DyeColor.RED.getData())).name(" ")
                                         .lore(CC.RED + "Click To Cancel Changes", " ").build(),
+                        BOT_QUEUE_DISABLED = new ItemBuilder(new ItemStack(351, 1, DyeColor.GRAY.getDyeData()))
+                                        .name("Click To Enable Bot Queue").build(),
+                        RANDOM_QUEUE = new ItemBuilder(Material.PAPER)
+                                        .name("Random Queue").build(),
+                        RANDOM_DIFFICULTY = new ItemBuilder(Material.PAPER)
+                                        .name("Random Difficulty").build(),
                         EASY = new ItemBuilder(new ItemStack(Material.WOOL, 1, DyeColor.GREEN.getData())).name("Easy")
                                         .build(),
                         MEDIUM = new ItemBuilder(new ItemStack(Material.WOOL, 1, DyeColor.YELLOW.getData()))
@@ -96,6 +121,10 @@ public class ItemStacks {
 
         // Item Builders
         public static final ItemBuilder LOAD_KIT = new ItemBuilder(Material.ENCHANTED_BOOK),
+                        TEAMFIGHT = new ItemBuilder(Material.ITEM_FRAME)
+                                        .name("Teamfight"),
+                        BOT_SETTINGS = new ItemBuilder(Material.GOLD_HELMET)
+                                        .name("Bot Settings"),
                         CLICK_TO_APPLY_CHANGES = new ItemBuilder(Material.STONE_SWORD)
                                         .lore(CC.ACCENT + "Click To Apply Changes"),
                         INVENTORY_STATS = new ItemBuilder(Material.ENDER_CHEST),
@@ -128,6 +157,8 @@ public class ItemStacks {
                         HEALTH_POTIONS_LEFT = new ItemBuilder(new ItemStack(Material.POTION, 1, (short) 16421))
                                         .name("Health Potions Left"),
                         SOUP_LEFT = new ItemBuilder(Material.MUSHROOM_SOUP).name("Soup Left"),
+                        BOT_QUEUE_ENABLED = new ItemBuilder(new ItemStack(351, 1, DyeColor.LIME.getDyeData()))
+                                        .name("Click To Disable Bot Queue"),
                         HEALTH = new ItemBuilder(new ItemStack(Material.POTION, (short) 8193)),
                         HITS = new ItemBuilder(Material.BLAZE_ROD), CLICKS = new ItemBuilder(Material.GHAST_TEAR),
                         POTION_EFFECTS = new ItemBuilder(Material.BLAZE_POWDER).name("Potion Effects"),
@@ -137,6 +168,20 @@ public class ItemStacks {
                         VERTICAL = new ItemBuilder(Material.ARROW).lore("Click to change value."),
                         EXTRA_VERTICAL = new ItemBuilder(Material.BLAZE_ROD).lore("Click to change value."),
                         VERTICAL_LIMIT = new ItemBuilder(Material.BEDROCK).lore("Click to change value."),
+                        AIM_SPEED = new ItemBuilder(Material.ICE).lore("Click to change value."),
+                        AIM_ACCURACY = new ItemBuilder(Material.ARROW).lore("Click to change value."),
+                        BOW_AIMING_RADIUS = new ItemBuilder(Material.MAP)
+                                        .lore("Click to change value."),
+                        REACH = new ItemBuilder(Material.DIAMOND_SWORD).lore("Click to change value."),
+                        SPRINT_RESET_ACCURACY = new ItemBuilder(Material.DIAMOND_BOOTS).lore("Click to change value."),
+                        HIT_SELECT_ACCURACY = new ItemBuilder(Material.IRON_SWORD).lore("Click to change value."),
+                        DISTANCING_MINIMUM = new ItemBuilder(Material.GOLD_RECORD)
+                                        .lore("Click to change value."),
+                        DISTANCING_MAXIMUM = new ItemBuilder(Material.GREEN_RECORD).lore("Click to change value."),
+                        CPS = new ItemBuilder(Material.SUGAR).lore("Click to change value."),
+                        PING = new ItemBuilder(Material.REDSTONE).lore("Click to change value."),
+                        ARENA_DISABLED = new ItemBuilder(new ItemStack(351, 1, (short) 1))
+                                        .lore(CC.RED + "Click to enable arena."),
                         SUBTRACT_1 = new ItemBuilder(new ItemStack(Material.WOOL, 1, DyeColor.RED.getData()))
                                         .lore("Click to change value."),
                         ADD_1 = new ItemBuilder(new ItemStack(Material.WOOL, 1, DyeColor.GREEN.getData()))

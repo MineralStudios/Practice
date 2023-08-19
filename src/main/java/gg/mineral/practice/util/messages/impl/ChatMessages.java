@@ -141,6 +141,9 @@ public class ChatMessages {
 			QUEUETYPE_COMMUNITY_SET = new ChatMessage(
 					"Community for the %queuetype% queuetype has been set to the %toggled%.", CC.YELLOW)
 					.highlightText(CC.GOLD, "%queuetype%", "%toggled%"),
+			QUEUETYPE_UNRANKED_SET = new ChatMessage(
+					"Unranked for the %queuetype% queuetype has been set to the %toggled%.", CC.YELLOW)
+					.highlightText(CC.GOLD, "%queuetype%", "%toggled%"),
 			QUEUETYPE_BOTS_SET = new ChatMessage(
 					"Bots for the %queuetype% queuetype has been set to the %toggled%.", CC.YELLOW)
 					.highlightText(CC.GOLD, "%queuetype%", "%toggled%"),
@@ -168,6 +171,28 @@ public class ChatMessages {
 					"The settings slot has been set to the %slot% slot.",
 					CC.YELLOW)
 					.highlightText(CC.GOLD, "%slot%"),
+			SPECTATE_ENABLED = new ChatMessage("The spectator item has been set to %toggled%.",
+					CC.YELLOW)
+					.highlightText(CC.GOLD, "%toggled%"),
+			SPECTATE_DISPLAY_SET = new ChatMessage(
+					"The spectate display item has been set to the item in your hand.",
+					CC.YELLOW)
+					.highlightText(CC.GOLD, "the item in your hand"),
+			SPECTATE_SLOT_SET = new ChatMessage(
+					"The spectate slot has been set to the %slot% slot.",
+					CC.YELLOW)
+					.highlightText(CC.GOLD, "%slot%"),
+			LEADERBOARD_ENABLED = new ChatMessage("The leaderboard item has been set to %toggled%.",
+					CC.YELLOW)
+					.highlightText(CC.GOLD, "%toggled%"),
+			LEADERBOARD_DISPLAY_SET = new ChatMessage(
+					"The leaderboard display item has been set to the item in your hand.",
+					CC.YELLOW)
+					.highlightText(CC.GOLD, "the item in your hand"),
+			LEADERBOARD_SLOT_SET = new ChatMessage(
+					"The leaderboard slot has been set to the %slot% slot.",
+					CC.YELLOW)
+					.highlightText(CC.GOLD, "%slot%"),
 			PARTY_CREATED = new ChatMessage("You have created a new party.",
 					CC.YELLOW)
 					.highlightText(CC.GOLD, "party"),
@@ -180,6 +205,9 @@ public class ChatMessages {
 					CC.YELLOW).highlightText(CC.GOLD, "%toggled%"),
 			PARTY_REQUESTS_TOGGLED = new ChatMessage(
 					"Your party requests has now been %toggled%.",
+					CC.YELLOW).highlightText(CC.GOLD, "%toggled%"),
+			SCOREBOARD_TOGGLED = new ChatMessage(
+					"Your scoreboard has now been %toggled%.",
 					CC.YELLOW).highlightText(CC.GOLD, "%toggled%"),
 			VISIBILITY_TOGGLED = new ChatMessage(
 					"Your player visibility has now been %toggled%.",
@@ -197,9 +225,9 @@ public class ChatMessages {
 			CC.AQUA)
 			.highlightText(CC.D_AQUA, "%time%"),
 			JOINED_QUEUE = new ChatMessage(
-					"You are now queued for %queue% %gametype%.",
+					"You are now queued for %queue% %catagory% %gametype%.",
 					CC.AQUA)
-					.highlightText(CC.D_AQUA, "%queue%", "%gametype%"),
+					.highlightText(CC.D_AQUA, "%queue%", "%catagory%", "%gametype%"),
 			STOP_SPECTATING = new ChatMessage(
 					"Please type /stopspectating to stop spectating.",
 					CC.YELLOW).highlightText(CC.GOLD, "/stopspectating"),
@@ -257,7 +285,11 @@ public class ChatMessages {
 			LEFT_EVENT = new ChatMessage("%player% has left the event.", CC.RED).highlightText(CC.D_RED, "%player%"),
 			PARTY_REQUEST_SENT = new ChatMessage(
 					"You have send a party invite to %player%. They have 30 seconds to accept.", CC.AQUA)
-					.highlightText(CC.D_AQUA, "%player%");
+					.highlightText(CC.D_AQUA, "%player%"),
+			TIME_SET_DAY = new ChatMessage("Your time has been set to day.", CC.YELLOW)
+					.highlightText(CC.GOLD, "day"),
+			TIME_SET_NIGHT = new ChatMessage("Your time has been set to night.", CC.YELLOW)
+					.highlightText(CC.GOLD, "night");
 
 	public static final ClickableChatMessage DUEL_REQUEST_RECIEVED = new ClickableChatMessage(
 			"You have recieved a duel request from %player%. [Click To Accept]",
@@ -295,6 +327,10 @@ public class ChatMessages {
 			PARTIES_COMMANDS = new ChatMessage("Parties Commands", CC.PRIMARY,
 					false),
 			SETTINGS_COMMANDS = new ChatMessage("Settings Config Commands", CC.PRIMARY,
+					false),
+			SPECTATE_COMMANDS = new ChatMessage("Spectate Config Commands", CC.PRIMARY,
+					false),
+			LEADERBOARD_COMMANDS = new ChatMessage("Leaderboard Config Commands", CC.PRIMARY,
 					false),
 			PARTY_COMMANDS = new ChatMessage("Party Commands", CC.PRIMARY,
 					false);
@@ -432,6 +468,9 @@ public class ChatMessages {
 			QUEUETYPE_COMMUNITY = new ListElementMessage(
 					"/queuetype community <Queuetype> <True/False>",
 					CC.SECONDARY),
+			QUEUETYPE_UNRANKED = new ListElementMessage(
+					"/queuetype unranked <Queuetype> <True/False>",
+					CC.SECONDARY),
 			QUEUETYPE_BOTS = new ListElementMessage(
 					"/queuetype bots <Queuetype> <True/False>",
 					CC.SECONDARY),
@@ -455,6 +494,25 @@ public class ChatMessages {
 					"/settingsconfig setdisplay <DisplayName>",
 					CC.SECONDARY),
 			SETTINGS_SLOT = new ListElementMessage("/settingsconfig slot <Slot>",
+					CC.SECONDARY);
+
+	// Spectate Config Command
+	public static final ChatMessage SPECTATE_ENABLE = new ListElementMessage("/spectateconfig enable <True/False>",
+			CC.SECONDARY),
+			SPECTATE_DISPLAY = new ListElementMessage(
+					"/spectateconfig setdisplay <DisplayName>",
+					CC.SECONDARY),
+			SPECTATE_SLOT = new ListElementMessage("/spectateconfig slot <Slot>",
+					CC.SECONDARY);
+
+	// Leaderboard Config Command
+	public static final ChatMessage LEADERBOARD_ENABLE = new ListElementMessage(
+			"/leaderboardconfig enable <True/False>",
+			CC.SECONDARY),
+			LEADERBOARD_DISPLAY = new ListElementMessage(
+					"/leaderboardconfig setdisplay <DisplayName>",
+					CC.SECONDARY),
+			LEADERBOARD_SLOT = new ListElementMessage("/leaderboardconfig slot <Slot>",
 					CC.SECONDARY);
 	// Party Command
 	public static final ChatMessage PARTY_CREATE = new ListElementMessage("/party create", CC.SECONDARY),

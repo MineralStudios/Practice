@@ -10,6 +10,7 @@ import gg.mineral.practice.gametype.Gametype;
 import gg.mineral.practice.inventory.PracticeMenu;
 import gg.mineral.practice.queue.QueueEntry;
 import gg.mineral.practice.queue.QueueSearchTask;
+import gg.mineral.practice.queue.QueueSearchTask2v2;
 import gg.mineral.practice.util.items.ItemBuilder;
 import gg.mineral.practice.util.messages.CC;
 
@@ -24,7 +25,8 @@ public class QueueManagerMenu extends PracticeMenu {
     @Override
     public boolean update() {
         clear();
-        List<QueueEntry> queueEntries = QueueSearchTask.getQueueEntries(viewer);
+        List<QueueEntry> queueEntries = viewer.getMatchData().getTeam2v2() ? QueueSearchTask2v2.getQueueEntries(viewer)
+                : QueueSearchTask.getQueueEntries(viewer);
 
         if (queueEntries == null) {
             return false;

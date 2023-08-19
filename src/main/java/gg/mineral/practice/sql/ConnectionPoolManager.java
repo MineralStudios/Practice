@@ -46,7 +46,11 @@ public class ConnectionPoolManager {
         config.addDataSourceProperty("cachePrepStmts", "true");
         config.addDataSourceProperty("prepStmtCacheSize", "250");
         config.addDataSourceProperty("prepStmtCacheSqlLimit", "2048");
-        dataSource = new HikariDataSource(config);
+
+        try {
+            dataSource = new HikariDataSource(config);
+        } catch (Exception e) {
+        }
     }
 
     public void close(AutoCloseable... toClose) {

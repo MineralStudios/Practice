@@ -1,5 +1,6 @@
 package gg.mineral.practice.match;
 
+import java.util.Collection;
 import java.util.Iterator;
 import java.util.List;
 
@@ -26,6 +27,7 @@ import gg.mineral.practice.util.messages.CC;
 import gg.mineral.practice.util.messages.ChatMessage;
 import gg.mineral.practice.util.messages.impl.ChatMessages;
 import gg.mineral.practice.util.messages.impl.Strings;
+import gg.mineral.server.fakeplayer.FakePlayer;
 import lombok.Getter;
 import net.md_5.bungee.api.chat.ClickEvent;
 import net.md_5.bungee.api.chat.ComponentBuilder;
@@ -52,13 +54,29 @@ public class PartyMatch extends Match {
 	}
 
 	public PartyMatch(Party party, MatchData matchData) {
+		this(party.getPartyMembers(), matchData);
+	}
+
+	public PartyMatch(Collection<Profile> team1, Collection<Profile> team2, MatchData matchData) {
 		super(matchData);
-		this.participants.addAll(party.getPartyMembers());
+		this.team1RemainingPlayers = new ProfileList(team1);
+		this.team2RemainingPlayers = new ProfileList(team2);
+		this.profile1 = team1RemainingPlayers.getFirst();
+		this.profile2 = team2RemainingPlayers.getFirst();
+		this.participants.addAll(team1RemainingPlayers);
+		this.participants.addAll(team2RemainingPlayers);
+		this.team1RequiredHitCount = team1RemainingPlayers.size() * 100;
+		this.team2RequiredHitCount = team2RemainingPlayers.size() * 100;
+	}
+
+	public PartyMatch(Collection<Profile> profiles, MatchData matchData) {
+		super(matchData);
+		this.participants.addAll(profiles);
 		int size = participants.size();
 		this.team1RemainingPlayers = new ProfileList(participants.subList(0, (size + 1) / 2));
 		this.team2RemainingPlayers = new ProfileList(participants.subList((size + 1) / 2, size));
-		this.profile1 = team1RemainingPlayers.get(0);
-		this.profile2 = team2RemainingPlayers.get(0);
+		this.profile1 = team1RemainingPlayers.getFirst();
+		this.profile2 = team2RemainingPlayers.getFirst();
 		this.team1RequiredHitCount = team1RemainingPlayers.size() * 100;
 		this.team2RequiredHitCount = team2RemainingPlayers.size() * 100;
 	}
@@ -78,16 +96,12 @@ public class PartyMatch extends Match {
 		org.bukkit.scoreboard.Scoreboard team1sb = getDisplayNameBoard(team1RemainingPlayers, team2RemainingPlayers);
 		org.bukkit.scoreboard.Scoreboard team2sb = getDisplayNameBoard(team2RemainingPlayers, team1RemainingPlayers);
 
-		int i;
-
-		for (i = 0; i < team1RemainingPlayers.size(); i++) {
-			Profile teamMember = team1RemainingPlayers.get(i);
+		for (Profile teamMember : team1RemainingPlayers) {
 			prepareForMatch(teamMember, team1sb);
 			PlayerUtil.teleport(teamMember.getPlayer(), location1);
 		}
 
-		for (i = 0; i < team2RemainingPlayers.size(); i++) {
-			Profile teamMember = team2RemainingPlayers.get(i);
+		for (Profile teamMember : team2RemainingPlayers) {
 			prepareForMatch(teamMember, team2sb);
 			PlayerUtil.teleport(teamMember.getPlayer(), location2);
 		}
@@ -112,9 +126,11 @@ public class PartyMatch extends Match {
 
 	@Override
 	public void end(Profile victim) {
-		if (isEnded()) {
+		if (isEnded() || victim.isDead()) {
 			return;
 		}
+
+		victim.setDead(true);
 
 		victim.getMatchStatisticCollector().end(false);
 
@@ -160,10 +176,11 @@ public class PartyMatch extends Match {
 		if (victimTeam.size() > 0) {
 			participants.remove(victim);
 			victim.removeFromMatch();
-			victim.getSpectateHandler().spectate(victimTeam.get(0));
+			victim.getSpectateHandler().spectate(victimTeam.getFirst());
 
 			if (CoreConnector.connected()) {
-				CoreConnector.INSTANCE.getNameTagAPI().giveTagAfterMatch(victim.getPlayer(), victim.getPlayer());
+				CoreConnector.INSTANCE.getNameTagAPI().giveTagAfterMatch(victim.getPlayer(),
+						victim.getPlayer());
 			}
 
 			return;
@@ -212,8 +229,10 @@ public class PartyMatch extends Match {
 			profile.getPlayer().sendMessage(CC.SEPARATOR);
 
 			if (CoreConnector.connected()) {
-				CoreConnector.INSTANCE.getNameTagAPI().giveTagAfterMatch(profile.getPlayer(), profile.getPlayer());
+				CoreConnector.INSTANCE.getNameTagAPI().giveTagAfterMatch(profile.getPlayer(),
+						profile.getPlayer());
 			}
+
 		}
 
 		participants.remove(victim);
@@ -229,6 +248,8 @@ public class PartyMatch extends Match {
 
 		victim.removeFromMatch();
 
+		FakePlayer.destroy(victim.getPlayer().getHandle());
+
 		for (Profile spectator : getSpectators()) {
 			spectator.getPlayer().sendMessage(CC.SEPARATOR);
 			spectator.getPlayer().sendMessage(Strings.MATCH_RESULTS);
@@ -243,7 +264,7 @@ public class PartyMatch extends Match {
 	}
 
 	@Override
-	public List<Profile> getTeam(Profile p) {
+	public ProfileList getTeam(Profile p) {
 		return team1RemainingPlayers.contains(p) ? team1RemainingPlayers : team2RemainingPlayers;
 	}
 
@@ -270,6 +291,7 @@ public class PartyMatch extends Match {
 			}
 			attacker.removeFromMatch();
 			attacker.setScoreboard(DefaultScoreboard.INSTANCE);
+			FakePlayer.destroy(attacker.getPlayer().getHandle());
 		}, getPostMatchTime());
 	}
 
@@ -279,15 +301,15 @@ public class PartyMatch extends Match {
 		victim.getMatchStatisticCollector().resetCombo();
 
 		boolean isTeam1 = team1RemainingPlayers.contains(attacker);
-		int hitCount = isTeam1 ? team1HitCount++ : team2HitCount++;
+		int hitCount = isTeam1 ? ++team1HitCount : ++team2HitCount;
 		int requiredHitCount = isTeam1 ? team1RequiredHitCount : team2RequiredHitCount;
 		ProfileList opponentTeam = isTeam1 ? team2RemainingPlayers : team1RemainingPlayers;
 
 		if (hitCount >= requiredHitCount
 				&& getData().getBoxing()) {
-			for (Profile opponent : opponentTeam) {
+			for (Profile opponent : opponentTeam)
 				end(opponent);
-			}
+
 			return true;
 		}
 
@@ -304,15 +326,11 @@ public class PartyMatch extends Match {
 		teammates.setPrefix(CC.GREEN);
 		opponents.setPrefix(CC.RED);
 
-		int i;
+		for (Profile profile : playerTeam)
+			teammates.addEntry(profile.getName());
 
-		for (i = 0; i < playerTeam.size(); i++) {
-			teammates.addEntry(playerTeam.get(i).getName());
-		}
-
-		for (i = 0; i < opponentTeam.size(); i++) {
-			opponents.addEntry(opponentTeam.get(i).getName());
-		}
+		for (Profile profile : opponentTeam)
+			opponents.addEntry(profile.getName());
 
 		return scoreboard;
 	}

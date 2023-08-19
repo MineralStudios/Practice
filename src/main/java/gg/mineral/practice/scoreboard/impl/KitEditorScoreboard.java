@@ -14,7 +14,8 @@ public class KitEditorScoreboard
     public void updateBoard(ScoreboardHandler board, Profile profile) {
         board.updateTitle(CC.PRIMARY + CC.B + "Mineral");
         board.updateLines(CC.BOARD_SEPARATOR,
-                CC.ACCENT + "Editing Kit",
+                CC.ACCENT + "Editing Kit", CC.SPACER,
+                CC.SECONDARY + "mineral.gg",
                 CC.BOARD_SEPARATOR);
     }
 }

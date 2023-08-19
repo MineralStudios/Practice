@@ -38,6 +38,7 @@ public class QueuetypeCommand extends PlayerCommand {
 				ChatMessages.QUEUETYPE_DISPLAY.send(player);
 				ChatMessages.QUEUETYPE_RANKED.send(player);
 				ChatMessages.QUEUETYPE_COMMUNITY.send(player);
+				ChatMessages.QUEUETYPE_UNRANKED.send(player);
 				ChatMessages.QUEUETYPE_BOTS.send(player);
 				ChatMessages.QUEUETYPE_SLOT.send(player);
 				ChatMessages.QUEUETYPE_KB.send(player);
@@ -121,7 +122,7 @@ public class QueuetypeCommand extends PlayerCommand {
 				return;
 			case "community":
 				if (args.length < 3) {
-					UsageMessages.QUEUETYPE_RANKED.send(player);
+					UsageMessages.QUEUETYPE_COMMUNITY.send(player);
 					return;
 				}
 
@@ -148,6 +149,37 @@ public class QueuetypeCommand extends PlayerCommand {
 				}
 
 				ChatMessages.QUEUETYPE_COMMUNITY_SET.clone().replace("%queuetype%", queuetypeName)
+						.replace("%toggled%", toggled).send(player);
+				return;
+			case "unranked":
+				if (args.length < 3) {
+					UsageMessages.QUEUETYPE_UNRANKED.send(player);
+					return;
+				}
+
+				queuetypeName = args[1];
+				queuetype = QueuetypeManager.getQueuetypeByName(queuetypeName);
+
+				if (queuetype == null) {
+					ErrorMessages.QUEUETYPE_DOES_NOT_EXIST.send(player);
+					return;
+				}
+
+				toggled = args[2].toLowerCase();
+
+				switch (toggled) {
+					case "false":
+						queuetype.setUnranked(false);
+						break;
+					case "true":
+						queuetype.setUnranked(true);
+						break;
+					default:
+						UsageMessages.QUEUETYPE_UNRANKED.send(player);
+						return;
+				}
+
+				ChatMessages.QUEUETYPE_UNRANKED_SET.clone().replace("%queuetype%", queuetypeName)
 						.replace("%toggled%", toggled).send(player);
 				return;
 			case "bots":

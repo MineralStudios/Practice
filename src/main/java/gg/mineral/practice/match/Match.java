@@ -1,10 +1,10 @@
 package gg.mineral.practice.match;
 
 import java.util.Arrays;
-import java.util.List;
 import java.util.Map.Entry;
 import java.util.Queue;
 import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.ConcurrentLinkedDeque;
 import java.util.concurrent.ConcurrentLinkedQueue;
 
 import org.bukkit.Bukkit;
@@ -12,11 +12,13 @@ import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.World;
 import org.bukkit.craftbukkit.v1_8_R3.CraftWorld;
+import org.bukkit.entity.Arrow;
 import org.bukkit.entity.Item;
+import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.potion.PotionEffect;
 import org.bukkit.potion.PotionEffectType;
-import org.bukkit.scoreboard.Team;
+import org.bukkit.projectiles.ProjectileSource;
 
 import gg.mineral.api.collection.GlueList;
 import gg.mineral.practice.PracticePlugin;
@@ -29,6 +31,8 @@ import gg.mineral.practice.managers.MatchManager;
 import gg.mineral.practice.managers.ProfileManager;
 import gg.mineral.practice.match.data.MatchData;
 import gg.mineral.practice.match.data.MatchStatisticCollector;
+import gg.mineral.practice.queue.QueueSearchTask;
+import gg.mineral.practice.queue.QueueSearchTask2v2;
 import gg.mineral.practice.scoreboard.impl.BoxingScoreboard;
 import gg.mineral.practice.scoreboard.impl.DefaultScoreboard;
 import gg.mineral.practice.scoreboard.impl.InMatchScoreboard;
@@ -56,6 +60,8 @@ import net.md_5.bungee.api.chat.TextComponent;
 
 public class Match implements Spectatable {
 
+	@Getter
+	ConcurrentLinkedDeque<Profile> spectators = new ConcurrentLinkedDeque<>();
 	@Getter
 	ProfileList participants = new ProfileList();
 	@Getter
@@ -113,6 +119,7 @@ public class Match implements Spectatable {
 
 	public void setAttributes(Profile p) {
 		p.getMatchStatisticCollector().clearHitCount();
+		p.setDead(false);
 		p.getPlayer().setMaximumNoDamageTicks(data.getNoDamageTicks());
 		p.getPlayer().setKnockback(data.getKnockback());
 		p.getPlayer().setAllowFlight(false);
@@ -132,8 +139,8 @@ public class Match implements Spectatable {
 	}
 
 	public void setVisibility(Profile p) {
-		for (int i = 0; i < participants.size(); i++) {
-			p.getPlayer().showPlayer(participants.get(i).getPlayer());
+		for (Profile participant : participants) {
+			p.getPlayer().showPlayer(participant.getPlayer());
 		}
 
 		for (Match match : MatchManager.getMatches()) {
@@ -143,20 +150,27 @@ public class Match implements Spectatable {
 
 	public void prepareForMatch(Profile p) {
 
+		QueueSearchTask.removePlayer(p);
+		QueueSearchTask2v2.removePlayer(p);
+
 		p.setMatch(this);
 		p.getRequestHandler().getRecievedDuelRequests().clear();
 		p.getMatchStatisticCollector().start();
 		p.setKitLoaded(false);
 
 		if (CoreConnector.connected()) {
-			CoreConnector.INSTANCE.getNameTagAPI().clearTagOnMatchStart(p.getPlayer(), p.getPlayer());
+			if (this instanceof PartyMatch || this instanceof TeamMatch) {
+				CoreConnector.INSTANCE.getNameTagAPI().clearTagOnMatchStart(p.getPlayer(), p.getPlayer());
+			} else {
+				CoreConnector.INSTANCE.getNameTagAPI().giveTagAfterMatch(p.getPlayer(), p.getPlayer());
+			}
 		}
 
 		giveLoadoutSelection(p);
 		setAttributes(p);
 		setPotionEffects(p);
 		setVisibility(p);
-		setDisplayNames(p);
+		// setDisplayNames(p);
 		setScoreboard(p);
 		handleFollowers(p);
 	}
@@ -166,7 +180,7 @@ public class Match implements Spectatable {
 		BlockData blockData = new BlockData(profile.getPlayer().getLocation(), Material.BEDROCK,
 				(byte) 0);
 
-		int radius = 2;
+		int radius = 1;
 
 		for (int x = -radius; x <= radius; x++) {
 			for (int z = -radius; z <= radius; z++) {
@@ -230,8 +244,7 @@ public class Match implements Spectatable {
 			return;
 		}
 
-		for (int i = 0; i < participants.size(); i++) {
-			Profile participant = participants.get(i);
+		for (Profile participant : participants) {
 			participant.getPlayer().hidePlayer(profile.getPlayer(), false);
 			profile.getPlayer().hidePlayer(participant.getPlayer(), false);
 		}
@@ -411,14 +424,20 @@ public class Match implements Spectatable {
 			attacker.setScoreboard(DefaultScoreboard.INSTANCE);
 			sendBackToLobby(attacker);
 
-			if (CoreConnector.connected()) {
-				CoreConnector.INSTANCE.getNameTagAPI().giveTagAfterMatch(profile1.getPlayer(), profile2.getPlayer());
-				CoreConnector.INSTANCE.getUuidChecker().check(attacker.getPlayer().getDisplayName());
-				int mineralsAmount = data.isRanked() ? 100 : 20;
-				CoreConnector.INSTANCE.getMineralsSQL().addMinerals(attacker.getPlayer(),
-						de.jeezycore.utils.UUIDChecker.uuid, mineralsAmount,
-						"&7You &2successfully &7earned &9" + mineralsAmount + " &fminerals&7.");
-			}
+			/*
+			 * if (CoreConnector.connected()) {
+			 * //
+			 * CoreConnector.INSTANCE.getNameTagAPI().giveTagAfterMatch(profile1.getPlayer()
+			 * ,
+			 * // profile2.getPlayer());
+			 * CoreConnector.INSTANCE.getUuidChecker().check(attacker.getPlayer().
+			 * getDisplayName());
+			 * int mineralsAmount = data.isRanked() ? 100 : 20;
+			 * CoreConnector.INSTANCE.getMineralsSQL().addMinerals(attacker.getPlayer(),
+			 * de.jeezycore.utils.UUIDChecker.uuid, mineralsAmount,
+			 * "&7You &2successfully &7earned &9" + mineralsAmount + " &fminerals&7.");
+			 * }
+			 */
 
 		}, getPostMatchTime());
 
@@ -504,6 +523,23 @@ public class Match implements Spectatable {
 			item.remove();
 		}
 
+		for (Arrow arrow : data.getArena().getLocation1().getWorld().getEntitiesByClass(Arrow.class)) {
+			ProjectileSource shooter = arrow.getShooter();
+
+			if (shooter instanceof Player) {
+				Profile profile = ProfileManager.getProfile(p -> p.getUUID().equals(((Player) shooter).getUniqueId()));
+
+				if (profile == null) {
+					arrow.remove();
+					continue;
+				}
+
+				if (profile.getPlayerStatus() != PlayerStatus.FIGHTING
+						|| (profile.getPlayerStatus() == PlayerStatus.FIGHTING && profile.getMatch().isEnded()))
+					arrow.remove();
+			}
+		}
+
 	}
 
 	public void clearWorld() {
@@ -559,7 +595,7 @@ public class Match implements Spectatable {
 		menu.setSlot(50, ItemStacks.POTION_EFFECTS
 				.lore(matchStatisticCollector.getPotionEffectStringArray()).build());
 
-		if (!(this instanceof PartyMatch)) {
+		if (!(this instanceof PartyMatch || this instanceof TeamMatch)) {
 			ProfileManager.setInventoryStats(profile, menu);
 		}
 
@@ -570,23 +606,26 @@ public class Match implements Spectatable {
 		participants.addAll(Arrays.asList(players));
 	}
 
-	public List<Profile> getTeam(Profile profile) {
-		return Arrays.asList(profile);
+	public ProfileList getTeam(Profile profile) {
+		return new ProfileList(Arrays.asList(profile));
 	}
 
-	private void setDisplayNames(Profile profile) {
-
-		org.bukkit.scoreboard.Scoreboard scoreboard = Bukkit.getScoreboardManager().getNewScoreboard();
-
-		Team teammates = scoreboard.registerNewTeam("teammates");
-		Team opponents = scoreboard.registerNewTeam("opponents");
-
-		teammates.setPrefix(CC.GREEN);
-		opponents.setPrefix(CC.RED);
-
-		teammates.addEntry(profile.getName());
-		opponents.addEntry(getOpponent(profile).getName());
-
-		profile.getPlayer().setScoreboard(scoreboard);
-	}
+	/*
+	 * private void setDisplayNames(Profile profile) {
+	 * 
+	 * org.bukkit.scoreboard.Scoreboard scoreboard =
+	 * Bukkit.getScoreboardManager().getNewScoreboard();
+	 * 
+	 * Team teammates = scoreboard.registerNewTeam("teammates");
+	 * Team opponents = scoreboard.registerNewTeam("opponents");
+	 * 
+	 * teammates.setPrefix(CC.GREEN);
+	 * opponents.setPrefix(CC.RED);
+	 * 
+	 * teammates.addEntry(profile.getName());
+	 * opponents.addEntry(getOpponent(profile).getName());
+	 * 
+	 * profile.getPlayer().setScoreboard(scoreboard);
+	 * }
+	 */
 }

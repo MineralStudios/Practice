@@ -14,7 +14,8 @@ public class SpectatorScoreboard
     public void updateBoard(ScoreboardHandler board, Profile profile) {
         board.updateTitle(CC.PRIMARY + CC.B + "Mineral");
         board.updateLines(CC.BOARD_SEPARATOR,
-                CC.ACCENT + "Spectating",
+                CC.ACCENT + "Spectating", CC.SPACER,
+                CC.SECONDARY + "mineral.gg",
                 CC.BOARD_SEPARATOR);
     }
 }

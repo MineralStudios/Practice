@@ -54,8 +54,7 @@ public class ProfileManager {
 
 	public static int count(Predicate<Profile> predicate) {
 		int count = 0;
-		for (int i = 0; i < profiles.size(); i++) {
-			Profile profile = profiles.get(i);
+		for (Profile profile : profiles) {
 
 			if (!predicate.test(profile)) {
 				continue;
@@ -68,8 +67,7 @@ public class ProfileManager {
 	}
 
 	public static Profile getProfile(Predicate<Profile> predicate) {
-		for (int i = 0; i < profiles.size(); i++) {
-			Profile profile = profiles.get(i);
+		for (Profile profile : profiles) {
 
 			if (!predicate.test(profile)) {
 				continue;
@@ -79,6 +77,15 @@ public class ProfileManager {
 		}
 
 		return null;
+	}
+
+	public static void removeIfExists(org.bukkit.entity.Player pl) {
+		if (pl == null)
+			return;
+
+		Profile profile = getProfile(p -> p.getUUID().equals(pl.getUniqueId()));
+
+		remove(profile);
 	}
 
 	public static Profile getOrCreateProfile(org.bukkit.entity.Player pl) {

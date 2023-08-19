@@ -7,11 +7,7 @@ import gg.mineral.practice.util.collection.ProfileList;
 
 public interface Spectatable {
 
-    ConcurrentLinkedDeque<Profile> spectators = new ConcurrentLinkedDeque<>();
-
-    default ConcurrentLinkedDeque<Profile> getSpectators() {
-        return spectators;
-    }
+    public ConcurrentLinkedDeque<Profile> getSpectators();
 
     public ProfileList getParticipants();
 

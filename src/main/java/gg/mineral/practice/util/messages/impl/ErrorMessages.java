@@ -47,6 +47,8 @@ public class ErrorMessages {
 			PARTY_DOES_NOT_EXIST = new ErrorMessage("That party does not exist."),
 			PARTY_NOT_BIG_ENOUGH = new ErrorMessage(
 					"You need to be in a party with at least 2 people."),
+			PARTY_NOT_CORRECT_SIZE = new ErrorMessage(
+					"You need to be in a party with exactly 2 people."),
 			PARTY_NOT_OPEN = new ErrorMessage("That party is not open."), PARTY_REQUESTS_DISABLED = new ErrorMessage(
 					"That player has party requests disabled."),
 			YOU_CAN_NOT_INVITE_YOURSELF = new ErrorMessage("You can not invite yourself."),
@@ -86,5 +88,7 @@ public class ErrorMessages {
 	// Other
 	public static final Message INVALID_SLOT = new ErrorMessage("You did not input a valid slot."),
 			INVALID_NUMBER = new ErrorMessage("You did not input a valid number."),
-			COMING_SOON = new ErrorMessage("This feature is not yet released, it will be completed soon.");
+			COMING_SOON = new ErrorMessage("This feature is not yet released, it will be completed soon."),
+			RANK_REQUIRED = new ErrorMessage("A rank is required to access this feature.");
+
 }

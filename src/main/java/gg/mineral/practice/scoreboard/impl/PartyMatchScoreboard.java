@@ -1,7 +1,5 @@
 package gg.mineral.practice.scoreboard.impl;
 
-import java.util.List;
-
 import gg.mineral.practice.entity.Profile;
 import gg.mineral.practice.match.Match;
 import gg.mineral.practice.scoreboard.Scoreboard;
@@ -23,11 +21,12 @@ public class PartyMatchScoreboard
             return;
         }
 
-        List<Profile> team = match.getTeam(profile);
+        ProfileList team = match.getTeam(profile);
         ProfileList opponents = new ProfileList(match.getParticipants());
         opponents.removeAll(team);
 
         board.updateLines(CC.BOARD_SEPARATOR, CC.ACCENT + "Your Team Remaining: " + CC.SECONDARY + team.size(),
-                CC.ACCENT + "Their Team Remaining: " + CC.SECONDARY + opponents.size(), CC.BOARD_SEPARATOR);
+                CC.ACCENT + "Their Team Remaining: " + CC.SECONDARY + opponents.size(), CC.SPACER,
+                CC.SECONDARY + "mineral.gg", CC.BOARD_SEPARATOR);
     }
 }

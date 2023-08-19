@@ -27,7 +27,7 @@ public abstract class PlayerCommand extends BaseCommand {
             Player player = (Player) sender;
 
             if (!player.isOp()
-                    && permission != null && player.hasPermission(permission)) {
+                    && permission != null && !player.hasPermission(permission)) {
                 player.sendMessage(CC.RED + "You don't have the required permission to perform this command.");
                 return;
             }

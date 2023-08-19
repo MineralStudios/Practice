@@ -4,6 +4,7 @@ import java.util.List;
 import java.util.Map.Entry;
 
 import gg.mineral.api.collection.GlueList;
+import gg.mineral.practice.entity.PlayerStatus;
 import gg.mineral.practice.entity.Profile;
 import gg.mineral.practice.gametype.Gametype;
 import gg.mineral.practice.match.Match;
@@ -54,7 +55,8 @@ public class QueueSearchTask {
 
 		for (Entry<Profile, List<QueueEntry>> e : map.entrySet()) {
 			if (e.getValue().contains(queueEntry)) {
-				return e.getKey();
+				if (e.getKey().getPlayerStatus() == PlayerStatus.QUEUEING)
+					return e.getKey();
 			}
 		}
 

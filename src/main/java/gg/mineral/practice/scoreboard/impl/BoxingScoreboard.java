@@ -38,6 +38,8 @@ public class BoxingScoreboard implements Scoreboard {
                                                 + ((CraftPlayer) board.getPlayer()).getHandle().ping,
                                 CC.ACCENT + "Their Ping: " + CC.SECONDARY
                                                 + profile.getMatch().getOpponent(profile).getPlayer().getHandle().ping,
+                                CC.SPACER,
+                                CC.SECONDARY + "mineral.gg",
                                 CC.BOARD_SEPARATOR);
         }
 }

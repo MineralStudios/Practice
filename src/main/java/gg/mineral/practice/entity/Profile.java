@@ -29,6 +29,7 @@ import gg.mineral.practice.match.data.MatchStatisticCollector;
 import gg.mineral.practice.party.Party;
 import gg.mineral.practice.queue.QueueEntry;
 import gg.mineral.practice.queue.QueueSearchTask;
+import gg.mineral.practice.queue.QueueSearchTask2v2;
 import gg.mineral.practice.scoreboard.Scoreboard;
 import gg.mineral.practice.scoreboard.ScoreboardHandler;
 import gg.mineral.practice.scoreboard.impl.DefaultScoreboard;
@@ -65,7 +66,10 @@ public class Profile {
 	@Getter
 	MatchStatisticCollector matchStatisticCollector = new MatchStatisticCollector(this);
 	@Getter
-	boolean playersVisible = true, partyOpenCooldown = false;
+	boolean playersVisible = false, partyOpenCooldown = false, scoreboardEnabled = true;
+	@Getter
+	@Setter
+	boolean nightMode = false;
 	@Setter
 	@Getter
 	Menu openMenu;
@@ -91,6 +95,9 @@ public class Profile {
 	boolean kitLoaded = false, inMatchCountdown = false;
 	@Getter
 	Registry<BlockData, String> fakeBlocks = new Registry<>(BlockData::toString);
+	@Getter
+	@Setter
+	boolean dead = false;
 
 	public Profile(org.bukkit.entity.Player player) {
 		this.player = (CraftPlayer) player;
@@ -99,7 +106,7 @@ public class Profile {
 		this.scoreboardHandler = new ScoreboardHandler(player);
 
 		scoreboardTaskId = Bukkit.getServer().getScheduler().scheduleSyncRepeatingTask(PracticePlugin.INSTANCE, () -> {
-			if (getScoreboard() != null) {
+			if (getScoreboard() != null && scoreboardHandler != null) {
 				getScoreboard().updateBoard(scoreboardHandler, this);
 			}
 		}, 0, 10);
@@ -131,6 +138,11 @@ public class Profile {
 		scoreboardHandler.delete();
 	}
 
+	public void disableScoreboard() {
+		scoreboard = null;
+		scoreboardHandler.delete();
+	}
+
 	public void heal() {
 		this.player.setFoodLevel(20);
 		this.player.setHealth(20);
@@ -148,10 +160,6 @@ public class Profile {
 	}
 
 	public void removeFromMatch() {
-		if (playerStatus == PlayerStatus.FIGHTING && !getMatch().isEnded()) {
-			return;
-		}
-
 		setPlayerStatus(PlayerStatus.IDLE);
 		match = null;
 	}
@@ -211,15 +219,23 @@ public class Profile {
 
 	public void removeFromQueue() {
 		QueueSearchTask.removePlayer(this);
+		QueueSearchTask2v2.removePlayer(this);
 		message(ChatMessages.LEFT_QUEUE);
 		setPlayerStatus(PlayerStatus.IDLE);
 	}
 
 	public void removeFromQueue(QueueEntry queueEntry) {
-		if (QueueSearchTask.removePlayer(this, queueEntry)) {
+
+		if ((getMatchData().getTeam2v2() && QueueSearchTask2v2.removePlayer(this, queueEntry))
+				|| QueueSearchTask.removePlayer(this, queueEntry)) {
 			removeFromQueue();
 			player.closeInventory();
-			getInventory().setInventoryForLobby();
+
+			if (isInParty()) {
+				getInventory().setInventoryForParty();
+			} else {
+				getInventory().setInventoryForLobby();
+			}
 		}
 	}
 
@@ -232,7 +248,19 @@ public class Profile {
 			}
 
 			message(ChatMessages.JOINED_QUEUE.clone().replace("%queue%", queueEntry.getQueuetype().getDisplayName())
+					.replace("%catagory%",
+							queueEntry.getGametype().isInCatagory() ? queueEntry.getGametype().getCatagoryName() : "")
 					.replace("%gametype%", queueEntry.getGametype().getDisplayName()));
+
+			if (getMatchData().getTeam2v2()) {
+				if (isInParty()) {
+					QueueSearchTask2v2.addParty(this.getParty(), queueEntry);
+				} else {
+					QueueSearchTask2v2.addPlayer(this, queueEntry);
+				}
+				return;
+			}
+
 			QueueSearchTask.addPlayer(this, queueEntry);
 		}
 	}
@@ -309,14 +337,35 @@ public class Profile {
 	}
 
 	public void setPlayerStatus(PlayerStatus newPlayerStatus) {
+		if ((playerStatus == PlayerStatus.IDLE || playerStatus == PlayerStatus.QUEUEING)
+				&& this.getPlayer().hasPermission("practice.fly")) {
+			this.getPlayer().setAllowFlight(true);
+		} else if (this.getPlayer().getAllowFlight()) {
+			this.getPlayer().setAllowFlight(false);
+			this.getPlayer().setFlying(false);
+		}
+
 		playerStatus = newPlayerStatus;
 	}
 
-	private void updateVisiblity() {
+	public void updateVisiblity() {
 		List<org.bukkit.entity.Player> playersInWorld = getPlayer().getWorld().getPlayers();
 		if (!this.isPlayersVisible()) {
 			for (Player player : playersInWorld) {
+
 				getPlayer().hidePlayer(player, false);
+				//
+				player.hidePlayer(getPlayer(), false);
+
+				if (getPlayer().hasPermission("practice.visible")) {
+					// getPlayer().showPlayer(player);
+					player.showPlayer(getPlayer());
+				}
+
+				if (player.hasPermission("practice.visible")) {
+					// getPlayer().showPlayer(player);
+					getPlayer().showPlayer(player);
+				}
 			}
 			return;
 		}
@@ -385,5 +434,16 @@ public class Profile {
 		event.removePlayer(this);
 
 		event = null;
+	}
+
+	public void setScoreboardEnabled(boolean b) {
+		this.scoreboardEnabled = b;
+
+		if (b) {
+			this.scoreboardHandler = new ScoreboardHandler(player);
+			setScoreboard(new DefaultScoreboard());
+		} else {
+			disableScoreboard();
+		}
 	}
 }

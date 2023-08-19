@@ -19,6 +19,7 @@ import gg.mineral.practice.entity.PlayerStatus;
 import gg.mineral.practice.entity.Profile;
 import gg.mineral.practice.managers.ProfileManager;
 import gg.mineral.practice.match.PartyMatch;
+import gg.mineral.practice.match.TeamMatch;
 import gg.mineral.practice.util.messages.impl.ChatMessages;
 
 public class DamageListener implements Listener {
@@ -82,7 +83,7 @@ public class DamageListener implements Listener {
 			return;
 		}
 
-		if (e instanceof PlayerDamageByPlayerEvent) {
+		if (e instanceof PlayerDamageByPlayerEvent || e instanceof PlayerDamageByArrowEvent) {
 			return;
 		}
 
@@ -119,7 +120,8 @@ public class DamageListener implements Listener {
 			return;
 		}
 
-		if (attacker.getMatch() instanceof PartyMatch && attacker.getMatch().getTeam(attacker).contains(victim)) {
+		if ((attacker.getMatch() instanceof PartyMatch || attacker.getMatch() instanceof TeamMatch)
+				&& attacker.getMatch().getTeam(attacker).contains(victim)) {
 			e.setCancelled(true);
 			return;
 		}
@@ -141,11 +143,41 @@ public class DamageListener implements Listener {
 		}
 
 		Player shooter = (Player) arrow.getShooter();
+		Profile attacker = ProfileManager
+				.getProfile(p -> p.getUUID().equals(shooter.getUniqueId())
+						&& p.getPlayerStatus() == PlayerStatus.FIGHTING);
+
+		if (attacker == null) {
+			e.setCancelled(true);
+			return;
+		}
+
+		if (attacker.getMatch().isEnded()) {
+			e.setCancelled(true);
+			return;
+		}
+
+		Profile victim = ProfileManager
+				.getProfile(p -> p.getUUID().equals(e.getPlayer().getUniqueId())
+						&& p.getPlayerStatus() == PlayerStatus.FIGHTING);
+
+		if (victim == null) {
+			e.setCancelled(true);
+			return;
+		}
+
+		if ((attacker.getMatch() instanceof PartyMatch || attacker.getMatch() instanceof TeamMatch)
+				&& attacker.getMatch().getTeam(attacker).contains(victim)) {
+			e.setCancelled(true);
+			return;
+		}
 
 		int health = (int) e.getPlayer().getHealth();
 		ChatMessages.HEALTH.clone().replace("%player%", e.getPlayer().getName()).replace("%health%", "" + health)
 				.send(shooter);
 		shooter.playNote(shooter.getLocation(), Instrument.PIANO, new Note(20));
+
+		victim.setKiller(attacker);
 	}
 
 	@EventHandler

@@ -11,7 +11,7 @@ import gg.mineral.practice.util.messages.impl.ErrorMessages;
 public class TournamentCommand extends PlayerCommand {
 
     public TournamentCommand() {
-        super("tournament");
+        super("tournament", "practice.event");
     }
 
     @Override

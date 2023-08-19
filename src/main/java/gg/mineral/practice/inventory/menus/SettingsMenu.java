@@ -14,24 +14,46 @@ public class SettingsMenu extends PracticeMenu {
 
 	@Override
 	public boolean update() {
+		/*
+		 * setSlot(0,
+		 * ItemStacks.TOGGLE_PLAYER_VISIBILITY,
+		 * interaction -> {
+		 * Profile p = interaction.getProfile();
+		 * p.getPlayer().performCommand("toggleplayervisibility");
+		 * });
+		 */
 		setSlot(0,
-				ItemStacks.TOGGLE_PLAYER_VISIBILITY,
-				interaction -> {
-					Profile p = interaction.getProfile();
-					p.getPlayer().performCommand("toggleplayervisibility");
-				});
-		setSlot(1,
 				ItemStacks.TOGGLE_DUEL_REQUESTS,
 				interaction -> {
 					Profile p = interaction.getProfile();
 					p.getPlayer().performCommand("toggleduelrequests");
 				});
-		setSlot(2,
+		setSlot(1,
 				ItemStacks.TOGGLE_PARTY_REQUESTS,
 				interaction -> {
 					Profile p = interaction.getProfile();
 					p.getPlayer().performCommand("togglepartyrequests");
 				});
+		setSlot(2,
+				ItemStacks.TOGGLE_SCOREBOARD,
+				interaction -> {
+					Profile p = interaction.getProfile();
+					p.getPlayer().performCommand("togglescoreboard");
+				});
+		setSlot(3,
+				ItemStacks.TOGGLE_PRIVATE_MESSAGES,
+				interaction -> {
+					Profile p = interaction.getProfile();
+					p.getPlayer().performCommand("tpm");
+				});
+
+		setSlot(4,
+				ItemStacks.CHANGE_TIME,
+				interaction -> {
+					Profile p = interaction.getProfile();
+					p.getPlayer().performCommand(p.isNightMode() ? "day" : "night");
+				});
+
 		return true;
 	}
 }

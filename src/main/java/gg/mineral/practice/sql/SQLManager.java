@@ -5,6 +5,8 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 
+import gg.mineral.practice.PracticePlugin;
+
 public class SQLManager {
 
     public static ConnectionPoolManager manager;
@@ -31,6 +33,9 @@ public class SQLManager {
      *         some point
      */
     public static AutoCloseable[] prepare(String statement) {
+
+        if (!PracticePlugin.DB_CONNECTED)
+            return null;
         try {
             Connection conn = manager.getConnection();
             PreparedStatement ps = conn.prepareStatement(statement);

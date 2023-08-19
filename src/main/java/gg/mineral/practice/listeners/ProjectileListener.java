@@ -17,28 +17,28 @@ import gg.mineral.practice.util.messages.impl.ChatMessages;
 public class ProjectileListener implements Listener {
     @EventHandler
     public void onPotionSplash(final PotionSplashEvent e) {
-        if (!(e.getEntity().getShooter() instanceof Player)) {
+        if (!(e.getEntity().getShooter() instanceof Player))
             return;
-        }
+
+        final Player shooter = (Player) e.getEntity().getShooter();
+        final Profile shooterProfile = ProfileManager.getProfile(p -> p.getUUID().equals(shooter.getUniqueId()));
+
+        if (shooterProfile == null)
+            return;
 
         for (final PotionEffect effect : e.getEntity().getEffects()) {
-            if (!effect.getType().equals(PotionEffectType.HEAL)) {
+            if (!effect.getType().equals(PotionEffectType.HEAL))
                 continue;
-            }
-
-            final Player shooter = (Player) e.getEntity().getShooter();
-            final Profile shooterProfile = ProfileManager.getProfile(p -> p.getUUID().equals(shooter.getUniqueId()));
 
             for (LivingEntity entity : e.getAffectedEntities()) {
-                if (entity.getUniqueId().equals(shooter.getUniqueId())) {
+                if (entity.getUniqueId().equals(shooter.getUniqueId()) || !(entity instanceof Player))
                     continue;
-                }
-
-                if (!(entity instanceof Player)) {
-                    return;
-                }
 
                 Profile entityProfile = ProfileManager.getProfile(p -> p.getUUID().equals(entity.getUniqueId()));
+
+                if (entityProfile == null)
+                    continue;
+
                 entityProfile.getMatchStatisticCollector().stolenPotion();
             }
 

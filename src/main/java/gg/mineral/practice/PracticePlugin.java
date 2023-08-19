@@ -10,20 +10,25 @@ import gg.mineral.practice.commands.config.ArenaCommand;
 import gg.mineral.practice.commands.config.CatagoryCommand;
 import gg.mineral.practice.commands.config.GametypeCommand;
 import gg.mineral.practice.commands.config.KitEditorCommand;
+import gg.mineral.practice.commands.config.LeaderboardConfigCommand;
 import gg.mineral.practice.commands.config.ListConfigCommands;
 import gg.mineral.practice.commands.config.LobbyCommand;
 import gg.mineral.practice.commands.config.PartiesCommand;
 import gg.mineral.practice.commands.config.QueuetypeCommand;
 import gg.mineral.practice.commands.config.SettingsConfigCommand;
+import gg.mineral.practice.commands.config.SpectateConfigCommand;
 import gg.mineral.practice.commands.duel.AcceptCommand;
 import gg.mineral.practice.commands.duel.DuelCommand;
 import gg.mineral.practice.commands.events.EventCommand;
 import gg.mineral.practice.commands.kit.LeaveCommand;
 import gg.mineral.practice.commands.party.PartyCommand;
+import gg.mineral.practice.commands.settings.DayCommand;
+import gg.mineral.practice.commands.settings.NightCommand;
 import gg.mineral.practice.commands.settings.SettingsCommand;
 import gg.mineral.practice.commands.settings.ToggleDuelRequestsCommand;
 import gg.mineral.practice.commands.settings.TogglePartyRequestsCommand;
 import gg.mineral.practice.commands.settings.TogglePlayerVisibilityCommand;
+import gg.mineral.practice.commands.settings.ToggleScoreboardCommand;
 import gg.mineral.practice.commands.spectator.FollowCommand;
 import gg.mineral.practice.commands.spectator.SpectateCommand;
 import gg.mineral.practice.commands.spectator.StopSpectatingCommand;
@@ -32,9 +37,11 @@ import gg.mineral.practice.commands.stats.LeaderboardsCommand;
 import gg.mineral.practice.commands.stats.PotsCommand;
 import gg.mineral.practice.commands.stats.ViewInventoryCommand;
 import gg.mineral.practice.commands.stats.ViewTeamInventoryCommand;
+import gg.mineral.practice.commands.testing.BotTestingCommand;
 import gg.mineral.practice.commands.tournament.JoinCommand;
 import gg.mineral.practice.commands.tournament.TournamentCommand;
 import gg.mineral.practice.listeners.BuildListener;
+import gg.mineral.practice.listeners.CommandListener;
 import gg.mineral.practice.listeners.ComsumeListener;
 import gg.mineral.practice.listeners.DamageListener;
 import gg.mineral.practice.listeners.DeathListener;
@@ -49,16 +56,19 @@ import gg.mineral.practice.managers.ArenaManager;
 import gg.mineral.practice.managers.CatagoryManager;
 import gg.mineral.practice.managers.GametypeManager;
 import gg.mineral.practice.managers.KitEditorManager;
+import gg.mineral.practice.managers.LeaderboardManager;
 import gg.mineral.practice.managers.PartyManager;
 import gg.mineral.practice.managers.PlayerSettingsManager;
 import gg.mineral.practice.managers.ProfileManager;
 import gg.mineral.practice.managers.QueuetypeManager;
+import gg.mineral.practice.managers.SpectateManager;
 import gg.mineral.practice.sql.SQLManager;
 import net.minecraft.server.v1_8_R3.MinecraftServer;
 
 public class PracticePlugin extends JavaPlugin {
 
 	public static PracticePlugin INSTANCE;
+	public static boolean DB_CONNECTED = true;
 
 	@Override
 	public void onEnable() {
@@ -73,13 +83,15 @@ public class PracticePlugin extends JavaPlugin {
 		try {
 			SQLManager.initialize(host, port, database, username, password);
 		} catch (Exception e) {
-
+			DB_CONNECTED = false;
 		}
 
 		INSTANCE = this;
 
 		ProfileManager.load();
 		PlayerSettingsManager.load();
+		SpectateManager.load();
+		LeaderboardManager.load();
 		PartyManager.load();
 		ArenaManager.load();
 		QueuetypeManager.load();
@@ -97,11 +109,13 @@ public class PracticePlugin extends JavaPlugin {
 				new ToggleDuelRequestsCommand(), new TogglePartyRequestsCommand(), new CatagoryCommand(),
 				new SettingsCommand(),
 				new StopSpectatingCommand(), new TournamentCommand(), new JoinCommand(), new EventCommand(),
-				new ViewTeamInventoryCommand(), new LeaveCommand());
+				new ViewTeamInventoryCommand(), new LeaveCommand(), new SpectateConfigCommand(),
+				new LeaderboardConfigCommand(), new ToggleScoreboardCommand(), new BotTestingCommand(),
+				new DayCommand(), new NightCommand());
 
 		registerListeners(new BuildListener(), new InteractListener(), new ComsumeListener(), new InventoryListener(),
 				new DeathListener(), new DamageListener(), new EntryListener(), new HealthListener(),
-				new MovementListener(), new ProjectileListener(), new PacketListener());
+				new MovementListener(), new ProjectileListener(), new PacketListener(), new CommandListener());
 	}
 
 	@Override

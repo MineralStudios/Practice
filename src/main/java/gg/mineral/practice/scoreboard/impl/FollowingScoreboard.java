@@ -15,6 +15,8 @@ public class FollowingScoreboard
         board.updateTitle(CC.PRIMARY + CC.B + "Mineral");
         board.updateLines(CC.BOARD_SEPARATOR,
                 CC.ACCENT + "Following: " + CC.SECONDARY + profile.getSpectateHandler().getFollowing().getName(),
+                CC.SPACER,
+                CC.SECONDARY + "mineral.gg",
                 CC.BOARD_SEPARATOR);
     }
 }

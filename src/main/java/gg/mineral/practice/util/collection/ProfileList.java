@@ -1,11 +1,14 @@
 package gg.mineral.practice.util.collection;
 
 import java.util.Collection;
+import java.util.Iterator;
+import java.util.List;
+import java.util.concurrent.ConcurrentLinkedQueue;
 
 import gg.mineral.api.collection.GlueList;
 import gg.mineral.practice.entity.Profile;
 
-public class ProfileList extends GlueList<Profile> {
+public class ProfileList extends ConcurrentLinkedQueue<Profile> {
 
     /**
      *
@@ -20,11 +23,6 @@ public class ProfileList extends GlueList<Profile> {
 
     public ProfileList() {
         super();
-    }
-
-    public ProfileList(int initialCapacity, String name) {
-        super(initialCapacity);
-        this.name = name;
     }
 
     public ProfileList(Collection<? extends Profile> c, String name) {
@@ -55,7 +53,38 @@ public class ProfileList extends GlueList<Profile> {
         return false;
     }
 
+    public List<Profile> subList(int fromIndex, int toIndex) {
+        if (fromIndex < 0 || toIndex > size() || fromIndex > toIndex) {
+            throw new IndexOutOfBoundsException();
+        }
+
+        List<Profile> subList = new GlueList<>();
+        Iterator<Profile> iterator = iterator();
+
+        for (int i = 0; i < fromIndex; i++) {
+            if (iterator.hasNext()) {
+                iterator.next();
+            } else {
+                throw new IndexOutOfBoundsException();
+            }
+        }
+
+        for (int i = fromIndex; i < toIndex; i++) {
+            if (iterator.hasNext()) {
+                subList.add(iterator.next());
+            } else {
+                throw new IndexOutOfBoundsException();
+            }
+        }
+
+        return subList;
+    }
+
     public Profile removeFirst() {
-        return remove(0);
+        return poll();
+    }
+
+    public Profile getFirst() {
+        return peek();
     }
 }

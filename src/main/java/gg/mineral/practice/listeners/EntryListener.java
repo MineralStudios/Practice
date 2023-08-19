@@ -1,6 +1,7 @@
 package gg.mineral.practice.listeners;
 
 import org.bukkit.GameMode;
+import org.bukkit.craftbukkit.v1_8_R3.entity.CraftPlayer;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.player.PlayerInitialSpawnEvent;
@@ -8,6 +9,7 @@ import org.bukkit.event.player.PlayerJoinEvent;
 import org.bukkit.event.player.PlayerQuitEvent;
 
 import gg.mineral.practice.entity.Profile;
+import gg.mineral.practice.managers.EloManager;
 import gg.mineral.practice.managers.ProfileManager;
 import gg.mineral.practice.scoreboard.impl.DefaultScoreboard;
 import gg.mineral.server.fakeplayer.FakePlayer;
@@ -17,18 +19,27 @@ public class EntryListener implements Listener {
 	@EventHandler
 	public void onPlayerJoin(PlayerJoinEvent event) {
 		event.setJoinMessage(null);
+		ProfileManager.removeIfExists(event.getPlayer());
 		Profile profile = ProfileManager.getOrCreateProfile(event.getPlayer());
 		profile.getPlayer().setGameMode(GameMode.SURVIVAL);
 		profile.heal();
 
-		if (FakePlayer.isFakePlayer(profile.getPlayer().getHandle())) {
+		if (FakePlayer.isFakePlayer(profile.getPlayer().getHandle()))
 			return;
-		}
 
+		EloManager.updateName(profile);
 		profile.getInventory().setInventoryForLobby();
 		profile.removePotionEffects();
+		profile.updateVisiblity();
 
 		profile.setScoreboard(DefaultScoreboard.INSTANCE);
+
+		if (profile.getPlayer().hasPermission("practice.fly")) {
+			profile.getPlayer().setAllowFlight(true);
+		} else if (profile.getPlayer().getAllowFlight()) {
+			profile.getPlayer().setAllowFlight(false);
+			profile.getPlayer().setFlying(false);
+		}
 	}
 
 	@EventHandler
@@ -62,6 +73,10 @@ public class EntryListener implements Listener {
 
 	@EventHandler
 	public void onPlayerInitialSpawn(PlayerInitialSpawnEvent e) {
+
+		if (FakePlayer.isFakePlayer(((CraftPlayer) e.getPlayer()).getHandle()))
+			return;
+
 		e.setSpawnLocation(ProfileManager.getSpawnLocation());
 	}
 }

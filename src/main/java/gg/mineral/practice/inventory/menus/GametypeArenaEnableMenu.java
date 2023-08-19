@@ -45,6 +45,7 @@ public class GametypeArenaEnableMenu extends PracticeMenu {
                 ChatMessages.GAMETYPE_ARENA_SET.clone().replace("%gametype%", gametype.getName())
                         .replace("%toggled%", "" + !arenaEnabled).replace("%arena%", a.getName())
                         .send(viewer.getPlayer());
+                reload();
             });
         }
         return true;

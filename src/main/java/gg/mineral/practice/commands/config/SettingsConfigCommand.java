@@ -26,7 +26,7 @@ public class SettingsConfigCommand extends PlayerCommand {
 				ChatMessages.SETTINGS_DISPLAY.send(pl);
 				return;
 			case "enable":
-				if (args.length < 3) {
+				if (args.length < 2) {
 					UsageMessages.SETTINGS_ENABLE.send(pl);
 					return;
 				}

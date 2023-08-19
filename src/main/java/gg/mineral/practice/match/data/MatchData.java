@@ -1,7 +1,11 @@
 package gg.mineral.practice.match.data;
 
+import java.util.concurrent.ConcurrentLinkedQueue;
+
 import gg.mineral.api.knockback.Knockback;
 import gg.mineral.practice.arena.Arena;
+import gg.mineral.practice.bots.CustomDifficulty;
+import gg.mineral.practice.bots.Difficulty;
 import gg.mineral.practice.gametype.Gametype;
 import gg.mineral.practice.kit.Kit;
 import gg.mineral.practice.managers.ArenaManager;
@@ -26,6 +30,9 @@ public class MatchData {
 	@Setter
 	@Getter
 	CustomKnockback customKnockback;
+	@Setter
+	@Getter
+	CustomDifficulty customBotDifficulty;
 	@Getter
 	Gametype gametype;
 	@Setter
@@ -33,12 +40,17 @@ public class MatchData {
 	int noDamageTicks = 20, pearlCooldown = 15;
 	@Setter
 	@Getter
+	Difficulty botDifficulty = Difficulty.MEDIUM;
+	@Setter
+	@Getter
 	Boolean hunger = true, boxing = false, build = false, damage = true, griefing = false, deadlyWater = false,
-			regeneration = true;
+			regeneration = true, team2v2 = false, botTeammate = false, botQueue = false, arenaSelection = true;
 	@Getter
 	QueueEntry queueEntry;
 	@Getter
 	boolean ranked = false;
+	@Getter
+	ConcurrentLinkedQueue<Arena> enabledArenas = new ConcurrentLinkedQueue<>();
 
 	public MatchData() {
 
@@ -59,6 +71,15 @@ public class MatchData {
 		ranked = queueEntry.getQueuetype().isRanked();
 	}
 
+	public MatchData(QueueEntry queueEntry, ConcurrentLinkedQueue<Arena> enabledArenas) {
+		this.queueEntry = queueEntry;
+		this.enabledArenas = enabledArenas;
+		setGametype(queueEntry.getGametype());
+		knockback = queueEntry.getQueuetype().getKnockback();
+		arena = queueEntry.getQueuetype().nextArena(this, this.gametype);
+		ranked = queueEntry.getQueuetype().isRanked();
+	}
+
 	public void setGametype(Gametype gametype) {
 		this.gametype = gametype;
 		kit = gametype.getKit();
@@ -71,6 +92,14 @@ public class MatchData {
 		deadlyWater = gametype.getDeadlyWater();
 		regeneration = gametype.getRegeneration();
 		pearlCooldown = gametype.getPearlCooldown();
+	}
+
+	public void enableArena(Arena arena, Boolean enabled) {
+		if (enabled) {
+			enabledArenas.add(arena);
+		} else {
+			enabledArenas.remove(arena);
+		}
 	}
 
 	public String toString() {
@@ -96,6 +125,11 @@ public class MatchData {
 		sb.append(CC.GREEN + "Deadly Water: " + deadlyWater);
 		sb.append(newLine);
 		sb.append(CC.GREEN + "Regeneration: " + regeneration);
+		// TODO 2v2 with bots in /duel
+		// sb.append(newLine);
+		// sb.append(CC.GREEN + "2v2: " + team2v2);
+		// sb.append(newLine);
+		// sb.append(CC.GREEN + "Bots: " + bots);
 		sb.append(newLine);
 		sb.append(CC.GREEN + "Boxing: " + boxing);
 		sb.append(newLine);
