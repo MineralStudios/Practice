@@ -28,8 +28,8 @@ public class CatagorizedLeaderboardMenu extends PracticeMenu {
 
         for (Gametype gametype : catagory.getGametypes()) {
 
-            ItemStack item = new ItemBuilder(gametype.getDisplayItem())
-                    .name(gametype.getDisplayName()).build();
+            ItemStack item = new ItemBuilder(gametype.getDisplayItem().clone())
+                    .name(CC.SECONDARY + gametype.getDisplayName()).build();
             ItemMeta meta = item.getItemMeta();
 
             try {

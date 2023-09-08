@@ -32,6 +32,8 @@ public class ItemStacks {
                         DUEL = new ItemBuilder(Material.WOOD_AXE).name(CC.SECONDARY + CC.B + "Duel").build(),
                         LEADERBOARD = new ItemBuilder(Material.MAP).name(CC.SECONDARY + CC.B + "Leaderboard")
                                         .build(),
+                        SETTINGS = new ItemBuilder(Material.MAP).name(CC.SECONDARY + CC.B + "Settings")
+                                        .build(),
                         PARTY_SPLIT = new ItemBuilder(Material.GOLD_AXE).name(CC.SECONDARY + CC.B + "Party Split")
                                         .build(),
                         OPEN_PARTY = new ItemBuilder(Material.SKULL_ITEM).name(CC.SECONDARY + CC.B + "Open Party")
@@ -59,18 +61,21 @@ public class ItemStacks {
                         PLAYER_MODE = new ItemBuilder(Material.RECORD_7).name("Player").lore().build(),
                         TOGGLE_PLAYER_VISIBILITY = new ItemBuilder(Material.GOLDEN_CARROT)
                                         .name("Toggle Player Visibility").build(),
-                        TOGGLE_DUEL_REQUESTS = new ItemBuilder(Material.WOOD_SWORD).name("Toggle Duel Requests")
+                        TOGGLE_DUEL_REQUESTS = new ItemBuilder(Material.WOOD_SWORD)
+                                        .name(CC.SECONDARY + "Toggle Duel Requests")
                                         .build(),
-                        TOGGLE_PARTY_REQUESTS = new ItemBuilder(Material.NETHER_STAR).name("Toggle Party Requests")
+                        TOGGLE_PARTY_REQUESTS = new ItemBuilder(Material.NETHER_STAR)
+                                        .name(CC.SECONDARY + "Toggle Party Requests")
                                         .build(),
-                        TOGGLE_SCOREBOARD = new ItemBuilder(Material.ITEM_FRAME).name("Toggle Scoreboard")
+                        TOGGLE_SCOREBOARD = new ItemBuilder(Material.ITEM_FRAME)
+                                        .name(CC.SECONDARY + "Toggle Scoreboard")
                                         .build(),
 
                         TOGGLE_PRIVATE_MESSAGES = new ItemBuilder(Material.BOOK_AND_QUILL)
-                                        .name("Toggle Private Messages")
+                                        .name(CC.SECONDARY + "Toggle Private Messages")
                                         .build(),
                         CHANGE_TIME = new ItemBuilder(Material.WATCH)
-                                        .name("Change Time")
+                                        .name(CC.SECONDARY + "Change Time")
                                         .build(),
                         NEXT_PAGE = new ItemBuilder(new ItemStack(Material.WOOL, 1, DyeColor.LIME.getData()))
                                         .name("Next Page").build(),
@@ -100,10 +105,12 @@ public class ItemStacks {
                                         .lore(CC.GREEN + "Select All", " ").build(),
                         CANCEL = new ItemBuilder(new ItemStack(Material.WOOL, 1, DyeColor.RED.getData())).name(" ")
                                         .lore(CC.RED + "Click To Cancel Changes", " ").build(),
-                        BOT_QUEUE_DISABLED = new ItemBuilder(new ItemStack(351, 1, DyeColor.GRAY.getDyeData()))
-                                        .name("Click To Enable Bot Queue").build(),
                         RANDOM_QUEUE = new ItemBuilder(Material.PAPER)
-                                        .name("Random Queue").build(),
+                                        .name(CC.SECONDARY + "Random Queue")
+                                        .lore(CC.WHITE + "Adds you to a " + CC.BLUE + "random" + CC.WHITE + " queue.",
+                                                        " ", CC.BOARD_SEPARATOR,
+                                                        CC.ACCENT + "Click to be added to a random queue.")
+                                        .build(),
                         RANDOM_DIFFICULTY = new ItemBuilder(Material.PAPER)
                                         .name("Random Difficulty").build(),
                         EASY = new ItemBuilder(new ItemStack(Material.WOOL, 1, DyeColor.GREEN.getData())).name("Easy")
@@ -117,14 +124,30 @@ public class ItemStacks {
                                         .build(),
                         HACKER = new ItemBuilder(new ItemStack(Material.WOOL, 1, DyeColor.PURPLE.getData()))
                                         .name("Hacker")
+                                        .build(),
+                        BOT_QUEUE_DISABLED = new ItemBuilder(new ItemStack(351, 1, DyeColor.GRAY.getDyeData()))
+                                        .name(CC.SECONDARY + "Bot Queue")
+                                        .lore(CC.WHITE + "Allows you to queue in a " + CC.SECONDARY + "bot" + CC.WHITE
+                                                        + " match.", " ",
+                                                        CC.WHITE + "Currently:",
+                                                        CC.RED + "Disabled",
+                                                        " ", CC.BOARD_SEPARATOR, CC.ACCENT + "Click to toggle bots.")
+                                        .build(),
+                        BOT_QUEUE_ENABLED = new ItemBuilder(new ItemStack(351, 1, DyeColor.LIME.getDyeData()))
+                                        .name(CC.SECONDARY + "Bot Queue")
+                                        .lore(CC.WHITE + "Allows you to queue in a " + CC.SECONDARY + "bot" + CC.WHITE
+                                                        + " match.", " ",
+                                                        CC.WHITE + "Currently:",
+                                                        CC.GREEN + "Enabled",
+                                                        " ", CC.BOARD_SEPARATOR, CC.ACCENT + "Click to toggle bots.")
                                         .build();
 
         // Item Builders
         public static final ItemBuilder LOAD_KIT = new ItemBuilder(Material.ENCHANTED_BOOK),
                         TEAMFIGHT = new ItemBuilder(Material.ITEM_FRAME)
-                                        .name("Teamfight"),
+                                        .name(CC.SECONDARY + "2v2"),
                         BOT_SETTINGS = new ItemBuilder(Material.GOLD_HELMET)
-                                        .name("Bot Settings"),
+                                        .name(CC.SECONDARY + "Bot Settings"),
                         CLICK_TO_APPLY_CHANGES = new ItemBuilder(Material.STONE_SWORD)
                                         .lore(CC.ACCENT + "Click To Apply Changes"),
                         INVENTORY_STATS = new ItemBuilder(Material.ENDER_CHEST),
@@ -147,7 +170,7 @@ public class ItemStacks {
                         PEARL_COOLDOWN = new ItemBuilder(Material.ENDER_PEARL)
                                         .name("Pearl Cooldown"),
                         ARENA = new ItemBuilder(Material.WATER_LILY)
-                                        .name("Arena"),
+                                        .name(CC.SECONDARY + "Arena Selection"),
                         REGENERATION = new ItemBuilder(Material.GOLDEN_APPLE)
                                         .name("Regeneration"),
                         BOXING = new ItemBuilder(Material.IRON_CHESTPLATE)
@@ -157,8 +180,8 @@ public class ItemStacks {
                         HEALTH_POTIONS_LEFT = new ItemBuilder(new ItemStack(Material.POTION, 1, (short) 16421))
                                         .name("Health Potions Left"),
                         SOUP_LEFT = new ItemBuilder(Material.MUSHROOM_SOUP).name("Soup Left"),
-                        BOT_QUEUE_ENABLED = new ItemBuilder(new ItemStack(351, 1, DyeColor.LIME.getDyeData()))
-                                        .name("Click To Disable Bot Queue"),
+                        BOT_QUEUE_ENABLED_2V2 = new ItemBuilder(new ItemStack(351, 1, DyeColor.LIGHT_BLUE.getDyeData()))
+                                        .name(CC.SECONDARY + "2v2 Bot Queue"),
                         HEALTH = new ItemBuilder(new ItemStack(Material.POTION, (short) 8193)),
                         HITS = new ItemBuilder(Material.BLAZE_ROD), CLICKS = new ItemBuilder(Material.GHAST_TEAR),
                         POTION_EFFECTS = new ItemBuilder(Material.BLAZE_POWDER).name("Potion Effects"),
@@ -170,6 +193,7 @@ public class ItemStacks {
                         VERTICAL_LIMIT = new ItemBuilder(Material.BEDROCK).lore("Click to change value."),
                         AIM_SPEED = new ItemBuilder(Material.ICE).lore("Click to change value."),
                         AIM_ACCURACY = new ItemBuilder(Material.ARROW).lore("Click to change value."),
+                        AIM_REACTION_TIME = new ItemBuilder(Material.EMERALD).lore("Click to change value."),
                         BOW_AIMING_RADIUS = new ItemBuilder(Material.MAP)
                                         .lore("Click to change value."),
                         REACH = new ItemBuilder(Material.DIAMOND_SWORD).lore("Click to change value."),
@@ -185,6 +209,7 @@ public class ItemStacks {
                         SUBTRACT_1 = new ItemBuilder(new ItemStack(Material.WOOL, 1, DyeColor.RED.getData()))
                                         .lore("Click to change value."),
                         ADD_1 = new ItemBuilder(new ItemStack(Material.WOOL, 1, DyeColor.GREEN.getData()))
-                                        .lore("Click to change value.");
+                                        .lore("Click to change value."),
+                        GLOBAL_ELO = new ItemBuilder(Material.ENDER_PORTAL_FRAME);
 
 }

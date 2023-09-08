@@ -8,7 +8,7 @@ import lombok.Data;
 public class CustomDifficulty {
     float aimSpeed = 0.5F, aimAccuracy = 5F, bowAimingRadius = 0.6f, reach = 3.0f, sprintResetAccuracy = 0.95F,
             hitSelectAccuracy = 0.95F,
-            distancingMin = 2.6f, distancingMax = 3.0f, cps = 13f, latency = 50f;
+            distancingMin = 2.6f, distancingMax = 3.0f, cps = 13f, latency = 50f, reactionTimeTicks = 0;
 
     public void randomize() {
         Random r = new Random();
@@ -22,7 +22,7 @@ public class CustomDifficulty {
         this.distancingMax = 2.8f + r.nextFloat() * (3.0f - 2.8f);
         this.cps = r.nextInt((20 - 6) + 1) + 6;
         this.latency = r.nextInt((200 - 10) + 1) + 10;
-
+        this.reactionTimeTicks = r.nextInt((2) + 1) + 0;
     }
 
 }

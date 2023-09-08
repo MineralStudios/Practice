@@ -47,7 +47,7 @@ public class MovementListener implements Listener {
     @EventHandler
     public void onPlayerMove(PlayerMoveEvent e) {
         Profile profile = ProfileManager.getProfile(
-                p -> p.getUUID().equals(e.getPlayer().getUniqueId()) && p.getPlayerStatus() == PlayerStatus.FIGHTING);
+                p -> p.getUuid().equals(e.getPlayer().getUniqueId()) && p.getPlayerStatus() == PlayerStatus.FIGHTING);
 
         if (profile == null) {
             return;
@@ -64,7 +64,7 @@ public class MovementListener implements Listener {
     @EventHandler
     public void onPlayerDismount(EntityDismountEvent e) {
         Profile profile = ProfileManager.getProfile(
-                p -> p.getUUID().equals(e.getEntity().getUniqueId()) && p.getPlayerStatus() == PlayerStatus.FIGHTING);
+                p -> p.getUuid().equals(e.getEntity().getUniqueId()) && p.getPlayerStatus() == PlayerStatus.FIGHTING);
 
         if (profile == null) {
             return;

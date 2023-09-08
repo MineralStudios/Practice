@@ -1,12 +1,15 @@
 package gg.mineral.practice.match;
 
+import org.bukkit.Bukkit;
 import org.bukkit.Location;
 
+import gg.mineral.practice.PracticePlugin;
 import gg.mineral.practice.bots.Difficulty;
 import gg.mineral.practice.entity.Profile;
 import gg.mineral.practice.managers.ProfileManager;
 import gg.mineral.practice.match.data.MatchData;
 import gg.mineral.practice.util.PlayerUtil;
+import gg.mineral.practice.util.items.ItemStacks;
 import gg.mineral.server.fakeplayer.FakePlayer;
 
 public class BotMatch extends Match {
@@ -47,6 +50,24 @@ public class BotMatch extends Match {
         super.end(victim);
 
         FakePlayer.destroy(victim.getPlayer().getHandle());
+    }
+
+    @Override
+    public void giveQueueAgainItem(Profile profile) {
+        if (FakePlayer.isFakePlayer(profile.getPlayer().getHandle()))
+            return;
+        if (getData().getQueueEntry() != null) {
+            Bukkit.getServer().getScheduler().runTaskLater(PracticePlugin.INSTANCE, () -> {
+                int slot = profile.getInventory().getHeldItemSlot();
+
+                profile.getInventory().setItem(slot, ItemStacks.QUEUE_AGAIN,
+                        () -> {
+                            BotMatch m = new BotMatch(profile, profile.getMatchData().getBotDifficulty(),
+                                    BotMatch.this.getData());
+                            m.start();
+                        });
+            }, 20);
+        }
     }
 
     @Override

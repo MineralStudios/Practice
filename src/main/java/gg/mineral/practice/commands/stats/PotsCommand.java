@@ -19,7 +19,7 @@ public class PotsCommand extends PlayerCommand {
 	@Override
 	public void execute(org.bukkit.entity.Player pl, String[] args) {
 		Profile profile = ProfileManager
-				.getProfile(p -> p.getUUID().equals(pl.getUniqueId()) && p.getPlayerStatus() == PlayerStatus.FIGHTING);
+				.getProfile(p -> p.getUuid().equals(pl.getUniqueId()) && p.getPlayerStatus() == PlayerStatus.FIGHTING);
 
 		if (profile == null) {
 			pl.sendMessage(ErrorMessages.NOT_IN_MATCH.toString());

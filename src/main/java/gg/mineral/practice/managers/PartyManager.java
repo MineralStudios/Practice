@@ -42,7 +42,7 @@ public class PartyManager {
 
 	public Party getParty(UUID u) {
 		for (Party p : parties) {
-			if (p.getPartyLeader().getUUID().equals(u)) {
+			if (p.getPartyLeader().getUuid().equals(u)) {
 				return p;
 			}
 		}

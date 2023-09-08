@@ -2,8 +2,8 @@ package gg.mineral.practice.gametype;
 
 import java.util.List;
 import java.util.Map;
-import java.util.UUID;
 import java.util.Map.Entry;
+import java.util.UUID;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ConcurrentLinkedQueue;
 
@@ -15,6 +15,7 @@ import gg.mineral.api.config.FileConfiguration;
 import gg.mineral.practice.arena.Arena;
 import gg.mineral.practice.catagory.Catagory;
 import gg.mineral.practice.entity.Profile;
+import gg.mineral.practice.entity.ProfileData;
 import gg.mineral.practice.kit.Kit;
 import gg.mineral.practice.managers.ArenaManager;
 import gg.mineral.practice.managers.CatagoryManager;
@@ -25,6 +26,7 @@ import gg.mineral.practice.queue.Queuetype;
 import gg.mineral.practice.util.SaveableData;
 import gg.mineral.practice.util.collection.LeaderboardMap;
 import gg.mineral.practice.util.items.ItemStacks;
+import gg.mineral.practice.util.messages.CC;
 import it.unimi.dsi.fastutil.objects.Object2IntOpenHashMap;
 import it.unimi.dsi.fastutil.objects.Object2ObjectOpenHashMap;
 import lombok.Getter;
@@ -54,34 +56,40 @@ public class Gametype implements SaveableData {
 	Kit kit;
 	String path;
 	LeaderboardMap leaderboardMap;
-	Object2IntOpenHashMap<Profile> eloMap = new Object2IntOpenHashMap<>();
+	Object2IntOpenHashMap<ProfileData> eloMap = new Object2IntOpenHashMap<>();
 
 	public Gametype(String name) {
 		this.name = name;
 		this.path = "Gametype." + getName() + ".";
 	}
 
-	public Integer getElo(Profile profile) {
+	public Integer getElo(ProfileData profile) {
 		Integer elo = eloMap.get(profile);
 
+		if (profile.getUuid() == null)
+			return elo == null
+					? EloManager.get(this, profile.getName()).whenComplete((value, ex) -> eloMap.put(profile, value))
+							.join()
+					: elo;
+
 		return elo == null
-				? EloManager.get(this, profile.getUUID()).whenComplete((value, ex) -> eloMap.put(profile, value)).join()
+				? EloManager.get(this, profile.getUuid()).whenComplete((value, ex) -> eloMap.put(profile, value)).join()
 				: elo;
 	}
 
-	public CompletableFuture<Object2IntOpenHashMap<UUID>> getEloMap(Profile... profiles) {
+	public CompletableFuture<Object2IntOpenHashMap<UUID>> getEloMap(ProfileData... profiles) {
 		return CompletableFuture.supplyAsync(() -> {
 			Object2IntOpenHashMap<UUID> map = new Object2IntOpenHashMap<UUID>();
 
 			Map<UUID, CompletableFuture<Integer>> futures = new Object2ObjectOpenHashMap<>();
 
-			for (Profile profile : profiles) {
+			for (ProfileData profile : profiles) {
 				Integer elo = eloMap.get(profile);
 
 				if (elo != null)
-					map.put(profile.getUUID(), elo);
+					map.put(profile.getUuid(), elo);
 
-				futures.put(profile.getUUID(), EloManager.get(this, profile.getUUID())
+				futures.put(profile.getUuid(), EloManager.get(this, profile.getUuid())
 						.whenComplete((value, ex) -> eloMap.put(profile, value)));
 			}
 
@@ -92,17 +100,20 @@ public class Gametype implements SaveableData {
 		});
 	}
 
-	public void saveElo(Profile profile) {
+	public void saveElo(ProfileData profile) {
 		Integer elo = eloMap.get(profile);
 
-		if (elo == null) {
+		if (elo == null)
 			return;
-		}
 
 		EloManager.update(profile, getName(), elo);
 	}
 
-	public void setElo(int elo, Profile profile) {
+	public Object2IntOpenHashMap<ProfileData> getEloCache() {
+		return eloMap;
+	}
+
+	public void setElo(int elo, ProfileData profile) {
 		this.eloMap.put(profile, elo);
 
 		EloManager.update(profile, getName(), elo);
@@ -242,11 +253,11 @@ public class Gametype implements SaveableData {
 		List<String> lore = new GlueList<>();
 
 		for (gg.mineral.practice.util.collection.LeaderboardMap.Entry entry : leaderboardMap.getEntries()) {
-			lore.add(entry.getKey() + ": " + entry.getValue());
+			lore.add(CC.ACCENT + entry.getKey() + ": " + entry.getValue());
 		}
 
 		if (lore.isEmpty())
-			lore.add("No Data");
+			lore.add(CC.ACCENT + "No Data");
 
 		return lore;
 	}
@@ -392,7 +403,7 @@ public class Gametype implements SaveableData {
 		}
 
 		this.kit = new Kit(this.getName(), items.toArray(new ItemStack[0]), armour.toArray(new ItemStack[0]));
-		this.leaderboardMap = EloManager.getLeaderboardMap(this);
+		this.leaderboardMap = EloManager.getEloAndLeaderboard(this);
 	}
 
 	@Override

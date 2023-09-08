@@ -2,7 +2,7 @@ package gg.mineral.practice.managers;
 
 import java.util.Collection;
 import java.util.List;
-import java.util.concurrent.CompletableFuture;
+import java.util.UUID;
 import java.util.function.Predicate;
 
 import org.bukkit.Bukkit;
@@ -11,7 +11,7 @@ import org.bukkit.util.Vector;
 
 import gg.mineral.api.config.FileConfiguration;
 import gg.mineral.practice.entity.Profile;
-import gg.mineral.practice.gametype.Gametype;
+import gg.mineral.practice.entity.ProfileData;
 import gg.mineral.practice.inventory.menus.InventoryStatsMenu;
 import gg.mineral.practice.util.collection.ProfileList;
 import gg.mineral.practice.util.messages.Message;
@@ -40,10 +40,6 @@ public class ProfileManager {
 		profiles.remove(profile);
 	}
 
-	public static CompletableFuture<Integer> getOfflinePlayerElo(Gametype g, String name) {
-		return EloManager.get(g, name);
-	}
-
 	public static InventoryStatsMenu getInventoryStats(String s) {
 		return inventoryStats.get(s);
 	}
@@ -66,6 +62,22 @@ public class ProfileManager {
 		return count;
 	}
 
+	public static ProfileData getProfileData(String name, UUID uuid) {
+		for (Profile profile : profiles) {
+
+			if (uuid != null)
+				if (!profile.getUuid().equals(uuid))
+					continue;
+
+			if (!profile.getName().equalsIgnoreCase(name))
+				continue;
+
+			return profile;
+		}
+
+		return new ProfileData(uuid, name);
+	}
+
 	public static Profile getProfile(Predicate<Profile> predicate) {
 		for (Profile profile : profiles) {
 
@@ -83,7 +95,7 @@ public class ProfileManager {
 		if (pl == null)
 			return;
 
-		Profile profile = getProfile(p -> p.getUUID().equals(pl.getUniqueId()));
+		Profile profile = getProfile(p -> p.getUuid().equals(pl.getUniqueId()));
 
 		remove(profile);
 	}
@@ -93,7 +105,7 @@ public class ProfileManager {
 			return null;
 		}
 
-		Profile profile = getProfile(p -> p.getUUID().equals(pl.getUniqueId()));
+		Profile profile = getProfile(p -> p.getUuid().equals(pl.getUniqueId()));
 
 		if (profile == null) {
 			add(profile = new Profile(pl));

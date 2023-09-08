@@ -2,6 +2,7 @@ package gg.mineral.practice.commands.stats;
 
 import gg.mineral.practice.commands.PlayerCommand;
 import gg.mineral.practice.entity.Profile;
+import gg.mineral.practice.entity.ProfileData;
 import gg.mineral.practice.inventory.menus.EloMenu;
 import gg.mineral.practice.managers.ProfileManager;
 
@@ -20,13 +21,7 @@ public class EloCommand extends PlayerCommand {
 			return;
 		}
 
-		Profile eloProfile = ProfileManager.getProfile(p -> p.getName().equalsIgnoreCase(args[0]));
-
-		if (eloProfile == null) {
-			profile.openMenu(new EloMenu(args[0]));
-			return;
-		}
-
+		ProfileData eloProfile = ProfileManager.getProfileData(args[0], null);
 		profile.openMenu(new EloMenu(eloProfile));
 
 	}

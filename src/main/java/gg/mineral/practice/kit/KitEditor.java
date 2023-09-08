@@ -31,7 +31,7 @@ public class KitEditor {
         }
 
         kitLoadouts.put(loadoutSlot, newKitContents);
-        queueEntry.getCustomKits().put(profile.getUUID(), kitLoadouts);
+        queueEntry.getCustomKits().put(profile.getUuid(), kitLoadouts);
         FileConfiguration config = ProfileManager.getPlayerConfig();
         String path = profile.getName() + ".KitData." + queueEntry.getGametype().getName() + "."
                 + queueEntry.getQueuetype().getName() + "." + loadoutSlot + ".";
@@ -84,7 +84,7 @@ public class KitEditor {
         }
 
         kitLoadouts.remove(loadoutSlot);
-        queueEntry.getCustomKits().put(profile.getUUID(), kitLoadouts);
+        queueEntry.getCustomKits().put(profile.getUuid(), kitLoadouts);
         FileConfiguration config = ProfileManager.getPlayerConfig();
         String path = profile.getName() + ".KitData." + queueEntry.getGametype().getName() + "."
                 + queueEntry.getQueuetype().getName() + "." + loadoutSlot;

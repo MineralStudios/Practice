@@ -10,15 +10,20 @@ import gg.mineral.api.collection.GlueList;
 import gg.mineral.api.config.FileConfiguration;
 import gg.mineral.practice.arena.Arena;
 import gg.mineral.practice.catagory.Catagory;
+import gg.mineral.practice.entity.ProfileData;
 import gg.mineral.practice.gametype.Gametype;
 import gg.mineral.practice.managers.ArenaManager;
+import gg.mineral.practice.managers.EloManager;
 import gg.mineral.practice.managers.QueuetypeManager;
 import gg.mineral.practice.match.data.MatchData;
 import gg.mineral.practice.util.SaveableData;
+import gg.mineral.practice.util.collection.LeaderboardMap;
 import gg.mineral.practice.util.items.ItemStacks;
+import gg.mineral.practice.util.messages.CC;
 import gg.mineral.server.combat.KnockbackProfile;
 import gg.mineral.server.combat.KnockbackProfileList;
 import it.unimi.dsi.fastutil.objects.Object2IntOpenHashMap;
+import it.unimi.dsi.fastutil.objects.ObjectSet;
 import lombok.Getter;
 
 public class Queuetype implements SaveableData {
@@ -70,6 +75,33 @@ public class Queuetype implements SaveableData {
 		List<Arena> filteredArenas = new GlueList<>(this.arenas);
 		filteredArenas.retainAll(g.getArenas());
 		return filteredArenas;
+	}
+
+	public int getGlobalElo(ProfileData profile) {
+
+		ObjectSet<Gametype> set = getGametypes().keySet();
+
+		int sum = 0;
+
+		for (Gametype gametype : set)
+			sum += gametype.getElo(profile);
+
+		return sum / set.size();
+	}
+
+	public List<String> getGlobalLeaderboardLore() {
+		List<String> lore = new GlueList<>();
+
+		LeaderboardMap leaderboardMap = EloManager.getGlobalEloLeaderboard(this);
+
+		for (gg.mineral.practice.util.collection.LeaderboardMap.Entry entry : leaderboardMap.getEntries()) {
+			lore.add(CC.ACCENT + entry.getKey() + ": " + entry.getValue());
+		}
+
+		if (lore.isEmpty())
+			lore.add(CC.ACCENT + "No Data");
+
+		return lore;
 	}
 
 	public Arena nextArena(Gametype g) {

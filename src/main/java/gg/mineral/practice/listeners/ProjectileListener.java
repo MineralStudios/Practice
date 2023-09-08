@@ -21,7 +21,7 @@ public class ProjectileListener implements Listener {
             return;
 
         final Player shooter = (Player) e.getEntity().getShooter();
-        final Profile shooterProfile = ProfileManager.getProfile(p -> p.getUUID().equals(shooter.getUniqueId()));
+        final Profile shooterProfile = ProfileManager.getProfile(p -> p.getUuid().equals(shooter.getUniqueId()));
 
         if (shooterProfile == null)
             return;
@@ -34,7 +34,7 @@ public class ProjectileListener implements Listener {
                 if (entity.getUniqueId().equals(shooter.getUniqueId()) || !(entity instanceof Player))
                     continue;
 
-                Profile entityProfile = ProfileManager.getProfile(p -> p.getUUID().equals(entity.getUniqueId()));
+                Profile entityProfile = ProfileManager.getProfile(p -> p.getUuid().equals(entity.getUniqueId()));
 
                 if (entityProfile == null)
                     continue;

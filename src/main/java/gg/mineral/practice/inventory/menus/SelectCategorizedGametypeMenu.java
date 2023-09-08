@@ -33,17 +33,33 @@ public class SelectCategorizedGametypeMenu extends SelectGametypeMenu {
 	@Override
 	public boolean update() {
 		if (type == Type.UNRANKED) {
-			setSlot(2, ItemStacks.TEAMFIGHT.lore("2v2: " + viewer.getMatchData().getTeam2v2(), " ",
-					CC.GREEN + "Left Click to toggle 2v2").build(), interaction -> {
-						viewer.getMatchData().setTeam2v2(!viewer.getMatchData().getTeam2v2());
-						reload();
-					});
+			if (!viewer.isInParty()) {
+				setSlot(2,
+						ItemStacks.TEAMFIGHT
+								.lore(CC.WHITE + "Allows you to queue in a " + CC.SECONDARY + "2v2" + CC.WHITE
+										+ " match.",
+										" ",
+										CC.WHITE + "Currently:",
+										viewer.getMatchData().getTeam2v2() ? CC.GREEN + "Enabled" : CC.RED + "Disabled",
+										" ", CC.BOARD_SEPARATOR, CC.ACCENT + "Click to toggle 2v2.")
+								.build(),
+						interaction -> {
+							viewer.getMatchData().setTeam2v2(!viewer.getMatchData().getTeam2v2());
+							reload();
+						});
+			} else {
+				viewer.getMatchData().setTeam2v2(true);
+			}
 
-			setSlot(4,
+			setSlot(viewer.isInParty() ? 2 : 4,
 					ItemStacks.BOT_SETTINGS
-							.lore("Difficulty: " + viewer.getMatchData().getBotDifficulty().getDisplay(), " ",
-									CC.GREEN + "Left Click to Change Difficulty",
-									CC.RED + "Right Click to create custom difficulty")
+							.lore(CC.WHITE + "Allows you to configure the " + CC.SECONDARY + "difficulty" + CC.WHITE
+									+ ".", " ",
+									CC.WHITE + "Selected Difficulty: ",
+									viewer.getMatchData().getBotDifficulty().getDisplay(), " ",
+									CC.BOARD_SEPARATOR, " ",
+									CC.GREEN + "Left Click to change difficulty.",
+									CC.RED + "Right Click to create custom difficulty.")
 							.build(),
 					interaction -> {
 						if (interaction.getClickType() == ClickType.LEFT) {
@@ -85,18 +101,42 @@ public class SelectCategorizedGametypeMenu extends SelectGametypeMenu {
 
 			ItemStack item = ItemStacks.BOT_QUEUE_DISABLED;
 
-			if (botOpponents && botTeammate) {
-				item = ItemStacks.BOT_QUEUE_ENABLED.lore(
-						"2v2 Settings: Bot Opponents & Teammate", " ",
-						CC.RED + "Right Click to change 2v2 Settings").build();
-			} else if (botOpponents) {
-				item = ItemStacks.BOT_QUEUE_ENABLED.lore(
-						"2v2 Settings: Bot Opponents", " ",
-						CC.RED + "Right Click to change 2v2 Settings").build();
-			} else if (botTeammate) {
-				item = ItemStacks.BOT_QUEUE_ENABLED.lore(
-						"2v2 Settings: Bot Teammate", " ",
-						CC.RED + "Right Click to change 2v2 Settings").build();
+			if (viewer.getMatchData().getTeam2v2() && !viewer.isInParty()) {
+				if (botOpponents && botTeammate) {
+					item = ItemStacks.BOT_QUEUE_ENABLED_2V2.lore(
+							CC.WHITE + "Allows you to queue in a " + CC.SECONDARY + "2v2 bot" + CC.WHITE
+									+ " match.",
+							" ",
+							CC.WHITE + "Currently:",
+							CC.GREEN + "Enabled",
+							" ", CC.WHITE + "Team Settings:", CC.PINK + "Bot Teammate and Opponents", " ",
+							CC.BOARD_SEPARATOR,
+							CC.GREEN + "Left click to toggle bots.", CC.RED + "Right click to change team settings.")
+							.build();
+				} else if (botOpponents) {
+					item = ItemStacks.BOT_QUEUE_ENABLED_2V2.lore(
+							CC.WHITE + "Allows you to queue in a " + CC.SECONDARY + "2v2 bot" + CC.WHITE
+									+ " match.",
+							" ",
+							CC.WHITE + "Currently:",
+							CC.GREEN + "Enabled",
+							" ", CC.WHITE + "Team Settings:", CC.GOLD + "Bot Opponents", " ", CC.BOARD_SEPARATOR,
+							CC.GREEN + "Left click to toggle bots.", CC.RED + "Right click to change team settings.")
+							.build();
+				} else if (botTeammate) {
+
+					item = ItemStacks.BOT_QUEUE_ENABLED_2V2.lore(
+							CC.WHITE + "Allows you to queue in a " + CC.SECONDARY + "2v2 bot" + CC.WHITE
+									+ " match.",
+							" ",
+							CC.WHITE + "Currently:",
+							CC.GREEN + "Enabled",
+							" ", CC.WHITE + "Team Settings:", CC.AQUA + "Bot Teammate", " ", CC.BOARD_SEPARATOR,
+							CC.GREEN + "Left click to toggle bots.", CC.RED + "Right click to change team settings.")
+							.build();
+				}
+			} else if (viewer.getMatchData().getBotQueue()) {
+				item = ItemStacks.BOT_QUEUE_ENABLED;
 			}
 
 			setSlot(6,
@@ -139,17 +179,20 @@ public class SelectCategorizedGametypeMenu extends SelectGametypeMenu {
 
 			boolean arenaSelection = viewer.getMatchData().getArenaSelection();
 
-			String color = arenaSelection ? CC.GREEN : CC.RED;
-
-			setSlot(50, ItemStacks.ARENA.name("Toggle Arena Selection").lore(color + arenaSelection).build(), () -> {
-				viewer.getMatchData().setArenaSelection(!viewer.getMatchData().getArenaSelection());
-				return;
-			});
+			setSlot(50, ItemStacks.ARENA.lore(CC.WHITE + "Select an " + CC.SECONDARY + "arena" + CC.WHITE
+					+ " when you queue.",
+					" ",
+					CC.WHITE + "Currently:",
+					arenaSelection ? CC.GREEN + "Enabled" : CC.RED + "Disabled",
+					" ", CC.BOARD_SEPARATOR, CC.ACCENT + "Click to toggle arena selection.").build(), () -> {
+						viewer.getMatchData().setArenaSelection(!viewer.getMatchData().getArenaSelection());
+						reload();
+					});
 		}
 
 		for (Gametype g : c.getGametypes()) {
 			ItemBuilder itemBuild = new ItemBuilder(g.getDisplayItem().clone())
-					.name(g.getDisplayName());
+					.name(CC.SECONDARY + g.getDisplayName());
 
 			QueueEntry queueEntry = QueueEntryManager.newEntry(queuetype, g);
 

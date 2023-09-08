@@ -25,8 +25,8 @@ public class SelectQueuetypeMenu extends PracticeMenu {
         clear();
         for (Queuetype q : QueuetypeManager.getQueuetypes()) {
             try {
-                ItemStack item = new ItemBuilder(q.getDisplayItem())
-                        .name(q.getDisplayName()).build();
+                ItemStack item = new ItemBuilder(q.getDisplayItem().clone())
+                        .name(CC.SECONDARY + q.getDisplayName()).build();
                 add(item, interaction -> {
                     Profile p = interaction.getProfile();
                     p.openMenu(new SelectGametypeMenu(q, type));

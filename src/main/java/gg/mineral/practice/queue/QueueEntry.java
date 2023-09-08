@@ -52,7 +52,7 @@ public class QueueEntry {
 	}
 
 	public Int2ObjectOpenHashMap<ItemStack[]> getCustomKits(Profile profile) {
-		Int2ObjectOpenHashMap<ItemStack[]> kitLoadouts = getCustomKits().get(profile.getUUID());
+		Int2ObjectOpenHashMap<ItemStack[]> kitLoadouts = getCustomKits().get(profile.getUuid());
 
 		if (kitLoadouts != null)
 			return kitLoadouts;
@@ -77,7 +77,7 @@ public class QueueEntry {
 			kitLoadouts.put((int) Integer.valueOf(key), getCustomKit(profile, cs1));
 		}
 
-		getCustomKits().put(profile.getUUID(), kitLoadouts);
+		getCustomKits().put(profile.getUuid(), kitLoadouts);
 
 		return kitLoadouts;
 	}

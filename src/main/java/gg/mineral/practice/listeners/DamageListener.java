@@ -60,7 +60,7 @@ public class DamageListener implements Listener {
 
 		Profile victim = ProfileManager
 				.getProfile(
-						p -> p.getUUID().equals(player.getUniqueId()) && p.getPlayerStatus() == PlayerStatus.FIGHTING);
+						p -> p.getUuid().equals(player.getUniqueId()) && p.getPlayerStatus() == PlayerStatus.FIGHTING);
 
 		if (victim == null) {
 
@@ -93,7 +93,7 @@ public class DamageListener implements Listener {
 	@EventHandler
 	public void onPlayerDamageByPlayer(PlayerDamageByPlayerEvent e) {
 		Profile attacker = ProfileManager
-				.getProfile(p -> p.getUUID().equals(e.getDamager().getUniqueId())
+				.getProfile(p -> p.getUuid().equals(e.getDamager().getUniqueId())
 						&& p.getPlayerStatus() == PlayerStatus.FIGHTING);
 
 		if (attacker == null) {
@@ -107,7 +107,7 @@ public class DamageListener implements Listener {
 		}
 
 		Profile victim = ProfileManager
-				.getProfile(p -> p.getUUID().equals(e.getPlayer().getUniqueId())
+				.getProfile(p -> p.getUuid().equals(e.getPlayer().getUniqueId())
 						&& p.getPlayerStatus() == PlayerStatus.FIGHTING);
 
 		if (victim == null) {
@@ -144,7 +144,7 @@ public class DamageListener implements Listener {
 
 		Player shooter = (Player) arrow.getShooter();
 		Profile attacker = ProfileManager
-				.getProfile(p -> p.getUUID().equals(shooter.getUniqueId())
+				.getProfile(p -> p.getUuid().equals(shooter.getUniqueId())
 						&& p.getPlayerStatus() == PlayerStatus.FIGHTING);
 
 		if (attacker == null) {
@@ -158,7 +158,7 @@ public class DamageListener implements Listener {
 		}
 
 		Profile victim = ProfileManager
-				.getProfile(p -> p.getUUID().equals(e.getPlayer().getUniqueId())
+				.getProfile(p -> p.getUuid().equals(e.getPlayer().getUniqueId())
 						&& p.getPlayerStatus() == PlayerStatus.FIGHTING);
 
 		if (victim == null) {
@@ -183,7 +183,7 @@ public class DamageListener implements Listener {
 	@EventHandler
 	public void onEntityCombustByEntity(EntityCombustByEntityEvent e) {
 		Profile attacker = ProfileManager
-				.getProfile(p -> p.getUUID().equals(e.getCombuster().getUniqueId())
+				.getProfile(p -> p.getUuid().equals(e.getCombuster().getUniqueId())
 						&& p.getPlayerStatus() == PlayerStatus.FIGHTING);
 
 		if (attacker == null) {
@@ -192,7 +192,7 @@ public class DamageListener implements Listener {
 		}
 
 		Profile victim = ProfileManager
-				.getProfile(p -> p.getUUID().equals(e.getEntity().getUniqueId())
+				.getProfile(p -> p.getUuid().equals(e.getEntity().getUniqueId())
 						&& p.getPlayerStatus() == PlayerStatus.FIGHTING);
 
 		if (victim == null) {

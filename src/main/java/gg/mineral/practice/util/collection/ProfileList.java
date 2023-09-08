@@ -45,7 +45,7 @@ public class ProfileList extends ConcurrentLinkedQueue<Profile> {
         }
 
         for (Profile profile : this) {
-            if (p.getUUID().equals(profile.getUUID())) {
+            if (p.getUuid().equals(profile.getUuid())) {
                 return true;
             }
         }

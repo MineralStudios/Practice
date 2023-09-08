@@ -36,6 +36,8 @@ public class CustomBotDifficultyMenu extends PracticeMenu {
 
         String aimSpeedStr = "Aim Speed: " + DECIMAL_FORMAT.format(difficulty.getAimSpeed());
         String aimAccuracyStr = "Aim Accuracy: " + DECIMAL_FORMAT.format(difficulty.getAimAccuracy());
+        String aimReactionTimeStr = "Aim Reaction Time (ticks): "
+                + DECIMAL_FORMAT.format(difficulty.getReactionTimeTicks());
         String bowAimingRadiusStr = "Bow Aiming Radius: "
                 + DECIMAL_FORMAT.format(difficulty.getBowAimingRadius());
         String reachStr = "Reach: " + DECIMAL_FORMAT.format(difficulty.getReach());
@@ -60,50 +62,56 @@ public class CustomBotDifficultyMenu extends PracticeMenu {
             }));
         });
 
-        setSlot(2, ItemStacks.BOW_AIMING_RADIUS.name(bowAimingRadiusStr).build(), interaction -> {
+        setSlot(2, ItemStacks.AIM_REACTION_TIME.name(aimReactionTimeStr).build(), interaction -> {
+            interaction.getProfile().openMenu(new ConfigureDifficultyValueMenu(this, value -> {
+                difficulty.setReactionTimeTicks(value);
+            }));
+        });
+
+        setSlot(3, ItemStacks.BOW_AIMING_RADIUS.name(bowAimingRadiusStr).build(), interaction -> {
             interaction.getProfile().openMenu(new ConfigureDifficultyValueMenu(this, value -> {
                 difficulty.setBowAimingRadius(value);
             }));
         });
 
-        setSlot(3, ItemStacks.REACH.name(reachStr).build(), interaction -> {
+        setSlot(4, ItemStacks.REACH.name(reachStr).build(), interaction -> {
             interaction.getProfile().openMenu(new ConfigureDifficultyValueMenu(this, value -> {
                 difficulty.setReach(value);
             }));
         });
 
-        setSlot(4, ItemStacks.SPRINT_RESET_ACCURACY.name(sprintResetAccuracyStr).build(), interaction -> {
+        setSlot(5, ItemStacks.SPRINT_RESET_ACCURACY.name(sprintResetAccuracyStr).build(), interaction -> {
             interaction.getProfile().openMenu(new ConfigureDifficultyValueMenu(this, value -> {
                 difficulty.setSprintResetAccuracy(value);
             }));
         });
 
-        setSlot(5, ItemStacks.HIT_SELECT_ACCURACY.name(hitSelectAccuracyStr).build(), interaction -> {
+        setSlot(6, ItemStacks.HIT_SELECT_ACCURACY.name(hitSelectAccuracyStr).build(), interaction -> {
             interaction.getProfile().openMenu(new ConfigureDifficultyValueMenu(this, value -> {
                 difficulty.setHitSelectAccuracy(value);
             }));
         });
 
-        setSlot(6, ItemStacks.DISTANCING_MINIMUM.name(distancingMinimumStr).build(), interaction -> {
+        setSlot(7, ItemStacks.DISTANCING_MINIMUM.name(distancingMinimumStr).build(), interaction -> {
             interaction.getProfile().openMenu(new ConfigureDifficultyValueMenu(this, value -> {
                 difficulty.setDistancingMin(value);
             }));
         });
 
-        setSlot(7, ItemStacks.DISTANCING_MAXIMUM.name(distancingMaximumStr).build(), interaction -> {
+        setSlot(8, ItemStacks.DISTANCING_MAXIMUM.name(distancingMaximumStr).build(), interaction -> {
             interaction.getProfile().openMenu(new ConfigureDifficultyValueMenu(this, value -> {
                 difficulty.setDistancingMax(value);
             }));
         });
 
-        setSlot(8, ItemStacks.CPS.name(cpsStr)
+        setSlot(9, ItemStacks.CPS.name(cpsStr)
                 .build(), interaction -> {
                     interaction.getProfile().openMenu(new ConfigureDifficultyValueMenu(this, value -> {
                         difficulty.setCps(value);
                     }));
                 });
 
-        setSlot(9, ItemStacks.PING.name(pingStr)
+        setSlot(10, ItemStacks.PING.name(pingStr)
                 .build(), interaction -> {
                     interaction.getProfile().openMenu(new ConfigureDifficultyValueMenu(this, value -> {
                         difficulty.setLatency(value);

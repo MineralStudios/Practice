@@ -15,7 +15,7 @@ public class HealthListener implements Listener {
 	@EventHandler
 	public void onEntityRegainHealth(EntityRegainHealthEvent e) {
 		Profile profile = ProfileManager
-				.getProfile(p -> p.getUUID().equals(e.getEntity().getUniqueId())
+				.getProfile(p -> p.getUuid().equals(e.getEntity().getUniqueId())
 						&& p.getPlayerStatus() == PlayerStatus.FIGHTING);
 
 		if (profile == null)
@@ -31,7 +31,7 @@ public class HealthListener implements Listener {
 	@EventHandler
 	public void onFoodLevelChange(FoodLevelChangeEvent e) {
 		Profile profile = ProfileManager
-				.getProfile(p -> p.getUUID().equals(e.getEntity().getUniqueId())
+				.getProfile(p -> p.getUuid().equals(e.getEntity().getUniqueId())
 						&& p.getPlayerStatus() == PlayerStatus.FIGHTING);
 
 		if (profile == null) {

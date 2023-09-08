@@ -5,11 +5,17 @@ import java.sql.ResultSet;
 import java.util.UUID;
 import java.util.concurrent.CompletableFuture;
 
+import com.eatthepath.uuid.FastUUID;
+
 import gg.mineral.practice.PracticePlugin;
 import gg.mineral.practice.entity.Profile;
+import gg.mineral.practice.entity.ProfileData;
 import gg.mineral.practice.gametype.Gametype;
+import gg.mineral.practice.queue.Queuetype;
 import gg.mineral.practice.sql.SQLManager;
 import gg.mineral.practice.util.collection.LeaderboardMap;
+import it.unimi.dsi.fastutil.objects.Object2IntMap.Entry;
+import it.unimi.dsi.fastutil.objects.Object2IntOpenHashMap;
 
 public class EloManager {
 	final static String TABLE = "elo";
@@ -28,21 +34,21 @@ public class EloManager {
 		}
 	}
 
-	public static CompletableFuture<Void> update(Profile p, String g, int elo) {
+	public static CompletableFuture<Void> update(ProfileData p, String g, int elo) {
 
 		return CompletableFuture.runAsync(() -> {
 			if (!PracticePlugin.DB_CONNECTED)
 				return;
 			try {
 				AutoCloseable[] statement = SQLManager
-						.prepare(exists(p.getUUID().toString(), g)
+						.prepare(exists(p.getUuid().toString(), g)
 								? "UPDATE " + TABLE + " SET ELO=?, PLAYER=? WHERE GAMETYPE=? AND UUID=?"
 								: "INSERT INTO " + TABLE + " (ELO, PLAYER, GAMETYPE, UUID) VALUES (?, ?, ?, ?)");
 				PreparedStatement stmt = (PreparedStatement) statement[0];
 				stmt.setInt(1, elo);
 				stmt.setString(2, p.getName());
 				stmt.setString(3, g);
-				stmt.setString(4, p.getUUID().toString());
+				stmt.setString(4, p.getUuid().toString());
 				SQLManager.execute(statement);
 				SQLManager.close(statement);
 			} catch (Exception e) {
@@ -56,14 +62,14 @@ public class EloManager {
 			if (!PracticePlugin.DB_CONNECTED)
 				return;
 			try {
-				if (!exists(p.getUUID().toString()))
+				if (!exists(p.getUuid().toString()))
 					return;
 
 				AutoCloseable[] statement = SQLManager
 						.prepare("UPDATE " + TABLE + " SET PLAYER=? WHERE UUID=?");
 				PreparedStatement stmt = (PreparedStatement) statement[0];
 				stmt.setString(1, p.getName());
-				stmt.setString(2, p.getUUID().toString());
+				stmt.setString(2, p.getUuid().toString());
 				SQLManager.execute(statement);
 				SQLManager.close(statement);
 			} catch (Exception e) {
@@ -159,7 +165,7 @@ public class EloManager {
 		});
 	}
 
-	public static LeaderboardMap getLeaderboardMap(Gametype gametype) {
+	public static LeaderboardMap getEloAndLeaderboard(Gametype gametype) {
 		try {
 			LeaderboardMap map = new LeaderboardMap();
 
@@ -177,9 +183,11 @@ public class EloManager {
 			ResultSet r = (ResultSet) results[0];
 
 			while (r.next()) {
-
-				map.put(r.getString("PLAYER"), r.getInt("ELO"));
-
+				String playerName = r.getString("PLAYER");
+				int elo = r.getInt("ELO");
+				String uuid = r.getString("UUID");
+				gametype.getEloCache().put(ProfileManager.getProfileData(playerName, FastUUID.parseUUID(uuid)), elo);
+				map.put(playerName, elo);
 			}
 
 			SQLManager.close(statement);
@@ -191,5 +199,29 @@ public class EloManager {
 			e.printStackTrace();
 			return null;
 		}
+	}
+
+	public static LeaderboardMap getGlobalEloLeaderboard(Queuetype queuetype) {
+		LeaderboardMap map = new LeaderboardMap();
+
+		Object2IntOpenHashMap<ProfileData> globalEloMap = new Object2IntOpenHashMap<>();
+
+		for (Gametype gametype : queuetype.getGametypes().keySet()) {
+			for (Entry<ProfileData> e : gametype.getEloCache().object2IntEntrySet()) {
+				Integer eloSum = globalEloMap.getOrDefault(e.getKey(), 0);
+
+				eloSum += e.getIntValue();
+
+				globalEloMap.put(e.getKey(), eloSum);
+
+			}
+		}
+
+		int divisor = queuetype.getGametypes().keySet().size();
+
+		for (Entry<ProfileData> e : globalEloMap.object2IntEntrySet())
+			map.put(e.getKey().getName(), e.getIntValue() / divisor);
+
+		return map;
 	}
 }

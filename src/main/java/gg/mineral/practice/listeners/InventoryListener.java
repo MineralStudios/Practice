@@ -94,7 +94,7 @@ public class InventoryListener implements Listener {
 	@EventHandler
 	public void onPlayerPickupItem(PlayerPickupItemEvent e) {
 		e.setCancelled(ProfileManager
-				.getProfile(p -> p.getUUID().equals(e.getPlayer().getUniqueId())
+				.getProfile(p -> p.getUuid().equals(e.getPlayer().getUniqueId())
 						&& p.getPlayerStatus() == PlayerStatus.FIGHTING) == null);
 	}
 }

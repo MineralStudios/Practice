@@ -20,9 +20,9 @@ public class SelectCategorizedExistingKitMenu extends SelectExistingKitMenu {
 	@Override
 	public boolean update() {
 		for (Gametype g : c.getGametypes()) {
-			ItemStack item = new ItemBuilder(g.getDisplayItem())
-					.name(g.getDisplayName()).lore().build();
-			Runnable selectGametypeTask = () -> {
+			ItemStack item = new ItemBuilder(g.getDisplayItem().clone())
+					.name(CC.PRIMARY + g.getDisplayName()).lore().build();
+			add(item, () -> {
 				if (viewer.isInKitCreator()) {
 					viewer.giveKit(g.getKit());
 					return;
@@ -35,8 +35,7 @@ public class SelectCategorizedExistingKitMenu extends SelectExistingKitMenu {
 				}
 
 				viewer.openMenu(menu);
-			};
-			add(item, selectGametypeTask);
+			});
 		}
 
 		return true;

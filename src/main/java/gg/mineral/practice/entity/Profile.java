@@ -2,7 +2,6 @@ package gg.mineral.practice.entity;
 
 import java.util.Iterator;
 import java.util.List;
-import java.util.UUID;
 
 import org.bukkit.Bukkit;
 import org.bukkit.GameMode;
@@ -44,7 +43,7 @@ import gg.mineral.practice.util.world.BlockData;
 import lombok.Getter;
 import lombok.Setter;
 
-public class Profile {
+public class Profile extends ProfileData {
 	@Getter
 	final CraftPlayer player;
 	@Getter
@@ -100,6 +99,7 @@ public class Profile {
 	boolean dead = false;
 
 	public Profile(org.bukkit.entity.Player player) {
+		super(player.getUniqueId(), player.getName());
 		this.player = (CraftPlayer) player;
 		this.matchData = new MatchData();
 		this.inventory = new PlayerInventory(this);
@@ -211,10 +211,6 @@ public class Profile {
 
 	public void message(Message m) {
 		m.send(this.getPlayer());
-	}
-
-	public String getName() {
-		return player.getName();
 	}
 
 	public void removeFromQueue() {
@@ -329,11 +325,7 @@ public class Profile {
 	}
 
 	public boolean equals(Profile p) {
-		return p.getUUID().equals(player.getUniqueId());
-	}
-
-	public UUID getUUID() {
-		return player.getUniqueId();
+		return p.getUuid().equals(player.getUniqueId());
 	}
 
 	public void setPlayerStatus(PlayerStatus newPlayerStatus) {

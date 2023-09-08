@@ -14,6 +14,7 @@ public class SettingsMenu extends PracticeMenu {
 
 	@Override
 	public boolean update() {
+		setSlot(4, ItemStacks.SETTINGS);
 		/*
 		 * setSlot(0,
 		 * ItemStacks.TOGGLE_PLAYER_VISIBILITY,
@@ -22,32 +23,32 @@ public class SettingsMenu extends PracticeMenu {
 		 * p.getPlayer().performCommand("toggleplayervisibility");
 		 * });
 		 */
-		setSlot(0,
+		setSlot(18,
 				ItemStacks.TOGGLE_DUEL_REQUESTS,
 				interaction -> {
 					Profile p = interaction.getProfile();
 					p.getPlayer().performCommand("toggleduelrequests");
 				});
-		setSlot(1,
+		setSlot(19,
 				ItemStacks.TOGGLE_PARTY_REQUESTS,
 				interaction -> {
 					Profile p = interaction.getProfile();
 					p.getPlayer().performCommand("togglepartyrequests");
 				});
-		setSlot(2,
+		setSlot(20,
 				ItemStacks.TOGGLE_SCOREBOARD,
 				interaction -> {
 					Profile p = interaction.getProfile();
 					p.getPlayer().performCommand("togglescoreboard");
 				});
-		setSlot(3,
+		setSlot(21,
 				ItemStacks.TOGGLE_PRIVATE_MESSAGES,
 				interaction -> {
 					Profile p = interaction.getProfile();
 					p.getPlayer().performCommand("tpm");
 				});
 
-		setSlot(4,
+		setSlot(22,
 				ItemStacks.CHANGE_TIME,
 				interaction -> {
 					Profile p = interaction.getProfile();

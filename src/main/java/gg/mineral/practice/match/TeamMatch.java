@@ -122,7 +122,7 @@ public class TeamMatch extends Match {
             PlayerUtil.teleport(teamMember.getPlayer(), location1);
 
             for (FakePlayer fakePlayer : team1FakePlayers)
-                fakePlayer.addFriendlyEntity(teamMember.getUUID());
+                fakePlayer.addFriendlyEntity(teamMember.getUuid());
         }
 
         for (Profile teamMember : team2RemainingPlayers) {
@@ -130,7 +130,7 @@ public class TeamMatch extends Match {
             PlayerUtil.teleport(teamMember.getPlayer(), location2);
 
             for (FakePlayer fakePlayer : team2FakePlayers)
-                fakePlayer.addFriendlyEntity(teamMember.getUUID());
+                fakePlayer.addFriendlyEntity(teamMember.getUuid());
         }
 
         startCountdown();

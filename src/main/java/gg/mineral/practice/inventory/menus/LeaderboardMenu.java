@@ -29,7 +29,19 @@ public class LeaderboardMenu extends PracticeMenu {
     public boolean update() {
         QueuetypeManager.getQueuetypes().stream().filter(q -> q.isRanked())
                 .findFirst().ifPresent(queuetype -> {
-                    setSlot(4, ItemStacks.LEADERBOARD);
+
+                    ItemStack global = ItemStacks.GLOBAL_ELO.name(CC.SECONDARY + "Global").build();
+                    ItemMeta globalMeta = global.getItemMeta();
+
+                    try {
+                        globalMeta.setLore(queuetype.getGlobalLeaderboardLore());
+                    } catch (Exception e) {
+                        globalMeta.setLore(null);
+                    }
+
+                    global.setItemMeta(globalMeta);
+
+                    setSlot(4, global);
 
                     for (Entry<Gametype, Integer> entry : queuetype.getGametypes().object2IntEntrySet()) {
 
@@ -38,8 +50,8 @@ public class LeaderboardMenu extends PracticeMenu {
                         if (gametype.isInCatagory())
                             continue;
 
-                        ItemStack item = new ItemBuilder(gametype.getDisplayItem())
-                                .name(gametype.getDisplayName()).build();
+                        ItemStack item = new ItemBuilder(gametype.getDisplayItem().clone())
+                                .name(CC.SECONDARY + gametype.getDisplayName()).build();
                         ItemMeta meta = item.getItemMeta();
 
                         try {

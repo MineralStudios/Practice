@@ -13,7 +13,7 @@ public enum Difficulty {
         public FakePlayer spawn(Profile profile, Location location, String suffix) {
             FakePlayer fakePlayer = new FakePlayer();
             fakePlayer.spawn(location, "EasyBot" + suffix);
-            fakePlayer.startAiming(0.15F, 1.0F);
+            fakePlayer.startAiming(0.15F, 1.0F, 2);
             fakePlayer.startAttacking(5);
             fakePlayer.setArrowBlockAccuracy(2.4f);
             fakePlayer.setLatency(50);
@@ -28,7 +28,7 @@ public enum Difficulty {
         public FakePlayer spawn(Profile profile, Location location, String suffix) {
             FakePlayer fakePlayer = new FakePlayer();
             fakePlayer.spawn(location, "MediumBot" + suffix);
-            fakePlayer.startAiming(0.3F, 1.5F);
+            fakePlayer.startAiming(0.3F, 1.5F, 2);
             fakePlayer.startAttacking(8);
             fakePlayer.setArrowBlockAccuracy(1.2f);
             fakePlayer.setLatency(50);
@@ -43,7 +43,7 @@ public enum Difficulty {
         public FakePlayer spawn(Profile profile, Location location, String suffix) {
             FakePlayer fakePlayer = new FakePlayer();
             fakePlayer.spawn(location, "HardBot" + suffix);
-            fakePlayer.startAiming(0.5F, 2.0F);
+            fakePlayer.startAiming(0.5F, 2.0F, 1);
             fakePlayer.startAttacking(11);
             fakePlayer.setArrowBlockAccuracy(0.6f);
             fakePlayer.setLatency(50);
@@ -58,7 +58,7 @@ public enum Difficulty {
         public FakePlayer spawn(Profile profile, Location location, String suffix) {
             FakePlayer fakePlayer = new FakePlayer();
             fakePlayer.spawn(location, "ExpertBot" + suffix);
-            fakePlayer.startAiming(1F, 8F);
+            fakePlayer.startAiming(1F, 8F, 0);
             fakePlayer.startAttacking(14);
             fakePlayer.setArrowBlockAccuracy(0.3f);
             fakePlayer.setLatency(50);
@@ -73,7 +73,7 @@ public enum Difficulty {
         public FakePlayer spawn(Profile profile, Location location, String suffix) {
             FakePlayer fakePlayer = new FakePlayer();
             fakePlayer.spawn(location, "ProBot" + suffix);
-            fakePlayer.startAiming(2F, 32F);
+            fakePlayer.startAiming(2F, 32F, 0);
             fakePlayer.startAttacking(17);
             fakePlayer.setArrowBlockAccuracy(0.2f);
             fakePlayer.setLatency(50);
@@ -88,7 +88,7 @@ public enum Difficulty {
         public FakePlayer spawn(Profile profile, Location location, String suffix) {
             FakePlayer fakePlayer = new FakePlayer();
             fakePlayer.spawn(location, "HardcoreBot" + suffix);
-            fakePlayer.startAiming(4F, 64F);
+            fakePlayer.startAiming(4F, 64F, 0);
             fakePlayer.startAttacking(20);
             fakePlayer.setArrowBlockAccuracy(0.1f);
             fakePlayer.setLatency(50);
@@ -104,7 +104,8 @@ public enum Difficulty {
             FakePlayer fakePlayer = new FakePlayer();
             CustomDifficulty difficulty = profile.getMatchData().getCustomBotDifficulty();
             fakePlayer.spawn(location, "CustomBot" + suffix);
-            fakePlayer.startAiming(difficulty.getAimSpeed(), difficulty.getAimAccuracy());
+            fakePlayer.startAiming(difficulty.getAimSpeed(), difficulty.getAimAccuracy(),
+                    (int) difficulty.getReactionTimeTicks());
             fakePlayer.startAttacking((int) difficulty.getCps());
             fakePlayer.setReach(difficulty.getReach());
             fakePlayer.setArrowBlockAccuracy(difficulty.getBowAimingRadius());
@@ -122,7 +123,8 @@ public enum Difficulty {
             CustomDifficulty difficulty = new CustomDifficulty();
             difficulty.randomize();
             fakePlayer.spawn(location, "RandomBot" + suffix);
-            fakePlayer.startAiming(difficulty.getAimSpeed(), difficulty.getAimAccuracy());
+            fakePlayer.startAiming(difficulty.getAimSpeed(), difficulty.getAimAccuracy(),
+                    (int) difficulty.getReactionTimeTicks());
             fakePlayer.startAttacking((int) difficulty.getCps());
             fakePlayer.setReach(difficulty.getReach());
             fakePlayer.setArrowBlockAccuracy(difficulty.getBowAimingRadius());

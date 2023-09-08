@@ -363,8 +363,8 @@ public class Match implements Spectatable {
 		Gametype gametype = data.getQueueEntry().getGametype();
 		return gametype.getEloMap(attacker, victim)
 				.thenAccept(map -> {
-					int attackerElo = map.getInt(attacker.getUUID());
-					int victimElo = map.getInt(victim.getUUID());
+					int attackerElo = map.getInt(attacker.getUuid());
+					int victimElo = map.getInt(victim.getUuid());
 					int newAttackerElo = MathUtil.getNewRating(attackerElo, victimElo, true);
 					int newVictimElo = MathUtil.getNewRating(victimElo, attackerElo, false);
 
@@ -527,7 +527,7 @@ public class Match implements Spectatable {
 			ProjectileSource shooter = arrow.getShooter();
 
 			if (shooter instanceof Player) {
-				Profile profile = ProfileManager.getProfile(p -> p.getUUID().equals(((Player) shooter).getUniqueId()));
+				Profile profile = ProfileManager.getProfile(p -> p.getUuid().equals(((Player) shooter).getUniqueId()));
 
 				if (profile == null) {
 					arrow.remove();

@@ -25,7 +25,7 @@ public class BuildListener implements Listener {
 	public void onBlockBreak(BlockBreakEvent e) {
 
 		Profile profile = ProfileManager
-				.getProfile(p -> p.getUUID().equals(e.getPlayer().getUniqueId())
+				.getProfile(p -> p.getUuid().equals(e.getPlayer().getUniqueId())
 						&& p.getPlayerStatus() == PlayerStatus.FIGHTING);
 
 		if (profile == null) {
@@ -64,7 +64,7 @@ public class BuildListener implements Listener {
 	@EventHandler
 	public void onBlockPlace(BlockPlaceEvent e) {
 		Profile profile = ProfileManager
-				.getProfile(p -> p.getUUID().equals(e.getPlayer().getUniqueId())
+				.getProfile(p -> p.getUuid().equals(e.getPlayer().getUniqueId())
 						&& p.getPlayerStatus() == PlayerStatus.FIGHTING);
 		boolean canPlace = e.getPlayer().isOp() && e.getPlayer().getGameMode().equals(GameMode.CREATIVE);
 
@@ -93,7 +93,7 @@ public class BuildListener implements Listener {
 	@EventHandler
 	public void onPlayerBucketEmpty(PlayerBucketEmptyEvent e) {
 		Profile profile = ProfileManager
-				.getProfile(p -> p.getUUID().equals(e.getPlayer().getUniqueId())
+				.getProfile(p -> p.getUuid().equals(e.getPlayer().getUniqueId())
 						&& p.getPlayerStatus() == PlayerStatus.FIGHTING);
 		boolean canPlace = e.getPlayer().isOp() && e.getPlayer().getGameMode().equals(GameMode.CREATIVE);
 
