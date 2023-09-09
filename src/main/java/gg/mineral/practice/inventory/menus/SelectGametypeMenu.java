@@ -241,7 +241,8 @@ public class SelectGametypeMenu extends PracticeMenu {
 				if (botOpponents && botTeammate) {
 					item = ItemStacks.BOT_QUEUE_ENABLED_2V2.lore(
 							CC.WHITE + "Allows you to queue in a " + CC.SECONDARY + "2v2 bot" + CC.WHITE
-									+ " match.",
+									+ " match ",
+							CC.WHITE + "with a bot teammate and bot opponents.",
 							" ",
 							CC.WHITE + "Currently:",
 							CC.GREEN + "Enabled",
@@ -252,7 +253,8 @@ public class SelectGametypeMenu extends PracticeMenu {
 				} else if (botOpponents) {
 					item = ItemStacks.BOT_QUEUE_ENABLED_2V2.lore(
 							CC.WHITE + "Allows you to queue in a " + CC.SECONDARY + "2v2 bot" + CC.WHITE
-									+ " match.",
+									+ " match ",
+							CC.WHITE + "with bots as your opponents.",
 							" ",
 							CC.WHITE + "Currently:",
 							CC.GREEN + "Enabled",
@@ -263,7 +265,8 @@ public class SelectGametypeMenu extends PracticeMenu {
 
 					item = ItemStacks.BOT_QUEUE_ENABLED_2V2.lore(
 							CC.WHITE + "Allows you to queue in a " + CC.SECONDARY + "2v2 bot" + CC.WHITE
-									+ " match.",
+									+ " match ",
+							CC.WHITE + "with a bot as your teammate.",
 							" ",
 							CC.WHITE + "Currently:",
 							CC.GREEN + "Enabled",

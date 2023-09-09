@@ -106,7 +106,7 @@ public class ItemStacks {
                         CANCEL = new ItemBuilder(new ItemStack(Material.WOOL, 1, DyeColor.RED.getData())).name(" ")
                                         .lore(CC.RED + "Click To Cancel Changes", " ").build(),
                         RANDOM_QUEUE = new ItemBuilder(Material.PAPER)
-                                        .name(CC.SECONDARY + "Random Queue")
+                                        .name(CC.SECONDARY + CC.B + "Random Queue")
                                         .lore(CC.WHITE + "Adds you to a " + CC.BLUE + "random" + CC.WHITE + " queue.",
                                                         " ", CC.BOARD_SEPARATOR,
                                                         CC.ACCENT + "Click to be added to a random queue.")
@@ -126,7 +126,7 @@ public class ItemStacks {
                                         .name("Hacker")
                                         .build(),
                         BOT_QUEUE_DISABLED = new ItemBuilder(new ItemStack(351, 1, DyeColor.GRAY.getDyeData()))
-                                        .name(CC.SECONDARY + "Bot Queue")
+                                        .name(CC.SECONDARY + CC.B + "Bot Queue")
                                         .lore(CC.WHITE + "Allows you to queue in a " + CC.SECONDARY + "bot" + CC.WHITE
                                                         + " match.", " ",
                                                         CC.WHITE + "Currently:",
@@ -134,7 +134,7 @@ public class ItemStacks {
                                                         " ", CC.BOARD_SEPARATOR, CC.ACCENT + "Click to toggle bots.")
                                         .build(),
                         BOT_QUEUE_ENABLED = new ItemBuilder(new ItemStack(351, 1, DyeColor.LIME.getDyeData()))
-                                        .name(CC.SECONDARY + "Bot Queue")
+                                        .name(CC.SECONDARY + CC.B + "Bot Queue")
                                         .lore(CC.WHITE + "Allows you to queue in a " + CC.SECONDARY + "bot" + CC.WHITE
                                                         + " match.", " ",
                                                         CC.WHITE + "Currently:",
@@ -145,9 +145,9 @@ public class ItemStacks {
         // Item Builders
         public static final ItemBuilder LOAD_KIT = new ItemBuilder(Material.ENCHANTED_BOOK),
                         TEAMFIGHT = new ItemBuilder(Material.ITEM_FRAME)
-                                        .name(CC.SECONDARY + "2v2"),
+                                        .name(CC.SECONDARY + CC.B + "2v2"),
                         BOT_SETTINGS = new ItemBuilder(Material.GOLD_HELMET)
-                                        .name(CC.SECONDARY + "Bot Settings"),
+                                        .name(CC.SECONDARY + CC.B + "Bot Settings"),
                         CLICK_TO_APPLY_CHANGES = new ItemBuilder(Material.STONE_SWORD)
                                         .lore(CC.ACCENT + "Click To Apply Changes"),
                         INVENTORY_STATS = new ItemBuilder(Material.ENDER_CHEST),
@@ -170,7 +170,7 @@ public class ItemStacks {
                         PEARL_COOLDOWN = new ItemBuilder(Material.ENDER_PEARL)
                                         .name("Pearl Cooldown"),
                         ARENA = new ItemBuilder(Material.WATER_LILY)
-                                        .name(CC.SECONDARY + "Arena Selection"),
+                                        .name(CC.SECONDARY + CC.B + "Arena Selection"),
                         REGENERATION = new ItemBuilder(Material.GOLDEN_APPLE)
                                         .name("Regeneration"),
                         BOXING = new ItemBuilder(Material.IRON_CHESTPLATE)
@@ -181,7 +181,7 @@ public class ItemStacks {
                                         .name("Health Potions Left"),
                         SOUP_LEFT = new ItemBuilder(Material.MUSHROOM_SOUP).name("Soup Left"),
                         BOT_QUEUE_ENABLED_2V2 = new ItemBuilder(new ItemStack(351, 1, DyeColor.LIGHT_BLUE.getDyeData()))
-                                        .name(CC.SECONDARY + "2v2 Bot Queue"),
+                                        .name(CC.SECONDARY + CC.B + "2v2 Bot Queue"),
                         HEALTH = new ItemBuilder(new ItemStack(Material.POTION, (short) 8193)),
                         HITS = new ItemBuilder(Material.BLAZE_ROD), CLICKS = new ItemBuilder(Material.GHAST_TEAR),
                         POTION_EFFECTS = new ItemBuilder(Material.BLAZE_POWDER).name("Potion Effects"),
