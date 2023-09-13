@@ -34,7 +34,6 @@ public class Tournament {
         this.matchData = p.getMatchData();
         this.host = p.getName();
         addPlayer(p);
-        TournamentManager.registerTournament(this);
     }
 
     public void addPlayer(Profile p) {
@@ -84,6 +83,8 @@ public class Tournament {
         if (started) {
             return;
         }
+
+        TournamentManager.registerTournament(this);
 
         ChatMessage messageToBroadcast = ChatMessages.BROADCAST_TOURNAMENT.clone()
                 .replace("%player%", host).setTextEvent(new ClickEvent(ClickEvent.Action.RUN_COMMAND, "/join " + host),

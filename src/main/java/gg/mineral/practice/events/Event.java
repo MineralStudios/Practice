@@ -46,7 +46,6 @@ public class Event implements Spectatable {
         this.eventArena = eventArena;
         matchData.setArena(eventArena);
         addPlayer(p);
-        EventManager.registerEvent(this);
     }
 
     public void addPlayer(Profile p) {
@@ -129,9 +128,10 @@ public class Event implements Spectatable {
 
     public void start() {
 
-        if (started) {
+        if (started)
             return;
-        }
+
+        EventManager.registerEvent(this);
 
         ChatMessage messageToBroadcast = ChatMessages.BROADCAST_EVENT.clone()
                 .replace("%player%", host).setTextEvent(new ClickEvent(ClickEvent.Action.RUN_COMMAND, "/join " + host),
