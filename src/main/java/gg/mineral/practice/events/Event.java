@@ -3,11 +3,15 @@ package gg.mineral.practice.events;
 import java.util.Iterator;
 import java.util.concurrent.ConcurrentLinkedDeque;
 
+import org.bukkit.Bukkit;
+import org.bukkit.entity.Player;
 import org.bukkit.scheduler.BukkitRunnable;
 
 import gg.mineral.api.collection.GlueList;
 import gg.mineral.practice.PracticePlugin;
 import gg.mineral.practice.arena.Arena;
+import gg.mineral.practice.bukkit.events.PlayerEventInitializeEvent;
+import gg.mineral.practice.bukkit.events.PlayerEventStartEvent;
 import gg.mineral.practice.entity.Profile;
 import gg.mineral.practice.managers.EventManager;
 import gg.mineral.practice.managers.ProfileManager;
@@ -131,6 +135,14 @@ public class Event implements Spectatable {
         if (started)
             return;
 
+        final Player bukkitHost = participants.getFirst().getPlayer();
+
+        PlayerEventInitializeEvent event = new PlayerEventInitializeEvent(30, bukkitHost);
+        Bukkit.getPluginManager().callEvent(event);
+
+        if (event.isCancelled())
+            return;
+
         EventManager.registerEvent(this);
 
         ChatMessage messageToBroadcast = ChatMessages.BROADCAST_EVENT.clone()
@@ -144,7 +156,10 @@ public class Event implements Spectatable {
             public void run() {
                 started = true;
 
-                if (participants.size() == 1) {
+                PlayerEventStartEvent event = new PlayerEventStartEvent(bukkitHost);
+                Bukkit.getPluginManager().callEvent(event);
+
+                if (participants.size() == 1 || event.isCancelled()) {
                     Profile winner = participants.getFirst();
                     winner.removeFromEvent();
 

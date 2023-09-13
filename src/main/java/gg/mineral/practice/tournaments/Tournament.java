@@ -2,10 +2,14 @@ package gg.mineral.practice.tournaments;
 
 import java.util.Iterator;
 
+import org.bukkit.Bukkit;
+import org.bukkit.entity.Player;
 import org.bukkit.scheduler.BukkitRunnable;
 
 import gg.mineral.api.collection.GlueList;
 import gg.mineral.practice.PracticePlugin;
+import gg.mineral.practice.bukkit.events.PlayerTournamentInitializeEvent;
+import gg.mineral.practice.bukkit.events.PlayerTournamentStartEvent;
 import gg.mineral.practice.entity.Profile;
 import gg.mineral.practice.managers.ProfileManager;
 import gg.mineral.practice.managers.TournamentManager;
@@ -80,9 +84,16 @@ public class Tournament {
 
     public void start() {
 
-        if (started) {
+        if (started)
             return;
-        }
+
+        final Player bukkitHost = players.getFirst().getPlayer();
+
+        PlayerTournamentInitializeEvent event = new PlayerTournamentInitializeEvent(30, bukkitHost);
+        Bukkit.getPluginManager().callEvent(event);
+
+        if (event.isCancelled())
+            return;
 
         TournamentManager.registerTournament(this);
 
@@ -97,7 +108,10 @@ public class Tournament {
             public void run() {
                 started = true;
 
-                if (players.size() == 1) {
+                PlayerTournamentStartEvent event = new PlayerTournamentStartEvent(bukkitHost);
+                Bukkit.getPluginManager().callEvent(event);
+
+                if (players.size() == 1 || event.isCancelled()) {
                     Profile winner = players.getFirst();
                     winner.removeFromTournament();
 
