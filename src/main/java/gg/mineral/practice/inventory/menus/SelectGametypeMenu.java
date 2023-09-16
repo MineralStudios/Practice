@@ -333,7 +333,7 @@ public class SelectGametypeMenu extends PracticeMenu {
 				continue;
 
 			ItemBuilder itemBuild = new ItemBuilder(g.getDisplayItem().clone())
-					.name(CC.SECONDARY + g.getDisplayName());
+					.name(CC.SECONDARY + CC.B + g.getDisplayName());
 
 			QueueEntry queueEntry = QueueEntryManager.newEntry(queuetype, g);
 
@@ -346,10 +346,12 @@ public class SelectGametypeMenu extends PracticeMenu {
 					itemBuild.lore(CC.RED + "Click to leave queue.");
 				} else {
 
-					itemBuild.lore(CC.ACCENT + "In Queue: " + (viewer.getMatchData().getTeam2v2()
+					itemBuild.lore(CC.SECONDARY + "In Queue: " + CC.WHITE + (viewer.getMatchData().getTeam2v2()
 							? QueueSearchTask2v2.getNumberInQueue(queuetype, g)
 							: QueueSearchTask.getNumberInQueue(queuetype, g)),
-							CC.ACCENT + "In Game: " + MatchManager.getInGameCount(queuetype, g));
+							CC.SECONDARY + "In Game: " + CC.WHITE + MatchManager.getInGameCount(queuetype, g),
+							CC.BOARD_SEPARATOR,
+							CC.ACCENT + "Click to queue.");
 				}
 			} else {
 				itemBuild.lore();
@@ -375,14 +377,17 @@ public class SelectGametypeMenu extends PracticeMenu {
 		for (Entry<Catagory, Integer> entry : queuetype.getCatagories().object2IntEntrySet()) {
 			Catagory c = entry.getKey();
 			ItemBuilder itemBuild = new ItemBuilder(c.getDisplayItem())
-					.name(CC.SECONDARY + c.getDisplayName());
+					.name(CC.SECONDARY + CC.B + c.getDisplayName());
 
 			List<String> sb = new GlueList<String>();
-			sb.add(CC.ACCENT + "Includes:");
+			sb.add(CC.SECONDARY + "Includes:");
 
-			for (Gametype g : c.getGametypes()) {
-				sb.add(g.getDisplayName());
-			}
+			for (Gametype g : c.getGametypes())
+				sb.add(CC.WHITE + g.getDisplayName());
+
+			sb.add(" ");
+			sb.add(CC.BOARD_SEPARATOR);
+			sb.add(CC.ACCENT + "Click to view catagory.");
 
 			itemBuild.lore(sb.toArray(new String[0]));
 			ItemStack item = itemBuild.build();

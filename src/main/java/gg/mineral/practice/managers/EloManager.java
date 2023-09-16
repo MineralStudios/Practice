@@ -2,6 +2,7 @@ package gg.mineral.practice.managers;
 
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
+import java.util.Set;
 import java.util.UUID;
 import java.util.concurrent.CompletableFuture;
 
@@ -16,6 +17,7 @@ import gg.mineral.practice.sql.SQLManager;
 import gg.mineral.practice.util.collection.LeaderboardMap;
 import it.unimi.dsi.fastutil.objects.Object2IntMap.Entry;
 import it.unimi.dsi.fastutil.objects.Object2IntOpenHashMap;
+import it.unimi.dsi.fastutil.objects.ObjectOpenHashSet;
 
 public class EloManager {
 	final static String TABLE = "elo";
@@ -207,8 +209,9 @@ public class EloManager {
 		Object2IntOpenHashMap<ProfileData> globalEloMap = new Object2IntOpenHashMap<>();
 
 		for (Gametype gametype : queuetype.getGametypes().keySet()) {
+
 			for (Entry<ProfileData> e : gametype.getEloCache().object2IntEntrySet()) {
-				Integer eloSum = globalEloMap.getOrDefault(e.getKey(), 0);
+				Integer eloSum = globalEloMap.getOrDefault(e.getKey(), 1000);
 
 				eloSum += e.getIntValue();
 
@@ -219,8 +222,12 @@ public class EloManager {
 
 		int divisor = queuetype.getGametypes().keySet().size();
 
-		for (Entry<ProfileData> e : globalEloMap.object2IntEntrySet())
-			map.put(e.getKey().getName(), e.getIntValue() / divisor);
+		for (Entry<ProfileData> e : globalEloMap.object2IntEntrySet()) {
+			int globalElo = e.getIntValue() / divisor;
+			if (globalElo < 1000)
+				continue;
+			map.put(e.getKey().getName(), globalElo);
+		}
 
 		return map;
 	}
