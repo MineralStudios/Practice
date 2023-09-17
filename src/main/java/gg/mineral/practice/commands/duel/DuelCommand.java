@@ -53,6 +53,9 @@ public class DuelCommand extends PlayerCommand {
 				profile.message(ErrorMessages.PLAYER_NOT_IN_PARTY_OR_PARTY_LEADER);
 				return;
 			}
+		} else if (duelReceiver.isInParty()) {
+			profile.message(ErrorMessages.PLAYER_IN_PARTY);
+			return;
 		}
 
 		profile.getRequestHandler().setDuelRequestReciever(duelReceiver);

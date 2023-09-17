@@ -54,14 +54,21 @@ public class AcceptCommand extends PlayerCommand {
 			return;
 		}
 
+		if (duelSender.isInParty() != profile.isInParty()) {
+			if (profile.isInParty())
+				profile.message(ErrorMessages.PLAYER_NOT_IN_PARTY_OR_PARTY_LEADER);
+			else
+				profile.message(ErrorMessages.PLAYER_IN_PARTY);
+			return;
+		}
+
 		Iterator<Entry<DuelRequest>> it = profile.getRequestHandler().getRecievedDuelRequests().entryIterator();
 
 		while (it.hasNext()) {
 			DuelRequest duelRequest = it.next().getKey();
 
-			if (!duelRequest.getSender().equals(duelSender)) {
+			if (!duelRequest.getSender().equals(duelSender))
 				continue;
-			}
 
 			it.remove();
 			MatchData matchData = duelRequest.getMatchData();
