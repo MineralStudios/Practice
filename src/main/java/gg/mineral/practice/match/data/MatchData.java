@@ -40,7 +40,7 @@ public class MatchData {
 	int noDamageTicks = 20, pearlCooldown = 15;
 	@Setter
 	@Getter
-	Difficulty botDifficulty = Difficulty.MEDIUM;
+	Difficulty botDifficulty = Difficulty.EASY;
 	@Setter
 	@Getter
 	Boolean hunger = true, boxing = false, build = false, damage = true, griefing = false, deadlyWater = false,
