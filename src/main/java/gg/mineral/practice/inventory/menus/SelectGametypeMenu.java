@@ -58,13 +58,12 @@ public class SelectGametypeMenu extends PracticeMenu {
 
 		if (viewer.getMatchData().getTeam2v2()) {
 
-			boolean botOpponents1 = viewer.getMatchData().getBotQueue();
-			boolean botTeammate1 = viewer.getMatchData().getBotTeammate();
+			boolean botOpponents1 = viewer.getMatchData().getBotQueue() && queueEntry.getQueuetype().getBotsEnabled();
+			boolean botTeammate1 = viewer.getMatchData().getBotTeammate() && queueEntry.getQueuetype().getBotsEnabled();
 
 			if (botOpponents1 && botTeammate1) {
 
-				if (!(queueEntry.getGametype().getBotsEnabled()
-						&& queueEntry.getQueuetype().getBotsEnabled())) {
+				if (!(queueEntry.getGametype().getBotsEnabled())) {
 					ErrorMessages.COMING_SOON.send(viewer.getPlayer());
 					return;
 				}
@@ -134,10 +133,9 @@ public class SelectGametypeMenu extends PracticeMenu {
 			return;
 		}
 
-		if (viewer.getMatchData().getBotQueue()) {
+		if (viewer.getMatchData().getBotQueue() && queueEntry.getQueuetype().getBotsEnabled()) {
 
-			if (!(queueEntry.getGametype().getBotsEnabled()
-					&& queueEntry.getQueuetype().getBotsEnabled())) {
+			if (!(queueEntry.getGametype().getBotsEnabled())) {
 				ErrorMessages.COMING_SOON.send(viewer.getPlayer());
 				return;
 			}
