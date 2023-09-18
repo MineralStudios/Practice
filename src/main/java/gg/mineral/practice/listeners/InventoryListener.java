@@ -33,21 +33,21 @@ public class InventoryListener implements Listener {
 
 		e.setCancelled(e.getCurrentItem() == null ? false : e.getCurrentItem().getType() == Material.TNT);
 
-		if (profile.getInventory().isInventoryClickCancelled()) {
+		if (profile.getInventory().isInventoryClickCancelled())
 			e.setCancelled(!canClick);
-		}
 
-		if (menu == null) {
+		if (menu == null)
 			return;
-		}
 
-		if (!e.getInventory().equals(menu.getInventory())) {
+		if (e.getClickedInventory() == null || !e.getClickedInventory().equals(e.getView().getTopInventory()))
 			return;
-		}
 
-		if (e.getSlot() < e.getView().getTopInventory().getSize()) {
-			e.setCancelled(menu.getClickCancelled());
-		}
+		if (e.getInventory() == null || !e.getInventory().equals(menu.getInventory()))
+			return;
+
+		if (e.getSlot() < e.getView().getTopInventory().getSize())
+			e.setCancelled(
+					menu.getClickCancelled());
 
 		Consumer<Interaction> predicate = menu.getTask(e.getSlot());
 
@@ -79,11 +79,14 @@ public class InventoryListener implements Listener {
 		boolean canDrop = profile.getPlayer().isOp() && profile.getPlayer().getGameMode().equals(GameMode.CREATIVE);
 
 		if (profile.isInKitCreator() || profile.isInKitEditor()) {
-			e.setCancelled(true);
+			e.setCancelled(false);
+			Bukkit.getScheduler().runTaskLater(PracticePlugin.INSTANCE, () -> e.getItemDrop().remove(), 20L);
 			return;
 		}
 
-		if (profile.getPlayerStatus() == PlayerStatus.FIGHTING) {
+		if (profile.getPlayerStatus() == PlayerStatus.FIGHTING)
+
+		{
 			profile.getMatch().getItemRemovalQueue().add(e.getItemDrop());
 			return;
 		}

@@ -45,7 +45,7 @@ public class ItemStacks {
                         RESET_SETTINGS = new ItemBuilder(Material.PAPER).name("Reset Settings").build(),
                         SAVE_KIT = new ItemBuilder(Material.ENCHANTED_BOOK)
                                         .name("Save Kit").build(),
-                        DELETE_KIT = new ItemBuilder(new ItemStack(Material.WOOL, 1, DyeColor.RED.getData()))
+                        DELETE_KIT = new ItemBuilder(new ItemStack(351, 1, (short) 1))
                                         .name("Delete Kit").build(),
                         CHOOSE_EXISTING_KIT = new ItemBuilder(Material.LEATHER_CHESTPLATE).name("Choose Existing Kit")
                                         .build(),

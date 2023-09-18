@@ -110,6 +110,29 @@ public class PlayerInventory extends CraftInventoryPlayer {
         return i;
     }
 
+    public int getNumberAndAmount(Material m, short durability) {
+        int i = 0;
+
+        for (ItemStack itemStack : getContents()) {
+
+            if (itemStack == null) {
+                continue;
+            }
+
+            if (itemStack.getType() != m) {
+                continue;
+            }
+
+            if (itemStack.getDurability() != durability) {
+                continue;
+            }
+
+            i += itemStack.getAmount();
+        }
+
+        return i;
+    }
+
     public int getNumber(Material m) {
         int i = 0;
 

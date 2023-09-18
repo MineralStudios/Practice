@@ -84,7 +84,8 @@ public class ErrorMessages {
 	public static final Message KIT_EDITOR_LOCATION_NOT_SET = new ErrorMessage(
 			"A kit editor location has not been set, use /kiteditor setlocation to set the location."),
 			NOT_IN_KIT_EDITOR_OR_CREATOR = new ErrorMessage(
-					"You are not in the kit editor of kit creator.");
+					"You are not in the kit editor of kit creator."),
+			ITEM_LIMIT = new ErrorMessage("The limit for this item has been reached.");
 	// Other
 	public static final Message INVALID_SLOT = new ErrorMessage("You did not input a valid slot."),
 			INVALID_NUMBER = new ErrorMessage("You did not input a valid number."),

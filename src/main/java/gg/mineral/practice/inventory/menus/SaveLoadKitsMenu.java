@@ -23,33 +23,27 @@ public class SaveLoadKitsMenu extends PracticeMenu {
             return true;
         }
 
-        for (int i = 0; i <= 8; i++) {
-            final Integer slot = Integer.valueOf(i);
-            setSlot(slot, ItemStacks.SAVE_KIT,
-                    () -> {
-                        viewer.getKitEditor().save(slot);
-                        reload();
-                    });
-        }
-
         Int2ObjectOpenHashMap<ItemStack[]> loadouts = viewer.getKitEditor().getQueueEntry().getCustomKits(viewer);
 
-        if (loadouts == null) {
+        if (loadouts == null)
             return true;
-        }
 
-        for (int i = 9; i <= 17; i++) {
-            final Integer slot = Integer.valueOf(i - 9);
-
-            if (loadouts.get((int) (slot)) == null) {
-                continue;
+        for (int i = 0; i <= 8; i++) {
+            final Integer slot = Integer.valueOf(i);
+            if (!loadouts.containsKey(i)) {
+                setSlot(slot, ItemStacks.SAVE_KIT,
+                        () -> {
+                            viewer.getKitEditor().save(slot);
+                            reload();
+                        });
+            } else {
+                setSlot(i, ItemStacks.DELETE_KIT,
+                        () -> {
+                            viewer.getKitEditor().delete(slot);
+                            reload();
+                        });
             }
 
-            setSlot(i, ItemStacks.DELETE_KIT,
-                    () -> {
-                        viewer.getKitEditor().delete(slot);
-                        reload();
-                    });
         }
 
         return true;

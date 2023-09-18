@@ -26,9 +26,8 @@ public class KitEditor {
 
         Int2ObjectOpenHashMap<ItemStack[]> kitLoadouts = queueEntry.getCustomKits(profile);
 
-        if (kitLoadouts == null) {
+        if (kitLoadouts == null)
             kitLoadouts = new Int2ObjectOpenHashMap<>();
-        }
 
         kitLoadouts.put(loadoutSlot, newKitContents);
         queueEntry.getCustomKits().put(profile.getUuid(), kitLoadouts);
@@ -42,18 +41,16 @@ public class KitEditor {
 
             boolean newItemNull = newItem == null;
 
-            if (newItemNull && oldItem == null) {
+            if (newItemNull && oldItem == null)
                 continue;
-            }
 
             if (newItemNull) {
                 config.set(path + f, "empty");
                 continue;
             }
 
-            if (newItem.isSimilar(oldItem)) {
+            if (newItem.isSimilar(oldItem))
                 continue;
-            }
 
             config.set(path + f, newItem);
         }
@@ -69,9 +66,8 @@ public class KitEditor {
         profile.getInventory().setInventoryClickCancelled(false);
         profile.getInventory().clear();
 
-        for (Player player : profile.getPlayer().getWorld().getPlayers()) {
+        for (Player player : profile.getPlayer().getWorld().getPlayers())
             profile.getPlayer().hidePlayer(player, false);
-        }
 
         profile.getInventory().setContents(queueEntry.getGametype().getKit().getContents());
     }
@@ -79,9 +75,8 @@ public class KitEditor {
     public void delete(int loadoutSlot) {
         Int2ObjectOpenHashMap<ItemStack[]> kitLoadouts = queueEntry.getCustomKits(profile);
 
-        if (kitLoadouts == null) {
+        if (kitLoadouts == null)
             return;
-        }
 
         kitLoadouts.remove(loadoutSlot);
         queueEntry.getCustomKits().put(profile.getUuid(), kitLoadouts);
