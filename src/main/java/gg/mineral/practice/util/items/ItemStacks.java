@@ -140,6 +140,8 @@ public class ItemStacks {
                                                         CC.WHITE + "Currently:",
                                                         CC.GREEN + "Enabled",
                                                         " ", CC.BOARD_SEPARATOR, CC.ACCENT + "Click to toggle bots.")
+                                        .build(),
+                        BACK = new ItemBuilder(new ItemStack(Material.WOOL, 1, DyeColor.RED.getData())).name("Back")
                                         .build();
 
         // Item Builders

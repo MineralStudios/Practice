@@ -118,13 +118,19 @@ public class CustomBotDifficultyMenu extends PracticeMenu {
                     }));
                 });
 
-        setSlot(30, ItemStacks.CLICK_TO_APPLY_CHANGES.name("Save Difficulty").build(), interaction -> {
+        setSlot(29, ItemStacks.BACK, interaction -> {
             Profile p = interaction.getProfile();
             p.getMatchData().setCustomBotDifficulty(difficulty);
             p.openMenu(menu);
         });
 
-        setSlot(32, ItemStacks.RANDOM_DIFFICULTY, interaction -> {
+        setSlot(31, ItemStacks.CLICK_TO_APPLY_CHANGES.name("Save Difficulty").build(), interaction -> {
+            Profile p = interaction.getProfile();
+            p.getMatchData().setCustomBotDifficulty(difficulty);
+            p.openMenu(menu);
+        });
+
+        setSlot(33, ItemStacks.RANDOM_DIFFICULTY, interaction -> {
             Profile p = interaction.getProfile();
             difficulty.randomize();
             p.getMatchData().setCustomBotDifficulty(difficulty);
