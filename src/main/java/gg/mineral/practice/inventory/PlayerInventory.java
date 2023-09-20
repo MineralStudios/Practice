@@ -254,7 +254,9 @@ public class PlayerInventory extends CraftInventoryPlayer {
                 continue;
 
             ItemStack item = new ItemBuilder(queuetype.getDisplayItem())
-                    .name(CC.SECONDARY + CC.B + queuetype.getDisplayName()).build();
+                    .name(CC.SECONDARY + CC.B + queuetype.getDisplayName())
+                    .lore(CC.ACCENT + "Right click to open queue.", CC.BOARD_SEPARATOR)
+                    .build();
             setItem(queuetype.getSlotNumber(), item,
                     p -> {
                         if (!p.getParty().getPartyLeader().equals(p)) {
@@ -293,7 +295,8 @@ public class PlayerInventory extends CraftInventoryPlayer {
             Queuetype queuetype = list.get(i);
 
             ItemStack item = new ItemBuilder(queuetype.getDisplayItem())
-                    .name(CC.SECONDARY + CC.B + queuetype.getDisplayName()).build();
+                    .name(CC.SECONDARY + CC.B + queuetype.getDisplayName())
+                    .lore(CC.ACCENT + "Right click to queue.").build();
             setItem(queuetype.getSlotNumber(), item,
                     p -> {
 
@@ -315,6 +318,7 @@ public class PlayerInventory extends CraftInventoryPlayer {
         if (KitEditorManager.getEnabled()) {
             ItemStack editor = new ItemBuilder(KitEditorManager.getDisplayItem())
                     .name(CC.SECONDARY + CC.B + KitEditorManager.getDisplayName())
+                    .lore(CC.ACCENT + "Right click to edit a kit.")
                     .build();
             setItem(KitEditorManager.getSlot(), editor,
                     p -> {
@@ -326,6 +330,7 @@ public class PlayerInventory extends CraftInventoryPlayer {
         if (PartyManager.getEnabled()) {
             ItemStack parties = new ItemBuilder(PartyManager.getDisplayItem())
                     .name(CC.SECONDARY + CC.B + PartyManager.getDisplayName())
+                    .lore(CC.ACCENT + "Right click to create a party.")
                     .build();
             setItem(PartyManager.getSlot(), parties,
                     p -> p.getPlayer().performCommand("p create"));
@@ -334,6 +339,7 @@ public class PlayerInventory extends CraftInventoryPlayer {
         if (PlayerSettingsManager.getEnabled()) {
             ItemStack settings = new ItemBuilder(PlayerSettingsManager.getDisplayItem())
                     .name(CC.SECONDARY + CC.B + PlayerSettingsManager.getDisplayName())
+                    .lore(CC.ACCENT + "Right click to open settings.")
                     .build();
             setItem(PlayerSettingsManager.getSlot(), settings,
                     p -> p.getPlayer().performCommand("settings"));
@@ -342,6 +348,7 @@ public class PlayerInventory extends CraftInventoryPlayer {
         if (SpectateManager.getEnabled()) {
             ItemStack spectate = new ItemBuilder(SpectateManager.getDisplayItem())
                     .name(CC.SECONDARY + CC.B + SpectateManager.getDisplayName())
+                    .lore(CC.ACCENT + "Right click to spectate.")
                     .build();
             setItem(SpectateManager.getSlot(), spectate,
                     p -> p.getPlayer().performCommand("spectate"));
@@ -350,6 +357,7 @@ public class PlayerInventory extends CraftInventoryPlayer {
         if (LeaderboardManager.getEnabled()) {
             ItemStack leaderboard = new ItemBuilder(LeaderboardManager.getDisplayItem())
                     .name(CC.SECONDARY + CC.B + LeaderboardManager.getDisplayName())
+                    .lore(CC.ACCENT + "Right click to view.")
                     .build();
             setItem(LeaderboardManager.getSlot(), leaderboard,
                     p -> p.getPlayer().performCommand("leaderboard"));
