@@ -3,8 +3,6 @@ package gg.mineral.practice.listeners;
 import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.World;
-import org.bukkit.block.Block;
-import org.bukkit.block.BlockFace;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.player.PlayerMoveEvent;
@@ -28,6 +26,15 @@ public class MovementListener implements Listener {
         Location pearlLocation = event.getTo();
         Location fromLocation = event.getFrom();
 
+        pearlLocation.setY((int) (pearlLocation.getY() + 0.5));
+        pearlLocation.setX(pearlLocation.getBlockX() + 0.5);
+        pearlLocation.setZ(pearlLocation.getBlockZ() + 0.5);
+
+        if (fromLocation.distanceSquared(pearlLocation) <= 2.25) {
+            event.setTo(fromLocation);
+            return;
+        }
+
         if (isInsideBlock(pearlLocation)) {
             // Find the nearest safe location in the direction from where the pearl was
             // thrown
@@ -40,39 +47,34 @@ public class MovementListener implements Listener {
             return;
         }
 
-        Block block = pearlLocation.getBlock();
-
-        for (BlockFace face : BlockFace.values()) {
-            Block relative = block.getRelative(face);
-            Material type = relative.getType();
-
-            if (type != Material.AIR) {
-                pearlLocation.setY(pearlLocation.getBlockY());
-                pearlLocation.setX(pearlLocation.getBlockX() + 0.5);
-                pearlLocation.setZ(pearlLocation.getBlockZ() + 0.5);
-                break;
-            }
-        }
-
         event.setTo(pearlLocation);
     }
 
     private Location findNearestSafeLocation(Location to, Location from) {
         Vector direction = to.toVector().subtract(from.toVector()).normalize();
         Location currentLocation = to.clone();
-        int safetyCounter = 100; // To avoid infinite loops, limit the number of checks
+        int safetyCounter = 100;
 
         while (safetyCounter-- > 0) {
-            currentLocation.add(direction.multiply(-2)); // Move half a block in the direction of the throw origin
-            currentLocation.setX(Math.round(currentLocation.getX()) + 0.5);
+            currentLocation.add(direction.multiply(-0.5));
             currentLocation.setY(Math.round(currentLocation.getY() + 0.5));
-            currentLocation.setZ(Math.round(currentLocation.getZ()) + 0.5);
-            if (!isInsideBlock(currentLocation)) {
+            if (!isInsideBlock(currentLocation) && hasBlockBelow(currentLocation, 10))
                 return currentLocation;
-            }
+
         }
 
-        return null; // No safe location found within the limits
+        return null;
+    }
+
+    private boolean hasBlockBelow(Location loc, int depth) {
+        Location checkLoc = loc.clone();
+        for (int i = 0; i < depth; i++) {
+            checkLoc.subtract(0, 1, 0);
+            if (checkLoc.getBlock().getType() != Material.AIR)
+                return true;
+
+        }
+        return false;
     }
 
     private boolean isInsideBlock(Location loc) {
