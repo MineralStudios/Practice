@@ -35,29 +35,45 @@ public class EloMenu extends PracticeMenu {
 
                     setSlot(4,
                             ItemStacks.GLOBAL_ELO.name(
-                                    CC.ACCENT + arg.getName() + "'s Global Elo: " + queuetype.getGlobalElo(arg))
+                                    CC.SECONDARY + CC.B + arg.getName() + "'s Global Elo")
+                                    .lore(CC.WHITE + "The " + CC.SECONDARY + "average elo" + CC.WHITE
+                                            + " across all game types.",
+                                            CC.WHITE + "You must be above " + CC.SECONDARY + "1000 elo" + CC.WHITE
+                                                    + " in every",
+                                            CC.WHITE + "game type to be on " + CC.SECONDARY + "leaderboards" + CC.WHITE
+                                                    + ".",
+                                            " ",
+                                            CC.WHITE + "Currently:",
+                                            CC.GOLD + queuetype.getGlobalElo(arg))
+
                                     .build());
 
                     for (Gametype gametype : queuetype.getGametypes().keySet()) {
                         if (gametype.isInCatagory())
                             continue;
                         ItemStack item = new ItemBuilder(gametype.getDisplayItem())
-                                .name(gametype.getDisplayName())
-                                .lore(CC.ACCENT + arg.getName() + "'s Elo: " + gametype.getElo(arg)).build();
+                                .name(CC.SECONDARY + CC.B + gametype.getDisplayName())
+                                .lore(" ",
+                                        CC.WHITE + arg.getName() + "'s Elo:",
+                                        CC.GOLD + gametype.getElo(arg))
+                                .build();
                         setSlot(queuetype.getGametypes().getInt(gametype) + 18, item);
                     }
 
                     for (Entry<Catagory, Integer> entry : queuetype.getCatagories().object2IntEntrySet()) {
                         Catagory c = entry.getKey();
                         ItemBuilder itemBuild = new ItemBuilder(c.getDisplayItem())
-                                .name(c.getDisplayName());
+                                .name(CC.SECONDARY + CC.B + c.getDisplayName());
 
                         List<String> sb = new GlueList<String>();
                         sb.add(CC.SECONDARY + "Includes:");
 
-                        for (Gametype g : c.getGametypes()) {
-                            sb.add(g.getDisplayName());
-                        }
+                        for (Gametype g : c.getGametypes())
+                            sb.add(CC.WHITE + g.getDisplayName());
+
+                        sb.add(" ");
+                        sb.add(CC.BOARD_SEPARATOR);
+                        sb.add(CC.ACCENT + "Click to view catagory.");
 
                         itemBuild.lore(sb.toArray(new String[0]));
                         ItemStack item = itemBuild.build();

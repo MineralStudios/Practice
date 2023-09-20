@@ -97,10 +97,8 @@ public class Queuetype implements SaveableData {
 		lore.add(CC.WHITE + "The " + CC.SECONDARY + "global" + CC.WHITE + " elo leaderboard.");
 		lore.add(" ");
 
-		int position = 1;
-
 		for (gg.mineral.practice.util.collection.LeaderboardMap.Entry entry : leaderboardMap.getEntries()) {
-			lore.add(CC.SECONDARY + "(" + position++ + ")" + entry.getKey() + ": " + CC.WHITE + entry.getValue());
+			lore.add(CC.SECONDARY + entry.getKey() + ": " + CC.WHITE + entry.getValue());
 		}
 
 		if (lore.size() <= 2)

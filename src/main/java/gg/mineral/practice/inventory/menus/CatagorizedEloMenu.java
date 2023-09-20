@@ -28,8 +28,11 @@ public class CatagorizedEloMenu extends PracticeMenu {
 
         for (Gametype gametype : catagory.getGametypes()) {
             ItemStack item = new ItemBuilder(gametype.getDisplayItem())
-                    .name(gametype.getDisplayName())
-                    .lore(CC.ACCENT + arg.getName() + "'s Elo: " + gametype.getElo(arg)).build();
+                    .name(CC.SECONDARY + CC.B + gametype.getDisplayName())
+                    .lore(" ",
+                            CC.WHITE + arg.getName() + "'s Elo:",
+                            CC.GOLD + gametype.getElo(arg))
+                    .build();
             setSlot(queuetype.getGametypes().getInt(gametype), item);
         }
 
