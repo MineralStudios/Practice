@@ -252,8 +252,10 @@ public class Gametype implements SaveableData {
 	public List<String> getLeaderboardLore() {
 		List<String> lore = new GlueList<>();
 
+		int position = 1;
+
 		for (gg.mineral.practice.util.collection.LeaderboardMap.Entry entry : leaderboardMap.getEntries()) {
-			lore.add(CC.ACCENT + entry.getKey() + ": " + entry.getValue());
+			lore.add(CC.SECONDARY + "(" + position++ + ")" + entry.getKey() + ": " + CC.WHITE + entry.getValue());
 		}
 
 		if (lore.isEmpty())

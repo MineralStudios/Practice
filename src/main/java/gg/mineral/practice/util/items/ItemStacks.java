@@ -30,8 +30,6 @@ public class ItemStacks {
                         LIST_PLAYERS = new ItemBuilder(Material.PAPER).name(CC.SECONDARY + CC.B + "List Players")
                                         .build(),
                         DUEL = new ItemBuilder(Material.WOOD_AXE).name(CC.SECONDARY + CC.B + "Duel").build(),
-                        LEADERBOARD = new ItemBuilder(Material.MAP).name(CC.SECONDARY + CC.B + "Leaderboard")
-                                        .build(),
                         SETTINGS = new ItemBuilder(Material.MAP).name(CC.SECONDARY + CC.B + "Settings")
                                         .build(),
                         PARTY_SPLIT = new ItemBuilder(Material.GOLD_AXE).name(CC.SECONDARY + CC.B + "Party Split")

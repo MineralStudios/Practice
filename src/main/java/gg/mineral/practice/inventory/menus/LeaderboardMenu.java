@@ -30,7 +30,7 @@ public class LeaderboardMenu extends PracticeMenu {
         QueuetypeManager.getQueuetypes().stream().filter(q -> q.isRanked())
                 .findFirst().ifPresent(queuetype -> {
 
-                    ItemStack global = ItemStacks.GLOBAL_ELO.name(CC.SECONDARY + "Global").build();
+                    ItemStack global = ItemStacks.GLOBAL_ELO.name(CC.SECONDARY + CC.B + "Global").build();
                     ItemMeta globalMeta = global.getItemMeta();
 
                     try {
@@ -51,7 +51,7 @@ public class LeaderboardMenu extends PracticeMenu {
                             continue;
 
                         ItemStack item = new ItemBuilder(gametype.getDisplayItem().clone())
-                                .name(CC.SECONDARY + gametype.getDisplayName()).build();
+                                .name(CC.SECONDARY + CC.B + gametype.getDisplayName()).build();
                         ItemMeta meta = item.getItemMeta();
 
                         try {
@@ -67,14 +67,17 @@ public class LeaderboardMenu extends PracticeMenu {
                     for (Entry<Catagory, Integer> entry : queuetype.getCatagories().object2IntEntrySet()) {
                         Catagory c = entry.getKey();
                         ItemBuilder itemBuild = new ItemBuilder(c.getDisplayItem())
-                                .name(c.getDisplayName());
+                                .name(CC.SECONDARY + CC.B + c.getDisplayName());
 
                         List<String> sb = new GlueList<String>();
                         sb.add(CC.SECONDARY + "Includes:");
 
-                        for (Gametype g : c.getGametypes()) {
-                            sb.add(g.getDisplayName());
-                        }
+                        for (Gametype g : c.getGametypes())
+                            sb.add(CC.WHITE + g.getDisplayName());
+
+                        sb.add(" ");
+                        sb.add(CC.BOARD_SEPARATOR);
+                        sb.add(CC.ACCENT + "Click to view catagory.");
 
                         itemBuild.lore(sb.toArray(new String[0]));
                         ItemStack item = itemBuild.build();
