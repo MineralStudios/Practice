@@ -57,24 +57,6 @@ public class ItemStacks {
                         ADVANCED_MODE = new ItemBuilder(Material.GOLD_RECORD).name("Advanced Mode").lore().build(),
                         BOT_MODE = new ItemBuilder(Material.RECORD_12).name("Bot").lore().build(),
                         PLAYER_MODE = new ItemBuilder(Material.RECORD_7).name("Player").lore().build(),
-                        TOGGLE_PLAYER_VISIBILITY = new ItemBuilder(Material.GOLDEN_CARROT)
-                                        .name("Toggle Player Visibility").build(),
-                        TOGGLE_DUEL_REQUESTS = new ItemBuilder(Material.WOOD_SWORD)
-                                        .name(CC.SECONDARY + "Toggle Duel Requests")
-                                        .build(),
-                        TOGGLE_PARTY_REQUESTS = new ItemBuilder(Material.NETHER_STAR)
-                                        .name(CC.SECONDARY + "Toggle Party Requests")
-                                        .build(),
-                        TOGGLE_SCOREBOARD = new ItemBuilder(Material.ITEM_FRAME)
-                                        .name(CC.SECONDARY + "Toggle Scoreboard")
-                                        .build(),
-
-                        TOGGLE_PRIVATE_MESSAGES = new ItemBuilder(Material.BOOK_AND_QUILL)
-                                        .name(CC.SECONDARY + "Toggle Private Messages")
-                                        .build(),
-                        CHANGE_TIME = new ItemBuilder(Material.WATCH)
-                                        .name(CC.SECONDARY + "Change Time")
-                                        .build(),
                         NEXT_PAGE = new ItemBuilder(new ItemStack(Material.WOOL, 1, DyeColor.LIME.getData()))
                                         .name("Next Page").build(),
                         PREVIOUS_PAGE = new ItemBuilder(new ItemStack(Material.WOOL, 1, DyeColor.RED.getData()))
@@ -212,6 +194,26 @@ public class ItemStacks {
                                         .lore("Click to change value."),
                         ADD_1 = new ItemBuilder(new ItemStack(Material.WOOL, 1, DyeColor.GREEN.getData()))
                                         .lore("Click to change value."),
-                        GLOBAL_ELO = new ItemBuilder(Material.ENDER_PORTAL_FRAME);
+                        GLOBAL_ELO = new ItemBuilder(Material.ENDER_PORTAL_FRAME),
+                        TOGGLE_PLAYER_VISIBILITY = new ItemBuilder(Material.GOLDEN_CARROT)
+                                        .name(CC.SECONDARY + CC.B + "Toggle Player Visibility"),
+                        TOGGLE_DUEL_REQUESTS = new ItemBuilder(Material.WOOD_SWORD)
+                                        .name(CC.SECONDARY + CC.B + "Toggle Duel Requests"),
+                        TOGGLE_PARTY_REQUESTS = new ItemBuilder(Material.NETHER_STAR)
+                                        .name(CC.SECONDARY + CC.B + "Toggle Party Requests"),
+                        TOGGLE_SCOREBOARD = new ItemBuilder(Material.ITEM_FRAME)
+                                        .name(CC.SECONDARY + CC.B + "Toggle Scoreboard"),
+                        TOGGLE_PRIVATE_MESSAGES = new ItemBuilder(Material.BOOK_AND_QUILL)
+                                        .name(CC.SECONDARY + CC.B + "Toggle Private Messages"),
+                        TOGGLE_PRIVATE_MESSAGES_SOUNDS = new ItemBuilder(Material.NOTE_BLOCK)
+                                        .name(CC.SECONDARY + CC.B + "Toggle Private Message Sounds"),
+                        TOGGLE_FRIENDS_SOUNDS = new ItemBuilder(Material.JUKEBOX)
+                                        .name(CC.SECONDARY + CC.B + "Toggle Friend Sounds"),
+                        TOGGLE_FRIEND_REQUESTS = new ItemBuilder(Material.CAKE)
+                                        .name(CC.SECONDARY + CC.B + "Toggle Friend Requests"),
+                        TOGGLE_GLOBAL_CHAT = new ItemBuilder(Material.FEATHER)
+                                        .name(CC.SECONDARY + CC.B + "Toggle Global Chat"),
+                        CHANGE_TIME = new ItemBuilder(Material.WATCH)
+                                        .name(CC.SECONDARY + CC.B + "Change Time");
 
 }

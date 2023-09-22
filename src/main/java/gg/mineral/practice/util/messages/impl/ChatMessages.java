@@ -209,6 +209,22 @@ public class ChatMessages {
 			SCOREBOARD_TOGGLED = new ChatMessage(
 					"Your scoreboard has now been %toggled%.",
 					CC.YELLOW).highlightText(CC.GOLD, "%toggled%"),
+
+			FRIENDS_TOGGLED = new ChatMessage(
+					"Your friend requests has now been %toggled%.",
+					CC.YELLOW).highlightText(CC.GOLD, "%toggled%"),
+			FRIEND_SOUND_TOGGLED = new ChatMessage(
+					"Your friend request sounds has now been %toggled%.",
+					CC.YELLOW).highlightText(CC.GOLD, "%toggled%"),
+			PRIVATE_MESSAGES_TOGGLED = new ChatMessage(
+					"Your private messages has now been %toggled%.",
+					CC.YELLOW).highlightText(CC.GOLD, "%toggled%"),
+			PRIVATE_MESSAGE_SOUNDS_TOGGLED = new ChatMessage(
+					"Your private message sounds has now been %toggled%.",
+					CC.YELLOW).highlightText(CC.GOLD, "%toggled%"),
+			GLOBAL_CHAT_TOGGLED = new ChatMessage(
+					"Your global chat has now been %toggled%.",
+					CC.YELLOW).highlightText(CC.GOLD, "%toggled%"),
 			VISIBILITY_TOGGLED = new ChatMessage(
 					"Your player visibility has now been %toggled%.",
 					CC.YELLOW).highlightText(CC.GOLD, "%toggled%"),
