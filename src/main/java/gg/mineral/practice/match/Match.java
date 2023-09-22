@@ -271,10 +271,14 @@ public class Match implements Spectatable {
 	}
 
 	public void handleOpponentMessages(Profile profile1, Profile profile2) {
-		StringBuilder sb = new StringBuilder("Opponent: " + profile2.getName())
-				.append(data.isRanked() ? " (Elo: " + data.getQueueEntry().getGametype().getElo(profile2) + ")" : "");
+		StringBuilder sb = new StringBuilder("Opponent: " + CC.AQUA + profile2.getName())
+				.append(data.isRanked()
+						? CC.WHITE + "\nElo: " + CC.AQUA + data.getQueueEntry().getGametype().getElo(profile2)
+						: "");
 
-		profile1.getPlayer().sendMessage(CC.ACCENT + sb.toString());
+		profile1.getPlayer().sendMessage(CC.BOARD_SEPARATOR);
+		profile1.getPlayer().sendMessage(sb.toString());
+		profile1.getPlayer().sendMessage(CC.BOARD_SEPARATOR);
 	}
 
 	public void setWorldParameters(World world) {

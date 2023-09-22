@@ -255,9 +255,9 @@ public class ChatMessages {
 			WON_EVENT = new ChatMessage("%player% has won the event.", CC.AQUA).highlightText(CC.D_AQUA, "%player%"),
 			ROUND_OVER = new ChatMessage("Round %round% his over. The next round will start in 5 seconds.", CC.AQUA)
 					.highlightText(CC.D_AQUA, "%round%"),
-			BEGINS_IN = new ChatMessage("The match will begin in %time% second(s).", CC.AQUA)
-					.highlightText(CC.D_AQUA, "%time%"),
-			MATCH_STARTED = new ChatMessage("The match has started.", CC.D_AQUA, true),
+			BEGINS_IN = new ChatMessage("The match will begin in %time% second(s).", CC.WHITE)
+					.highlightText(CC.SECONDARY, "match", "%time% second(s)"),
+			MATCH_STARTED = new ChatMessage("The match has started.", CC.SECONDARY, true),
 			FOLLOWING = new ChatMessage("You are now following %player%.", CC.AQUA).highlightText(CC.D_AQUA,
 					"%player%"),
 			POTS = new ChatMessage("You have %pots% health potions in your inventory.", CC.AQUA)

@@ -20,7 +20,7 @@ public class ChatMessage extends Message {
 	}
 
 	protected void formatMessage(String c, boolean bold) {
-		this.addition = bold ? CC.B + c : c;
+		this.addition = bold ? c + CC.B : c;
 		message = addition + message;
 	}
 
