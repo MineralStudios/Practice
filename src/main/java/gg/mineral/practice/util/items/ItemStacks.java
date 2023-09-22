@@ -110,7 +110,8 @@ public class ItemStacks {
                                                         CC.ACCENT + "Click to be added to a random queue.")
                                         .build(),
                         RANDOM_DIFFICULTY = new ItemBuilder(Material.PAPER)
-                                        .name("Random Difficulty").build(),
+                                        .name(CC.SECONDARY + CC.B + "Random Difficulty")
+                                        .lore(CC.ACCENT + "Click to randomize bot parameters.").build(),
                         EASY = new ItemBuilder(new ItemStack(Material.WOOL, 1, DyeColor.GREEN.getData())).name("Easy")
                                         .build(),
                         MEDIUM = new ItemBuilder(new ItemStack(Material.WOOL, 1, DyeColor.YELLOW.getData()))
@@ -139,7 +140,8 @@ public class ItemStacks {
                                                         CC.GREEN + "Enabled",
                                                         " ", CC.BOARD_SEPARATOR, CC.ACCENT + "Click to toggle bots.")
                                         .build(),
-                        BACK = new ItemBuilder(new ItemStack(Material.WOOL, 1, DyeColor.RED.getData())).name("Back")
+                        BACK = new ItemBuilder(new ItemStack(Material.WOOL, 1, DyeColor.RED.getData()))
+                                        .name(CC.SECONDARY + CC.B + "Back").lore(CC.ACCENT + "Click to go back.")
                                         .build();
 
         // Item Builders
