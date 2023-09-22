@@ -307,7 +307,8 @@ public class SelectGametypeMenu extends PracticeMenu {
 
 				queue(queueEntry);
 
-				viewer.getPlayer().closeInventory();
+				if (viewer.getOpenMenu() instanceof SelectGametypeMenu)
+					viewer.getPlayer().closeInventory();
 			});
 
 			boolean arenaSelection = viewer.getMatchData().getArenaSelection();
