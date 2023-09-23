@@ -35,7 +35,7 @@ public class QueuetypeArenaEnableMenu extends PracticeMenu {
             ItemStack item;
             try {
                 item = new ItemBuilder(a.getDisplayItem())
-                        .name(a.getDisplayName()).lore(color.toString() + arenaEnabled).build();
+                        .name(CC.SECONDARY + CC.B + a.getDisplayName()).lore(color.toString() + arenaEnabled).build();
             } catch (Exception e) {
                 continue;
             }

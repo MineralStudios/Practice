@@ -35,7 +35,7 @@ public class QueueManagerMenu extends PracticeMenu {
         for (QueueEntry queueEntry : queueEntries) {
             Gametype g = queueEntry.getGametype();
             ItemStack item = new ItemBuilder(g.getDisplayItem())
-                    .name(queueEntry.getQueuetype().getDisplayName() + " " + g.getDisplayName())
+                    .name(CC.SECONDARY + CC.B + queueEntry.getQueuetype().getDisplayName() + " " + g.getDisplayName())
                     .lore(CC.RED + "Click to leave queue.").build();
 
             add(item, interaction -> {

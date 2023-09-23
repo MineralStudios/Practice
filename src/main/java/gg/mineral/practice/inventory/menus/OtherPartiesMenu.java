@@ -25,7 +25,7 @@ public class OtherPartiesMenu extends PracticeMenu {
             if (party.getPartyLeader().getPlayerStatus() == PlayerStatus.IDLE && !party.equals(viewer.getParty())) {
                 Profile partyLeader = party.getPartyLeader();
                 add(ItemStacks.OTHER_PARTY
-                        .name(partyLeader.getName()).build(),
+                        .name(CC.SECONDARY + CC.B + partyLeader.getName()).build(),
                         interaction -> {
                             Profile p = interaction.getProfile();
                             p.getPlayer().performCommand("duel " + partyLeader.getName());

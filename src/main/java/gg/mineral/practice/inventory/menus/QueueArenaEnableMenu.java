@@ -43,7 +43,8 @@ public class QueueArenaEnableMenu extends PracticeMenu {
 
                 if (arenaEnabled) {
                     item = new ItemBuilder(a.getDisplayItem())
-                            .name(a.getDisplayName()).lore(CC.GREEN + "Click to disable arena.").build();
+                            .name(CC.SECONDARY + CC.B + a.getDisplayName()).lore(CC.GREEN + "Click to disable arena.")
+                            .build();
                 } else {
                     item = ItemStacks.ARENA_DISABLED.name(a.getDisplayName()).build();
                 }
