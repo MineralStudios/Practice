@@ -21,7 +21,7 @@ public class SelectCategorizedExistingKitMenu extends SelectExistingKitMenu {
 	public boolean update() {
 		for (Gametype g : c.getGametypes()) {
 			ItemStack item = new ItemBuilder(g.getDisplayItem().clone())
-					.name(CC.PRIMARY + g.getDisplayName()).lore().build();
+					.name(CC.SECONDARY + CC.B + g.getDisplayName()).lore(CC.ACCENT + "Click to select.").build();
 			add(item, () -> {
 				if (viewer.isInKitCreator()) {
 					viewer.giveKit(g.getKit());

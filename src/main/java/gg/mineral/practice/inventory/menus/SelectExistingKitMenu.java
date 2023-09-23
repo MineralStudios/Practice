@@ -1,7 +1,10 @@
 package gg.mineral.practice.inventory.menus;
 
+import java.util.List;
+
 import org.bukkit.inventory.ItemStack;
 
+import gg.mineral.api.collection.GlueList;
 import gg.mineral.practice.catagory.Catagory;
 import gg.mineral.practice.entity.Profile;
 import gg.mineral.practice.gametype.Gametype;
@@ -32,7 +35,7 @@ public class SelectExistingKitMenu extends PracticeMenu {
             if (g.isInCatagory())
                 continue;
             ItemStack item = new ItemBuilder(g.getDisplayItem())
-                    .name(g.getDisplayName()).lore().build();
+                    .name(CC.SECONDARY + CC.B + g.getDisplayName()).lore(CC.ACCENT + "Click to select.").build();
 
             Runnable runnable = () -> {
 
@@ -49,8 +52,21 @@ public class SelectExistingKitMenu extends PracticeMenu {
         }
 
         for (Catagory c : CatagoryManager.getCatagories()) {
-            ItemStack item = new ItemBuilder(c.getDisplayItem())
-                    .name(c.getDisplayName()).build();
+            ItemBuilder itemBuild = new ItemBuilder(c.getDisplayItem())
+                    .name(CC.SECONDARY + CC.B + c.getDisplayName());
+
+            List<String> sb = new GlueList<String>();
+            sb.add(CC.SECONDARY + "Includes:");
+
+            for (Gametype g : c.getGametypes())
+                sb.add(CC.WHITE + g.getDisplayName());
+
+            sb.add(" ");
+            sb.add(CC.BOARD_SEPARATOR);
+            sb.add(CC.ACCENT + "Click to view catagory.");
+
+            itemBuild.lore(sb.toArray(new String[0]));
+            ItemStack item = itemBuild.build();
             add(item, interaction -> {
                 Profile p = interaction.getProfile();
                 p.openMenu(new SelectCategorizedExistingKitMenu(c, menu, simple));
