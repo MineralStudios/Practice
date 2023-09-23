@@ -62,9 +62,18 @@ public class ItemStacks {
                         CHOOSE_EXISTING_KIT = new ItemBuilder(Material.LEATHER_CHESTPLATE).name("Choose Existing Kit")
                                         .build(),
                         CHOOSE_EXISTING_KNOCKBACK = new ItemBuilder(Material.GOLD_SWORD)
-                                        .name("Choose Existing Knockback")
+                                        .name(CC.SECONDARY + CC.B + "Choose Existing Knockback")
+                                        .lore(CC.WHITE + "Choose a " + CC.SECONDARY + "preconfigured knockback"
+                                                        + CC.WHITE + ".",
+                                                        " ",
+                                                        CC.BOARD_SEPARATOR, CC.ACCENT + "Click to select knockback.")
                                         .build(),
-                        CREATE_CUSTOM_KNOCKBACK = new ItemBuilder(Material.STONE_SWORD).name("Create Custom Knockback")
+                        CREATE_CUSTOM_KNOCKBACK = new ItemBuilder(Material.STONE_SWORD)
+                                        .name(CC.SECONDARY + CC.B + "Create Custom Knockback")
+                                        .lore(CC.WHITE + "Create a " + CC.SECONDARY + "custom knockback"
+                                                        + CC.WHITE + ".",
+                                                        " ",
+                                                        CC.BOARD_SEPARATOR, CC.ACCENT + "Click to create knockback.")
                                         .build(),
                         CHOOSE_CUSTOM_KIT = new ItemBuilder(Material.GOLD_CHESTPLATE).name("Create Custom Kit").build(),
                         SIMPLE_MODE = new ItemBuilder(Material.GREEN_RECORD).name(CC.SECONDARY + CC.B + "Simple Mode")
@@ -97,13 +106,13 @@ public class ItemStacks {
                         DEFAULT_QUEUETYPE_DISPLAY_ITEM = new ItemStack(Material.DIAMOND_SWORD),
                         WOOD_AXE = new ItemStack(Material.WOOD_AXE),
                         APPLY = new ItemBuilder(new ItemStack(Material.WOOL, 1, DyeColor.GREEN.getData())).name(" ")
-                                        .lore(CC.GREEN + "Click To Apply Changes", " ").build(),
+                                        .lore(CC.GOLD + CC.B + "Click To Apply Changes", " ").build(),
                         DESELECT_ALL = new ItemBuilder(Material.REDSTONE_BLOCK).name(" ")
-                                        .lore(CC.GREEN + "Deselect All", " ").build(),
+                                        .lore(CC.RED + CC.B + "Deselect All", " ").build(),
                         SELECT_ALL = new ItemBuilder(Material.LAPIS_BLOCK).name(" ")
-                                        .lore(CC.GREEN + "Select All", " ").build(),
+                                        .lore(CC.GREEN + CC.B + "Select All", " ").build(),
                         CANCEL = new ItemBuilder(new ItemStack(Material.WOOL, 1, DyeColor.RED.getData())).name(" ")
-                                        .lore(CC.RED + "Click To Cancel Changes", " ").build(),
+                                        .lore(CC.RED + CC.B + "Click To Cancel Changes", " ").build(),
                         RANDOM_QUEUE = new ItemBuilder(Material.PAPER)
                                         .name(CC.SECONDARY + CC.B + "Random Queue")
                                         .lore(CC.WHITE + "Adds you to a " + CC.BLUE + "random" + CC.WHITE + " queue.",
