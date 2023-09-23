@@ -59,7 +59,12 @@ public class ItemStacks {
                                         .name("Save Kit").build(),
                         DELETE_KIT = new ItemBuilder(new ItemStack(351, 1, (short) 1))
                                         .name("Delete Kit").build(),
-                        CHOOSE_EXISTING_KIT = new ItemBuilder(Material.LEATHER_CHESTPLATE).name("Choose Existing Kit")
+                        CHOOSE_EXISTING_KIT = new ItemBuilder(Material.LEATHER_CHESTPLATE)
+                                        .name(CC.SECONDARY + CC.B + "Choose Existing Kit")
+                                        .lore(CC.WHITE + "Create a " + CC.SECONDARY + "custom kit"
+                                                        + CC.WHITE + ".",
+                                                        " ",
+                                                        CC.BOARD_SEPARATOR, CC.ACCENT + "Click to create kit.")
                                         .build(),
                         CHOOSE_EXISTING_KNOCKBACK = new ItemBuilder(Material.GOLD_SWORD)
                                         .name(CC.SECONDARY + CC.B + "Choose Existing Knockback")
@@ -75,7 +80,13 @@ public class ItemStacks {
                                                         " ",
                                                         CC.BOARD_SEPARATOR, CC.ACCENT + "Click to create knockback.")
                                         .build(),
-                        CHOOSE_CUSTOM_KIT = new ItemBuilder(Material.GOLD_CHESTPLATE).name("Create Custom Kit").build(),
+                        CHOOSE_CUSTOM_KIT = new ItemBuilder(Material.GOLD_CHESTPLATE)
+                                        .name(CC.SECONDARY + CC.B + "Create Custom Kit")
+                                        .lore(CC.WHITE + "Choose a " + CC.SECONDARY + "preconfigured kit"
+                                                        + CC.WHITE + ".",
+                                                        " ",
+                                                        CC.BOARD_SEPARATOR, CC.ACCENT + "Click to select kit.")
+                                        .build(),
                         SIMPLE_MODE = new ItemBuilder(Material.GREEN_RECORD).name(CC.SECONDARY + CC.B + "Simple Mode")
                                         .lore(CC.WHITE + "A more " + CC.SECONDARY + "simple and familiar", CC.WHITE
                                                         + "duel interface.",
