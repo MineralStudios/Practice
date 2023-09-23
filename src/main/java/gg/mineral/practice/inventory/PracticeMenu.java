@@ -12,6 +12,7 @@ import org.bukkit.inventory.ItemStack;
 import gg.mineral.practice.entity.Profile;
 import gg.mineral.practice.util.items.ItemStacks;
 import gg.mineral.practice.util.math.MathUtil;
+import gg.mineral.practice.util.messages.CC;
 import it.unimi.dsi.fastutil.ints.Int2ObjectOpenHashMap;
 import lombok.Getter;
 import lombok.Setter;
@@ -251,24 +252,32 @@ public class PracticeMenu implements Menu {
 
 				switch (i) {
 					case 48:
-						setSlot(i, ItemStacks.PREVIOUS_PAGE, interaction -> {
-							Profile p = interaction.getProfile();
-							if (pageNumber == 0) {
-								return;
-							}
+						setSlot(i, ItemStacks.PREVIOUS_PAGE.lore(
+								CC.WHITE + "Current page:",
+								CC.GOLD + pageNumber,
+								CC.BOARD_SEPARATOR, CC.ACCENT + "Click to go to the previous page.").build(),
+								interaction -> {
+									Profile p = interaction.getProfile();
+									if (pageNumber <= 0) {
+										return;
+									}
 
-							PracticeMenu.this.open(p, pageNumber - 1);
-						});
+									PracticeMenu.this.open(p, pageNumber - 1);
+								});
 						break;
 					case 50:
-						setSlot(i, ItemStacks.NEXT_PAGE, interaction -> {
-							Profile p = interaction.getProfile();
-							if (pageNumber == pageMap.size() - 1) {
-								return;
-							}
+						setSlot(i, ItemStacks.NEXT_PAGE.lore(
+								CC.WHITE + "Current page:",
+								CC.GOLD + pageNumber,
+								CC.BOARD_SEPARATOR, CC.ACCENT + "Click to go to the next page.").build(),
+								interaction -> {
+									Profile p = interaction.getProfile();
+									if (pageNumber >= pageMap.size() - 1) {
+										return;
+									}
 
-							PracticeMenu.this.open(p, pageNumber + 1);
-						});
+									PracticeMenu.this.open(p, pageNumber + 1);
+								});
 						break;
 					default:
 						setSlot(i, ItemStacks.BLACK_STAINED_GLASS);

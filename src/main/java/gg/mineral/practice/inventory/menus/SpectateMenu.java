@@ -32,7 +32,12 @@ public class SpectateMenu extends PracticeMenu {
                 continue;
 
             ItemStack skull = new ItemBuilder(item.clone())
-                    .name(CC.SECONDARY + m.getProfile1().getName() + " vs " + m.getProfile2().getName()).lore()
+                    .name(CC.SECONDARY + CC.B + m.getProfile1().getName() + " vs " + m.getProfile2().getName())
+                    .lore(
+                            CC.WHITE + "Game type:",
+                            CC.GOLD + (queueEntry == null ? "Custom"
+                                    : m.getData().getQueueEntry().getGametype().getName()),
+                            CC.BOARD_SEPARATOR, CC.ACCENT + "Click to spectate.")
                     .build();
             add(skull, interaction -> {
                 Profile p = interaction.getProfile();

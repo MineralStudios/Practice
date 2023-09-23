@@ -255,7 +255,7 @@ public class PlayerInventory extends CraftInventoryPlayer {
 
             ItemStack item = new ItemBuilder(queuetype.getDisplayItem())
                     .name(CC.SECONDARY + CC.B + queuetype.getDisplayName())
-                    .lore(CC.ACCENT + "Right click to open queue.", CC.BOARD_SEPARATOR)
+                    .lore(CC.ACCENT + "Right click to queue.")
                     .build();
             setItem(queuetype.getSlotNumber(), item,
                     p -> {

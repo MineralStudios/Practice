@@ -10,31 +10,45 @@ import gg.mineral.practice.util.messages.CC;
 public class ItemStacks {
         // Item Stacks
         public static final ItemStack STOP_FOLLOWING = new ItemBuilder(new ItemStack(351, 1, (short) 1))
-                        .name(CC.SECONDARY + CC.B + "Stop Following").build(),
+                        .name(CC.SECONDARY + CC.B + "Stop Following").lore(CC.ACCENT + "Right click to stop following.")
+                        .build(),
                         STOP_SPECTATING = new ItemBuilder(new ItemStack(351, 1, (short) 1))
-                                        .name(CC.SECONDARY + CC.B + "Stop Spectating").build(),
+                                        .name(CC.SECONDARY + CC.B + "Stop Spectating")
+                                        .lore(CC.ACCENT + "Right click to stop spectating.").build(),
                         WAIT_TO_LEAVE = new ItemBuilder(new ItemStack(351, 1, (short) 14))
-                                        .name(CC.SECONDARY + CC.B + "Please Wait").build(),
+                                        .name(CC.SECONDARY + CC.B + "Please Wait")
+                                        .lore(CC.ACCENT + "You must wait before leaving.").build(),
                         LEAVE_TOURNAMENT = new ItemBuilder(new ItemStack(351, 1, (short) 1))
-                                        .name(CC.SECONDARY + CC.B + "Leave Tournament").build(),
+                                        .name(CC.SECONDARY + CC.B + "Leave Tournament")
+                                        .lore(CC.ACCENT + "Right click to leave.").build(),
                         LEAVE_EVENT = new ItemBuilder(new ItemStack(351, 1, (short) 1))
-                                        .name(CC.SECONDARY + CC.B + "Leave Event").build(),
+                                        .name(CC.SECONDARY + CC.B + "Leave Event")
+                                        .lore(CC.ACCENT + "Right click to leave.").build(),
                         LEAVE_PARTY = new ItemBuilder(new ItemStack(351, 1, (short) 1))
-                                        .name(CC.SECONDARY + CC.B + "Leave Party").build(),
+                                        .name(CC.SECONDARY + CC.B + "Leave Party")
+                                        .lore(CC.ACCENT + "Right click to leave.").build(),
                         LEAVE_QUEUE = new ItemBuilder(new ItemStack(351, 1, (short) 1))
-                                        .name(CC.SECONDARY + CC.B + "Leave Queue").build(),
+                                        .name(CC.SECONDARY + CC.B + "Leave Queue")
+                                        .lore(CC.ACCENT + "Right click to leave.").build(),
                         QUEUE_MANAGER = new ItemBuilder(Material.ITEM_FRAME).name(CC.SECONDARY + CC.B + "Queue Manager")
+                                        .lore(CC.ACCENT + "Right click to manage queued game types.")
                                         .build(),
-                        QUEUE = new ItemBuilder(Material.COMPASS).name(CC.SECONDARY + CC.B + "Queue").build(),
-                        QUEUE_AGAIN = new ItemBuilder(Material.PAPER).name(CC.SECONDARY + CC.B + "Queue Again").build(),
+                        QUEUE = new ItemBuilder(Material.COMPASS).name(CC.SECONDARY + CC.B + "Queue")
+                                        .lore(CC.ACCENT + "Right click to queue.").build(),
+                        QUEUE_AGAIN = new ItemBuilder(Material.PAPER).name(CC.SECONDARY + CC.B + "Queue Again")
+                                        .lore(CC.ACCENT + "Right click to queue again.").build(),
                         LIST_PLAYERS = new ItemBuilder(Material.PAPER).name(CC.SECONDARY + CC.B + "List Players")
+                                        .lore(CC.ACCENT + "Right click to list players.")
                                         .build(),
-                        DUEL = new ItemBuilder(Material.WOOD_AXE).name(CC.SECONDARY + CC.B + "Duel").build(),
+                        DUEL = new ItemBuilder(Material.WOOD_AXE).name(CC.SECONDARY + CC.B + "Duel")
+                                        .lore(CC.ACCENT + "Right click to duel.").build(),
                         SETTINGS = new ItemBuilder(Material.MAP).name(CC.SECONDARY + CC.B + "Settings")
                                         .build(),
                         PARTY_SPLIT = new ItemBuilder(Material.GOLD_AXE).name(CC.SECONDARY + CC.B + "Party Split")
+                                        .lore(CC.ACCENT + "Right click to start party split.")
                                         .build(),
                         OPEN_PARTY = new ItemBuilder(Material.SKULL_ITEM).name(CC.SECONDARY + CC.B + "Open Party")
+                                        .lore(CC.ACCENT + "Right click to open party.")
                                         .build(),
                         NO_HEALTH = new ItemBuilder(Material.SKULL_ITEM).name("Health: 0").build(),
                         VIEW_OPPONENT_INVENTORY = new ItemBuilder(Material.LEVER).name("View Opponent Inventory")
@@ -53,14 +67,19 @@ public class ItemStacks {
                         CREATE_CUSTOM_KNOCKBACK = new ItemBuilder(Material.STONE_SWORD).name("Create Custom Knockback")
                                         .build(),
                         CHOOSE_CUSTOM_KIT = new ItemBuilder(Material.GOLD_CHESTPLATE).name("Create Custom Kit").build(),
-                        SIMPLE_MODE = new ItemBuilder(Material.GREEN_RECORD).name("Simple Mode").lore().build(),
-                        ADVANCED_MODE = new ItemBuilder(Material.GOLD_RECORD).name("Advanced Mode").lore().build(),
-                        BOT_MODE = new ItemBuilder(Material.RECORD_12).name("Bot").lore().build(),
-                        PLAYER_MODE = new ItemBuilder(Material.RECORD_7).name("Player").lore().build(),
-                        NEXT_PAGE = new ItemBuilder(new ItemStack(Material.WOOL, 1, DyeColor.LIME.getData()))
-                                        .name("Next Page").build(),
-                        PREVIOUS_PAGE = new ItemBuilder(new ItemStack(Material.WOOL, 1, DyeColor.RED.getData()))
-                                        .name("Previous Page").build(),
+                        SIMPLE_MODE = new ItemBuilder(Material.GREEN_RECORD).name(CC.SECONDARY + CC.B + "Simple Mode")
+                                        .lore(CC.WHITE + "A more " + CC.SECONDARY + "simple and familiar", CC.WHITE
+                                                        + "duel interface.",
+                                                        " ",
+                                                        CC.BOARD_SEPARATOR, CC.ACCENT + "Click to select.")
+                                        .build(),
+                        ADVANCED_MODE = new ItemBuilder(Material.GOLD_RECORD)
+                                        .name(CC.SECONDARY + CC.B + "Advanced Mode")
+                                        .lore(CC.WHITE + "A more " + CC.SECONDARY + "advanced" + CC.WHITE
+                                                        + " duel interface", CC.WHITE + "with many options.",
+                                                        " ",
+                                                        CC.BOARD_SEPARATOR, CC.ACCENT + "Click to select.")
+                                        .build(),
                         AIR = new ItemStack(Material.AIR), BLACK_STAINED_GLASS = new ItemBuilder(
                                         new ItemStack(Material.STAINED_GLASS_PANE, 1,
                                                         DyeColor.BLACK.getData()))
@@ -213,6 +232,10 @@ public class ItemStacks {
                                         .name(CC.SECONDARY + CC.B + "Toggle Friend Requests"),
                         TOGGLE_GLOBAL_CHAT = new ItemBuilder(Material.FEATHER)
                                         .name(CC.SECONDARY + CC.B + "Toggle Global Chat"),
+                        NEXT_PAGE = new ItemBuilder(new ItemStack(Material.WOOL, 1, DyeColor.LIME.getData()))
+                                        .name(CC.SECONDARY + CC.B + "Next Page"),
+                        PREVIOUS_PAGE = new ItemBuilder(new ItemStack(Material.WOOL, 1, DyeColor.RED.getData()))
+                                        .name(CC.SECONDARY + CC.B + "Previous Page"),
                         CHANGE_TIME = new ItemBuilder(Material.WATCH)
                                         .name(CC.SECONDARY + CC.B + "Change Time");
 
