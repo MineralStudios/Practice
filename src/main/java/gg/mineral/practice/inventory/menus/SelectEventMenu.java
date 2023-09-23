@@ -21,12 +21,14 @@ public class SelectEventMenu extends PracticeMenu {
     @Override
     public boolean update() {
         for (Gametype g : GametypeManager.getGametypes()) {
-            if (!g.getEvent()) {
+            if (!g.getEvent())
                 continue;
-            }
 
             ItemStack item = new ItemBuilder(g.getDisplayItem())
-                    .name(g.getDisplayName()).lore().build();
+                    .name(CC.SECONDARY + CC.B
+                            + (g.isInCatagory() ? g.getCatagoryName() + g.getDisplayName() : g.getDisplayName()))
+                    .lore(CC.ACCENT + "Click to start event.")
+                    .build();
 
             Runnable runnable = () -> {
                 viewer.getPlayer().closeInventory();
