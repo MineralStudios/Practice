@@ -56,9 +56,19 @@ public class ItemStacks {
                         SUBMIT = new ItemBuilder(Material.STICK).name("Submit").build(),
                         RESET_SETTINGS = new ItemBuilder(Material.PAPER).name("Reset Settings").build(),
                         SAVE_KIT = new ItemBuilder(Material.ENCHANTED_BOOK)
-                                        .name("Save Kit").build(),
+                                        .name(CC.SECONDARY + CC.B + "Save Kit")
+                                        .lore(CC.WHITE + "Saves a " + CC.SECONDARY + "kit"
+                                                        + CC.WHITE + " to this hotbar slot.",
+                                                        " ",
+                                                        CC.BOARD_SEPARATOR, CC.ACCENT + "Click to save.")
+                                        .build(),
                         DELETE_KIT = new ItemBuilder(new ItemStack(351, 1, (short) 1))
-                                        .name("Delete Kit").build(),
+                                        .name(CC.SECONDARY + CC.B + "Delete Kit")
+                                        .lore(CC.WHITE + "Deletes a " + CC.SECONDARY + "kit"
+                                                        + CC.WHITE + " from this hotbar slot.",
+                                                        " ",
+                                                        CC.BOARD_SEPARATOR, CC.ACCENT + "Click to delete.")
+                                        .build(),
                         CHOOSE_EXISTING_KIT = new ItemBuilder(Material.LEATHER_CHESTPLATE)
                                         .name(CC.SECONDARY + CC.B + "Choose Existing Kit")
                                         .lore(CC.WHITE + "Create a " + CC.SECONDARY + "custom kit"
