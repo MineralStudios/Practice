@@ -24,7 +24,8 @@ public class SelectExistingKnockbackMenu extends PracticeMenu {
                 continue;
 
             add(ItemStacks.KNOCKBACK
-                    .name(knockback.getName()).build(), () -> {
+                    .name(CC.SECONDARY + CC.B + knockback.getName()).lore(CC.ACCENT + "Click to select.").build(),
+                    () -> {
                         viewer.getMatchData().setKnockback(knockback);
                         viewer.openMenu(menu);
                     });
