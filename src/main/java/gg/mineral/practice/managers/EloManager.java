@@ -225,8 +225,6 @@ public class EloManager {
 
 		for (Entry<ProfileData> e : globalEloMap.object2IntEntrySet()) {
 			int globalElo = e.getIntValue() / divisor;
-			if (globalElo < 1000)
-				continue;
 			map.put(e.getKey().getName(), globalElo);
 		}
 
