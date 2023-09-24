@@ -50,8 +50,10 @@ public class ItemStacks {
                         OPEN_PARTY = new ItemBuilder(Material.SKULL_ITEM).name(CC.SECONDARY + CC.B + "Open Party")
                                         .lore(CC.ACCENT + "Right click to open party.")
                                         .build(),
-                        NO_HEALTH = new ItemBuilder(Material.SKULL_ITEM).name("Health: 0").build(),
-                        VIEW_OPPONENT_INVENTORY = new ItemBuilder(Material.LEVER).name("View Opponent Inventory")
+                        NO_HEALTH = new ItemBuilder(Material.SKULL_ITEM).name(CC.RED + CC.B + "Dead").build(),
+                        VIEW_OPPONENT_INVENTORY = new ItemBuilder(Material.LEVER)
+                                        .name(CC.SECONDARY + CC.B + "View Opponent Inventory")
+                                        .lore(CC.ACCENT + "Click to view.")
                                         .build(),
                         SUBMIT = new ItemBuilder(Material.STICK).name(CC.SECONDARY + CC.B + "Submit")
                                         .lore(CC.ACCENT + "Click to confirm settings.").build(),
@@ -208,19 +210,20 @@ public class ItemStacks {
                         ARENA = new ItemBuilder(Material.WATER_LILY)
                                         .name(CC.SECONDARY + CC.B + "Arena Selection"),
                         REGENERATION = new ItemBuilder(Material.GOLDEN_APPLE)
-                                        .name(CC.SECONDARY + CC.B +"Regeneration"),
+                                        .name(CC.SECONDARY + CC.B + "Regeneration"),
                         BOXING = new ItemBuilder(Material.IRON_CHESTPLATE)
-                                        .name(CC.SECONDARY + CC.B +"Boxing"),
+                                        .name(CC.SECONDARY + CC.B + "Boxing"),
                         OTHER_PARTY = new ItemBuilder(Material.SKULL_ITEM).lore(CC.ACCENT + "Click to duel."),
                         KNOCKBACK = new ItemBuilder(Material.GOLD_SWORD),
                         HEALTH_POTIONS_LEFT = new ItemBuilder(new ItemStack(Material.POTION, 1, (short) 16421))
-                                        .name("Health Potions Left"),
-                        SOUP_LEFT = new ItemBuilder(Material.MUSHROOM_SOUP).name("Soup Left"),
+                                        .name(CC.SECONDARY + CC.B + "Health Potions Left"),
+                        SOUP_LEFT = new ItemBuilder(Material.MUSHROOM_SOUP).name(CC.SECONDARY + CC.B + "Soup Left"),
                         BOT_QUEUE_ENABLED_2V2 = new ItemBuilder(new ItemStack(351, 1, DyeColor.LIGHT_BLUE.getDyeData()))
                                         .name(CC.SECONDARY + CC.B + "2v2 Bot Queue"),
                         HEALTH = new ItemBuilder(new ItemStack(Material.POTION, (short) 8193)),
                         HITS = new ItemBuilder(Material.BLAZE_ROD), CLICKS = new ItemBuilder(Material.GHAST_TEAR),
-                        POTION_EFFECTS = new ItemBuilder(Material.BLAZE_POWDER).name("Potion Effects"),
+                        POTION_EFFECTS = new ItemBuilder(Material.BLAZE_POWDER)
+                                        .name(CC.SECONDARY + CC.B + "Potion Effects"),
                         FRICTION = new ItemBuilder(Material.SOUL_SAND).lore("Click to change value."),
                         HORIZONTAL = new ItemBuilder(Material.DIODE).lore("Click to change value."),
                         EXTRA_HORIZONTAL = new ItemBuilder(Material.REDSTONE_COMPARATOR).lore("Click to change value."),

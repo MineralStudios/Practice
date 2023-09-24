@@ -573,14 +573,15 @@ public class Match implements Spectatable {
 
 		menu.setSlot(45, !matchStatisticCollector.isAlive() ? ItemStacks.NO_HEALTH
 				: ItemStacks.HEALTH
-						.name("Health: " + matchStatisticCollector.getRemainingHealth())
+						.name(CC.SECONDARY + CC.B + "Health")
+						.lore(" ", CC.WHITE + "Remaining:", CC.GOLD + matchStatisticCollector.getRemainingHealth())
 						.amount(matchStatisticCollector.getRemainingHealth()).build());
 
 		menu.setSlot(46, ItemStacks.HEALTH_POTIONS_LEFT
-				.lore("Thrown: " + matchStatisticCollector.getPotionsThrown(),
-						"Missed: " + matchStatisticCollector.getPotionsMissed(),
-						"Stolen: " + matchStatisticCollector.getPotionsStolen(),
-						"Accuracy: " + matchStatisticCollector.getPotionAccuracy() + "%")
+				.lore(" ", CC.WHITE + "Thrown: " + CC.GOLD + matchStatisticCollector.getPotionsThrown(),
+						CC.WHITE + "Missed: " + CC.GOLD + matchStatisticCollector.getPotionsMissed(),
+						CC.WHITE + "Stolen: " + CC.GOLD + matchStatisticCollector.getPotionsStolen(),
+						CC.WHITE + "Accuracy: " + CC.GOLD + matchStatisticCollector.getPotionAccuracy() + "%")
 				.amount(Math.max(matchStatisticCollector.getPotionsRemaining(), 1)).build());
 
 		menu.setSlot(47, ItemStacks.SOUP_LEFT
@@ -594,7 +595,7 @@ public class Match implements Spectatable {
 				.build());
 
 		menu.setSlot(49, ItemStacks.CLICKS
-				.name("Highest CPS: " + matchStatisticCollector.getHighestCps()).build());
+				.name(CC.SECONDARY + CC.B + "Highest CPS: " + matchStatisticCollector.getHighestCps()).build());
 
 		menu.setSlot(50, ItemStacks.POTION_EFFECTS
 				.lore(matchStatisticCollector.getPotionEffectStringArray()).build());
