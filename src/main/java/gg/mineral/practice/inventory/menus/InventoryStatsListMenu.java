@@ -22,10 +22,11 @@ public class InventoryStatsListMenu extends PracticeMenu {
     public boolean update() {
 
         for (InventoryStatsMenu inventoryStatsMenu : list) {
-            add(ItemStacks.INVENTORY_STATS.name(inventoryStatsMenu.getTitle()).build(), interaction -> {
-                Profile p = interaction.getProfile();
-                p.openMenu(inventoryStatsMenu);
-            });
+            add(ItemStacks.INVENTORY_STATS.name(CC.SECONDARY + CC.B + inventoryStatsMenu.getTitle())
+                    .lore(CC.ACCENT + "Click to view.").build(), interaction -> {
+                        Profile p = interaction.getProfile();
+                        p.openMenu(inventoryStatsMenu);
+                    });
         }
         return true;
     }
