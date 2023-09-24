@@ -53,8 +53,11 @@ public class ItemStacks {
                         NO_HEALTH = new ItemBuilder(Material.SKULL_ITEM).name("Health: 0").build(),
                         VIEW_OPPONENT_INVENTORY = new ItemBuilder(Material.LEVER).name("View Opponent Inventory")
                                         .build(),
-                        SUBMIT = new ItemBuilder(Material.STICK).name("Submit").build(),
-                        RESET_SETTINGS = new ItemBuilder(Material.PAPER).name("Reset Settings").build(),
+                        SUBMIT = new ItemBuilder(Material.STICK).name(CC.SECONDARY + CC.B + "Submit")
+                                        .lore(CC.ACCENT + "Click to confirm settings.").build(),
+                        RESET_SETTINGS = new ItemBuilder(Material.PAPER).name(CC.SECONDARY + CC.B + "Reset Settings")
+                                        .lore(CC.ACCENT + "Click to reset settings.")
+                                        .build(),
                         SAVE_KIT = new ItemBuilder(Material.ENCHANTED_BOOK)
                                         .name(CC.SECONDARY + CC.B + "Save Kit")
                                         .lore(CC.WHITE + "Saves a " + CC.SECONDARY + "kit"
@@ -185,23 +188,23 @@ public class ItemStacks {
                                         .lore(CC.ACCENT + "Click To Apply Changes"),
                         INVENTORY_STATS = new ItemBuilder(Material.ENDER_CHEST),
                         SELECT_KIT = new ItemBuilder(Material.DIAMOND_CHESTPLATE)
-                                        .name("Select Kit"),
+                                        .name(CC.SECONDARY + CC.B + "Select Kit"),
                         CHANGE_KNOCKBACK = new ItemBuilder(Material.STICK)
-                                        .name("Change Knockback"),
+                                        .name(CC.SECONDARY + CC.B + "Change Knockback"),
                         HIT_DELAY = new ItemBuilder(Material.WATCH)
-                                        .name("Hit Delay"),
+                                        .name(CC.SECONDARY + CC.B + "Hit Delay"),
                         TOGGLE_HUNGER = new ItemBuilder(Material.COOKED_BEEF)
-                                        .name("Toggle Hunger"),
+                                        .name(CC.SECONDARY + CC.B + "Toggle Hunger"),
                         DEADLY_WATER = new ItemBuilder(Material.BLAZE_ROD)
-                                        .name("Deadly Water"),
+                                        .name(CC.SECONDARY + CC.B + "Deadly Water"),
                         TOGGLE_BUILD = new ItemBuilder(Material.BRICK)
-                                        .name("Toggle Build"),
+                                        .name(CC.SECONDARY + CC.B + "Toggle Build"),
                         TOGGLE_DAMAGE = new ItemBuilder(Material.DIAMOND_AXE)
-                                        .name("Toggle Damage"),
+                                        .name(CC.SECONDARY + CC.B + "Toggle Damage"),
                         TOGGLE_GRIEFING = new ItemBuilder(Material.TNT)
-                                        .name("Toggle Griefing"),
+                                        .name(CC.SECONDARY + CC.B + "Toggle Griefing"),
                         PEARL_COOLDOWN = new ItemBuilder(Material.ENDER_PEARL)
-                                        .name("Pearl Cooldown"),
+                                        .name(CC.SECONDARY + CC.B + "Pearl Cooldown"),
                         ARENA = new ItemBuilder(Material.WATER_LILY)
                                         .name(CC.SECONDARY + CC.B + "Arena Selection"),
                         REGENERATION = new ItemBuilder(Material.GOLDEN_APPLE)

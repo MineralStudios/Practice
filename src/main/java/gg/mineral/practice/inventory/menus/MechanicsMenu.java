@@ -27,85 +27,124 @@ public class MechanicsMenu extends PracticeMenu {
 	public boolean update() {
 		MatchData matchData = viewer.getMatchData();
 
-		setSlot(10, ItemStacks.SELECT_KIT
-				.lore(CC.ACCENT + matchData.getKit().getName())
-				.build(), interaction -> {
+		setSlot(10,
+				ItemStacks.SELECT_KIT
+						.lore(CC.WHITE + "The " + CC.SECONDARY + "items" + CC.WHITE + " in your inventory.", " ",
+								CC.WHITE + "Currently:", CC.GOLD + matchData.getKit().getName(),
+								CC.BOARD_SEPARATOR, CC.ACCENT + "Click to change kit.")
+						.build(),
+				interaction -> {
 					Profile p = interaction.getProfile();
 					p.openMenu(new SelectKitMenu(this));
 				});
 
-		setSlot(11, ItemStacks.CHANGE_KNOCKBACK
-				.lore(CC.ACCENT + matchData.getKnockback().getName())
-				.build(), interaction -> {
+		setSlot(11,
+				ItemStacks.CHANGE_KNOCKBACK
+						.lore(CC.WHITE + "Changes the amount of" + CC.SECONDARY + " knockback" + CC.WHITE
+								+ " you recieve.", " ",
+								CC.WHITE + "Currently:", CC.GOLD + matchData.getKnockback().getName(),
+								CC.BOARD_SEPARATOR, CC.ACCENT + "Click to change knockback.")
+						.build(),
+				interaction -> {
 					Profile p = interaction.getProfile();
 					p.openMenu(new SelectKnockbackMenu(this));
 				});
 
 		setSlot(12, ItemStacks.HIT_DELAY
-				.lore(CC.ACCENT + matchData.getNoDamageTicks() + " Ticks")
+				.lore(CC.WHITE + "Changes how " + CC.SECONDARY + "frequently " + CC.WHITE
+						+ " you can attack.", " ",
+						CC.WHITE + "Currently:", CC.GOLD + matchData.getNoDamageTicks() + " Ticks",
+						CC.BOARD_SEPARATOR, CC.ACCENT + "Click to change hit delay.")
 				.build(), interaction -> {
 					Profile p = interaction.getProfile();
 					p.openMenu(new HitDelayMenu(this));
 				});
 
 		setSlot(13, ItemStacks.TOGGLE_HUNGER
-				.lore(CC.ACCENT + matchData.getHunger())
+				.lore(CC.WHITE + "Changes if you lose " + CC.SECONDARY + "hunger" + CC.WHITE
+						+ ".", " ",
+						CC.WHITE + "Currently:", CC.GOLD + matchData.getHunger(),
+						CC.BOARD_SEPARATOR, CC.ACCENT + "Click to toggle hunger.")
 				.build(), () -> {
 					matchData.setHunger(!matchData.getHunger());
 					reload();
 				});
 
 		setSlot(14, ItemStacks.TOGGLE_BUILD
-				.lore(CC.ACCENT + matchData.getBuild())
+				.lore(CC.WHITE + "Changes if you can " + CC.SECONDARY + "build" + CC.WHITE
+						+ ".", " ",
+						CC.WHITE + "Currently:", CC.GOLD + matchData.getBuild(),
+						CC.BOARD_SEPARATOR, CC.ACCENT + "Click to toggle build.")
 				.build(), () -> {
 					matchData.setBuild(!matchData.getBuild());
 					reload();
 				});
 
 		setSlot(15, ItemStacks.TOGGLE_DAMAGE
-				.lore(CC.ACCENT + matchData.getDamage())
+				.lore(CC.WHITE + "Changes if you can " + CC.SECONDARY + "lose health" + CC.WHITE
+						+ ".", " ",
+						CC.WHITE + "Currently:", CC.GOLD + matchData.getDamage(),
+						CC.BOARD_SEPARATOR, CC.ACCENT + "Click to toggle damage.")
 				.build(), () -> {
 					matchData.setDamage(!matchData.getDamage());
 					reload();
 				});
 
 		setSlot(16, ItemStacks.TOGGLE_GRIEFING
-				.lore(CC.ACCENT + matchData.getGriefing())
+				.lore(CC.WHITE + "Changes if you can " + CC.SECONDARY + "break the map" + CC.WHITE
+						+ ".", " ",
+						CC.WHITE + "Currently:", CC.GOLD + matchData.getGriefing(),
+						CC.BOARD_SEPARATOR, CC.ACCENT + "Click to toggle griefing.")
 				.build(), () -> {
 					matchData.setGriefing(!matchData.getGriefing());
 					reload();
 				});
 
 		setSlot(19, ItemStacks.PEARL_COOLDOWN
-				.lore(CC.ACCENT + matchData.getPearlCooldown() + " Seconds")
+				.lore(CC.WHITE + "Changes how frequently you can " + CC.SECONDARY + "throw a pearl" + CC.WHITE
+						+ ".", " ",
+						CC.WHITE + "Currently:", CC.GOLD + matchData.getPearlCooldown() + " Seconds",
+						CC.BOARD_SEPARATOR, CC.ACCENT + "Click to change cooldown.")
 				.build(), interaction -> {
 					Profile p = interaction.getProfile();
 					p.openMenu(new PearlCooldownMenu(this));
 				});
 
 		setSlot(20, ItemStacks.ARENA
-				.lore(CC.ACCENT + matchData.getArena().getName())
+				.lore(CC.WHITE + "Changes the " + CC.SECONDARY + "arena" + CC.WHITE
+						+ ".", " ",
+						CC.WHITE + "Currently:", CC.GOLD + matchData.getArena().getName(),
+						CC.BOARD_SEPARATOR, CC.ACCENT + "Click to change arena.")
 				.build(), interaction -> {
 					Profile p = interaction.getProfile();
 					p.openMenu(new SelectArenaMenu(this, submitAction));
 				});
 
 		setSlot(21, ItemStacks.DEADLY_WATER
-				.lore(CC.ACCENT + matchData.getDeadlyWater())
+				.lore(CC.WHITE + "Changes if " + CC.SECONDARY + "water can kill you" + CC.WHITE
+						+ ".", " ",
+						CC.WHITE + "Currently:", CC.GOLD + matchData.getDeadlyWater(),
+						CC.BOARD_SEPARATOR, CC.ACCENT + "Click to toggle deadly water.")
 				.build(), () -> {
 					matchData.setDeadlyWater(!matchData.getDeadlyWater());
 					reload();
 				});
 
 		setSlot(22, ItemStacks.REGENERATION
-				.lore(CC.ACCENT + matchData.getRegeneration())
+				.lore(CC.WHITE + "Changes if you " + CC.SECONDARY + "regenerate" + CC.WHITE
+						+ " health.", " ",
+						CC.WHITE + "Currently:", CC.GOLD + matchData.getRegeneration(),
+						CC.BOARD_SEPARATOR, CC.ACCENT + "Click to toggle regeneration.")
 				.build(), () -> {
 					matchData.setRegeneration(!matchData.getRegeneration());
 					reload();
 				});
 
 		setSlot(23, ItemStacks.BOXING
-				.lore(CC.ACCENT + matchData.getBoxing())
+				.lore(CC.WHITE + "Changes if you die after " + CC.SECONDARY + "100 hits" + CC.WHITE
+						+ ".", " ",
+						CC.WHITE + "Currently:", CC.GOLD + matchData.getBoxing(),
+						CC.BOARD_SEPARATOR, CC.ACCENT + "Click to toggle boxing.")
 				.build(), () -> {
 					matchData.setBoxing(!matchData.getBoxing());
 					reload();
