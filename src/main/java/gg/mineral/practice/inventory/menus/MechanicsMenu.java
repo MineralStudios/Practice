@@ -52,7 +52,7 @@ public class MechanicsMenu extends PracticeMenu {
 
 		setSlot(12, ItemStacks.HIT_DELAY
 				.lore(CC.WHITE + "Changes how " + CC.SECONDARY + "frequently " + CC.WHITE
-						+ " you can attack.", " ",
+						+ "you can attack.", " ",
 						CC.WHITE + "Currently:", CC.GOLD + matchData.getNoDamageTicks() + " Ticks",
 						CC.BOARD_SEPARATOR, CC.ACCENT + "Click to change hit delay.")
 				.build(), interaction -> {

@@ -208,9 +208,9 @@ public class ItemStacks {
                         ARENA = new ItemBuilder(Material.WATER_LILY)
                                         .name(CC.SECONDARY + CC.B + "Arena Selection"),
                         REGENERATION = new ItemBuilder(Material.GOLDEN_APPLE)
-                                        .name("Regeneration"),
+                                        .name(CC.SECONDARY + CC.B +"Regeneration"),
                         BOXING = new ItemBuilder(Material.IRON_CHESTPLATE)
-                                        .name("Boxing"),
+                                        .name(CC.SECONDARY + CC.B +"Boxing"),
                         OTHER_PARTY = new ItemBuilder(Material.SKULL_ITEM).lore(CC.ACCENT + "Click to duel."),
                         KNOCKBACK = new ItemBuilder(Material.GOLD_SWORD),
                         HEALTH_POTIONS_LEFT = new ItemBuilder(new ItemStack(Material.POTION, 1, (short) 16421))
