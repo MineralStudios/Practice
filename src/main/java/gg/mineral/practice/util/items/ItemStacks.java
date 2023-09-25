@@ -131,7 +131,7 @@ public class ItemStacks {
                         DEFAULT_PARTY_DISPLAY_ITEM = new ItemStack(Material.NETHER_STAR),
                         DEFAULT_QUEUETYPE_DISPLAY_ITEM = new ItemStack(Material.DIAMOND_SWORD),
                         WOOD_AXE = new ItemStack(Material.WOOD_AXE),
-                        APPLY = new ItemBuilder(new ItemStack(Material.WOOL, 1, DyeColor.GREEN.getData())).name(" ")
+                        APPLY = new ItemBuilder(new ItemStack(Material.WOOL, 1, DyeColor.BLUE.getData())).name(" ")
                                         .lore(CC.GOLD + CC.B + "Click To Apply Changes", " ").build(),
                         DESELECT_ALL = new ItemBuilder(Material.REDSTONE_BLOCK).name(" ")
                                         .lore(CC.RED + CC.B + "Deselect All", " ").build(),
