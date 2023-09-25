@@ -246,7 +246,7 @@ public class EloManager {
 				eloSum += 1000 * (maxDivisor - divisor);
 
 			// Calculate global elo from the sum and divisor
-			int globalElo = eloSum / maxDivisor;
+			int globalElo = Math.round(eloSum / maxDivisor);
 			// Put in leaderboard map where it is put into the correct order
 			map.putNoDuplicate(e.getKey().getName(), globalElo);
 		}

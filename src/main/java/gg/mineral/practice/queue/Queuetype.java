@@ -94,7 +94,7 @@ public class Queuetype implements SaveableData {
 		for (Gametype gametype : set)
 			sum += gametype.getElo(profile);
 
-		return sum / set.size();
+		return Math.round(sum / set.size());
 	}
 
 	public List<String> getGlobalLeaderboardLore() {
