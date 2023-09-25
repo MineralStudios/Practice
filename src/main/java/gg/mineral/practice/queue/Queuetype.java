@@ -3,6 +3,7 @@ package gg.mineral.practice.queue;
 import java.util.List;
 import java.util.Random;
 import java.util.concurrent.ConcurrentLinkedQueue;
+import java.util.stream.Collectors;
 
 import org.bukkit.inventory.ItemStack;
 
@@ -66,6 +67,13 @@ public class Queuetype implements SaveableData {
 
 	public Gametype randomGametype() {
 		List<Gametype> list = new GlueList<>(gametypes.keySet());
+		Random rand = new Random();
+		return list.get(rand.nextInt(list.size()));
+	}
+
+	public Gametype randomGametypeWithBotsEnabled() {
+		List<Gametype> list = new GlueList<>(gametypes.keySet()).stream().filter(g -> g.getBotsEnabled())
+				.collect(Collectors.toList());
 		Random rand = new Random();
 		return list.get(rand.nextInt(list.size()));
 	}

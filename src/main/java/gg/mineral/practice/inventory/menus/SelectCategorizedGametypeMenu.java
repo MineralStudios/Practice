@@ -172,7 +172,9 @@ public class SelectCategorizedGametypeMenu extends SelectGametypeMenu {
 					});
 
 			setSlot(48, ItemStacks.RANDOM_QUEUE, () -> {
-				QueueEntry queueEntry = QueueEntryManager.newEntry(queuetype, queuetype.randomGametype());
+				QueueEntry queueEntry = QueueEntryManager.newEntry(queuetype,
+						viewer.getMatchData().getBotQueue() ? queuetype.randomGametypeWithBotsEnabled()
+								: queuetype.randomGametype());
 
 				queue(queueEntry);
 
