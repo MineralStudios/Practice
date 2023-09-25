@@ -207,35 +207,36 @@ public class EloManager {
 
 		// The map that will be used to store the elo sum <Player, Elo Sum>
 		Object2IntOpenHashMap<ProfileData> globalEloMap = new Object2IntOpenHashMap<>();
-
-		// The amount to divide by to get the average
-		int divisor = 0;
+		Object2IntOpenHashMap<ProfileData> divisorMap = new Object2IntOpenHashMap<>();
 
 		// Iterates through every gametype in ranked, eg. NoDebuff, Debuff, Gapple
 		// etc.....
 		for (Gametype gametype : queuetype.getGametypes().keySet()) {
 
-			// If one or more players has played ranked before in this gametype, increase
-			// divisor
-			if (!gametype.getEloCache().isEmpty())
-				divisor++;
-
 			// Iterate through entries and put the sum of elo in the map for each player
 			for (Entry<ProfileData> e : gametype.getEloCache().object2IntEntrySet()) {
 				// Get elo sum for this player, if it doesn't exist return 1000
 				Integer eloSum = globalEloMap.getOrDefault(e.getKey(), 1000);
+				Integer divisor = divisorMap.getOrDefault(e.getKey(), 0);
 
 				// Add elo
 				eloSum += e.getIntValue();
 
 				// Update the map
 				globalEloMap.put(e.getKey(), eloSum);
+				divisorMap.put(e.getKey(), divisor + 1);
 
 			}
 		}
 
 		// Iterate through globalEloMap
 		for (Entry<ProfileData> e : globalEloMap.object2IntEntrySet()) {
+			int divisor = divisorMap.getOrDefault(e.getKey(), 0);
+
+			if (divisor == 0) {
+				map.put(e.getKey().getName(), 1000);
+				continue;
+			}
 			// Calculate global elo from the sum and divisor
 			int globalElo = e.getIntValue() / divisor;
 			// Put in leaderboard map where it is put into the correct order
