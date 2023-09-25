@@ -215,8 +215,8 @@ public class EloManager {
 
 			// Iterate through entries and put the sum of elo in the map for each player
 			for (Entry<ProfileData> e : gametype.getEloCache().object2IntEntrySet()) {
-				// Get elo sum for this player, if it doesn't exist return 1000
-				Integer eloSum = globalEloMap.getOrDefault(e.getKey(), 1000);
+				// Get elo sum for this player, if it doesn't exist return 0
+				Integer eloSum = globalEloMap.getOrDefault(e.getKey(), 0);
 				Integer divisor = divisorMap.getOrDefault(e.getKey(), 0);
 
 				// Add elo
