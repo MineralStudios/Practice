@@ -110,7 +110,7 @@ public class SettingsMenu extends PracticeMenu {
 							CoreConnector.INSTANCE.getSettingsSQL().enableMsg(p.getPlayer());
 
 						p.message(ChatMessages.PRIVATE_MESSAGES_TOGGLED.clone()
-								.replace("%toggled%", privateMessages ? "enabled" : "disabled"));
+								.replace("%toggled%", privateMessages ? "disabled" : "enabled"));
 						reload();
 					});
 
@@ -131,7 +131,7 @@ public class SettingsMenu extends PracticeMenu {
 							CoreConnector.INSTANCE.getSettingsSQL().enableFriendsSound(p.getPlayer());
 
 						p.message(ChatMessages.FRIEND_SOUND_TOGGLED.clone()
-								.replace("%toggled%", friendsSound ? "enabled" : "disabled"));
+								.replace("%toggled%", friendsSound ? "disabled" : "enabled"));
 						reload();
 					});
 
@@ -146,17 +146,7 @@ public class SettingsMenu extends PracticeMenu {
 							.build(),
 					interaction -> {
 						Profile p = interaction.getProfile();
-						if (friendRequests)
-							CoreConnector.INSTANCE.getFriendsSQL().friendsSwitcherMYSQL(p.getPlayer(),
-									String.valueOf(true),
-									"§2enabled");
-						else
-							CoreConnector.INSTANCE.getFriendsSQL().friendsSwitcherMYSQL(p.getPlayer(),
-									String.valueOf(false),
-									"§cdisabled");
-
-						p.message(ChatMessages.FRIENDS_TOGGLED.clone()
-								.replace("%toggled%", friendRequests ? "enabled" : "disabled"));
+						p.getPlayer().performCommand(friendRequests ? "friends disable" : "friends enable");
 						reload();
 					});
 
@@ -177,7 +167,7 @@ public class SettingsMenu extends PracticeMenu {
 							CoreConnector.INSTANCE.getSettingsSQL().enablePmSound(p.getPlayer());
 
 						p.message(ChatMessages.PRIVATE_MESSAGE_SOUNDS_TOGGLED.clone()
-								.replace("%toggled%", privateMessagesSound ? "enabled" : "disabled"));
+								.replace("%toggled%", privateMessagesSound ? "disabled" : "enabled"));
 						reload();
 					});
 
@@ -198,7 +188,7 @@ public class SettingsMenu extends PracticeMenu {
 							CoreConnector.INSTANCE.getSettingsSQL().enableGlobalChat(p.getPlayer());
 
 						p.message(ChatMessages.GLOBAL_CHAT_TOGGLED.clone()
-								.replace("%toggled%", globalChat ? "enabled" : "disabled"));
+								.replace("%toggled%", globalChat ? "disabled" : "enabled"));
 						reload();
 					});
 		}
