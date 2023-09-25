@@ -588,10 +588,10 @@ public class Match implements Spectatable {
 				.amount(Math.max(matchStatisticCollector.getSoupsRemaining(), 1)).build());
 
 		menu.setSlot(48, ItemStacks.HITS
-				.name(profile.getMatchStatisticCollector().getHitCount() + " Hits")
-				.lore("Longest Combo: " + matchStatisticCollector.getLongestCombo(),
-						"Average Combo: " + matchStatisticCollector.getAverageCombo(),
-						"W Tap Accuracy: " + matchStatisticCollector.getWTapAccuracy() + "%")
+				.name(CC.SECONDARY + CC.B + profile.getMatchStatisticCollector().getHitCount() + " Hits")
+				.lore(CC.WHITE + "Longest Combo: " + CC.GOLD + matchStatisticCollector.getLongestCombo(),
+						CC.WHITE + "Average Combo: " + CC.GOLD + matchStatisticCollector.getAverageCombo(),
+						CC.WHITE + "W Tap Accuracy: " + CC.GOLD + matchStatisticCollector.getWTapAccuracy() + "%")
 				.build());
 
 		menu.setSlot(49, ItemStacks.CLICKS
