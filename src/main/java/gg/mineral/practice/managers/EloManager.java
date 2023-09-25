@@ -229,6 +229,8 @@ public class EloManager {
 			}
 		}
 
+		int maxDivisor = queuetype.getGametypes().size();
+
 		// Iterate through globalEloMap
 		for (Entry<ProfileData> e : globalEloMap.object2IntEntrySet()) {
 			int divisor = divisorMap.getOrDefault(e.getKey(), 0);
@@ -237,10 +239,16 @@ public class EloManager {
 				map.put(e.getKey().getName(), 1000);
 				continue;
 			}
+
+			int eloSum = e.getIntValue();
+
+			if (divisor < maxDivisor)
+				eloSum += 1000 * (maxDivisor - divisor);
+
 			// Calculate global elo from the sum and divisor
-			int globalElo = e.getIntValue() / divisor;
+			int globalElo = eloSum / maxDivisor;
 			// Put in leaderboard map where it is put into the correct order
-			map.put(e.getKey().getName(), globalElo);
+			map.putNoDuplicate(e.getKey().getName(), globalElo);
 		}
 
 		return map;

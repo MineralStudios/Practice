@@ -75,6 +75,14 @@ public class LeaderboardMap {
         }
     }
 
+    public void putNoDuplicate(String key, int value) {
+        for (Entry entry : entries)
+            if (entry.getKey().equals(key))
+                return;
+
+        put(key, value);
+    }
+
     public void putOrReplace(String key, int value, int oldValue) {
         int oldPosition = findPositionOfEntry(oldValue);
         Entry oldEntry = entries.size() - 1 < oldPosition ? null : entries.get(oldPosition);
