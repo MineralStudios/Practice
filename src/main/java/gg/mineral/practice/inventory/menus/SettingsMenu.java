@@ -5,7 +5,6 @@ import gg.mineral.practice.inventory.PracticeMenu;
 import gg.mineral.practice.util.CoreConnector;
 import gg.mineral.practice.util.items.ItemStacks;
 import gg.mineral.practice.util.messages.CC;
-import gg.mineral.practice.util.messages.impl.ChatMessages;
 
 public class SettingsMenu extends PracticeMenu {
 
@@ -109,8 +108,6 @@ public class SettingsMenu extends PracticeMenu {
 						else
 							CoreConnector.INSTANCE.getSettingsSQL().enableMsg(p.getPlayer());
 
-						p.message(ChatMessages.PRIVATE_MESSAGES_TOGGLED.clone()
-								.replace("%toggled%", privateMessages ? "disabled" : "enabled"));
 						reload();
 					});
 
@@ -130,8 +127,6 @@ public class SettingsMenu extends PracticeMenu {
 						else
 							CoreConnector.INSTANCE.getSettingsSQL().enableFriendsSound(p.getPlayer());
 
-						p.message(ChatMessages.FRIEND_SOUND_TOGGLED.clone()
-								.replace("%toggled%", friendsSound ? "disabled" : "enabled"));
 						reload();
 					});
 
@@ -166,8 +161,6 @@ public class SettingsMenu extends PracticeMenu {
 						else
 							CoreConnector.INSTANCE.getSettingsSQL().enablePmSound(p.getPlayer());
 
-						p.message(ChatMessages.PRIVATE_MESSAGE_SOUNDS_TOGGLED.clone()
-								.replace("%toggled%", privateMessagesSound ? "disabled" : "enabled"));
 						reload();
 					});
 
@@ -187,8 +180,6 @@ public class SettingsMenu extends PracticeMenu {
 						else
 							CoreConnector.INSTANCE.getSettingsSQL().enableGlobalChat(p.getPlayer());
 
-						p.message(ChatMessages.GLOBAL_CHAT_TOGGLED.clone()
-								.replace("%toggled%", globalChat ? "disabled" : "enabled"));
 						reload();
 					});
 		}
