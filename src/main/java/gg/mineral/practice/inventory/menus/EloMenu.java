@@ -38,10 +38,6 @@ public class EloMenu extends PracticeMenu {
                                     CC.SECONDARY + CC.B + arg.getName() + "'s Global Elo")
                                     .lore(CC.WHITE + "The " + CC.SECONDARY + "average elo" + CC.WHITE
                                             + " across all game types.",
-                                            CC.WHITE + "You must be above " + CC.SECONDARY + "1000 elo" + CC.WHITE
-                                                    + " in every",
-                                            CC.WHITE + "game type to be on " + CC.SECONDARY + "leaderboards" + CC.WHITE
-                                                    + ".",
                                             " ",
                                             CC.WHITE + "Currently:",
                                             CC.GOLD + queuetype.getGlobalElo(arg))
