@@ -72,7 +72,7 @@ public class PracticePlugin extends JavaPlugin {
 
 	@Override
 	public void onEnable() {
-		FileConfiguration databaseDetails = new FileConfiguration("database.yml", "plugins/Core");
+		FileConfiguration databaseDetails = new FileConfiguration("database.yml", "plugins/Practice");
 
 		String host = databaseDetails.getString("host", "host");
 		String port = databaseDetails.getString("port", "3306");
