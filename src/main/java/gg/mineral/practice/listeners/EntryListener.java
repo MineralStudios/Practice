@@ -8,11 +8,11 @@ import org.bukkit.event.player.PlayerInitialSpawnEvent;
 import org.bukkit.event.player.PlayerJoinEvent;
 import org.bukkit.event.player.PlayerQuitEvent;
 
+import gg.mineral.botapi.entity.FakePlayer;
 import gg.mineral.practice.entity.Profile;
 import gg.mineral.practice.managers.EloManager;
 import gg.mineral.practice.managers.ProfileManager;
 import gg.mineral.practice.scoreboard.impl.DefaultScoreboard;
-import gg.mineral.server.fakeplayer.FakePlayer;
 
 public class EntryListener implements Listener {
 

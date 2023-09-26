@@ -2,9 +2,9 @@ package gg.mineral.practice.bots;
 
 import org.bukkit.Location;
 
+import gg.mineral.botapi.entity.FakePlayer;
 import gg.mineral.practice.entity.Profile;
 import gg.mineral.practice.util.messages.CC;
-import gg.mineral.server.fakeplayer.FakePlayer;
 import lombok.Getter;
 
 public enum Difficulty {

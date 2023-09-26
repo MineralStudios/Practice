@@ -75,6 +75,13 @@
         </dependency>
         <dependency>
             <groupId>gg.mineral</groupId>
+            <artifactId>BotAPI</artifactId>
+            <version>1.0</version>
+            <scope>system</scope>
+            <systemPath>${basedir}/lib/MineralBotAPI.jar</systemPath>
+        </dependency>
+        <dependency>
+            <groupId>gg.mineral</groupId>
             <artifactId>Core</artifactId>
             <version>1.0</version>
             <scope>system</scope>

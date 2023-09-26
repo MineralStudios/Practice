@@ -9,6 +9,7 @@ import org.bukkit.Location;
 import org.bukkit.scoreboard.Team;
 
 import gg.mineral.api.collection.GlueList;
+import gg.mineral.botapi.entity.FakePlayer;
 import gg.mineral.practice.PracticePlugin;
 import gg.mineral.practice.entity.Profile;
 import gg.mineral.practice.inventory.menus.InventoryStatsMenu;
@@ -27,7 +28,6 @@ import gg.mineral.practice.util.messages.CC;
 import gg.mineral.practice.util.messages.ChatMessage;
 import gg.mineral.practice.util.messages.impl.ChatMessages;
 import gg.mineral.practice.util.messages.impl.Strings;
-import gg.mineral.server.fakeplayer.FakePlayer;
 import lombok.Getter;
 import net.md_5.bungee.api.chat.ClickEvent;
 import net.md_5.bungee.api.chat.ComponentBuilder;
