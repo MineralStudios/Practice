@@ -21,7 +21,6 @@ import gg.mineral.practice.scoreboard.impl.DefaultScoreboard;
 import gg.mineral.practice.scoreboard.impl.MatchEndScoreboard;
 import gg.mineral.practice.scoreboard.impl.PartyBoxingScoreboard;
 import gg.mineral.practice.scoreboard.impl.PartyMatchScoreboard;
-import gg.mineral.practice.util.CoreConnector;
 import gg.mineral.practice.util.PlayerUtil;
 import gg.mineral.practice.util.collection.ProfileList;
 import gg.mineral.practice.util.messages.CC;
@@ -178,10 +177,12 @@ public class PartyMatch extends Match {
 			victim.removeFromMatch();
 			victim.getSpectateHandler().spectate(victimTeam.getFirst());
 
-			if (CoreConnector.connected()) {
-				CoreConnector.INSTANCE.getNameTagAPI().giveTagAfterMatch(victim.getPlayer(),
-						victim.getPlayer());
-			}
+			/*
+			 * if (CoreConnector.connected()) {
+			 * CoreConnector.INSTANCE.getNameTagAPI().giveTagAfterMatch(victim.getPlayer(),
+			 * victim.getPlayer());
+			 * }
+			 */
 
 			return;
 		}
@@ -228,10 +229,12 @@ public class PartyMatch extends Match {
 			profile.getPlayer().spigot().sendMessage(loseMessage);
 			profile.getPlayer().sendMessage(CC.SEPARATOR);
 
-			if (CoreConnector.connected()) {
-				CoreConnector.INSTANCE.getNameTagAPI().giveTagAfterMatch(profile.getPlayer(),
-						profile.getPlayer());
-			}
+			/*
+			 * if (CoreConnector.connected()) {
+			 * CoreConnector.INSTANCE.getNameTagAPI().giveTagAfterMatch(profile.getPlayer(),
+			 * profile.getPlayer());
+			 * }
+			 */
 
 		}
 

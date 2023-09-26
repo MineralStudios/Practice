@@ -38,7 +38,6 @@ import gg.mineral.practice.scoreboard.impl.DefaultScoreboard;
 import gg.mineral.practice.scoreboard.impl.InMatchScoreboard;
 import gg.mineral.practice.scoreboard.impl.MatchEndScoreboard;
 import gg.mineral.practice.traits.Spectatable;
-import gg.mineral.practice.util.CoreConnector;
 import gg.mineral.practice.util.PlayerUtil;
 import gg.mineral.practice.util.collection.ProfileList;
 import gg.mineral.practice.util.items.ItemStacks;
@@ -158,13 +157,17 @@ public class Match implements Spectatable {
 		p.getMatchStatisticCollector().start();
 		p.setKitLoaded(false);
 
-		if (CoreConnector.connected()) {
-			if (this instanceof PartyMatch || this instanceof TeamMatch) {
-				CoreConnector.INSTANCE.getNameTagAPI().clearTagOnMatchStart(p.getPlayer(), p.getPlayer());
-			} else {
-				CoreConnector.INSTANCE.getNameTagAPI().giveTagAfterMatch(p.getPlayer(), p.getPlayer());
-			}
-		}
+		/*
+		 * if (CoreConnector.connected()) {
+		 * if (this instanceof PartyMatch || this instanceof TeamMatch) {
+		 * CoreConnector.INSTANCE.getNameTagAPI().clearTagOnMatchStart(p.getPlayer(),
+		 * p.getPlayer());
+		 * } else {
+		 * CoreConnector.INSTANCE.getNameTagAPI().giveTagAfterMatch(p.getPlayer(),
+		 * p.getPlayer());
+		 * }
+		 * }
+		 */
 
 		giveLoadoutSelection(p);
 		setAttributes(p);
