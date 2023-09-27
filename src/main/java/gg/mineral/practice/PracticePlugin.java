@@ -3,6 +3,7 @@ package gg.mineral.practice;
 import org.bukkit.Bukkit;
 import org.bukkit.command.Command;
 import org.bukkit.event.Listener;
+import org.bukkit.generator.ChunkGenerator;
 import org.bukkit.plugin.java.JavaPlugin;
 
 import gg.mineral.api.config.FileConfiguration;
@@ -63,6 +64,7 @@ import gg.mineral.practice.managers.ProfileManager;
 import gg.mineral.practice.managers.QueuetypeManager;
 import gg.mineral.practice.managers.SpectateManager;
 import gg.mineral.practice.sql.SQLManager;
+import gg.mineral.practice.util.world.VoidWorldGenerator;
 import net.minecraft.server.v1_8_R3.MinecraftServer;
 
 public class PracticePlugin extends JavaPlugin {
@@ -121,6 +123,11 @@ public class PracticePlugin extends JavaPlugin {
 	@Override
 	public void onDisable() {
 		Bukkit.getServer().getScheduler().cancelTasks(this);
+	}
+
+	@Override
+	public ChunkGenerator getDefaultWorldGenerator(String worldName, String id) {
+		return new VoidWorldGenerator();
 	}
 
 	public void registerCommands(Command... cmds) {
