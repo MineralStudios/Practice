@@ -17,14 +17,12 @@ import gg.mineral.practice.util.collection.ProfileList;
 import gg.mineral.practice.util.messages.Message;
 import it.unimi.dsi.fastutil.objects.Object2ObjectOpenHashMap;
 import lombok.Getter;
-import lombok.Setter;
 
 public class ProfileManager {
 	final static FileConfiguration lobbyConfig = new FileConfiguration("lobby.yml", "plugins/Practice");
 	@Getter
 	final static FileConfiguration playerConfig = new FileConfiguration("PlayerData.yml",
 			"plugins/Practice/PlayerData");
-	@Setter
 	@Getter
 	static Location spawnLocation;
 	@Getter
@@ -126,7 +124,7 @@ public class ProfileManager {
 		c.parallelStream().forEach(p -> p.message(message));
 	}
 
-	public void save() {
+	public static void save() {
 		lobbyConfig.set("Lobby.World", spawnLocation.getWorld().getName());
 		lobbyConfig.set("Lobby.x", spawnLocation.getBlockX());
 		lobbyConfig.set("Lobby.y", spawnLocation.getBlockY());
@@ -146,5 +144,10 @@ public class ProfileManager {
 	public void setDefaults() {
 		spawnLocation = new Location(Bukkit.getWorlds().get(0),
 				0, 70, 0);
+	}
+
+	public static void setSpawnLocation(Location loc) {
+		spawnLocation = loc;
+		save();
 	}
 }
