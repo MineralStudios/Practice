@@ -65,7 +65,8 @@ public class KitEditorManager {
 		displayItem = config.getItemstack("KitEditor.DisplayItem", ItemStacks.DEFAULT_KIT_EDITOR_DISPLAY_ITEM);
 		slot = config.getInt("KitEditor.Slot", 0);
 		enabled = config.getBoolean("KitEditor.Enable", true);
-		location = new Location(Bukkit.getWorld(config.getString("KitEditor.Location.World", null)),
+		location = new Location(
+				Bukkit.getWorld(config.getString("KitEditor.Location.World", Bukkit.getWorlds().get(0).getName())),
 				config.getInt("KitEditor.Location.x", 0), config.getInt("KitEditor.Location.y", 70),
 				config.getInt("KitEditor.Location.z", 0));
 		location.setDirection(config.getVector("KitEditor.Location.Direction", null));
