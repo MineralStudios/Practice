@@ -96,6 +96,11 @@ public class InventoryListener implements Listener {
 
 	@EventHandler
 	public void onPlayerPickupItem(PlayerPickupItemEvent e) {
+		boolean canPickup = e.getPlayer().isOp() && e.getPlayer().getGameMode().equals(GameMode.CREATIVE);
+
+		if (canPickup)
+			return;
+
 		e.setCancelled(ProfileManager
 				.getProfile(p -> p.getUuid().equals(e.getPlayer().getUniqueId())
 						&& p.getPlayerStatus() == PlayerStatus.FIGHTING) == null);
