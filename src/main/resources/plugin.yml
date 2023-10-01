@@ -4,4 +4,3 @@ author: OpaqueEclipse
 main: gg.mineral.practice.PracticePlugin
 description: Mineral Practice Plugin!
 depend: [MineralBotAPI]
-load: STARTUP
