@@ -78,7 +78,7 @@ public class UsageMessages {
 	public static final UsageMessage QUEUETYPE_BOTS = new UsageMessage(
 			"/queuetype bots <Queuetype> <True/False>");
 	public static final UsageMessage QUEUETYPE_ARENA = new UsageMessage(
-			"/queuetype arena <Queuetype> <Arena> <True/False>");
+			"/queuetype arena <Queuetype>");
 	public static final UsageMessage QUEUETYPE_DELETE = new UsageMessage("/queuetype delete <Queuetype>");
 	// Settings Config Command
 	public static final UsageMessage SETTINGS_ENABLE = new UsageMessage("/settingsconfig enable <True/False>");

@@ -82,7 +82,6 @@ public class Arena implements SaveableData {
 		config.set(path + "Spawn.2.x", location2.getBlockX());
 		config.set(path + "Spawn.2.y", location2.getBlockY());
 		config.set(path + "Spawn.2.z", location2.getBlockZ());
-		config.set(path + "Spawn.World", location2.getWorld().getName());
 		config.set(path + "Spawn.1.Direction", location1.getDirection());
 		config.set(path + "Spawn.2.Direction", location2.getDirection());
 		config.save();

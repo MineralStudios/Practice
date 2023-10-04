@@ -7,6 +7,8 @@ import java.util.function.Predicate;
 
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
+import org.bukkit.World;
+import org.bukkit.WorldCreator;
 import org.bukkit.util.Vector;
 
 import gg.mineral.api.config.FileConfiguration;
@@ -134,9 +136,11 @@ public class ProfileManager {
 	}
 
 	public static void load() {
+		World world = Bukkit.createWorld(
+				new WorldCreator(lobbyConfig.getString("Lobby.World", Bukkit.getWorlds().get(0).getName())));
 		Vector spawnDirection = lobbyConfig.getVector("Lobby.Direction", new Vector());
 		spawnLocation = new Location(
-				Bukkit.getWorld(lobbyConfig.getString("Lobby.World", Bukkit.getWorlds().get(0).getName())),
+				world,
 				lobbyConfig.getInt("Lobby.x", 0), lobbyConfig.getInt("Lobby.y", 70), lobbyConfig.getInt("Lobby.z", 0));
 		spawnLocation.setDirection(spawnDirection);
 	}

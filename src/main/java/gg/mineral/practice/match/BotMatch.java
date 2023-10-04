@@ -30,7 +30,6 @@ public class BotMatch extends Match {
         fakePlayer = difficulty.spawn(profile1, location2, "");
         this.profile2 = ProfileManager.getOrCreateProfile(fakePlayer.getServerSide().getBukkitEntity());
         addParicipants(profile2);
-        PlayerUtil.teleport(profile2.getPlayer(), location2);
     }
 
     @Override
