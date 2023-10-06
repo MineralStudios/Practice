@@ -81,6 +81,13 @@
             <systemPath>${basedir}/lib/MineralBotAPI.jar</systemPath>
         </dependency>
         <dependency>
+            <groupId>gg.mineral</groupId>
+            <artifactId>DatabaseAPI</artifactId>
+            <version>1.0</version>
+            <scope>system</scope>
+            <systemPath>${basedir}/lib/MineralDatabaseAPI.jar</systemPath>
+        </dependency>
+        <dependency>
             <groupId>com.zaxxer</groupId>
             <artifactId>HikariCP</artifactId>
             <version>2.4.5</version>

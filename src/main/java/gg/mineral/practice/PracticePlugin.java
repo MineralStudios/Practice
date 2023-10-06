@@ -6,7 +6,6 @@ import org.bukkit.event.Listener;
 import org.bukkit.generator.ChunkGenerator;
 import org.bukkit.plugin.java.JavaPlugin;
 
-import gg.mineral.api.config.FileConfiguration;
 import gg.mineral.practice.commands.config.ArenaCommand;
 import gg.mineral.practice.commands.config.CatagoryCommand;
 import gg.mineral.practice.commands.config.GametypeCommand;
@@ -63,30 +62,15 @@ import gg.mineral.practice.managers.PlayerSettingsManager;
 import gg.mineral.practice.managers.ProfileManager;
 import gg.mineral.practice.managers.QueuetypeManager;
 import gg.mineral.practice.managers.SpectateManager;
-import gg.mineral.practice.sql.SQLManager;
 import gg.mineral.practice.util.world.VoidWorldGenerator;
 import net.minecraft.server.v1_8_R3.MinecraftServer;
 
 public class PracticePlugin extends JavaPlugin {
 
 	public static PracticePlugin INSTANCE;
-	public static boolean DB_CONNECTED = true;
 
 	@Override
 	public void onEnable() {
-		FileConfiguration databaseDetails = new FileConfiguration("database.yml", "plugins/Practice");
-
-		String host = databaseDetails.getString("host", "host");
-		String port = databaseDetails.getString("port", "3306");
-		String database = databaseDetails.getString("database", "database");
-		String username = databaseDetails.getString("username", "username");
-		String password = databaseDetails.getString("password", "password");
-
-		try {
-			SQLManager.initialize(host, port, database, username, password);
-		} catch (Exception e) {
-			DB_CONNECTED = false;
-		}
 
 		INSTANCE = this;
 

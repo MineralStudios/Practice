@@ -55,7 +55,9 @@ public class Gametype implements SaveableData {
 	@Getter
 	Kit kit;
 	String path;
-	LeaderboardMap leaderboardMap;
+	@Setter
+	@Getter
+	LeaderboardMap leaderboardMap = new LeaderboardMap();
 	Object2IntOpenHashMap<ProfileData> eloMap = new Object2IntOpenHashMap<>();
 
 	public Gametype(String name) {
@@ -403,7 +405,6 @@ public class Gametype implements SaveableData {
 		}
 
 		this.kit = new Kit(this.getName(), items.toArray(new ItemStack[0]), armour.toArray(new ItemStack[0]));
-		this.leaderboardMap = EloManager.getEloAndLeaderboard(this);
 	}
 
 	@Override

@@ -80,6 +80,8 @@ public class GametypeManager {
 
 			registerGametype(gametype);
 		}
+
+		EloManager.setAllEloAndLeaderboards();
 	}
 
 	public static void setDefaults() {
