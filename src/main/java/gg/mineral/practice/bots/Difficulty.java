@@ -33,7 +33,7 @@ public enum Difficulty {
             fakePlayer.setArrowBlockAccuracy(1.2f);
             fakePlayer.setLatency(50);
             fakePlayer.setRange(2.1F, 3.0F);
-            fakePlayer.setSprintResetAccuracy(0.5F);
+            fakePlayer.setSprintResetAccuracy(0.45F);
             fakePlayer.setHitSelectAccuracy(0.3f);
             return fakePlayer;
         }
@@ -47,7 +47,7 @@ public enum Difficulty {
             fakePlayer.startAttacking(11);
             fakePlayer.setArrowBlockAccuracy(0.6f);
             fakePlayer.setLatency(50);
-            fakePlayer.setSprintResetAccuracy(0.75F);
+            fakePlayer.setSprintResetAccuracy(0.8F);
             fakePlayer.setHitSelectAccuracy(0.6f);
             fakePlayer.setRange(2.4F, 3.0F);
             return fakePlayer;

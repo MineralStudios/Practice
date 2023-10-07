@@ -23,38 +23,34 @@ public class GametypeManager {
 		gametypes.remove(gametype);
 		gametype.delete();
 
-		for (Catagory catagory : CatagoryManager.getCatagories()) {
+		for (Catagory catagory : CatagoryManager.getCatagories())
 			catagory.getGametypes().remove(gametype);
-		}
 
-		for (Queuetype queuetype : QueuetypeManager.getQueuetypes()) {
+		for (Queuetype queuetype : QueuetypeManager.getQueuetypes())
 			queuetype.getGametypes().removeInt(gametype);
-		}
+
 	}
 
 	public boolean contains(Gametype gametype) {
-		for (Gametype g : gametypes) {
-			if (g.equals(gametype)) {
+		for (Gametype g : gametypes)
+			if (g.equals(gametype))
 				return true;
-			}
-		}
+
 		return false;
 	}
 
 	public static Gametype getGametypeByName(String string) {
-		for (Gametype g : gametypes) {
-			if (g.getName().equalsIgnoreCase(string)) {
+		for (Gametype g : gametypes)
+			if (g.getName().equalsIgnoreCase(string))
 				return g;
-			}
-		}
+
 		return null;
 	}
 
 	public void save() {
 
-		for (Gametype gametype : getGametypes()) {
+		for (Gametype gametype : getGametypes())
 			gametype.save();
-		}
 
 		config.save();
 
@@ -70,9 +66,8 @@ public class GametypeManager {
 
 		for (String key : configSection.getKeys(false)) {
 
-			if (key == null) {
+			if (key == null)
 				continue;
-			}
 
 			Gametype gametype = new Gametype(key);
 
