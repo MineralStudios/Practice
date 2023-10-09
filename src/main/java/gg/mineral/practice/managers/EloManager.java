@@ -21,7 +21,7 @@ public class EloManager {
 	static {
 		DatabaseAPIPlugin.INSTANCE.retrieveSqlManager().ifPresent(sqlManager -> {
 			sqlManager.executeStatement("CREATE TABLE IF NOT EXISTS " + TABLE
-					+ " (ELO INT NOT NULL, PLAYER VARCHAR(200), GAMETYPE VARCHAR(200), UUID VARCHAR(200))")
+					+ " (ELO INT NOT NULL, PLAYER VARCHAR(200), GAMETYPE VARCHAR(200), UUID VARCHAR(200), UNIQUE(PLAYER, GAMETYPE, UUID))")
 					.join();
 		});
 	}
