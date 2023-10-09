@@ -1,5 +1,6 @@
 package gg.mineral.practice.managers;
 
+import java.sql.ResultSet;
 import java.util.UUID;
 import java.util.concurrent.CompletableFuture;
 
@@ -51,15 +52,12 @@ public class EloManager {
 			return DatabaseAPIPlugin.INSTANCE.retrieveSqlManager().get()
 					.executeQuery("SELECT * FROM " + TABLE + " WHERE GAMETYPE=? AND UUID=?", gametype.getName(),
 							uuid.toString())
-					.thenApply(r -> {
+					.thenApply(queryResult -> {
 						Integer elo = 1000;
-						try {
+						try (ResultSet r = queryResult.getResultSet()) {
 
-							if (r.next()) {
+							if (r.next())
 								elo = r.getInt("ELO");
-							}
-
-							r.close();
 
 						} catch (Exception e) {
 							e.printStackTrace();
@@ -77,13 +75,12 @@ public class EloManager {
 			return DatabaseAPIPlugin.INSTANCE.retrieveSqlManager().get()
 					.executeQuery("SELECT * FROM " + TABLE + " WHERE PLAYER=? AND GAMETYPE=?", playerName,
 							gametype.getName())
-					.thenApply(r -> {
+					.thenApply(queryResult -> {
 						Integer elo = 1000;
-						try {
-							if (r.next()) {
+						try (ResultSet r = queryResult.getResultSet()) {
+							if (r.next())
 								elo = r.getInt("ELO");
-							}
-							r.close();
+
 						} catch (Exception e) {
 							e.printStackTrace();
 						}
@@ -98,8 +95,8 @@ public class EloManager {
 		if (DatabaseAPIPlugin.INSTANCE.retrieveSqlManager().isPresent()) {
 			DatabaseAPIPlugin.INSTANCE.retrieveSqlManager().get()
 					.executeQuery("SELECT * FROM " + TABLE)
-					.thenAccept(r -> {
-						try {
+					.thenAccept(queryResult -> {
+						try (ResultSet r = queryResult.getResultSet()) {
 							while (r.next()) {
 								String playerName = r.getString("PLAYER");
 								int elo = r.getInt("ELO");
@@ -107,21 +104,20 @@ public class EloManager {
 								String gametypeName = r.getString("GAMETYPE");
 								Gametype gametype = GametypeManager.getGametypeByName(gametypeName);
 
-								if (gametype != null) {
-									gametype.getEloCache().put(
-											ProfileManager.getProfileData(playerName, FastUUID.parseUUID(uuid)), elo);
+								if (gametype == null)
+									continue;
 
-									LeaderboardMap map = gametype.getLeaderboardMap(); // Fetch the existing
-																						// LeaderboardMap
-									map.put(playerName, elo);
-									gametype.setLeaderboardMap(map);
-								}
+								gametype.getEloCache().put(
+										ProfileManager.getProfileData(playerName, FastUUID.parseUUID(uuid)), elo);
+
+								LeaderboardMap map = gametype.getLeaderboardMap(); // Fetch the existing LeaderboardMap
+								map.put(playerName, elo);
+								gametype.setLeaderboardMap(map);
 							}
-							r.close();
 						} catch (Exception e) {
 							e.printStackTrace();
 						}
-					});
+					}).join();
 		}
 	}
 

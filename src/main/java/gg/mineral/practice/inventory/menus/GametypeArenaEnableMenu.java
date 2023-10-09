@@ -25,6 +25,7 @@ public class GametypeArenaEnableMenu extends PracticeMenu {
 
     @Override
     public boolean update() {
+        clear();
         Iterator<Arena> arenas = ArenaManager.getArenas().iterator();
 
         while (arenas.hasNext()) {

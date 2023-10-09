@@ -241,7 +241,7 @@ public class ChatMessages {
 			CC.AQUA)
 			.highlightText(CC.D_AQUA, "%time%"),
 			JOINED_QUEUE = new ChatMessage(
-					"You are now queued for %queue% %catagory% %gametype%.",
+					"You are now queued for %queue%%catagory% %gametype%.",
 					CC.AQUA)
 					.highlightText(CC.D_AQUA, "%queue%", "%catagory%", "%gametype%"),
 			STOP_SPECTATING = new ChatMessage(

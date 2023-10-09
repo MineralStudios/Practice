@@ -245,7 +245,8 @@ public class Profile extends ProfileData {
 
 			message(ChatMessages.JOINED_QUEUE.clone().replace("%queue%", queueEntry.getQueuetype().getDisplayName())
 					.replace("%catagory%",
-							queueEntry.getGametype().isInCatagory() ? queueEntry.getGametype().getCatagoryName() : "")
+							queueEntry.getGametype().isInCatagory() ? " " + queueEntry.getGametype().getCatagoryName()
+									: "")
 					.replace("%gametype%", queueEntry.getGametype().getDisplayName()));
 
 			if (getMatchData().getTeam2v2()) {
