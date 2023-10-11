@@ -52,24 +52,28 @@ public class TeamMatch extends Match {
     }
 
     @Override
-    public void onMatchStart(Profile p) {
-        super.onMatchStart(p);
+    public void onMatchStart() {
+        super.onMatchStart();
 
         for (FakePlayer fakePlayer : team1FakePlayers) {
+            fakePlayer.startAiming();
+            fakePlayer.startAttacking();
             fakePlayer.startSprinting();
             fakePlayer.startSprintReset();
             fakePlayer.startStrafing();
             fakePlayer.startItemUsage();
-            fakePlayer.setPearlCooldown(data.getPearlCooldown());
+            fakePlayer.getConfiguration().setPearlCooldown(data.getPearlCooldown());
             fakePlayer.startMoving(FakePlayer.Direction.FORWARDS);
         }
 
         for (FakePlayer fakePlayer : team2FakePlayers) {
+            fakePlayer.startAiming();
+            fakePlayer.startAttacking();
             fakePlayer.startSprinting();
             fakePlayer.startSprintReset();
             fakePlayer.startStrafing();
             fakePlayer.startItemUsage();
-            fakePlayer.setPearlCooldown(data.getPearlCooldown());
+            fakePlayer.getConfiguration().setPearlCooldown(data.getPearlCooldown());
             fakePlayer.startMoving(FakePlayer.Direction.FORWARDS);
         }
     }
@@ -77,9 +81,8 @@ public class TeamMatch extends Match {
     @Override
     public void start() {
 
-        if (noArenas()) {
+        if (noArenas())
             return;
-        }
 
         MatchManager.registerMatch(this);
         Location location1 = data.getArena().getLocation1().clone();
@@ -152,9 +155,8 @@ public class TeamMatch extends Match {
 
     @Override
     public void end(Profile victim) {
-        if (isEnded() || victim.isDead()) {
+        if (isEnded() || victim.isDead())
             return;
-        }
 
         victim.setDead(true);
 

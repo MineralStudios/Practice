@@ -253,7 +253,7 @@ public class ChatMessages {
 			LEAVE_KIT_CREATOR = new ChatMessage(
 					"Please type /leave to leave the kit creator.",
 					CC.YELLOW).highlightText(CC.GOLD, "/leave"),
-			LEFT_QUEUE = new ChatMessage("You are no longer queued", CC.AQUA).highlightText(CC.D_AQUA, "%queue%",
+			LEFT_QUEUE = new ChatMessage("You are no longer queued.", CC.AQUA).highlightText(CC.D_AQUA, "%queue%",
 					"%gametype%"),
 			HEALTH = new ChatMessage("%player% now has %health% health remaining.", CC.AQUA).highlightText(CC.D_AQUA,
 					"%health%", "%player%"),

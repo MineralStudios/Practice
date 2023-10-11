@@ -46,6 +46,8 @@ public class Countdown {
 
 	public void cancel() {
 
+		match.onMatchStart();
+
 		for (Profile profile : match.getParticipants()) {
 			match.onMatchStart(profile);
 			profile.setInMatchCountdown(false);

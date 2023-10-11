@@ -138,13 +138,12 @@ public class Match implements Spectatable {
 	}
 
 	public void setVisibility(Profile p) {
-		for (Profile participant : participants) {
+		for (Profile participant : participants)
 			p.getPlayer().showPlayer(participant.getPlayer());
-		}
 
-		for (Match match : MatchManager.getMatches()) {
+		for (Match match : MatchManager.getMatches())
 			match.updateVisiblity(this, p);
-		}
+
 	}
 
 	public void prepareForMatch(Profile p) {
@@ -226,11 +225,14 @@ public class Match implements Spectatable {
 	}
 
 	public void onMatchStart(Profile p) {
-		if (!p.isKitLoaded()) {
+
+		if (!p.isKitLoaded())
 			p.giveKit(getKit());
-		}
 
 		BlockUtil.clearFakeBlocks(p);
+	}
+
+	public void onMatchStart() {
 	}
 
 	public void setScoreboard(Profile p) {

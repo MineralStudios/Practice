@@ -106,16 +106,12 @@ public class Profile extends ProfileData {
 		this.scoreboardHandler = new ScoreboardHandler(player);
 
 		scoreboardTaskId = Bukkit.getServer().getScheduler().scheduleSyncRepeatingTask(PracticePlugin.INSTANCE, () -> {
-			if (getScoreboard() != null && scoreboardHandler != null) {
+			if (getScoreboard() != null && scoreboardHandler != null)
 				getScoreboard().updateBoard(scoreboardHandler, this);
-			}
 		}, 0, 10);
 
-		fakeBlockTaskId = Bukkit.getServer().getScheduler().scheduleSyncRepeatingTask(PracticePlugin.INSTANCE, () -> {
-			fakeBlocks.getRegisteredObjects().forEach(blockData -> {
-				blockData.update(this.getPlayer());
-			});
-		}, 0, 3);
+		fakeBlockTaskId = Bukkit.getServer().getScheduler().scheduleSyncRepeatingTask(PracticePlugin.INSTANCE,
+				() -> fakeBlocks.getRegisteredObjects().forEach(blockData -> blockData.update(this.getPlayer())), 0, 3);
 
 		pearlCooldown.start();
 	}
@@ -125,9 +121,8 @@ public class Profile extends ProfileData {
 	}
 
 	public void setPlayersVisible(boolean playersVisible) {
-		if (getPlayerStatus() != PlayerStatus.IDLE && getPlayerStatus() != PlayerStatus.QUEUEING) {
+		if (getPlayerStatus() != PlayerStatus.IDLE && getPlayerStatus() != PlayerStatus.QUEUEING)
 			return;
-		}
 
 		this.playersVisible = playersVisible;
 	}
@@ -172,15 +167,13 @@ public class Profile extends ProfileData {
 
 	public void removeFromParty() {
 
-		if (party != null) {
+		if (isInParty())
 			party.remove(this);
-		}
 
 		this.party = null;
 
-		if (playerStatus != PlayerStatus.IDLE) {
+		if (playerStatus != PlayerStatus.IDLE)
 			return;
-		}
 
 		getInventory().setInventoryForLobby();
 	}
@@ -198,9 +191,8 @@ public class Profile extends ProfileData {
 			try {
 				PotionEffect e = it.next();
 
-				if (e == null) {
+				if (e == null)
 					continue;
-				}
 
 				player.removePotionEffect(e.getType());
 			} catch (Exception ex) {
@@ -227,11 +219,11 @@ public class Profile extends ProfileData {
 			removeFromQueue();
 			player.closeInventory();
 
-			if (isInParty()) {
+			if (isInParty())
 				getInventory().setInventoryForParty();
-			} else {
+			else
 				getInventory().setInventoryForLobby();
-			}
+
 		}
 	}
 
@@ -250,11 +242,11 @@ public class Profile extends ProfileData {
 					.replace("%gametype%", queueEntry.getGametype().getDisplayName()));
 
 			if (getMatchData().getTeam2v2()) {
-				if (isInParty()) {
+				if (isInParty())
 					QueueSearchTask2v2.addParty(this.getParty(), queueEntry);
-				} else {
+				else
 					QueueSearchTask2v2.addPlayer(this, queueEntry);
-				}
+
 				return;
 			}
 
@@ -263,16 +255,15 @@ public class Profile extends ProfileData {
 	}
 
 	public void teleportToLobby() {
-		if (playerStatus == PlayerStatus.FIGHTING && !getMatch().isEnded()) {
+		if (playerStatus == PlayerStatus.FIGHTING && !getMatch().isEnded())
 			return;
-		}
 
 		PlayerUtil.teleport(this.getPlayer(), ProfileManager.getSpawnLocation());
 		updateVisiblity();
 
-		if (playerStatus != PlayerStatus.FOLLOWING && playerStatus != PlayerStatus.QUEUEING) {
+		if (playerStatus != PlayerStatus.FOLLOWING && playerStatus != PlayerStatus.QUEUEING)
 			setPlayerStatus(PlayerStatus.IDLE);
-		}
+
 	}
 
 	public void leaveKitEditor() {
@@ -363,9 +354,8 @@ public class Profile extends ProfileData {
 			return;
 		}
 
-		for (Player player : playersInWorld) {
+		for (Player player : playersInWorld)
 			getPlayer().showPlayer(player);
-		}
 	}
 
 	public void resetMatchData() {
@@ -406,9 +396,8 @@ public class Profile extends ProfileData {
 		teleportToLobby();
 		getInventory().setInventoryForLobby();
 
-		if (!isInTournament()) {
+		if (!isInTournament())
 			return;
-		}
 
 		tournament.removePlayer(this);
 
@@ -420,9 +409,8 @@ public class Profile extends ProfileData {
 		teleportToLobby();
 		getInventory().setInventoryForLobby();
 
-		if (!isInEvent()) {
+		if (!isInEvent())
 			return;
-		}
 
 		event.removePlayer(this);
 

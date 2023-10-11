@@ -33,14 +33,16 @@ public class BotMatch extends Match {
     }
 
     @Override
-    public void onMatchStart(Profile p) {
-        super.onMatchStart(p);
+    public void onMatchStart() {
+        super.onMatchStart();
 
+        fakePlayer.startAiming();
+        fakePlayer.startAttacking();
         fakePlayer.startSprinting();
         fakePlayer.startSprintReset();
         fakePlayer.startStrafing();
         fakePlayer.startItemUsage();
-        fakePlayer.setPearlCooldown(data.getPearlCooldown());
+        fakePlayer.getConfiguration().setPearlCooldown(data.getPearlCooldown());
         fakePlayer.startMoving(FakePlayer.Direction.FORWARDS);
     }
 

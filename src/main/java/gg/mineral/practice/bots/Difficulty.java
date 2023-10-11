@@ -3,6 +3,7 @@ package gg.mineral.practice.bots;
 import org.bukkit.Location;
 
 import gg.mineral.botapi.entity.FakePlayer;
+import gg.mineral.botapi.entity.config.BotConfiguration;
 import gg.mineral.practice.entity.Profile;
 import gg.mineral.practice.util.messages.CC;
 import lombok.Getter;
@@ -11,127 +12,105 @@ public enum Difficulty {
     EASY(CC.GREEN + "Easy") {
         @Override
         public FakePlayer spawn(Profile profile, Location location, String suffix) {
-            FakePlayer fakePlayer = new FakePlayer();
-            fakePlayer.spawn(location, "EasyBot" + suffix);
-            fakePlayer.startAiming(0.15F, 1.0F, 2);
-            fakePlayer.startAttacking(5);
-            fakePlayer.setArrowBlockAccuracy(2.4f);
-            fakePlayer.setLatency(50);
-            fakePlayer.setSprintResetAccuracy(0.25F);
-            fakePlayer.setHitSelectAccuracy(0.0f);
-            fakePlayer.setRange(1.8F, 3.0F);
+            BotConfiguration config = BotConfiguration.builder().location(location).name("EasyBot" + suffix)
+                    .aimSpeed(0.15F).aimAccuracy(1.0F).reactionTime(2).cps(5).bowAimingRadius(2.4F).latency(50)
+                    .sprintResetAccuracy(0.25F).hitSelectAccuracy(0.0F).distancingMin(1.8F).distancingMax(3.0F).build();
+            FakePlayer fakePlayer = new FakePlayer(config);
+            fakePlayer.spawn();
             return fakePlayer;
         }
     },
     MEDIUM(CC.YELLOW + "Medium") {
         @Override
         public FakePlayer spawn(Profile profile, Location location, String suffix) {
-            FakePlayer fakePlayer = new FakePlayer();
-            fakePlayer.spawn(location, "MediumBot" + suffix);
-            fakePlayer.startAiming(0.3F, 1.5F, 2);
-            fakePlayer.startAttacking(8);
-            fakePlayer.setArrowBlockAccuracy(1.2f);
-            fakePlayer.setLatency(50);
-            fakePlayer.setRange(2.1F, 3.0F);
-            fakePlayer.setSprintResetAccuracy(0.45F);
-            fakePlayer.setHitSelectAccuracy(0.3f);
+            BotConfiguration config = BotConfiguration.builder().location(location).name("MediumBot" + suffix)
+                    .aimSpeed(0.3F).aimAccuracy(1.5F).reactionTime(2).cps(8).bowAimingRadius(1.2f).latency(50)
+                    .sprintResetAccuracy(0.45F).hitSelectAccuracy(0.3f).distancingMin(2.1F).distancingMax(3.0F).build();
+            FakePlayer fakePlayer = new FakePlayer(config);
+            fakePlayer.spawn();
             return fakePlayer;
         }
     },
     HARD(CC.GOLD + "Hard") {
         @Override
         public FakePlayer spawn(Profile profile, Location location, String suffix) {
-            FakePlayer fakePlayer = new FakePlayer();
-            fakePlayer.spawn(location, "HardBot" + suffix);
-            fakePlayer.startAiming(0.5F, 2.0F, 1);
-            fakePlayer.startAttacking(11);
-            fakePlayer.setArrowBlockAccuracy(0.6f);
-            fakePlayer.setLatency(50);
-            fakePlayer.setSprintResetAccuracy(0.8F);
-            fakePlayer.setHitSelectAccuracy(0.6f);
-            fakePlayer.setRange(2.4F, 3.0F);
+            BotConfiguration config = BotConfiguration.builder().location(location).name("HardBot" + suffix)
+                    .aimSpeed(0.5F).aimAccuracy(2.0F).reactionTime(1).cps(11).bowAimingRadius(0.6f).latency(50)
+                    .sprintResetAccuracy(0.8F).hitSelectAccuracy(0.6f).distancingMin(2.4F).distancingMax(3.0F).build();
+            FakePlayer fakePlayer = new FakePlayer(config);
+            fakePlayer.spawn();
             return fakePlayer;
         }
     },
     EXPERT(CC.RED + "Expert") {
         @Override
         public FakePlayer spawn(Profile profile, Location location, String suffix) {
-            FakePlayer fakePlayer = new FakePlayer();
-            fakePlayer.spawn(location, "ExpertBot" + suffix);
-            fakePlayer.startAiming(1F, 8F, 0);
-            fakePlayer.startAttacking(14);
-            fakePlayer.setArrowBlockAccuracy(0.3f);
-            fakePlayer.setLatency(50);
-            fakePlayer.setSprintResetAccuracy(0.85F);
-            fakePlayer.setHitSelectAccuracy(0.9f);
-            fakePlayer.setRange(2.6F, 3.0F);
+            BotConfiguration config = BotConfiguration.builder().location(location).name("ExpertBot" + suffix)
+                    .aimSpeed(1F).aimAccuracy(8F).reactionTime(0).cps(14).bowAimingRadius(0.3f).latency(50)
+                    .sprintResetAccuracy(0.85F).hitSelectAccuracy(0.9f).distancingMin(2.6F).distancingMax(3.0F).build();
+            FakePlayer fakePlayer = new FakePlayer(config);
+            fakePlayer.spawn();
             return fakePlayer;
         }
     },
     PRO(CC.PURPLE + "Pro") {
         @Override
         public FakePlayer spawn(Profile profile, Location location, String suffix) {
-            FakePlayer fakePlayer = new FakePlayer();
-            fakePlayer.spawn(location, "ProBot" + suffix);
-            fakePlayer.startAiming(2F, 32F, 0);
-            fakePlayer.startAttacking(17);
-            fakePlayer.setArrowBlockAccuracy(0.2f);
-            fakePlayer.setLatency(50);
-            fakePlayer.setSprintResetAccuracy(0.95F);
-            fakePlayer.setHitSelectAccuracy(0.98f);
-            fakePlayer.setRange(2.7F, 3.0F);
+
+            BotConfiguration config = BotConfiguration.builder().location(location).name("ProBot" + suffix)
+                    .aimSpeed(2F).aimAccuracy(32F).reactionTime(0).cps(17).bowAimingRadius(0.2f).latency(50)
+                    .sprintResetAccuracy(0.95F).hitSelectAccuracy(0.98f).distancingMin(2.7F).distancingMax(3.0F)
+                    .build();
+            FakePlayer fakePlayer = new FakePlayer(config);
+            fakePlayer.spawn();
             return fakePlayer;
         }
     },
     HARDCORE(CC.PINK + "Hardcore") {
         @Override
         public FakePlayer spawn(Profile profile, Location location, String suffix) {
-            FakePlayer fakePlayer = new FakePlayer();
-            fakePlayer.spawn(location, "HardcoreBot" + suffix);
-            fakePlayer.startAiming(4F, 64F, 0);
-            fakePlayer.startAttacking(20);
-            fakePlayer.setArrowBlockAccuracy(0.1f);
-            fakePlayer.setLatency(50);
-            fakePlayer.setSprintResetAccuracy(1.0F);
-            fakePlayer.setHitSelectAccuracy(1.0f);
-            fakePlayer.setRange(2.8F, 3.0F);
+            BotConfiguration config = BotConfiguration.builder().location(location).name("HardcoreBot" + suffix)
+                    .aimSpeed(4F).aimAccuracy(64F).reactionTime(0).cps(20).bowAimingRadius(0.1f).latency(50)
+                    .sprintResetAccuracy(1.0F).hitSelectAccuracy(1.0F).distancingMin(2.8F).distancingMax(3.0F)
+                    .build();
+            FakePlayer fakePlayer = new FakePlayer(config);
+            fakePlayer.spawn();
             return fakePlayer;
         }
     },
     CUSTOM(CC.GRAY + "Custom") {
         @Override
         public FakePlayer spawn(Profile profile, Location location, String suffix) {
-            FakePlayer fakePlayer = new FakePlayer();
             CustomDifficulty difficulty = profile.getMatchData().getCustomBotDifficulty();
-            fakePlayer.spawn(location, "CustomBot" + suffix);
-            fakePlayer.startAiming(difficulty.getAimSpeed(), difficulty.getAimAccuracy(),
-                    (int) difficulty.getReactionTimeTicks());
-            fakePlayer.startAttacking((int) difficulty.getCps());
-            fakePlayer.setReach(difficulty.getReach());
-            fakePlayer.setArrowBlockAccuracy(difficulty.getBowAimingRadius());
-            fakePlayer.setLatency((int) difficulty.getLatency());
-            fakePlayer.setSprintResetAccuracy(difficulty.getSprintResetAccuracy());
-            fakePlayer.setHitSelectAccuracy(difficulty.getHitSelectAccuracy());
-            fakePlayer.setRange(difficulty.getDistancingMin(), difficulty.getDistancingMax());
+            BotConfiguration config = BotConfiguration.builder().location(location).name("CustomBot" + suffix)
+                    .aimSpeed(difficulty.getAimSpeed()).aimAccuracy(difficulty.getAimAccuracy())
+                    .reactionTime((int) difficulty.getReactionTimeTicks()).cps((int) difficulty.getCps())
+                    .bowAimingRadius(difficulty.getBowAimingRadius()).latency((int) difficulty.getLatency())
+                    .sprintResetAccuracy(difficulty.getSprintResetAccuracy())
+                    .hitSelectAccuracy(difficulty.getHitSelectAccuracy()).distancingMin(difficulty.getDistancingMin())
+                    .distancingMax(difficulty.getDistancingMax())
+                    .build();
+            FakePlayer fakePlayer = new FakePlayer(config);
+            fakePlayer.spawn();
+
             return fakePlayer;
         }
     },
     RANDOM(CC.AQUA + "Random") {
         @Override
         public FakePlayer spawn(Profile profile, Location location, String suffix) {
-            FakePlayer fakePlayer = new FakePlayer();
             CustomDifficulty difficulty = new CustomDifficulty();
             difficulty.randomize();
-            fakePlayer.spawn(location, "RandomBot" + suffix);
-            fakePlayer.startAiming(difficulty.getAimSpeed(), difficulty.getAimAccuracy(),
-                    (int) difficulty.getReactionTimeTicks());
-            fakePlayer.startAttacking((int) difficulty.getCps());
-            fakePlayer.setReach(difficulty.getReach());
-            fakePlayer.setArrowBlockAccuracy(difficulty.getBowAimingRadius());
-            fakePlayer.setLatency((int) difficulty.getLatency());
-            fakePlayer.setSprintResetAccuracy(difficulty.getSprintResetAccuracy());
-            fakePlayer.setHitSelectAccuracy(difficulty.getHitSelectAccuracy());
-            fakePlayer.setRange(difficulty.getDistancingMin(), difficulty.getDistancingMax());
+            BotConfiguration config = BotConfiguration.builder().location(location).name("RandomBot" + suffix)
+                    .aimSpeed(difficulty.getAimSpeed()).aimAccuracy(difficulty.getAimAccuracy())
+                    .reactionTime((int) difficulty.getReactionTimeTicks()).cps((int) difficulty.getCps())
+                    .bowAimingRadius(difficulty.getBowAimingRadius()).latency((int) difficulty.getLatency())
+                    .sprintResetAccuracy(difficulty.getSprintResetAccuracy())
+                    .hitSelectAccuracy(difficulty.getHitSelectAccuracy()).distancingMin(difficulty.getDistancingMin())
+                    .distancingMax(difficulty.getDistancingMax())
+                    .build();
+            FakePlayer fakePlayer = new FakePlayer(config);
+            fakePlayer.spawn();
             return fakePlayer;
         }
     };
