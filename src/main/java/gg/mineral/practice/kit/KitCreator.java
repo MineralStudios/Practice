@@ -31,9 +31,8 @@ public class KitCreator {
         profile.getInventory().setInventoryClickCancelled(false);
         profile.getInventory().clear();
 
-        for (Player player : profile.getPlayer().getWorld().getPlayers()) {
+        for (Player player : profile.getPlayer().getWorld().getPlayers())
             profile.getPlayer().hidePlayer(player, false);
-        }
 
         profile.getPlayer().setGameMode(GameMode.CREATIVE);
     }

@@ -44,6 +44,7 @@ public class BotMatch extends Match {
         fakePlayer.startItemUsage();
         fakePlayer.getConfiguration().setPearlCooldown(data.getPearlCooldown());
         fakePlayer.startMoving(FakePlayer.Direction.FORWARDS);
+        fakePlayer.startPathfinding();
     }
 
     @Override

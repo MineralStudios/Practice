@@ -64,6 +64,7 @@ public class TeamMatch extends Match {
             fakePlayer.startItemUsage();
             fakePlayer.getConfiguration().setPearlCooldown(data.getPearlCooldown());
             fakePlayer.startMoving(FakePlayer.Direction.FORWARDS);
+            fakePlayer.startPathfinding();
         }
 
         for (FakePlayer fakePlayer : team2FakePlayers) {
@@ -75,6 +76,7 @@ public class TeamMatch extends Match {
             fakePlayer.startItemUsage();
             fakePlayer.getConfiguration().setPearlCooldown(data.getPearlCooldown());
             fakePlayer.startMoving(FakePlayer.Direction.FORWARDS);
+            fakePlayer.startPathfinding();
         }
     }
 
