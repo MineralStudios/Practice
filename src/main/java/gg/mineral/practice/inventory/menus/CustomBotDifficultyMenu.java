@@ -3,6 +3,8 @@ package gg.mineral.practice.inventory.menus;
 import java.math.RoundingMode;
 import java.text.DecimalFormat;
 
+import org.bukkit.event.inventory.ClickType;
+
 import gg.mineral.practice.bots.CustomDifficulty;
 import gg.mineral.practice.bots.Difficulty;
 import gg.mineral.practice.entity.Profile;
@@ -36,22 +38,39 @@ public class CustomBotDifficultyMenu extends PracticeMenu {
 
         setSlot(0, ItemStacks.AIM_SPEED.name(CC.SECONDARY + CC.B + "Aim Speed")
                 .lore(CC.WHITE + "The speed the bot " + CC.SECONDARY + "rotates" + CC.WHITE + " its head.", " ",
-                        CC.WHITE + "Currently:", CC.GOLD + DECIMAL_FORMAT.format(difficulty.getAimSpeed()),
-                        CC.BOARD_SEPARATOR, CC.ACCENT + "Click to change value.")
+                        CC.WHITE + "Horizontal:", CC.GOLD + DECIMAL_FORMAT.format(difficulty.getHorizontalAimSpeed()),
+                        CC.WHITE + "Vertical:", CC.GOLD + DECIMAL_FORMAT.format(difficulty.getVerticalAimSpeed()),
+                        CC.BOARD_SEPARATOR, CC.GREEN + "Left click to change horizontal.",
+                        CC.RED + "Right click to change vertical.")
                 .build(), interaction -> {
-                    interaction.getProfile().openMenu(new ConfigureDifficultyValueMenu(this, value -> {
-                        difficulty.setAimSpeed(value);
-                    }));
+                    if (interaction.getClickType() == ClickType.RIGHT) {
+                        interaction.getProfile().openMenu(new ConfigureDifficultyValueMenu(this, value -> {
+                            difficulty.setVerticalAimSpeed(value);
+                        }));
+                    } else {
+                        interaction.getProfile().openMenu(new ConfigureDifficultyValueMenu(this, value -> {
+                            difficulty.setHorizontalAimSpeed(value);
+                        }));
+                    }
                 });
 
         setSlot(1, ItemStacks.AIM_ACCURACY.name(CC.SECONDARY + CC.B + "Aim Accuracy")
                 .lore(CC.WHITE + "The " + CC.SECONDARY + "accuracy" + CC.WHITE + " the bot has when aiming.", " ",
-                        CC.WHITE + "Currently:", CC.GOLD + DECIMAL_FORMAT.format(difficulty.getAimAccuracy()),
-                        CC.BOARD_SEPARATOR, CC.ACCENT + "Click to change value.")
+                        CC.WHITE + "Horizontal:",
+                        CC.GOLD + DECIMAL_FORMAT.format(difficulty.getHorizontalAimAccuracy()),
+                        CC.WHITE + "Vertical:", CC.GOLD + DECIMAL_FORMAT.format(difficulty.getVerticalAimAccuracy()),
+                        CC.BOARD_SEPARATOR, CC.GREEN + "Left click to change horizontal.",
+                        CC.RED + "Right click to change vertical.")
                 .build(), interaction -> {
-                    interaction.getProfile().openMenu(new ConfigureDifficultyValueMenu(this, value -> {
-                        difficulty.setAimAccuracy(value);
-                    }));
+                    if (interaction.getClickType() == ClickType.RIGHT) {
+                        interaction.getProfile().openMenu(new ConfigureDifficultyValueMenu(this, value -> {
+                            difficulty.setVerticalAimAccuracy(value);
+                        }));
+                    } else {
+                        interaction.getProfile().openMenu(new ConfigureDifficultyValueMenu(this, value -> {
+                            difficulty.setHorizontalAimAccuracy(value);
+                        }));
+                    }
                 });
 
         setSlot(2, ItemStacks.AIM_REACTION_TIME.name(CC.SECONDARY + CC.B + "Aim Reaction Time")
