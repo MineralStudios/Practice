@@ -295,11 +295,12 @@ public class Gametype implements SaveableData {
 
 			if (containsGametype) {
 				config.set(path + q.getName() + ".Slot", q.getGametypes().getInt(this));
-			}
-		}
 
-		for (Arena arena : arenas) {
-			config.set(path + "Arenas." + arena.getName(), true);
+				for (Arena arena : q.getArenas()) {
+					config.set(path + "Arenas." + arena.getName(), getArenas().stream()
+							.filter(a -> a.getName().equalsIgnoreCase(arena.getName())).findFirst().isPresent());
+				}
+			}
 		}
 
 		ItemStack[] contents = kit.getContents();
