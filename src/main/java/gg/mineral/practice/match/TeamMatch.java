@@ -9,7 +9,8 @@ import org.bukkit.Location;
 import org.bukkit.scoreboard.Team;
 
 import gg.mineral.api.collection.GlueList;
-import gg.mineral.botapi.entity.FakePlayer;
+import gg.mineral.botapi.BotAPIPlugin;
+import gg.mineral.botapi.entity.player.self.FakePlayer;
 import gg.mineral.practice.PracticePlugin;
 import gg.mineral.practice.bots.Difficulty;
 import gg.mineral.practice.entity.Profile;
@@ -32,6 +33,7 @@ import net.md_5.bungee.api.chat.ClickEvent;
 import net.md_5.bungee.api.chat.ComponentBuilder;
 import net.md_5.bungee.api.chat.HoverEvent;
 import net.md_5.bungee.api.chat.TextComponent;
+import net.minecraft.server.v1_8_R3.EntityPlayer;
 
 public class TeamMatch extends Match {
     @Getter
@@ -56,27 +58,17 @@ public class TeamMatch extends Match {
         super.onMatchStart();
 
         for (FakePlayer fakePlayer : team1FakePlayers) {
-            fakePlayer.startAiming();
-            fakePlayer.startAttacking();
-            fakePlayer.startSprinting();
-            fakePlayer.startSprintReset();
-            fakePlayer.startStrafing();
-            fakePlayer.startItemUsage();
-            fakePlayer.getConfiguration().setPearlCooldown(data.getPearlCooldown());
+            fakePlayer.startTasks();
+            fakePlayer.setSprintingHeld(true);
             fakePlayer.startMoving(FakePlayer.Direction.FORWARDS);
-            fakePlayer.startPathfinding();
+            fakePlayer.getConfiguration().setPearlCooldown(data.getPearlCooldown());
         }
 
         for (FakePlayer fakePlayer : team2FakePlayers) {
-            fakePlayer.startAiming();
-            fakePlayer.startAttacking();
-            fakePlayer.startSprinting();
-            fakePlayer.startSprintReset();
-            fakePlayer.startStrafing();
-            fakePlayer.startItemUsage();
-            fakePlayer.getConfiguration().setPearlCooldown(data.getPearlCooldown());
+            fakePlayer.startTasks();
+            fakePlayer.setSprintingHeld(true);
             fakePlayer.startMoving(FakePlayer.Direction.FORWARDS);
-            fakePlayer.startPathfinding();
+            fakePlayer.getConfiguration().setPearlCooldown(data.getPearlCooldown());
         }
     }
 
@@ -98,14 +90,16 @@ public class TeamMatch extends Match {
 
         for (Difficulty difficulty : team1Bots) {
             FakePlayer fakePlayer = difficulty.spawn(profile, location1, "" + (suffix++));
-            Profile fakeProfile = ProfileManager.getOrCreateProfile(fakePlayer.getServerSide().getBukkitEntity());
+            Profile fakeProfile = ProfileManager
+                    .getOrCreateProfile(((EntityPlayer) fakePlayer.getServerSide()).getBukkitEntity());
             team1RemainingPlayers.add(fakeProfile);
             team1FakePlayers.add(fakePlayer);
         }
 
         for (Difficulty difficulty : team2Bots) {
             FakePlayer fakePlayer = difficulty.spawn(profile, location2, "" + (suffix++));
-            Profile fakeProfile = ProfileManager.getOrCreateProfile(fakePlayer.getServerSide().getBukkitEntity());
+            Profile fakeProfile = ProfileManager
+                    .getOrCreateProfile(((EntityPlayer) fakePlayer.getServerSide()).getBukkitEntity());
             team2RemainingPlayers.add(fakeProfile);
             team2FakePlayers.add(fakePlayer);
         }
@@ -208,8 +202,8 @@ public class TeamMatch extends Match {
             participants.remove(victim);
             victim.removeFromMatch();
 
-            if (FakePlayer.isFakePlayer(victim.getPlayer().getHandle())) {
-                FakePlayer.destroy(victim.getPlayer().getHandle());
+            if (BotAPIPlugin.INSTANCE.getFakePlayerUtil().isFakePlayer(victim.getPlayer())) {
+                BotAPIPlugin.INSTANCE.getFakePlayerUtil().destroy(victim.getPlayer());
                 return;
             }
 
@@ -289,7 +283,7 @@ public class TeamMatch extends Match {
 
         victim.removeFromMatch();
 
-        FakePlayer.destroy(victim.getPlayer().getHandle());
+        BotAPIPlugin.INSTANCE.getFakePlayerUtil().destroy(victim.getPlayer());
 
         for (Profile spectator : getSpectators()) {
             spectator.getPlayer().sendMessage(CC.SEPARATOR);
@@ -332,7 +326,7 @@ public class TeamMatch extends Match {
             }
             attacker.removeFromMatch();
             attacker.setScoreboard(DefaultScoreboard.INSTANCE);
-            FakePlayer.destroy(attacker.getPlayer().getHandle());
+            BotAPIPlugin.INSTANCE.getFakePlayerUtil().destroy(attacker.getPlayer());
         }, getPostMatchTime());
     }
 

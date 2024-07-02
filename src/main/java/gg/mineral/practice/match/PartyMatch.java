@@ -9,7 +9,7 @@ import org.bukkit.Location;
 import org.bukkit.scoreboard.Team;
 
 import gg.mineral.api.collection.GlueList;
-import gg.mineral.botapi.entity.FakePlayer;
+import gg.mineral.botapi.BotAPIPlugin;
 import gg.mineral.practice.PracticePlugin;
 import gg.mineral.practice.entity.Profile;
 import gg.mineral.practice.inventory.menus.InventoryStatsMenu;
@@ -251,7 +251,7 @@ public class PartyMatch extends Match {
 
 		victim.removeFromMatch();
 
-		FakePlayer.destroy(victim.getPlayer().getHandle());
+		BotAPIPlugin.INSTANCE.getFakePlayerUtil().destroy(victim.getPlayer());
 
 		for (Profile spectator : getSpectators()) {
 			spectator.getPlayer().sendMessage(CC.SEPARATOR);
@@ -294,7 +294,7 @@ public class PartyMatch extends Match {
 			}
 			attacker.removeFromMatch();
 			attacker.setScoreboard(DefaultScoreboard.INSTANCE);
-			FakePlayer.destroy(attacker.getPlayer().getHandle());
+			BotAPIPlugin.INSTANCE.getFakePlayerUtil().destroy(attacker.getPlayer());
 		}, getPostMatchTime());
 	}
 

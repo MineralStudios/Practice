@@ -13,7 +13,6 @@ dependencies {
     compileOnly files('lib/spigot.jar')
     compileOnly files('lib/MineralBotAPI.jar')
     compileOnly files('lib/MineralDatabaseAPI.jar')
-    implementation 'com.zaxxer:HikariCP:2.4.5'
     compileOnly 'org.projectlombok:lombok:1.18.30'
     annotationProcessor 'org.projectlombok:lombok:1.18.30'
 }

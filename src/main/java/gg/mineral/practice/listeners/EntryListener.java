@@ -7,7 +7,6 @@ import org.bukkit.event.player.PlayerInitialSpawnEvent;
 import org.bukkit.event.player.PlayerJoinEvent;
 import org.bukkit.event.player.PlayerQuitEvent;
 
-import gg.mineral.botapi.BotAPIBase;
 import gg.mineral.botapi.BotAPIPlugin;
 import gg.mineral.practice.entity.Profile;
 import gg.mineral.practice.managers.EloManager;
@@ -24,7 +23,7 @@ public class EntryListener implements Listener {
 		profile.getPlayer().setGameMode(GameMode.SURVIVAL);
 		profile.heal();
 
-		if (BotAPIBase.getPlugin().getFakePlayerUtil().isFakePlayer((Object) profile.getPlayer()))
+		if (BotAPIPlugin.INSTANCE.getFakePlayerUtil().isFakePlayer(profile.getPlayer()))
 			return;
 
 		EloManager.updateName(profile);
@@ -74,7 +73,7 @@ public class EntryListener implements Listener {
 	@EventHandler
 	public void onPlayerInitialSpawn(PlayerInitialSpawnEvent e) {
 
-		if (BotAPIPlugin.getFakePlayerUtil().isFakePlayer(e.getPlayer()))
+		if (BotAPIPlugin.INSTANCE.getFakePlayerUtil().isFakePlayer(e.getPlayer()))
 			return;
 
 		e.setSpawnLocation(ProfileManager.getSpawnLocation());

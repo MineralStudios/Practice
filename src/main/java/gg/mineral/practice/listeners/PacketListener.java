@@ -7,7 +7,7 @@ import org.bukkit.event.Listener;
 import org.bukkit.event.player.PlayerJoinEvent;
 import org.bukkit.event.player.PlayerQuitEvent;
 
-import gg.mineral.botapi.entity.FakePlayer;
+import gg.mineral.botapi.BotAPIPlugin;
 import io.netty.channel.Channel;
 import io.netty.channel.ChannelDuplexHandler;
 import io.netty.channel.ChannelHandlerContext;
@@ -19,18 +19,16 @@ public class PacketListener implements Listener {
     @EventHandler
     public void onJoin(PlayerJoinEvent event) {
 
-        if (FakePlayer.isFakePlayer(((CraftPlayer) event.getPlayer()).getHandle())) {
+        if (BotAPIPlugin.INSTANCE.getFakePlayerUtil().isFakePlayer(event.getPlayer()))
             return;
-        }
 
         injectPlayer(event.getPlayer());
     }
 
     @EventHandler
     public void onLeave(PlayerQuitEvent event) {
-        if (FakePlayer.isFakePlayer(((CraftPlayer) event.getPlayer()).getHandle())) {
+        if (BotAPIPlugin.INSTANCE.getFakePlayerUtil().isFakePlayer(event.getPlayer()))
             return;
-        }
 
         removePlayer(event.getPlayer());
     }

@@ -3,6 +3,7 @@ package gg.mineral.practice.match;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
 
+import gg.mineral.botapi.BotAPIPlugin;
 import gg.mineral.botapi.entity.player.self.FakePlayer;
 import gg.mineral.practice.PracticePlugin;
 import gg.mineral.practice.bots.Difficulty;
@@ -11,6 +12,7 @@ import gg.mineral.practice.managers.ProfileManager;
 import gg.mineral.practice.match.data.MatchData;
 import gg.mineral.practice.util.PlayerUtil;
 import gg.mineral.practice.util.items.ItemStacks;
+import net.minecraft.server.v1_8_R3.EntityPlayer;
 
 public class BotMatch extends Match {
 
@@ -28,7 +30,8 @@ public class BotMatch extends Match {
     public void teleportPlayers(Location location1, Location location2) {
         PlayerUtil.teleport(profile1.getPlayer(), location1);
         fakePlayer = difficulty.spawn(profile1, location2, "");
-        this.profile2 = ProfileManager.getOrCreateProfile(fakePlayer.getServerSide().getBukkitEntity());
+        this.profile2 = ProfileManager
+                .getOrCreateProfile(((EntityPlayer) fakePlayer.getServerSide()).getBukkitEntity());
         addParicipants(profile2);
     }
 
@@ -36,27 +39,22 @@ public class BotMatch extends Match {
     public void onMatchStart() {
         super.onMatchStart();
 
-        fakePlayer.startAiming();
-        fakePlayer.startAttacking();
-        fakePlayer.startSprinting();
-        fakePlayer.startSprintReset();
-        fakePlayer.startStrafing();
-        fakePlayer.startItemUsage();
-        fakePlayer.getConfiguration().setPearlCooldown(data.getPearlCooldown());
+        fakePlayer.startTasks();
+        fakePlayer.setSprintingHeld(true);
         fakePlayer.startMoving(FakePlayer.Direction.FORWARDS);
-        fakePlayer.startPathfinding();
+        fakePlayer.getConfiguration().setPearlCooldown(data.getPearlCooldown());
     }
 
     @Override
     public void end(Profile victim) {
         super.end(victim);
 
-        FakePlayer.destroy(victim.getPlayer().getHandle());
+        BotAPIPlugin.INSTANCE.getFakePlayerUtil().destroy(victim.getPlayer());
     }
 
     @Override
     public void giveQueueAgainItem(Profile profile) {
-        if (FakePlayer.isFakePlayer(profile.getPlayer().getHandle()))
+        if (BotAPIPlugin.INSTANCE.getFakePlayerUtil().isFakePlayer(profile.getPlayer()))
             return;
         if (getData().getQueueEntry() != null) {
             Bukkit.getServer().getScheduler().runTaskLater(PracticePlugin.INSTANCE, () -> {
@@ -76,8 +74,8 @@ public class BotMatch extends Match {
     public void end(Profile attacker, Profile victim) {
         super.end(attacker, victim);
 
-        FakePlayer.destroy(attacker.getPlayer().getHandle());
-        FakePlayer.destroy(victim.getPlayer().getHandle());
+        BotAPIPlugin.INSTANCE.getFakePlayerUtil().destroy(attacker.getPlayer());
+        BotAPIPlugin.INSTANCE.getFakePlayerUtil().destroy(victim.getPlayer());
     }
 
 }
