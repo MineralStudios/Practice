@@ -1,3 +1,10 @@
 /target
 /.vscode
+.factorypath
+.project
+.settings
+.classpath
+/.gradle
+/build
+/gradle
 dependency-reduced-pom.xml

@@ -1,0 +1,38 @@
+plugins {
+    id 'java'
+}
+
+group = 'gg.mineral'
+version = '1.0-SNAPSHOT'
+
+repositories {
+    mavenCentral()
+}
+
+dependencies {
+    compileOnly files('lib/spigot.jar')
+    compileOnly files('lib/MineralBotAPI.jar')
+    compileOnly files('lib/MineralDatabaseAPI.jar')
+    implementation 'com.zaxxer:HikariCP:2.4.5'
+    compileOnly 'org.projectlombok:lombok:1.18.30'
+    annotationProcessor 'org.projectlombok:lombok:1.18.30'
+}
+
+java {
+    toolchain {
+        languageVersion = JavaLanguageVersion.of(17)
+    }
+}
+
+tasks.withType(JavaCompile).configureEach {
+    options.encoding = 'UTF-8'
+    options.compilerArgs += ['-parameters']
+}
+
+jar {
+    archiveFileName = 'MineralPractice.jar'
+    from {
+        configurations.runtimeClasspath.collect { it.isDirectory() ? it : zipTree(it) }
+    }
+    duplicatesStrategy = DuplicatesStrategy.EXCLUDE
+}

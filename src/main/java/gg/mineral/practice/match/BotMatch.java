@@ -3,7 +3,7 @@ package gg.mineral.practice.match;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
 
-import gg.mineral.botapi.entity.FakePlayer;
+import gg.mineral.botapi.entity.player.self.FakePlayer;
 import gg.mineral.practice.PracticePlugin;
 import gg.mineral.practice.bots.Difficulty;
 import gg.mineral.practice.entity.Profile;

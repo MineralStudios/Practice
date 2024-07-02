@@ -1,14 +1,14 @@
 package gg.mineral.practice.listeners;
 
 import org.bukkit.GameMode;
-import org.bukkit.craftbukkit.v1_8_R3.entity.CraftPlayer;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.player.PlayerInitialSpawnEvent;
 import org.bukkit.event.player.PlayerJoinEvent;
 import org.bukkit.event.player.PlayerQuitEvent;
 
-import gg.mineral.botapi.entity.FakePlayer;
+import gg.mineral.botapi.BotAPIBase;
+import gg.mineral.botapi.BotAPIPlugin;
 import gg.mineral.practice.entity.Profile;
 import gg.mineral.practice.managers.EloManager;
 import gg.mineral.practice.managers.ProfileManager;
@@ -24,7 +24,7 @@ public class EntryListener implements Listener {
 		profile.getPlayer().setGameMode(GameMode.SURVIVAL);
 		profile.heal();
 
-		if (FakePlayer.isFakePlayer(profile.getPlayer().getHandle()))
+		if (BotAPIBase.getPlugin().getFakePlayerUtil().isFakePlayer((Object) profile.getPlayer()))
 			return;
 
 		EloManager.updateName(profile);
@@ -74,7 +74,7 @@ public class EntryListener implements Listener {
 	@EventHandler
 	public void onPlayerInitialSpawn(PlayerInitialSpawnEvent e) {
 
-		if (FakePlayer.isFakePlayer(((CraftPlayer) e.getPlayer()).getHandle()))
+		if (BotAPIPlugin.getFakePlayerUtil().isFakePlayer(e.getPlayer()))
 			return;
 
 		e.setSpawnLocation(ProfileManager.getSpawnLocation());
