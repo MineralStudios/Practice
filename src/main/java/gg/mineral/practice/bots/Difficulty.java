@@ -32,8 +32,8 @@ public enum Difficulty {
                     location.getZ());
 
             BotConfiguration config = BotConfiguration.builder().location(serverLocation).name("EasyBot" + suffix)
-                    .aimConfiguration(AimConfiguration.builder().horizontalAimSpeed(0.4F).verticalAimSpeed(0.4F)
-                            .horizontalAimAccuracy(0.35F).verticalAimAccuracy(0.35F).build())
+                    .aimConfiguration(AimConfiguration.builder().horizontalAimSpeed(0.35F).verticalAimSpeed(0.35F)
+                            .horizontalAimAccuracy(0.3F).verticalAimAccuracy(0.3F).build())
                     .cps(5).bowAimingRadius(2.4F).latency(50).sprintResetAccuracy(0.25F).hitSelectAccuracy(0.0F)
                     .distancingMin(1.8F).distancingMax(3.0F).build();
             FakePlayer fakePlayer = FakePlayerManager.create(config);
@@ -57,7 +57,7 @@ public enum Difficulty {
                     location.getZ());
             BotConfiguration config = BotConfiguration.builder().location(serverLocation).name("MediumBot" + suffix)
                     .aimConfiguration(AimConfiguration.builder().horizontalAimSpeed(0.5F).verticalAimSpeed(0.5F)
-                            .horizontalAimAccuracy(0.45F).verticalAimAccuracy(0.45F).build())
+                            .horizontalAimAccuracy(0.4F).verticalAimAccuracy(0.4F).build())
                     .cps(8).bowAimingRadius(1.2f).latency(50).sprintResetAccuracy(0.45F).hitSelectAccuracy(0.3f)
                     .distancingMin(2.1F).distancingMax(3.0F).build();
             FakePlayer fakePlayer = FakePlayerManager.create(config);
@@ -81,7 +81,7 @@ public enum Difficulty {
                     location.getZ());
             BotConfiguration config = BotConfiguration.builder().location(serverLocation).name("HardBot" + suffix)
                     .aimConfiguration(AimConfiguration.builder().horizontalAimSpeed(0.65F).verticalAimSpeed(0.65F)
-                            .horizontalAimAccuracy(0.65F).verticalAimAccuracy(0.65F).build())
+                            .horizontalAimAccuracy(0.6F).verticalAimAccuracy(0.6F).build())
                     .cps(11).bowAimingRadius(0.6f).latency(50).sprintResetAccuracy(0.8F).hitSelectAccuracy(0.6f)
                     .distancingMin(2.4F).distancingMax(3.0F).build();
             FakePlayer fakePlayer = FakePlayerManager.create(config);
