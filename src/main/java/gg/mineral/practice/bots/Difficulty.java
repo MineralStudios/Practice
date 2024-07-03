@@ -32,7 +32,7 @@ public enum Difficulty {
                     location.getZ());
 
             BotConfiguration config = BotConfiguration.builder().location(serverLocation).name("EasyBot" + suffix)
-                    .aimConfiguration(AimConfiguration.builder().horizontalAimSpeed(0.35F).verticalAimSpeed(0.35F)
+                    .aimConfiguration(AimConfiguration.builder().horizontalAimSpeed(0.4F).verticalAimSpeed(0.4F)
                             .horizontalAimAccuracy(0.35F).verticalAimAccuracy(0.35F).build())
                     .cps(5).bowAimingRadius(2.4F).latency(50).sprintResetAccuracy(0.25F).hitSelectAccuracy(0.0F)
                     .distancingMin(1.8F).distancingMax(3.0F).build();
@@ -57,7 +57,7 @@ public enum Difficulty {
                     location.getZ());
             BotConfiguration config = BotConfiguration.builder().location(serverLocation).name("MediumBot" + suffix)
                     .aimConfiguration(AimConfiguration.builder().horizontalAimSpeed(0.5F).verticalAimSpeed(0.5F)
-                            .horizontalAimAccuracy(0.5F).verticalAimAccuracy(0.5F).build())
+                            .horizontalAimAccuracy(0.45F).verticalAimAccuracy(0.45F).build())
                     .cps(8).bowAimingRadius(1.2f).latency(50).sprintResetAccuracy(0.45F).hitSelectAccuracy(0.3f)
                     .distancingMin(2.1F).distancingMax(3.0F).build();
             FakePlayer fakePlayer = FakePlayerManager.create(config);
@@ -161,7 +161,9 @@ public enum Difficulty {
                     .cps(20).bowAimingRadius(0.1f).latency(50)
                     .sprintResetAccuracy(1.0F).hitSelectAccuracy(1.0F).distancingMin(2.8F).distancingMax(3.0F)
                     .build();
-            return FakePlayerManager.create(config);
+            FakePlayer fakePlayer = FakePlayerManager.create(config);
+            fakePlayer.spawn();
+            return fakePlayer;
         }
     },
     CUSTOM(CC.GRAY + "Custom") {
@@ -188,9 +190,8 @@ public enum Difficulty {
                     .latency((int) difficulty.getLatency()).sprintResetAccuracy(difficulty.getSprintResetAccuracy())
                     .hitSelectAccuracy(difficulty.getHitSelectAccuracy()).distancingMin(difficulty.getDistancingMin())
                     .distancingMax(difficulty.getDistancingMax()).build();
-            FakePlayer fakePlayer = new FakePlayer(config);
+            FakePlayer fakePlayer = FakePlayerManager.create(config);
             fakePlayer.spawn();
-
             return fakePlayer;
         }
     },
@@ -219,7 +220,7 @@ public enum Difficulty {
                     .latency((int) difficulty.getLatency()).sprintResetAccuracy(difficulty.getSprintResetAccuracy())
                     .hitSelectAccuracy(difficulty.getHitSelectAccuracy()).distancingMin(difficulty.getDistancingMin())
                     .distancingMax(difficulty.getDistancingMax()).build();
-            FakePlayer fakePlayer = new FakePlayer(config);
+            FakePlayer fakePlayer = FakePlayerManager.create(config);
             fakePlayer.spawn();
             return fakePlayer;
         }

@@ -39,10 +39,10 @@ public class BotMatch extends Match {
     public void onMatchStart() {
         super.onMatchStart();
 
-        fakePlayer.startTasks();
         fakePlayer.setSprintingHeld(true);
         fakePlayer.startMoving(FakePlayer.Direction.FORWARDS);
         fakePlayer.getConfiguration().setPearlCooldown(data.getPearlCooldown());
+        fakePlayer.startTasks();
     }
 
     @Override
