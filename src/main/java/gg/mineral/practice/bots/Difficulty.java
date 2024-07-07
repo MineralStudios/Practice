@@ -29,11 +29,11 @@ public enum Difficulty {
                     return location.getWorld().getName();
                 }
             }, location.getX(), location.getY(),
-                    location.getZ());
+                    location.getZ(), location.getYaw(), location.getPitch());
 
             BotConfiguration config = BotConfiguration.builder().location(serverLocation).name("EasyBot" + suffix)
-                    .aimConfiguration(AimConfiguration.builder().horizontalAimSpeed(0.35F).verticalAimSpeed(0.35F)
-                            .horizontalAimAccuracy(0.3F).verticalAimAccuracy(0.3F).build())
+                    .aimConfiguration(AimConfiguration.builder().horizontalAimSpeed(0.3F).verticalAimSpeed(0.3F)
+                            .horizontalAimAccuracy(0.25F).verticalAimAccuracy(0.25F).build())
                     .cps(5).bowAimingRadius(2.4F).latency(50).sprintResetAccuracy(0.25F).hitSelectAccuracy(0.0F)
                     .distancingMin(1.8F).distancingMax(3.0F).build();
             FakePlayer fakePlayer = FakePlayerManager.create(config);
@@ -54,10 +54,10 @@ public enum Difficulty {
                     return location.getWorld().getName();
                 }
             }, location.getX(), location.getY(),
-                    location.getZ());
+                    location.getZ(), location.getYaw(), location.getPitch());
             BotConfiguration config = BotConfiguration.builder().location(serverLocation).name("MediumBot" + suffix)
-                    .aimConfiguration(AimConfiguration.builder().horizontalAimSpeed(0.5F).verticalAimSpeed(0.5F)
-                            .horizontalAimAccuracy(0.4F).verticalAimAccuracy(0.4F).build())
+                    .aimConfiguration(AimConfiguration.builder().horizontalAimSpeed(0.4F).verticalAimSpeed(0.4F)
+                            .horizontalAimAccuracy(0.35F).verticalAimAccuracy(0.35F).build())
                     .cps(8).bowAimingRadius(1.2f).latency(50).sprintResetAccuracy(0.45F).hitSelectAccuracy(0.3f)
                     .distancingMin(2.1F).distancingMax(3.0F).build();
             FakePlayer fakePlayer = FakePlayerManager.create(config);
@@ -78,7 +78,7 @@ public enum Difficulty {
                     return location.getWorld().getName();
                 }
             }, location.getX(), location.getY(),
-                    location.getZ());
+                    location.getZ(), location.getYaw(), location.getPitch());
             BotConfiguration config = BotConfiguration.builder().location(serverLocation).name("HardBot" + suffix)
                     .aimConfiguration(AimConfiguration.builder().horizontalAimSpeed(0.65F).verticalAimSpeed(0.65F)
                             .horizontalAimAccuracy(0.6F).verticalAimAccuracy(0.6F).build())
@@ -102,7 +102,7 @@ public enum Difficulty {
                     return location.getWorld().getName();
                 }
             }, location.getX(), location.getY(),
-                    location.getZ());
+                    location.getZ(), location.getYaw(), location.getPitch());
             BotConfiguration config = BotConfiguration.builder().location(serverLocation).name("ExpertBot" + suffix)
                     .aimConfiguration(AimConfiguration.builder().horizontalAimSpeed(0.8F).verticalAimSpeed(0.8F)
                             .horizontalAimAccuracy(0.8F).verticalAimAccuracy(0.8F).build())
@@ -126,7 +126,7 @@ public enum Difficulty {
                     return location.getWorld().getName();
                 }
             }, location.getX(), location.getY(),
-                    location.getZ());
+                    location.getZ(), location.getYaw(), location.getPitch());
 
             BotConfiguration config = BotConfiguration.builder().location(serverLocation).name("ProBot" + suffix)
                     .aimConfiguration(AimConfiguration.builder().horizontalAimSpeed(0.95F).verticalAimSpeed(0.95F)
@@ -152,7 +152,7 @@ public enum Difficulty {
                     return location.getWorld().getName();
                 }
             }, location.getX(), location.getY(),
-                    location.getZ());
+                    location.getZ(), location.getYaw(), location.getPitch());
 
             BotConfiguration config = BotConfiguration.builder().location(serverLocation).name("HardcoreBot" + suffix)
                     .aimConfiguration(AimConfiguration.builder().horizontalAimSpeed(1.1F).verticalAimSpeed(1.1F)
@@ -180,7 +180,7 @@ public enum Difficulty {
                     return location.getWorld().getName();
                 }
             }, location.getX(), location.getY(),
-                    location.getZ());
+                    location.getZ(), location.getYaw(), location.getPitch());
             BotConfiguration config = BotConfiguration.builder().location(serverLocation).name("CustomBot" + suffix)
                     .aimConfiguration(AimConfiguration.builder().horizontalAimSpeed(difficulty.getHorizontalAimSpeed())
                             .verticalAimSpeed(difficulty.getVerticalAimSpeed())
@@ -210,7 +210,7 @@ public enum Difficulty {
                     return location.getWorld().getName();
                 }
             }, location.getX(), location.getY(),
-                    location.getZ());
+                    location.getZ(), location.getYaw(), location.getPitch());
             BotConfiguration config = BotConfiguration.builder().location(serverLocation).name("RandomBot" + suffix)
                     .aimConfiguration(AimConfiguration.builder().horizontalAimSpeed(difficulty.getHorizontalAimSpeed())
                             .verticalAimSpeed(difficulty.getVerticalAimSpeed())
