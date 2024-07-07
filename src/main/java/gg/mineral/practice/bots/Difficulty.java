@@ -187,7 +187,8 @@ public enum Difficulty {
                             .horizontalAimAccuracy(difficulty.getHorizontalAimAccuracy())
                             .verticalAimAccuracy(difficulty.getVerticalAimAccuracy()).build())
                     .cps((int) difficulty.getCps()).bowAimingRadius(difficulty.getBowAimingRadius())
-                    .latency((int) difficulty.getLatency()).sprintResetAccuracy(difficulty.getSprintResetAccuracy())
+                    .latency((int) difficulty.getLatency()).latencyDeviation((int) difficulty.getLatencyDeviation())
+                    .sprintResetAccuracy(difficulty.getSprintResetAccuracy())
                     .hitSelectAccuracy(difficulty.getHitSelectAccuracy()).distancingMin(difficulty.getDistancingMin())
                     .distancingMax(difficulty.getDistancingMax()).build();
             FakePlayer fakePlayer = FakePlayerManager.create(config);
@@ -217,7 +218,8 @@ public enum Difficulty {
                             .horizontalAimAccuracy(difficulty.getHorizontalAimAccuracy())
                             .verticalAimAccuracy(difficulty.getVerticalAimAccuracy()).build())
                     .cps((int) difficulty.getCps()).bowAimingRadius(difficulty.getBowAimingRadius())
-                    .latency((int) difficulty.getLatency()).sprintResetAccuracy(difficulty.getSprintResetAccuracy())
+                    .latency((int) difficulty.getLatency()).latencyDeviation((int) difficulty.getLatencyDeviation())
+                    .sprintResetAccuracy(difficulty.getSprintResetAccuracy())
                     .hitSelectAccuracy(difficulty.getHitSelectAccuracy()).distancingMin(difficulty.getDistancingMin())
                     .distancingMax(difficulty.getDistancingMax()).build();
             FakePlayer fakePlayer = FakePlayerManager.create(config);

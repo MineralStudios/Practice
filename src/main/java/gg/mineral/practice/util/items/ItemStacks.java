@@ -243,6 +243,7 @@ public class ItemStacks {
                         DISTANCING_MAXIMUM = new ItemBuilder(Material.GREEN_RECORD).lore("Click to change value."),
                         CPS = new ItemBuilder(Material.SUGAR).lore("Click to change value."),
                         PING = new ItemBuilder(Material.REDSTONE).lore("Click to change value."),
+                        PING_DEVIATION = new ItemBuilder(Material.GLOWSTONE_DUST).lore("Click to change value."),
                         ARENA_DISABLED = new ItemBuilder(new ItemStack(351, 1, (short) 1))
                                         .lore(CC.RED + "Click to enable arena."),
                         SUBTRACT_1 = new ItemBuilder(new ItemStack(Material.WOOL, 1, DyeColor.RED.getData()))

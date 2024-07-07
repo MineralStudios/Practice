@@ -179,6 +179,17 @@ public class CustomBotDifficultyMenu extends PracticeMenu {
                     }));
                 });
 
+        setSlot(11, ItemStacks.PING_DEVIATION.name(CC.SECONDARY + CC.B + "Ping Deviation")
+                .lore(CC.WHITE + "Simulates the " + CC.SECONDARY + "variation in time", CC.WHITE
+                        + "it takes for packets to be", CC.SECONDARY + "transported" + CC.WHITE + ".", " ",
+                        CC.WHITE + "Currently:", CC.GOLD + DECIMAL_FORMAT.format(difficulty.getLatencyDeviation()),
+                        CC.BOARD_SEPARATOR, CC.ACCENT + "Click to change value.")
+                .build(), interaction -> {
+                    interaction.getProfile().openMenu(new ConfigureDifficultyValueMenu(this, value -> {
+                        difficulty.setLatencyDeviation(value);
+                    }));
+                });
+
         setSlot(29, ItemStacks.BACK, interaction -> {
             Profile p = interaction.getProfile();
             p.getMatchData().setCustomBotDifficulty(difficulty);
