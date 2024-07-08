@@ -26,7 +26,7 @@ public class CustomDifficulty {
         this.distancingMax = 2.9f + r.nextFloat() * (3.0f - 2.9f);
         this.cps = r.nextInt((20 - 5) + 1) + 5;
         this.latency = r.nextInt((250 - 5) + 1) + 5;
-        this.latencyDeviation = r.nextInt(25 + 1);
+        this.latencyDeviation = Math.min(r.nextInt(25 + 1), latency / 2);
         this.reactionTimeTicks = r.nextInt((2) + 1) + 0;
     }
 
