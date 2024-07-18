@@ -17,7 +17,7 @@ import gg.mineral.practice.entity.Profile;
 import gg.mineral.practice.inventory.menus.InventoryStatsMenu;
 import gg.mineral.practice.managers.MatchManager;
 import gg.mineral.practice.managers.ProfileManager;
-import gg.mineral.practice.match.data.MatchData;
+import gg.mineral.practice.match.data.QueueMatchData;
 import gg.mineral.practice.scoreboard.impl.DefaultScoreboard;
 import gg.mineral.practice.scoreboard.impl.MatchEndScoreboard;
 import gg.mineral.practice.scoreboard.impl.PartyMatchScoreboard;
@@ -35,7 +35,7 @@ import net.md_5.bungee.api.chat.HoverEvent;
 import net.md_5.bungee.api.chat.TextComponent;
 import net.minecraft.server.v1_8_R3.EntityPlayer;
 
-public class TeamMatch extends Match {
+public class TeamMatch extends Match<QueueMatchData> {
     @Getter
     ProfileList team1RemainingPlayers, team2RemainingPlayers;
     Collection<Difficulty> team1Bots, team2Bots;
@@ -45,7 +45,7 @@ public class TeamMatch extends Match {
     int team1HitCount = 0, team2HitCount = 0, team1RequiredHitCount, team2RequiredHitCount;
 
     public TeamMatch(Collection<Profile> team1, Collection<Profile> team2, Collection<Difficulty> team1Bots,
-            Collection<Difficulty> team2Bots, MatchData matchData) {
+            Collection<Difficulty> team2Bots, QueueMatchData matchData) {
         super(matchData);
         this.team1Bots = team1Bots;
         this.team2Bots = team2Bots;
@@ -61,14 +61,14 @@ public class TeamMatch extends Match {
             fakePlayer.startTasks();
             fakePlayer.setSprintingHeld(true);
             fakePlayer.startMoving(FakePlayer.Direction.FORWARDS);
-            fakePlayer.getConfiguration().setPearlCooldown(data.getPearlCooldown());
+            fakePlayer.getConfiguration().setPearlCooldown(getData().getPearlCooldown());
         }
 
         for (FakePlayer fakePlayer : team2FakePlayers) {
             fakePlayer.startTasks();
             fakePlayer.setSprintingHeld(true);
             fakePlayer.startMoving(FakePlayer.Direction.FORWARDS);
-            fakePlayer.getConfiguration().setPearlCooldown(data.getPearlCooldown());
+            fakePlayer.getConfiguration().setPearlCooldown(getData().getPearlCooldown());
         }
     }
 
@@ -79,17 +79,14 @@ public class TeamMatch extends Match {
             return;
 
         MatchManager.registerMatch(this);
-        Location location1 = data.getArena().getLocation1().clone();
-        Location location2 = data.getArena().getLocation2().clone();
+        Location location1 = getData().getArena().getLocation1().clone();
+        Location location2 = getData().getArena().getLocation2().clone();
         setupLocations(location1, location2);
-
-        Profile profile = team1RemainingPlayers.isEmpty() ? team2RemainingPlayers.getFirst()
-                : team1RemainingPlayers.getFirst();
 
         int suffix = 0;
 
         for (Difficulty difficulty : team1Bots) {
-            FakePlayer fakePlayer = difficulty.spawn(profile, location1, "" + (suffix++));
+            FakePlayer fakePlayer = difficulty.spawn(getData(), location1, "" + (suffix++));
             Profile fakeProfile = ProfileManager
                     .getOrCreateProfile(((EntityPlayer) fakePlayer.getServerSide()).getBukkitEntity());
             team1RemainingPlayers.add(fakeProfile);
@@ -97,7 +94,7 @@ public class TeamMatch extends Match {
         }
 
         for (Difficulty difficulty : team2Bots) {
-            FakePlayer fakePlayer = difficulty.spawn(profile, location2, "" + (suffix++));
+            FakePlayer fakePlayer = difficulty.spawn(getData(), location2, "" + (suffix++));
             Profile fakeProfile = ProfileManager
                     .getOrCreateProfile(((EntityPlayer) fakePlayer.getServerSide()).getBukkitEntity());
             team2RemainingPlayers.add(fakeProfile);
@@ -141,7 +138,7 @@ public class TeamMatch extends Match {
 
     @Override
     public void setScoreboard(Profile p) {
-        if (data.getBoxing()) {
+        if (getData().isBoxing()) {
             p.setScoreboard(TeamBoxingScoreboard.INSTANCE);
             return;
         }
@@ -227,10 +224,8 @@ public class TeamMatch extends Match {
 
         attackerEndMatch(attackerTeamLeader, attackerInventoryStatsMenus);
 
-        while (attackerTeamIterator.hasNext()) {
-            Profile attacker = attackerTeamIterator.next();
-            attackerEndMatch(attacker, attackerInventoryStatsMenus);
-        }
+        while (attackerTeamIterator.hasNext())
+            attackerEndMatch(attackerTeamIterator.next(), attackerInventoryStatsMenus);
 
         ProfileManager.setTeamInventoryStats(attackerTeamLeader, attackerInventoryStatsMenus);
         ProfileManager.setTeamInventoryStats(victim, victimInventoryStatsMenus);
@@ -275,11 +270,10 @@ public class TeamMatch extends Match {
         victim.removePotionEffects();
         victim.teleportToLobby();
 
-        if (victim.isInParty()) {
+        if (victim.isInParty())
             victim.getInventory().setInventoryForParty();
-        } else {
+        else
             victim.getInventory().setInventoryForLobby();
-        }
 
         victim.removeFromMatch();
 
@@ -319,11 +313,11 @@ public class TeamMatch extends Match {
 
         Bukkit.getServer().getScheduler().runTaskLater(PracticePlugin.INSTANCE, () -> {
             attacker.teleportToLobby();
-            if (attacker.isInParty()) {
+            if (attacker.isInParty())
                 attacker.getInventory().setInventoryForParty();
-            } else {
+            else
                 attacker.getInventory().setInventoryForLobby();
-            }
+
             attacker.removeFromMatch();
             attacker.setScoreboard(DefaultScoreboard.INSTANCE);
             BotAPIPlugin.INSTANCE.getFakePlayerUtil().destroy(attacker.getPlayer());
@@ -341,7 +335,7 @@ public class TeamMatch extends Match {
         ProfileList opponentTeam = isTeam1 ? team2RemainingPlayers : team1RemainingPlayers;
 
         if (hitCount >= requiredHitCount
-                && getData().getBoxing()) {
+                && getData().isBoxing()) {
             for (Profile opponent : opponentTeam)
                 end(opponent);
 

@@ -2,22 +2,19 @@ package gg.mineral.practice.inventory.menus;
 
 import gg.mineral.practice.util.items.ItemStacks;
 import gg.mineral.practice.util.messages.CC;
+import gg.mineral.practice.inventory.ClickCancelled;
 import gg.mineral.practice.inventory.PracticeMenu;
 import gg.mineral.server.combat.KnockbackProfile;
 import gg.mineral.server.combat.KnockbackProfileList;
+import lombok.RequiredArgsConstructor;
 
+@ClickCancelled(true)
+@RequiredArgsConstructor
 public class SelectExistingKnockbackMenu extends PracticeMenu {
-    MechanicsMenu menu;
-    final static String TITLE = CC.BLUE + "Select Existing Knockback";
-
-    public SelectExistingKnockbackMenu(MechanicsMenu menu) {
-        super(TITLE);
-        setClickCancelled(true);
-        this.menu = menu;
-    }
+    private final MechanicsMenu menu;
 
     @Override
-    public boolean update() {
+    public void update() {
         for (KnockbackProfile knockback : KnockbackProfileList.getKnockbackProfiles()) {
 
             if (knockback == null)
@@ -30,7 +27,15 @@ public class SelectExistingKnockbackMenu extends PracticeMenu {
                         viewer.openMenu(menu);
                     });
         }
+    }
 
+    @Override
+    public String getTitle() {
+        return CC.BLUE + "Select Existing Knockback";
+    }
+
+    @Override
+    public boolean shouldUpdate() {
         return true;
     }
 }

@@ -6,29 +6,24 @@ import org.bukkit.inventory.ItemStack;
 
 import gg.mineral.api.collection.GlueList;
 import gg.mineral.practice.catagory.Catagory;
-import gg.mineral.practice.entity.Profile;
 import gg.mineral.practice.gametype.Gametype;
+import gg.mineral.practice.inventory.ClickCancelled;
 import gg.mineral.practice.inventory.PracticeMenu;
 import gg.mineral.practice.managers.CatagoryManager;
 import gg.mineral.practice.managers.GametypeManager;
 import gg.mineral.practice.util.items.ItemBuilder;
 import gg.mineral.practice.util.messages.CC;
+import lombok.RequiredArgsConstructor;
 
+@ClickCancelled(true)
+@RequiredArgsConstructor
 public class SelectExistingKitMenu extends PracticeMenu {
 
-    PracticeMenu menu;
-    boolean simple = false;
-    final static String TITLE = CC.BLUE + "Select Existing Kit";
-
-    public SelectExistingKitMenu(PracticeMenu menu, boolean simple) {
-        super(TITLE);
-        setClickCancelled(true);
-        this.menu = menu;
-        this.simple = simple;
-    }
+    protected final PracticeMenu menu;
+    protected final boolean simple;
 
     @Override
-    public boolean update() {
+    public void update() {
         clear();
 
         for (Gametype g : GametypeManager.getGametypes()) {
@@ -37,18 +32,14 @@ public class SelectExistingKitMenu extends PracticeMenu {
             ItemStack item = new ItemBuilder(g.getDisplayItem())
                     .name(CC.SECONDARY + CC.B + g.getDisplayName()).lore(CC.ACCENT + "Click to select.").build();
 
-            Runnable runnable = () -> {
-
-                if (simple) {
+            add(item, () -> {
+                if (simple)
                     viewer.getMatchData().setGametype(g);
-                } else {
+                else
                     viewer.getMatchData().setKit(g.getKit());
-                }
 
                 viewer.openMenu(menu);
-            };
-
-            add(item, runnable);
+            });
         }
 
         for (Catagory c : CatagoryManager.getCatagories()) {
@@ -67,12 +58,18 @@ public class SelectExistingKitMenu extends PracticeMenu {
 
             itemBuild.lore(sb.toArray(new String[0]));
             ItemStack item = itemBuild.build();
-            add(item, interaction -> {
-                Profile p = interaction.getProfile();
-                p.openMenu(new SelectCategorizedExistingKitMenu(c, menu, simple));
-            });
+            add(item, interaction -> interaction.getProfile()
+                    .openMenu(new SelectCategorizedExistingKitMenu(c, menu, simple)));
         }
+    }
 
+    @Override
+    public String getTitle() {
+        return CC.BLUE + "Select Existing Kit";
+    }
+
+    @Override
+    public boolean shouldUpdate() {
         return true;
     }
 }

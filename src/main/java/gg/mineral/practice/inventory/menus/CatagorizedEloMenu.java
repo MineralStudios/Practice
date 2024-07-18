@@ -1,41 +1,40 @@
 package gg.mineral.practice.inventory.menus;
 
-import org.bukkit.inventory.ItemStack;
-
 import gg.mineral.practice.catagory.Catagory;
 import gg.mineral.practice.entity.ProfileData;
 import gg.mineral.practice.gametype.Gametype;
+import gg.mineral.practice.inventory.ClickCancelled;
 import gg.mineral.practice.inventory.PracticeMenu;
 import gg.mineral.practice.queue.Queuetype;
 import gg.mineral.practice.util.items.ItemBuilder;
 import gg.mineral.practice.util.messages.CC;
+import lombok.RequiredArgsConstructor;
 
+@ClickCancelled(true)
+@RequiredArgsConstructor
 public class CatagorizedEloMenu extends PracticeMenu {
-    Catagory catagory;
-    Queuetype queuetype;
-    ProfileData arg;
-
-    public CatagorizedEloMenu(ProfileData arg, Queuetype queuetype, Catagory catagory) {
-        super(CC.BLUE + catagory.getDisplayName());
-        this.catagory = catagory;
-        this.queuetype = queuetype;
-        this.arg = arg;
-        setClickCancelled(true);
-    }
+    private final ProfileData arg;
+    private final Queuetype queuetype;
+    private final Catagory catagory;
 
     @Override
-    public boolean update() {
-
-        for (Gametype gametype : catagory.getGametypes()) {
-            ItemStack item = new ItemBuilder(gametype.getDisplayItem())
+    public void update() {
+        for (Gametype gametype : catagory.getGametypes())
+            setSlot(queuetype.getGametypes().getInt(gametype), new ItemBuilder(gametype.getDisplayItem())
                     .name(CC.SECONDARY + CC.B + gametype.getDisplayName())
                     .lore(" ",
                             CC.WHITE + arg.getName() + "'s Elo:",
                             CC.GOLD + gametype.getElo(arg))
-                    .build();
-            setSlot(queuetype.getGametypes().getInt(gametype), item);
-        }
+                    .build());
+    }
 
+    @Override
+    public String getTitle() {
+        return CC.BLUE + catagory.getDisplayName();
+    }
+
+    @Override
+    public boolean shouldUpdate() {
         return true;
     }
 }

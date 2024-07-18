@@ -2,33 +2,27 @@ package gg.mineral.practice.inventory.menus;
 
 import java.util.Arrays;
 import java.util.List;
-import java.util.Map;
 
 import org.bukkit.Material;
 import org.bukkit.inventory.ItemStack;
 
+import gg.mineral.practice.inventory.ClickCancelled;
 import gg.mineral.practice.inventory.PracticeMenu;
 import gg.mineral.practice.util.messages.CC;
 import gg.mineral.practice.util.messages.impl.ErrorMessages;
 import it.unimi.dsi.fastutil.objects.Object2IntOpenHashMap;
 
+@ClickCancelled(true)
 public class AddItemsMenu extends PracticeMenu {
 	static List<Material> LIMITED = Arrays.asList(Material.DIAMOND_HELMET, Material.DIAMOND_CHESTPLATE,
 			Material.DIAMOND_LEGGINGS, Material.DIAMOND_BOOTS, Material.MUSHROOM_SOUP, Material.POTION,
 			Material.GOLDEN_APPLE, Material.ENDER_PEARL, Material.WATER_BUCKET, Material.LAVA_BUCKET, Material.ARROW),
 			INCLUDED = Arrays.asList(Material.COOKED_BEEF, Material.GOLDEN_CARROT, Material.GRILLED_PORK);
 
-	final static String TITLE = CC.BLUE + "Add Items";
-
-	public AddItemsMenu() {
-		super(TITLE);
-		setClickCancelled(true);
-	}
-
 	@Override
-	public boolean update() {
+	public void update() {
 
-		Map<String, Integer> maxAmountMap = new Object2IntOpenHashMap<String>();
+		Object2IntOpenHashMap<String> maxAmountMap = new Object2IntOpenHashMap<String>();
 
 		for (ItemStack is : viewer.getKitEditor().getQueueEntry().getGametype().getKit().getContents()) {
 			if (is == null || !LIMITED.contains(is.getType()))
@@ -75,7 +69,15 @@ public class AddItemsMenu extends PracticeMenu {
 
 			add(is, () -> viewer.getPlayer().setItemOnCursor(is));
 		}
+	}
 
-		return true;
+	@Override
+	public String getTitle() {
+		return CC.BLUE + "Add Items";
+	}
+
+	@Override
+	public boolean shouldUpdate() {
+		return false;
 	}
 }

@@ -66,7 +66,7 @@ public class PartyCommand extends PlayerCommand {
 					return;
 				}
 
-				profile2 = ProfileManager.getProfile(p -> p.getName().equalsIgnoreCase(args[1]));
+				profile2 = ProfileManager.getProfile(args[1]);
 
 				if (profile2 == null) {
 					profile.message(ErrorMessages.PLAYER_NOT_ONLINE);
@@ -141,7 +141,7 @@ public class PartyCommand extends PlayerCommand {
 												"/party join " + profile.getName()),
 										ChatMessages.CLICK_TO_JOIN);
 
-						ProfileManager.broadcast(ProfileManager.getProfiles(), messageToBroadcast);
+						ProfileManager.broadcast(messageToBroadcast);
 
 						return;
 					}
@@ -162,7 +162,7 @@ public class PartyCommand extends PlayerCommand {
 					return;
 				}
 
-				profile2 = ProfileManager.getProfile(p -> p.getName().equalsIgnoreCase(args[1]));
+				profile2 = ProfileManager.getProfile(args[1]);
 
 				if (profile2 == null) {
 					profile.message(ErrorMessages.PLAYER_NOT_ONLINE);
@@ -203,7 +203,7 @@ public class PartyCommand extends PlayerCommand {
 					return;
 				}
 
-				profile2 = ProfileManager.getProfile(p -> p.getName().equalsIgnoreCase(args[1]));
+				profile2 = ProfileManager.getProfile(args[1]);
 
 				if (profile2 == null) {
 					profile.message(ErrorMessages.REQUEST_SENDER_NOT_ONLINE);

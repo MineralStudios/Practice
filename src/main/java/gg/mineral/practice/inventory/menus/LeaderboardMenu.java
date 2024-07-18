@@ -8,25 +8,19 @@ import org.bukkit.inventory.meta.ItemMeta;
 
 import gg.mineral.api.collection.GlueList;
 import gg.mineral.practice.catagory.Catagory;
-import gg.mineral.practice.entity.Profile;
 import gg.mineral.practice.gametype.Gametype;
+import gg.mineral.practice.inventory.ClickCancelled;
 import gg.mineral.practice.inventory.PracticeMenu;
 import gg.mineral.practice.managers.QueuetypeManager;
 import gg.mineral.practice.util.items.ItemBuilder;
 import gg.mineral.practice.util.items.ItemStacks;
 import gg.mineral.practice.util.messages.CC;
 
+@ClickCancelled(true)
 public class LeaderboardMenu extends PracticeMenu {
 
-    final static String TITLE = CC.BLUE + "Leaderboards";
-
-    public LeaderboardMenu() {
-        super(TITLE);
-        setClickCancelled(true);
-    }
-
     @Override
-    public boolean update() {
+    public void update() {
         QueuetypeManager.getQueuetypes().stream().filter(q -> q.isRanked())
                 .findFirst().ifPresent(queuetype -> {
 
@@ -82,14 +76,20 @@ public class LeaderboardMenu extends PracticeMenu {
                         itemBuild.lore(sb.toArray(new String[0]));
                         ItemStack item = itemBuild.build();
 
-                        setSlot(entry.getValue() + 18, item, interaction -> {
-                            Profile p = interaction.getProfile();
-                            p.openMenu(new CatagorizedLeaderboardMenu(queuetype, c));
-                        });
+                        setSlot(entry.getValue() + 18, item, interaction -> interaction.getProfile()
+                                .openMenu(new CatagorizedLeaderboardMenu(queuetype, c)));
                     }
 
                 });
+    }
 
+    @Override
+    public String getTitle() {
+        return CC.BLUE + "Leaderboards";
+    }
+
+    @Override
+    public boolean shouldUpdate() {
         return true;
     }
 }

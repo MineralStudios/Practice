@@ -1,30 +1,22 @@
 package gg.mineral.practice.inventory.menus;
 
-import gg.mineral.practice.entity.Profile;
+import gg.mineral.practice.inventory.ClickCancelled;
 import gg.mineral.practice.inventory.PracticeMenu;
 import gg.mineral.practice.inventory.SubmitAction;
-import gg.mineral.practice.match.PartyMatch;
 import gg.mineral.practice.match.data.MatchData;
-import gg.mineral.practice.party.Party;
-import gg.mineral.practice.tournaments.Tournament;
 import gg.mineral.practice.util.items.ItemStacks;
 import gg.mineral.practice.util.messages.CC;
-import gg.mineral.practice.util.messages.impl.ErrorMessages;
 import lombok.Getter;
+import lombok.RequiredArgsConstructor;
 
+@ClickCancelled(true)
+@RequiredArgsConstructor
 public class MechanicsMenu extends PracticeMenu {
 	@Getter
-	SubmitAction submitAction;
-	final static String TITLE = CC.BLUE + "Game Mechanics";
-
-	public MechanicsMenu(SubmitAction submitAction) {
-		super(TITLE);
-		setClickCancelled(true);
-		this.submitAction = submitAction;
-	}
+	private final SubmitAction submitAction;
 
 	@Override
-	public boolean update() {
+	public void update() {
 		MatchData matchData = viewer.getMatchData();
 
 		setSlot(10,
@@ -33,10 +25,7 @@ public class MechanicsMenu extends PracticeMenu {
 								CC.WHITE + "Currently:", CC.GOLD + matchData.getKit().getName(),
 								CC.BOARD_SEPARATOR, CC.ACCENT + "Click to change kit.")
 						.build(),
-				interaction -> {
-					Profile p = interaction.getProfile();
-					p.openMenu(new SelectKitMenu(this));
-				});
+				interaction -> interaction.getProfile().openMenu(new SelectKitMenu(this)));
 
 		setSlot(11,
 				ItemStacks.CHANGE_KNOCKBACK
@@ -45,58 +34,54 @@ public class MechanicsMenu extends PracticeMenu {
 								CC.WHITE + "Currently:", CC.GOLD + matchData.getKnockback().getName(),
 								CC.BOARD_SEPARATOR, CC.ACCENT + "Click to change knockback.")
 						.build(),
-				interaction -> {
-					Profile p = interaction.getProfile();
-					p.openMenu(new SelectKnockbackMenu(this));
-				});
+				interaction -> interaction.getProfile().openMenu(new SelectKnockbackMenu(this)));
 
 		setSlot(12, ItemStacks.HIT_DELAY
 				.lore(CC.WHITE + "Changes how " + CC.SECONDARY + "frequently " + CC.WHITE
 						+ "you can attack.", " ",
 						CC.WHITE + "Currently:", CC.GOLD + matchData.getNoDamageTicks() + " Ticks",
 						CC.BOARD_SEPARATOR, CC.ACCENT + "Click to change hit delay.")
-				.build(), interaction -> {
-					Profile p = interaction.getProfile();
-					p.openMenu(new HitDelayMenu(this));
-				});
+				.build(),
+				interaction -> interaction.getProfile()
+						.openMenu(ConfigureValueMenu.of(this, value -> matchData.setNoDamageTicks(value), int.class)));
 
 		setSlot(13, ItemStacks.TOGGLE_HUNGER
 				.lore(CC.WHITE + "Changes if you lose " + CC.SECONDARY + "hunger" + CC.WHITE
 						+ ".", " ",
-						CC.WHITE + "Currently:", CC.GOLD + matchData.getHunger(),
+						CC.WHITE + "Currently:", CC.GOLD + matchData.isHunger(),
 						CC.BOARD_SEPARATOR, CC.ACCENT + "Click to toggle hunger.")
 				.build(), () -> {
-					matchData.setHunger(!matchData.getHunger());
+					matchData.setHunger(!matchData.isHunger());
 					reload();
 				});
 
 		setSlot(14, ItemStacks.TOGGLE_BUILD
 				.lore(CC.WHITE + "Changes if you can " + CC.SECONDARY + "build" + CC.WHITE
 						+ ".", " ",
-						CC.WHITE + "Currently:", CC.GOLD + matchData.getBuild(),
+						CC.WHITE + "Currently:", CC.GOLD + matchData.isBuild(),
 						CC.BOARD_SEPARATOR, CC.ACCENT + "Click to toggle build.")
 				.build(), () -> {
-					matchData.setBuild(!matchData.getBuild());
+					matchData.setBuild(!matchData.isBuild());
 					reload();
 				});
 
 		setSlot(15, ItemStacks.TOGGLE_DAMAGE
 				.lore(CC.WHITE + "Changes if you can " + CC.SECONDARY + "lose health" + CC.WHITE
 						+ ".", " ",
-						CC.WHITE + "Currently:", CC.GOLD + matchData.getDamage(),
+						CC.WHITE + "Currently:", CC.GOLD + matchData.isDamage(),
 						CC.BOARD_SEPARATOR, CC.ACCENT + "Click to toggle damage.")
 				.build(), () -> {
-					matchData.setDamage(!matchData.getDamage());
+					matchData.setDamage(!matchData.isDamage());
 					reload();
 				});
 
 		setSlot(16, ItemStacks.TOGGLE_GRIEFING
 				.lore(CC.WHITE + "Changes if you can " + CC.SECONDARY + "break the map" + CC.WHITE
 						+ ".", " ",
-						CC.WHITE + "Currently:", CC.GOLD + matchData.getGriefing(),
+						CC.WHITE + "Currently:", CC.GOLD + matchData.isGriefing(),
 						CC.BOARD_SEPARATOR, CC.ACCENT + "Click to toggle griefing.")
 				.build(), () -> {
-					matchData.setGriefing(!matchData.getGriefing());
+					matchData.setGriefing(!matchData.isGriefing());
 					reload();
 				});
 
@@ -105,48 +90,44 @@ public class MechanicsMenu extends PracticeMenu {
 						+ ".", " ",
 						CC.WHITE + "Currently:", CC.GOLD + matchData.getPearlCooldown() + " Seconds",
 						CC.BOARD_SEPARATOR, CC.ACCENT + "Click to change cooldown.")
-				.build(), interaction -> {
-					Profile p = interaction.getProfile();
-					p.openMenu(new PearlCooldownMenu(this));
-				});
+				.build(),
+				interaction -> interaction.getProfile()
+						.openMenu(ConfigureValueMenu.of(this, value -> matchData.setPearlCooldown(value), int.class)));
 
 		setSlot(20, ItemStacks.ARENA
 				.lore(CC.WHITE + "Changes the " + CC.SECONDARY + "arena" + CC.WHITE
 						+ ".", " ",
 						CC.WHITE + "Currently:", CC.GOLD + matchData.getArena().getName(),
 						CC.BOARD_SEPARATOR, CC.ACCENT + "Click to change arena.")
-				.build(), interaction -> {
-					Profile p = interaction.getProfile();
-					p.openMenu(new SelectArenaMenu(this, submitAction));
-				});
+				.build(), interaction -> interaction.getProfile().openMenu(new SelectArenaMenu(this, submitAction)));
 
 		setSlot(21, ItemStacks.DEADLY_WATER
 				.lore(CC.WHITE + "Changes if " + CC.SECONDARY + "water can kill you" + CC.WHITE
 						+ ".", " ",
-						CC.WHITE + "Currently:", CC.GOLD + matchData.getDeadlyWater(),
+						CC.WHITE + "Currently:", CC.GOLD + matchData.isDeadlyWater(),
 						CC.BOARD_SEPARATOR, CC.ACCENT + "Click to toggle deadly water.")
 				.build(), () -> {
-					matchData.setDeadlyWater(!matchData.getDeadlyWater());
+					matchData.setDeadlyWater(!matchData.isDeadlyWater());
 					reload();
 				});
 
 		setSlot(22, ItemStacks.REGENERATION
 				.lore(CC.WHITE + "Changes if you " + CC.SECONDARY + "regenerate" + CC.WHITE
 						+ " health.", " ",
-						CC.WHITE + "Currently:", CC.GOLD + matchData.getRegeneration(),
+						CC.WHITE + "Currently:", CC.GOLD + matchData.isRegeneration(),
 						CC.BOARD_SEPARATOR, CC.ACCENT + "Click to toggle regeneration.")
 				.build(), () -> {
-					matchData.setRegeneration(!matchData.getRegeneration());
+					matchData.setRegeneration(!matchData.isRegeneration());
 					reload();
 				});
 
 		setSlot(23, ItemStacks.BOXING
 				.lore(CC.WHITE + "Changes if you die after " + CC.SECONDARY + "100 hits" + CC.WHITE
 						+ ".", " ",
-						CC.WHITE + "Currently:", CC.GOLD + matchData.getBoxing(),
+						CC.WHITE + "Currently:", CC.GOLD + matchData.isBoxing(),
 						CC.BOARD_SEPARATOR, CC.ACCENT + "Click to toggle boxing.")
 				.build(), () -> {
-					matchData.setBoxing(!matchData.getBoxing());
+					matchData.setBoxing(!matchData.isBoxing());
 					reload();
 				});
 
@@ -157,38 +138,18 @@ public class MechanicsMenu extends PracticeMenu {
 
 		setSlot(31, ItemStacks.SUBMIT, () -> {
 			viewer.getPlayer().closeInventory();
-
-			switch (submitAction) {
-				case DUEL:
-					viewer.getRequestHandler().sendDuelRequest(viewer.getRequestHandler().getDuelRequestReciever());
-					break;
-				case P_SPLIT:
-					Party party = viewer.getParty();
-
-					if (!viewer.getParty().getPartyLeader().equals(viewer)) {
-						viewer.message(ErrorMessages.YOU_ARE_NOT_PARTY_LEADER);
-						return;
-					}
-
-					if (party.getPartyMembers().size() < 2) {
-						viewer.message(ErrorMessages.PARTY_NOT_BIG_ENOUGH);
-						return;
-					}
-
-					PartyMatch partyMatch = new PartyMatch(party, viewer.getMatchData());
-					partyMatch.start();
-					break;
-				case TOURNAMENT:
-					Tournament tournament = new Tournament(viewer);
-					tournament.start();
-					break;
-				default:
-					break;
-
-			}
-
+			submitAction.execute(viewer);
 		});
 
+	}
+
+	@Override
+	public String getTitle() {
+		return CC.BLUE + "Game Mechanics";
+	}
+
+	@Override
+	public boolean shouldUpdate() {
 		return true;
 	}
 }

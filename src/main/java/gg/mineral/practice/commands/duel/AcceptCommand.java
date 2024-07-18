@@ -38,7 +38,7 @@ public class AcceptCommand extends PlayerCommand {
 			return;
 		}
 
-		Profile duelSender = ProfileManager.getProfile(p -> p.getName().equalsIgnoreCase(args[0]));
+		Profile duelSender = ProfileManager.getProfile(args[0]);
 
 		if (duelSender == null) {
 			profile.message(ErrorMessages.DUEL_SENDER_NOT_ONLINE);
@@ -72,9 +72,9 @@ public class AcceptCommand extends PlayerCommand {
 
 			it.remove();
 			MatchData matchData = duelRequest.getMatchData();
-			Match match = duelSender.isInParty() && profile.isInParty()
+			Match<MatchData> match = duelSender.isInParty() && profile.isInParty()
 					? new PartyMatch(duelSender.getParty(), profile.getParty(), matchData)
-					: new Match(duelSender, profile, matchData);
+					: new Match<>(duelSender, profile, matchData);
 			match.start();
 			return;
 		}

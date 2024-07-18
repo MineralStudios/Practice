@@ -7,26 +7,27 @@ import org.bukkit.inventory.ItemStack;
 
 import gg.mineral.practice.arena.Arena;
 import gg.mineral.practice.gametype.Gametype;
+import gg.mineral.practice.inventory.ClickCancelled;
 import gg.mineral.practice.inventory.PracticeMenu;
 import gg.mineral.practice.managers.ArenaManager;
 import gg.mineral.practice.util.items.ItemBuilder;
 import gg.mineral.practice.util.messages.CC;
 import gg.mineral.practice.util.messages.impl.ChatMessages;
+import lombok.RequiredArgsConstructor;
 
+@ClickCancelled(true)
+@RequiredArgsConstructor
 public class GametypeArenaEnableMenu extends PracticeMenu {
-    final static String TITLE = CC.BLUE + "Toggle Arena";
-    Gametype gametype;
+    private final Gametype gametype;
 
-    public GametypeArenaEnableMenu(Gametype gametype) {
-        super(TITLE);
-        setClickCancelled(true);
-        this.gametype = gametype;
-    }
+    private int numberOfArenas;
 
     @Override
-    public boolean update() {
+    public void update() {
         clear();
         Iterator<Arena> arenas = ArenaManager.getArenas().iterator();
+
+        numberOfArenas = ArenaManager.getArenas().size();
 
         while (arenas.hasNext()) {
             Arena a = arenas.next();
@@ -49,6 +50,15 @@ public class GametypeArenaEnableMenu extends PracticeMenu {
                 reload();
             });
         }
-        return true;
+    }
+
+    @Override
+    public String getTitle() {
+        return CC.BLUE + "Toggle Arena";
+    }
+
+    @Override
+    public boolean shouldUpdate() {
+        return numberOfArenas != ArenaManager.getArenas().size();
     }
 }

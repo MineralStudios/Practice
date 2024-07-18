@@ -59,14 +59,12 @@ public class DamageListener implements Listener {
 		Player player = e.getPlayer();
 
 		Profile victim = ProfileManager
-				.getProfile(
-						p -> p.getUuid().equals(player.getUniqueId()) && p.getPlayerStatus() == PlayerStatus.FIGHTING);
+				.getProfile(player.getUniqueId(), p -> p.getPlayerStatus() == PlayerStatus.FIGHTING);
 
 		if (victim == null) {
 
-			if (e.getCause() == DamageCause.VOID) {
+			if (e.getCause() == DamageCause.VOID)
 				player.teleport(ProfileManager.getSpawnLocation());
-			}
 
 			e.setCancelled(true);
 			return;
@@ -93,8 +91,8 @@ public class DamageListener implements Listener {
 	@EventHandler
 	public void onPlayerDamageByPlayer(PlayerDamageByPlayerEvent e) {
 		Profile attacker = ProfileManager
-				.getProfile(p -> p.getUuid().equals(e.getDamager().getUniqueId())
-						&& p.getPlayerStatus() == PlayerStatus.FIGHTING);
+				.getProfile(e.getDamager().getUniqueId(),
+						p -> p.getPlayerStatus() == PlayerStatus.FIGHTING);
 
 		if (attacker == null) {
 			e.setCancelled(true);
@@ -107,8 +105,8 @@ public class DamageListener implements Listener {
 		}
 
 		Profile victim = ProfileManager
-				.getProfile(p -> p.getUuid().equals(e.getPlayer().getUniqueId())
-						&& p.getPlayerStatus() == PlayerStatus.FIGHTING);
+				.getProfile(e.getPlayer().getUniqueId(),
+						p -> p.getPlayerStatus() == PlayerStatus.FIGHTING);
 
 		if (victim == null) {
 			e.setCancelled(true);
@@ -144,8 +142,7 @@ public class DamageListener implements Listener {
 
 		Player shooter = (Player) arrow.getShooter();
 		Profile attacker = ProfileManager
-				.getProfile(p -> p.getUuid().equals(shooter.getUniqueId())
-						&& p.getPlayerStatus() == PlayerStatus.FIGHTING);
+				.getProfile(shooter.getUniqueId(), p -> p.getPlayerStatus() == PlayerStatus.FIGHTING);
 
 		if (attacker == null) {
 			e.setCancelled(true);
@@ -158,8 +155,8 @@ public class DamageListener implements Listener {
 		}
 
 		Profile victim = ProfileManager
-				.getProfile(p -> p.getUuid().equals(e.getPlayer().getUniqueId())
-						&& p.getPlayerStatus() == PlayerStatus.FIGHTING);
+				.getProfile(e.getPlayer().getUniqueId(),
+						p -> p.getPlayerStatus() == PlayerStatus.FIGHTING);
 
 		if (victim == null) {
 			e.setCancelled(true);
@@ -183,8 +180,8 @@ public class DamageListener implements Listener {
 	@EventHandler
 	public void onEntityCombustByEntity(EntityCombustByEntityEvent e) {
 		Profile attacker = ProfileManager
-				.getProfile(p -> p.getUuid().equals(e.getCombuster().getUniqueId())
-						&& p.getPlayerStatus() == PlayerStatus.FIGHTING);
+				.getProfile(e.getCombuster().getUniqueId(),
+						p -> p.getPlayerStatus() == PlayerStatus.FIGHTING);
 
 		if (attacker == null) {
 			e.setCancelled(true);
@@ -192,8 +189,8 @@ public class DamageListener implements Listener {
 		}
 
 		Profile victim = ProfileManager
-				.getProfile(p -> p.getUuid().equals(e.getEntity().getUniqueId())
-						&& p.getPlayerStatus() == PlayerStatus.FIGHTING);
+				.getProfile(e.getEntity().getUniqueId(),
+						p -> p.getPlayerStatus() == PlayerStatus.FIGHTING);
 
 		if (victim == null) {
 			e.setCancelled(true);

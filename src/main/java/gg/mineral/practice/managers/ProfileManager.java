@@ -10,12 +10,12 @@ import org.bukkit.Location;
 import org.bukkit.World;
 import org.bukkit.WorldCreator;
 import org.bukkit.util.Vector;
+import org.eclipse.jdt.annotation.Nullable;
 
 import gg.mineral.api.config.FileConfiguration;
 import gg.mineral.practice.entity.Profile;
 import gg.mineral.practice.entity.ProfileData;
 import gg.mineral.practice.inventory.menus.InventoryStatsMenu;
-import gg.mineral.practice.util.collection.ProfileList;
 import gg.mineral.practice.util.messages.Message;
 import it.unimi.dsi.fastutil.objects.Object2ObjectOpenHashMap;
 import lombok.Getter;
@@ -28,16 +28,16 @@ public class ProfileManager {
 	@Getter
 	static Location spawnLocation;
 	@Getter
-	static ProfileList profiles = new ProfileList();
+	static Object2ObjectOpenHashMap<UUID, Profile> profiles = new Object2ObjectOpenHashMap<>();
 	static Object2ObjectOpenHashMap<String, InventoryStatsMenu> inventoryStats = new Object2ObjectOpenHashMap<>();
 	static Object2ObjectOpenHashMap<String, List<InventoryStatsMenu>> teamInventoryStats = new Object2ObjectOpenHashMap<>();
 
 	public static void add(Profile profile) {
-		profiles.add(profile);
+		profiles.put(profile.getUuid(), profile);
 	}
 
 	public static void remove(Profile profile) {
-		profiles.remove(profile);
+		profiles.remove(profile.getUuid());
 	}
 
 	public static InventoryStatsMenu getInventoryStats(String s) {
@@ -50,11 +50,10 @@ public class ProfileManager {
 
 	public static int count(Predicate<Profile> predicate) {
 		int count = 0;
-		for (Profile profile : profiles) {
+		for (Profile profile : profiles.values()) {
 
-			if (!predicate.test(profile)) {
+			if (!predicate.test(profile))
 				continue;
-			}
 
 			count++;
 		}
@@ -63,55 +62,72 @@ public class ProfileManager {
 	}
 
 	public static ProfileData getProfileData(String name, UUID uuid) {
-		for (Profile profile : profiles) {
 
-			if (uuid != null)
-				if (!profile.getUuid().equals(uuid))
-					continue;
+		if (uuid != null) {
+			Profile profile = profiles.get(uuid);
 
-			if (!profile.getName().equalsIgnoreCase(name))
+			if (profile != null)
+				return profile;
+		}
+
+		for (Profile p : profiles.values()) {
+			if (!p.getName().equalsIgnoreCase(name))
 				continue;
 
-			return profile;
+			return p;
 		}
 
 		return new ProfileData(uuid, name);
 	}
 
-	public static Profile getProfile(Predicate<Profile> predicate) {
-		for (Profile profile : profiles) {
+	@Nullable
+	public static Profile getProfile(UUID uuid) {
+		return profiles.get(uuid);
+	}
 
-			if (!predicate.test(profile)) {
+	@Nullable
+	public static Profile getProfile(UUID uuid, Predicate<Profile> predicate) {
+		Profile profile = profiles.get(uuid);
+
+		if (profile == null || !predicate.test(profile))
+			return null;
+
+		return profile;
+	}
+
+	@Nullable
+	public static Profile getProfile(String name) {
+		for (Profile p : profiles.values()) {
+			if (!p.getName().equalsIgnoreCase(name))
 				continue;
-			}
 
-			return profile;
+			return p;
 		}
-
 		return null;
+	}
+
+	@Nullable
+	public static Profile getProfile(String name, Predicate<Profile> predicate) {
+		Profile profile = getProfile(name);
+
+		if (profile == null || !predicate.test(profile))
+			return null;
+
+		return profile;
 	}
 
 	public static void removeIfExists(org.bukkit.entity.Player pl) {
 		if (pl == null)
 			return;
 
-		Profile profile = getProfile(p -> p.getUuid().equals(pl.getUniqueId()));
-
-		remove(profile);
+		profiles.remove(pl.getUniqueId());
 	}
 
 	public static Profile getOrCreateProfile(org.bukkit.entity.Player pl) {
-		if (pl == null) {
+		if (pl == null)
 			return null;
-		}
 
-		Profile profile = getProfile(p -> p.getUuid().equals(pl.getUniqueId()));
-
-		if (profile == null) {
-			add(profile = new Profile(pl));
-		}
-
-		return profile;
+		return profiles.computeIfAbsent(pl.getUniqueId(), k -> new Profile(pl));
 	}
 
 	public static void setInventoryStats(Profile p, InventoryStatsMenu menu) {
@@ -123,7 +139,12 @@ public class ProfileManager {
 	}
 
 	public static void broadcast(Collection<Profile> c, Message message) {
-		c.parallelStream().forEach(p -> p.message(message));
+		for (Profile p : c)
+			p.message(message);
+	}
+
+	public static void broadcast(Message message) {
+		broadcast(profiles.values(), message);
 	}
 
 	public static void save() {

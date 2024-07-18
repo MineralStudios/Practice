@@ -66,16 +66,18 @@ public class Gametype implements SaveableData {
 	}
 
 	public Integer getElo(ProfileData profile) {
-		Integer elo = eloMap.get(profile);
+		int elo = eloMap.getInt(profile);
 
 		if (profile.getUuid() == null)
-			return elo == null
-					? EloManager.get(this, profile.getName()).whenComplete((value, ex) -> eloMap.put(profile, value))
+			return elo == 0
+					? EloManager.get(this, profile.getName())
+							.whenComplete((value, ex) -> eloMap.put(profile, (int) value))
 							.join()
 					: elo;
 
-		return elo == null
-				? EloManager.get(this, profile.getUuid()).whenComplete((value, ex) -> eloMap.put(profile, value)).join()
+		return elo == 0
+				? EloManager.get(this, profile.getUuid()).whenComplete((value, ex) -> eloMap.put(profile, (int) value))
+						.join()
 				: elo;
 	}
 
@@ -86,26 +88,26 @@ public class Gametype implements SaveableData {
 			Map<UUID, CompletableFuture<Integer>> futures = new Object2ObjectOpenHashMap<>();
 
 			for (ProfileData profile : profiles) {
-				Integer elo = eloMap.get(profile);
+				int elo = eloMap.getInt(profile);
 
-				if (elo != null)
+				if (elo != 0)
 					map.put(profile.getUuid(), elo);
 
 				futures.put(profile.getUuid(), EloManager.get(this, profile.getUuid())
-						.whenComplete((value, ex) -> eloMap.put(profile, value)));
+						.whenComplete((value, ex) -> eloMap.put(profile, (int) value)));
 			}
 
 			for (Entry<UUID, CompletableFuture<Integer>> entry : futures.entrySet())
-				map.put(entry.getKey(), entry.getValue().join());
+				map.put(entry.getKey(), (int) entry.getValue().join());
 
 			return map;
 		});
 	}
 
 	public void saveElo(ProfileData profile) {
-		Integer elo = eloMap.get(profile);
+		int elo = eloMap.getInt(profile);
 
-		if (elo == null)
+		if (elo == 0)
 			return;
 
 		EloManager.update(profile, getName(), elo);
@@ -210,7 +212,7 @@ public class Gametype implements SaveableData {
 	}
 
 	public void removeFromQueuetype(Queuetype queuetype) {
-		queuetype.getGametypes().remove(this);
+		queuetype.getGametypes().removeInt(this);
 		save();
 	}
 

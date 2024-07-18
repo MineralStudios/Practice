@@ -14,12 +14,10 @@ import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 
 @RequiredArgsConstructor
+@Getter
 public class QueueEntry {
-	@Getter
 	final Queuetype queuetype;
-	@Getter
 	final Gametype gametype;
-	@Getter
 	Object2ObjectOpenHashMap<UUID, Int2ObjectOpenHashMap<ItemStack[]>> customKits = new Object2ObjectOpenHashMap<>();
 
 	public boolean equals(QueueEntry queueEntry) {

@@ -6,25 +6,23 @@ import org.bukkit.ChatColor;
 import org.bukkit.inventory.ItemStack;
 
 import gg.mineral.practice.arena.Arena;
+import gg.mineral.practice.inventory.ClickCancelled;
 import gg.mineral.practice.inventory.PracticeMenu;
 import gg.mineral.practice.managers.ArenaManager;
 import gg.mineral.practice.queue.Queuetype;
 import gg.mineral.practice.util.items.ItemBuilder;
 import gg.mineral.practice.util.messages.CC;
 import gg.mineral.practice.util.messages.impl.ChatMessages;
+import lombok.RequiredArgsConstructor;
 
+@ClickCancelled(true)
+@RequiredArgsConstructor
 public class QueuetypeArenaEnableMenu extends PracticeMenu {
-    final static String TITLE = CC.BLUE + "Toggle Arena";
-    Queuetype queuetype;
-
-    public QueuetypeArenaEnableMenu(Queuetype queuetype) {
-        super(TITLE);
-        setClickCancelled(true);
-        this.queuetype = queuetype;
-    }
+    private final Queuetype queuetype;
 
     @Override
-    public boolean update() {
+    public void update() {
+        clear();
         Iterator<Arena> arenas = ArenaManager.getArenas().iterator();
 
         while (arenas.hasNext()) {
@@ -48,6 +46,15 @@ public class QueuetypeArenaEnableMenu extends PracticeMenu {
                 reload();
             });
         }
+    }
+
+    @Override
+    public String getTitle() {
+        return CC.BLUE + "Toggle Arena";
+    }
+
+    @Override
+    public boolean shouldUpdate() {
         return true;
     }
 }

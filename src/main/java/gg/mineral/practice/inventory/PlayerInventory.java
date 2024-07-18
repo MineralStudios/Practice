@@ -47,9 +47,8 @@ public class PlayerInventory extends CraftInventoryPlayer {
     }
 
     public void clearHotbar() {
-        for (int it = 0; it < 9; it++) {
+        for (int it = 0; it < 9; it++)
             setItem(it, null);
-        }
     }
 
     @Override
@@ -92,17 +91,14 @@ public class PlayerInventory extends CraftInventoryPlayer {
 
         for (ItemStack itemStack : getContents()) {
 
-            if (itemStack == null) {
+            if (itemStack == null)
                 continue;
-            }
 
-            if (itemStack.getType() != m) {
+            if (itemStack.getType() != m)
                 continue;
-            }
 
-            if (itemStack.getDurability() != durability) {
+            if (itemStack.getDurability() != durability)
                 continue;
-            }
 
             i++;
         }
@@ -115,17 +111,14 @@ public class PlayerInventory extends CraftInventoryPlayer {
 
         for (ItemStack itemStack : getContents()) {
 
-            if (itemStack == null) {
+            if (itemStack == null)
                 continue;
-            }
 
-            if (itemStack.getType() != m) {
+            if (itemStack.getType() != m)
                 continue;
-            }
 
-            if (itemStack.getDurability() != durability) {
+            if (itemStack.getDurability() != durability)
                 continue;
-            }
 
             i += itemStack.getAmount();
         }
@@ -138,13 +131,11 @@ public class PlayerInventory extends CraftInventoryPlayer {
 
         for (ItemStack itemStack : getContents()) {
 
-            if (itemStack == null) {
+            if (itemStack == null)
                 continue;
-            }
 
-            if (itemStack.getType() != m) {
+            if (itemStack.getType() != m)
                 continue;
-            }
 
             i++;
         }
@@ -170,29 +161,24 @@ public class PlayerInventory extends CraftInventoryPlayer {
     }
 
     public void setContents(ItemStack[] items) {
-
         net.minecraft.server.v1_8_R3.ItemStack[] mcItems = this.getInventory().getContents();
         for (int i = 0; i < mcItems.length; ++i) {
             if (i >= items.length) {
                 setItem(i, null);
-            } else {
-
-                if (i < 8) {
-                    fullClear = true;
-                }
-
-                setItem(i, items[i]);
+                continue;
             }
-        }
 
-        holder.getPlayer().updateInventory();
+            if (i < 8)
+                fullClear = true;
+
+            setItem(i, items[i]);
+        }
     }
 
     public void setInventoryToFollow() {
         setInventoryClickCancelled(true);
         clear();
         setItem(0, ItemStacks.STOP_FOLLOWING, (Runnable) holder.getSpectateHandler()::stopFollowing);
-        holder.getPlayer().updateInventory();
     }
 
     public void setInventoryForTournament() {
@@ -207,7 +193,6 @@ public class PlayerInventory extends CraftInventoryPlayer {
                 setItem(0, ItemStacks.LEAVE_TOURNAMENT, (Runnable) holder::removeFromTournament);
             }
         }.runTaskLater(PracticePlugin.INSTANCE, 20);
-        holder.getPlayer().updateInventory();
     }
 
     public void setInventoryForEvent() {
@@ -222,7 +207,6 @@ public class PlayerInventory extends CraftInventoryPlayer {
                 setItem(0, ItemStacks.LEAVE_EVENT, (Runnable) holder::removeFromEvent);
             }
         }.runTaskLater(PracticePlugin.INSTANCE, 20);
-        holder.getPlayer().updateInventory();
     }
 
     public void setInventoryForParty() {
@@ -273,8 +257,6 @@ public class PlayerInventory extends CraftInventoryPlayer {
                         return true;
                     });
         }
-
-        holder.getPlayer().updateInventory();
     }
 
     public void setInventoryForLobby() {
@@ -305,12 +287,9 @@ public class PlayerInventory extends CraftInventoryPlayer {
                             return true;
                         }
 
-                        if (queuetype.isUnranked()) {
-                            p.openMenu(new SelectGametypeMenu(queuetype, SelectGametypeMenu.Type.UNRANKED));
-                            return true;
-                        }
-
-                        p.openMenu(new SelectGametypeMenu(queuetype, SelectGametypeMenu.Type.QUEUE));
+                        p.openMenu(new SelectGametypeMenu(queuetype,
+                                queuetype.isUnranked() ? SelectGametypeMenu.Type.UNRANKED
+                                        : SelectGametypeMenu.Type.QUEUE));
                         return true;
                     });
         }
@@ -362,8 +341,6 @@ public class PlayerInventory extends CraftInventoryPlayer {
             setItem(LeaderboardManager.getSlot(), leaderboard,
                     p -> p.getPlayer().performCommand("leaderboard"));
         }
-
-        holder.getPlayer().updateInventory();
     }
 
     public void setInventoryForQueue() {
@@ -373,30 +350,22 @@ public class PlayerInventory extends CraftInventoryPlayer {
         setItem(0, ItemStacks.LEAVE_QUEUE,
                 () -> {
                     holder.removeFromQueue();
-                    if (holder.isInParty()) {
+                    if (holder.isInParty())
                         setInventoryForParty();
-                    } else {
+                    else
                         setInventoryForLobby();
-                    }
                 });
 
         setItem(4, ItemStacks.QUEUE_MANAGER,
-                () -> {
-                    holder.openMenu(new QueueManagerMenu());
-                });
+                () -> holder.openMenu(new QueueManagerMenu()));
 
         setItem(8, ItemStacks.QUEUE,
-                () -> {
-                    holder.openMenu(new SelectQueuetypeMenu(SelectGametypeMenu.Type.QUEUE));
-                });
-
-        holder.getPlayer().updateInventory();
+                () -> holder.openMenu(new SelectQueuetypeMenu(SelectGametypeMenu.Type.QUEUE)));
     }
 
     public void setInventoryForSpectating() {
         setInventoryClickCancelled(true);
         clear();
         setItem(0, ItemStacks.STOP_SPECTATING, (Runnable) holder.getSpectateHandler()::stopSpectating);
-        holder.getPlayer().updateInventory();
     }
 }

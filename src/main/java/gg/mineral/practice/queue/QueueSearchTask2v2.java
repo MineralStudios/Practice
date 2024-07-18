@@ -8,7 +8,7 @@ import gg.mineral.practice.bots.Difficulty;
 import gg.mineral.practice.entity.Profile;
 import gg.mineral.practice.gametype.Gametype;
 import gg.mineral.practice.match.TeamMatch;
-import gg.mineral.practice.match.data.MatchData;
+import gg.mineral.practice.match.data.QueueMatchData;
 import gg.mineral.practice.party.Party;
 import it.unimi.dsi.fastutil.objects.Object2ObjectOpenHashMap;
 import lombok.Getter;
@@ -24,7 +24,7 @@ public class QueueSearchTask2v2 {
 
         List<Team> teams = formedTeams.getOrDefault(queueEntry, new GlueList<>());
 
-        if (profile.getMatchData().getBotTeammate()) {
+        if (profile.getMatchData().isBotTeammate()) {
             for (Team team : teams) {
                 if (team.getProfiles().contains(profile) && team.isBots()) {
                     found = team;
@@ -41,11 +41,11 @@ public class QueueSearchTask2v2 {
             for (Team team : teams) {
                 if (!team.isFull()) {
                     for (Profile teamProfile : team.getProfiles()) {
-                        if (teamProfile.getMatchData().getBotQueue() == profile.getMatchData().getBotQueue()) {
+                        if (teamProfile.getMatchData().isBotQueue() == profile.getMatchData().isBotQueue()) {
                             found = team;
                             found.getProfiles().add(profile);
 
-                            if (profile.getMatchData().getBotQueue()) {
+                            if (profile.getMatchData().isBotQueue()) {
                                 List<Difficulty> team2Difficulties = new GlueList<>();
 
                                 for (int i = 0; i < 2; i++)
@@ -54,7 +54,8 @@ public class QueueSearchTask2v2 {
                                 TeamMatch m = new TeamMatch(found.getProfiles(), new GlueList<>(),
                                         new GlueList<>(),
                                         team2Difficulties,
-                                        new MatchData(queueEntry));
+                                        profile.getMatchData()
+                                                .cloneBotAndArenaData(() -> new QueueMatchData(queueEntry)));
                                 teams.remove(found);
                                 formedTeams.put(queueEntry, teams);
                                 m.start();
@@ -87,19 +88,17 @@ public class QueueSearchTask2v2 {
             if (opponent != null && opponent.isFull()) {
                 List<Difficulty> team1Difficulties = new GlueList<>(), team2Difficulties = new GlueList<>();
 
-                if (found.isBots()) {
+                if (found.isBots())
                     for (int i = 0; i < found.getBotCount(); i++)
                         team1Difficulties.add(Difficulty.RANDOM);
-                }
 
-                if (opponent.isBots()) {
+                if (opponent.isBots())
                     for (int i = 0; i < opponent.getBotCount(); i++)
                         team2Difficulties.add(Difficulty.RANDOM);
-                }
 
                 TeamMatch m = new TeamMatch(found.getProfiles(), opponent.getProfiles(), team1Difficulties,
                         team2Difficulties,
-                        new MatchData(queueEntry));
+                        profile.getMatchData().cloneBotAndArenaData(() -> new QueueMatchData(queueEntry)));
                 formedTeams.remove(queueEntry);
                 m.start();
                 return;
@@ -131,14 +130,13 @@ public class QueueSearchTask2v2 {
         if (opponent != null && opponent.isFull()) {
             List<Difficulty> team1Difficulties = new GlueList<>(), team2Difficulties = new GlueList<>();
 
-            if (opponent.isBots()) {
+            if (opponent.isBots())
                 for (int i = 0; i < opponent.getBotCount(); i++)
                     team2Difficulties.add(Difficulty.RANDOM);
-            }
 
             TeamMatch m = new TeamMatch(found.getProfiles(), opponent.getProfiles(), team1Difficulties,
                     team2Difficulties,
-                    new MatchData(queueEntry));
+                    new QueueMatchData(queueEntry));
             formedTeams.remove(queueEntry);
             m.start();
             return;

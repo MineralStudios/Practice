@@ -22,7 +22,9 @@ public interface Menu {
 
     public void add(ItemStack item, Runnable d);
 
-    public boolean update();
+    public void update();
+
+    public boolean shouldUpdate();
 
     public void onClose();
 
@@ -46,7 +48,7 @@ public interface Menu {
 
     public void setClosed(boolean b);
 
-    public boolean getClickCancelled();
+    public boolean isClickCancelled();
 
     public Inventory getInventory();
 }

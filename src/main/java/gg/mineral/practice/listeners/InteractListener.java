@@ -121,7 +121,7 @@ public class InteractListener implements Listener {
 				return;
 			}
 
-			e.setCancelled(!profile.getMatch().getData().getGriefing());
+			e.setCancelled(!profile.getMatch().getData().isGriefing());
 			return;
 		}
 

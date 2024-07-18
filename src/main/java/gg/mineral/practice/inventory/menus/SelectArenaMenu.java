@@ -7,7 +7,9 @@ import org.bukkit.inventory.ItemStack;
 import gg.mineral.practice.util.items.ItemBuilder;
 import gg.mineral.practice.util.messages.CC;
 import gg.mineral.practice.util.messages.impl.ErrorMessages;
+import lombok.RequiredArgsConstructor;
 import gg.mineral.practice.arena.Arena;
+import gg.mineral.practice.inventory.ClickCancelled;
 import gg.mineral.practice.inventory.PracticeMenu;
 import gg.mineral.practice.inventory.SubmitAction;
 import gg.mineral.practice.managers.ArenaManager;
@@ -15,29 +17,21 @@ import gg.mineral.practice.match.PartyMatch;
 import gg.mineral.practice.party.Party;
 import gg.mineral.practice.tournaments.Tournament;
 
+@ClickCancelled(true)
+@RequiredArgsConstructor
 public class SelectArenaMenu extends PracticeMenu {
-    MechanicsMenu menu;
-    boolean simpleMode = false;
-    SubmitAction action;
-
-    final static String TITLE = CC.BLUE + "Select Arena";
+    private MechanicsMenu menu;
+    private final SubmitAction action;
+    private boolean simpleMode = true;
 
     public SelectArenaMenu(MechanicsMenu menu, SubmitAction action) {
-        super(TITLE);
-        setClickCancelled(true);
+        this(action);
         this.menu = menu;
-        this.action = action;
-    }
-
-    public SelectArenaMenu(SubmitAction action) {
-        super(TITLE);
-        setClickCancelled(true);
-        simpleMode = true;
-        this.action = action;
+        this.simpleMode = false;
     }
 
     @Override
-    public boolean update() {
+    public void update() {
         Iterator<Arena> arenas = simpleMode ? viewer.getMatchData().getGametype().getArenas().iterator()
                 : ArenaManager.getArenas().iterator();
 
@@ -98,6 +92,15 @@ public class SelectArenaMenu extends PracticeMenu {
 
             add(item, arenaRunnable);
         }
+    }
+
+    @Override
+    public String getTitle() {
+        return CC.BLUE + "Select Arena";
+    }
+
+    @Override
+    public boolean shouldUpdate() {
         return true;
     }
 }

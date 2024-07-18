@@ -4,14 +4,8 @@ import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 
 import gg.mineral.practice.util.messages.CC;
-import lombok.Getter;
-import lombok.Setter;
 
 public abstract class PlayerCommand extends BaseCommand {
-
-    @Setter
-    @Getter
-    Boolean console = false;
 
     protected PlayerCommand(String name, String permission) {
         super(name, permission);
@@ -23,8 +17,7 @@ public abstract class PlayerCommand extends BaseCommand {
 
     @Override
     protected final void execute(CommandSender sender, String[] args) {
-        if (sender instanceof Player || getConsole()) {
-            Player player = (Player) sender;
+        if (sender instanceof Player player) {
 
             if (!player.isOp()
                     && permission != null && !player.hasPermission(permission)) {
@@ -33,9 +26,10 @@ public abstract class PlayerCommand extends BaseCommand {
             }
 
             execute(player, args);
-        } else {
-            sender.sendMessage(CC.RED + "Only players can perform this command.");
+            return;
         }
+
+        sender.sendMessage(CC.RED + "Only players can perform this command.");
     }
 
     public abstract void execute(Player player, String[] args);

@@ -1,19 +1,16 @@
 package gg.mineral.practice.inventory.menus;
 
 import gg.mineral.practice.entity.Profile;
+import gg.mineral.practice.inventory.ClickCancelled;
 import gg.mineral.practice.inventory.PracticeMenu;
 import gg.mineral.practice.util.items.ItemStacks;
 import gg.mineral.practice.util.messages.CC;
 
+@ClickCancelled(true)
 public class SettingsMenu extends PracticeMenu {
 
-	public SettingsMenu() {
-		super(CC.BLUE + "Settings");
-		setClickCancelled(true);
-	}
-
 	@Override
-	public boolean update() {
+	public void update() {
 		setSlot(4, ItemStacks.SETTINGS);
 
 		/*
@@ -194,7 +191,15 @@ public class SettingsMenu extends PracticeMenu {
 		 * });
 		 * }
 		 */
+	}
 
+	@Override
+	public String getTitle() {
+		return CC.BLUE + "Settings";
+	}
+
+	@Override
+	public boolean shouldUpdate() {
 		return true;
 	}
 }

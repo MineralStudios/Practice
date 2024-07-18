@@ -24,7 +24,7 @@ import lombok.Getter;
 import net.md_5.bungee.api.chat.ClickEvent;
 
 public class Tournament {
-    GlueList<Match> matches = new GlueList<>();
+    GlueList<Match<MatchData>> matches = new GlueList<>();
     ProfileList players = new ProfileList();
     boolean started = false;
     @Getter
@@ -75,8 +75,7 @@ public class Tournament {
 
             ChatMessage wonMessage = ChatMessages.WON_TOURNAMENT.clone().replace("%player%", winner.getName());
 
-            ProfileManager.broadcast(ProfileManager.getProfiles(),
-                    wonMessage);
+            ProfileManager.broadcast(wonMessage);
 
             return;
         }
@@ -101,7 +100,7 @@ public class Tournament {
                 .replace("%player%", host).setTextEvent(new ClickEvent(ClickEvent.Action.RUN_COMMAND, "/join " + host),
                         ChatMessages.CLICK_TO_JOIN);
 
-        ProfileManager.broadcast(ProfileManager.getProfiles(), messageToBroadcast);
+        ProfileManager.broadcast(messageToBroadcast);
 
         new BukkitRunnable() {
             @Override
@@ -154,12 +153,11 @@ public class Tournament {
         }
     }
 
-    public void removeMatch(Match m) {
+    public void removeMatch(Match<MatchData> m) {
         matches.remove(m);
 
-        if (ended) {
+        if (ended)
             return;
-        }
 
         if (matches.isEmpty()) {
             ChatMessage broadcastedMessage = ChatMessages.ROUND_OVER.clone().replace("%round%", "" + round);

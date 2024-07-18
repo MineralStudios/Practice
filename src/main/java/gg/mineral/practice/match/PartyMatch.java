@@ -33,7 +33,7 @@ import net.md_5.bungee.api.chat.ComponentBuilder;
 import net.md_5.bungee.api.chat.HoverEvent;
 import net.md_5.bungee.api.chat.TextComponent;
 
-public class PartyMatch extends Match {
+public class PartyMatch extends Match<MatchData> {
 	@Getter
 	ProfileList team1RemainingPlayers, team2RemainingPlayers;
 	List<InventoryStatsMenu> team1InventoryStatsMenus = new GlueList<>(), team2InventoryStatsMenus = new GlueList<>();
@@ -88,8 +88,8 @@ public class PartyMatch extends Match {
 		}
 
 		MatchManager.registerMatch(this);
-		Location location1 = data.getArena().getLocation1().clone();
-		Location location2 = data.getArena().getLocation2().clone();
+		Location location1 = getData().getArena().getLocation1().clone();
+		Location location2 = getData().getArena().getLocation2().clone();
 		setupLocations(location1, location2);
 
 		org.bukkit.scoreboard.Scoreboard team1sb = getDisplayNameBoard(team1RemainingPlayers, team2RemainingPlayers);
@@ -115,7 +115,7 @@ public class PartyMatch extends Match {
 
 	@Override
 	public void setScoreboard(Profile p) {
-		if (data.getBoxing()) {
+		if (getData().isBoxing()) {
 			p.setScoreboard(PartyBoxingScoreboard.INSTANCE);
 			return;
 		}
@@ -243,17 +243,16 @@ public class PartyMatch extends Match {
 		victim.removePotionEffects();
 		victim.teleportToLobby();
 
-		if (victim.isInParty()) {
+		if (victim.isInParty())
 			victim.getInventory().setInventoryForParty();
-		} else {
+		else
 			victim.getInventory().setInventoryForLobby();
-		}
 
 		victim.removeFromMatch();
 
 		BotAPIPlugin.INSTANCE.getFakePlayerUtil().destroy(victim.getPlayer());
 
-		for (Profile spectator : getSpectators()) {
+		for (Profile spectator : this.getSpectators()) {
 			spectator.getPlayer().sendMessage(CC.SEPARATOR);
 			spectator.getPlayer().sendMessage(Strings.MATCH_RESULTS);
 			spectator.getPlayer().spigot().sendMessage(winMessage);
@@ -309,7 +308,7 @@ public class PartyMatch extends Match {
 		ProfileList opponentTeam = isTeam1 ? team2RemainingPlayers : team1RemainingPlayers;
 
 		if (hitCount >= requiredHitCount
-				&& getData().getBoxing()) {
+				&& getData().isBoxing()) {
 			for (Profile opponent : opponentTeam)
 				end(opponent);
 

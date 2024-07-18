@@ -1,6 +1,5 @@
 package gg.mineral.practice.inventory;
 
-import java.util.Map.Entry;
 import java.util.function.Consumer;
 
 import org.bukkit.Material;
@@ -9,6 +8,7 @@ import org.bukkit.craftbukkit.v1_8_R3.event.CraftEventFactory;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
+import org.eclipse.jdt.annotation.Nullable;
 
 import gg.mineral.practice.entity.Profile;
 import it.unimi.dsi.fastutil.ints.Int2ObjectOpenHashMap;
@@ -26,17 +26,16 @@ import net.minecraft.server.v1_8_R3.IInventory;
 import net.minecraft.server.v1_8_R3.PacketPlayOutCloseWindow;
 import net.minecraft.server.v1_8_R3.PacketPlayOutOpenWindow;
 
-public class AnvilMenu implements Menu {
+public abstract class AnvilMenu implements Menu {
 
     Int2ObjectOpenHashMap<Consumer<Interaction>> dataMap = new Int2ObjectOpenHashMap<>();
     Int2ObjectOpenHashMap<ItemStack> items = new Int2ObjectOpenHashMap<>();
-    @Setter
-    Boolean clickCancelled = false;
     @Setter
     @Getter
     boolean closed = true;
     protected Profile viewer;
     @Getter
+    @Nullable
     String text;
 
     /**
@@ -54,6 +53,10 @@ public class AnvilMenu implements Menu {
         handleInventoryCloseEvent(viewer.getPlayer());
         setActiveContainerDefault(viewer.getPlayer());
         sendPacketCloseWindow(viewer.getPlayer(), containerId);
+    }
+
+    public boolean shouldUpdate() {
+        return true;
     }
 
     /**
@@ -181,9 +184,8 @@ public class AnvilMenu implements Menu {
 
     @Override
     public void setSlot(int slot, ItemStack item) {
-        if (item == null || slot < 0) {
+        if (item == null || slot < 0)
             return;
-        }
 
         items.put(slot, item);
     }
@@ -196,9 +198,7 @@ public class AnvilMenu implements Menu {
 
     @Override
     public void setSlot(int slot, ItemStack item, Runnable d) {
-        setSlot(slot, item, p -> {
-            d.run();
-        });
+        setSlot(slot, item, p -> d.run());
     }
 
     @Override
@@ -208,11 +208,9 @@ public class AnvilMenu implements Menu {
     }
 
     public Integer findUnusedSlot() {
-        for (int i = 0; i <= 3; i++) {
-            if (items.get(i) == null) {
+        for (int i = 0; i <= 3; i++)
+            if (items.get(i) == null)
                 return i;
-            }
-        }
 
         return -1;
     }
@@ -225,15 +223,11 @@ public class AnvilMenu implements Menu {
 
     @Override
     public void add(ItemStack item, Runnable d) {
-        add(item, p -> {
-            d.run();
-        });
+        add(item, p -> d.run());
     }
 
     @Override
-    public boolean update() {
-        return false;
-    }
+    public abstract void update();
 
     @Override
     public void onClose() {
@@ -241,17 +235,18 @@ public class AnvilMenu implements Menu {
     }
 
     @Override
+    @Nullable
     public ItemStack getItemBySlot(int slot) {
         return items.get(slot);
     }
 
     @Override
+    @Nullable
     public ItemStack getItemByType(Material m) {
-        for (ItemStack i : items.values()) {
-            if (i.getType() == m) {
+        for (ItemStack i : items.values())
+            if (i.getType() == m)
                 return i;
-            }
-        }
+
         return null;
     }
 
@@ -274,9 +269,8 @@ public class AnvilMenu implements Menu {
 
         inventory = toBukkitInventory(container);
 
-        for (Entry<Integer, ItemStack> e : items.entrySet()) {
-            inventory.setItem(e.getKey(), e.getValue());
-        }
+        for (it.unimi.dsi.fastutil.ints.Int2ObjectMap.Entry<ItemStack> e : items.int2ObjectEntrySet())
+            inventory.setItem(e.getIntKey(), e.getValue());
 
         containerId = getNextContainerId(viewer.getPlayer(), container);
         sendPacketOpenWindow(viewer.getPlayer(), containerId);
@@ -293,9 +287,8 @@ public class AnvilMenu implements Menu {
 
     @Override
     public void setContents(ItemStack[] contents) {
-        for (int i = 0; i < contents.length; i++) {
+        for (int i = 0; i < contents.length; i++)
             setSlot(i, contents[i]);
-        }
     }
 
     @Override
@@ -310,8 +303,14 @@ public class AnvilMenu implements Menu {
     }
 
     @Override
-    public boolean getClickCancelled() {
-        return clickCancelled;
+    public boolean isClickCancelled() {
+        ClickCancelled annotation = getClass().getAnnotation(ClickCancelled.class);
+
+        if (annotation == null)
+            throw new IllegalArgumentException(
+                    "ClickCancelled annotation not found on class " + getClass().getSimpleName());
+
+        return annotation.value();
     }
 
 }

@@ -8,7 +8,7 @@ import gg.mineral.botapi.entity.player.self.FakePlayer;
 import gg.mineral.botapi.manager.FakePlayerManager;
 import gg.mineral.botapi.math.position.ServerLocation;
 import gg.mineral.botapi.world.ServerWorld;
-import gg.mineral.practice.entity.Profile;
+import gg.mineral.practice.match.data.MatchData;
 import gg.mineral.practice.util.messages.CC;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
@@ -18,7 +18,7 @@ public enum Difficulty {
 
     EASY(CC.GREEN + "Easy") {
         @Override
-        public FakePlayer spawn(Profile profile, Location location, String suffix) {
+        public FakePlayer spawn(MatchData matchData, Location location, String suffix) {
             ServerLocation serverLocation = new ServerLocation(new ServerWorld() {
                 public Object getHandle() {
                     return location.getWorld();
@@ -32,8 +32,8 @@ public enum Difficulty {
                     location.getZ(), location.getYaw(), location.getPitch());
 
             BotConfiguration config = BotConfiguration.builder().location(serverLocation).name("EasyBot" + suffix)
-                    .aimConfiguration(AimConfiguration.builder().horizontalAimSpeed(0.3F).verticalAimSpeed(0.3F)
-                            .horizontalAimAccuracy(0.25F).verticalAimAccuracy(0.25F).build())
+                    .aimConfiguration(AimConfiguration.builder().horizontalAimSpeed(0.2F).verticalAimSpeed(0.2F)
+                            .horizontalAimAccuracy(0.2F).verticalAimAccuracy(0.25F).build())
                     .cps(5).bowAimingRadius(2.4F).latency(50).sprintResetAccuracy(0.25F).hitSelectAccuracy(0.0F)
                     .distancingMin(1.8F).distancingMax(3.0F).build();
             FakePlayer fakePlayer = FakePlayerManager.create(config);
@@ -43,7 +43,7 @@ public enum Difficulty {
     },
     MEDIUM(CC.YELLOW + "Medium") {
         @Override
-        public FakePlayer spawn(Profile profile, Location location, String suffix) {
+        public FakePlayer spawn(MatchData matchData, Location location, String suffix) {
             ServerLocation serverLocation = new ServerLocation(new ServerWorld() {
                 public Object getHandle() {
                     return location.getWorld();
@@ -67,7 +67,7 @@ public enum Difficulty {
     },
     HARD(CC.GOLD + "Hard") {
         @Override
-        public FakePlayer spawn(Profile profile, Location location, String suffix) {
+        public FakePlayer spawn(MatchData matchData, Location location, String suffix) {
             ServerLocation serverLocation = new ServerLocation(new ServerWorld() {
                 public Object getHandle() {
                     return location.getWorld();
@@ -91,7 +91,7 @@ public enum Difficulty {
     },
     EXPERT(CC.RED + "Expert") {
         @Override
-        public FakePlayer spawn(Profile profile, Location location, String suffix) {
+        public FakePlayer spawn(MatchData matchData, Location location, String suffix) {
             ServerLocation serverLocation = new ServerLocation(new ServerWorld() {
                 public Object getHandle() {
                     return location.getWorld();
@@ -115,7 +115,7 @@ public enum Difficulty {
     },
     PRO(CC.PURPLE + "Pro") {
         @Override
-        public FakePlayer spawn(Profile profile, Location location, String suffix) {
+        public FakePlayer spawn(MatchData matchData, Location location, String suffix) {
             ServerLocation serverLocation = new ServerLocation(new ServerWorld() {
                 public Object getHandle() {
                     return location.getWorld();
@@ -140,7 +140,7 @@ public enum Difficulty {
     },
     HARDCORE(CC.PINK + "Hardcore") {
         @Override
-        public FakePlayer spawn(Profile profile, Location location, String suffix) {
+        public FakePlayer spawn(MatchData matchData, Location location, String suffix) {
 
             ServerLocation serverLocation = new ServerLocation(new ServerWorld() {
                 public Object getHandle() {
@@ -168,8 +168,8 @@ public enum Difficulty {
     },
     CUSTOM(CC.GRAY + "Custom") {
         @Override
-        public FakePlayer spawn(Profile profile, Location location, String suffix) {
-            CustomDifficulty difficulty = profile.getMatchData().getCustomBotDifficulty();
+        public FakePlayer spawn(MatchData matchData, Location location, String suffix) {
+            CustomDifficulty difficulty = matchData.getCustomBotDifficulty();
             ServerLocation serverLocation = new ServerLocation(new ServerWorld() {
                 public Object getHandle() {
                     return location.getWorld();
@@ -185,12 +185,14 @@ public enum Difficulty {
                     .aimConfiguration(AimConfiguration.builder().horizontalAimSpeed(difficulty.getHorizontalAimSpeed())
                             .verticalAimSpeed(difficulty.getVerticalAimSpeed())
                             .horizontalAimAccuracy(difficulty.getHorizontalAimAccuracy())
-                            .verticalAimAccuracy(difficulty.getVerticalAimAccuracy()).build())
+                            .verticalAimAccuracy(difficulty.getVerticalAimAccuracy())
+                            .horizontalErraticness(difficulty.getHorizontalAimErraticness())
+                            .verticalErraticness(difficulty.getVerticalAimErraticness()).build())
                     .cps((int) difficulty.getCps()).bowAimingRadius(difficulty.getBowAimingRadius())
                     .latency((int) difficulty.getLatency()).latencyDeviation((int) difficulty.getLatencyDeviation())
                     .sprintResetAccuracy(difficulty.getSprintResetAccuracy())
                     .hitSelectAccuracy(difficulty.getHitSelectAccuracy()).distancingMin(difficulty.getDistancingMin())
-                    .distancingMax(difficulty.getDistancingMax()).build();
+                    .distancingMax(difficulty.getDistancingMax()).reach(difficulty.getReach()).build();
             FakePlayer fakePlayer = FakePlayerManager.create(config);
             fakePlayer.spawn();
             return fakePlayer;
@@ -198,7 +200,7 @@ public enum Difficulty {
     },
     RANDOM(CC.AQUA + "Random") {
         @Override
-        public FakePlayer spawn(Profile profile, Location location, String suffix) {
+        public FakePlayer spawn(MatchData matchData, Location location, String suffix) {
             CustomDifficulty difficulty = new CustomDifficulty();
             difficulty.randomize();
             ServerLocation serverLocation = new ServerLocation(new ServerWorld() {
@@ -216,7 +218,9 @@ public enum Difficulty {
                     .aimConfiguration(AimConfiguration.builder().horizontalAimSpeed(difficulty.getHorizontalAimSpeed())
                             .verticalAimSpeed(difficulty.getVerticalAimSpeed())
                             .horizontalAimAccuracy(difficulty.getHorizontalAimAccuracy())
-                            .verticalAimAccuracy(difficulty.getVerticalAimAccuracy()).build())
+                            .verticalAimAccuracy(difficulty.getVerticalAimAccuracy())
+                            .horizontalErraticness(difficulty.getHorizontalAimErraticness())
+                            .verticalErraticness(difficulty.getVerticalAimErraticness()).build())
                     .cps((int) difficulty.getCps()).bowAimingRadius(difficulty.getBowAimingRadius())
                     .latency((int) difficulty.getLatency()).latencyDeviation((int) difficulty.getLatencyDeviation())
                     .sprintResetAccuracy(difficulty.getSprintResetAccuracy())
@@ -231,5 +235,5 @@ public enum Difficulty {
     @Getter
     final String display;
 
-    public abstract FakePlayer spawn(Profile profile, Location location, String suffix);
+    public abstract FakePlayer spawn(MatchData matchData, Location location, String suffix);
 }

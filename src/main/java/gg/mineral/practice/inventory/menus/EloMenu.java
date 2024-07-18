@@ -7,28 +7,24 @@ import org.bukkit.inventory.ItemStack;
 
 import gg.mineral.api.collection.GlueList;
 import gg.mineral.practice.catagory.Catagory;
-import gg.mineral.practice.entity.Profile;
 import gg.mineral.practice.entity.ProfileData;
 import gg.mineral.practice.gametype.Gametype;
+import gg.mineral.practice.inventory.ClickCancelled;
 import gg.mineral.practice.inventory.PracticeMenu;
 import gg.mineral.practice.managers.QueuetypeManager;
 import gg.mineral.practice.util.items.ItemBuilder;
 import gg.mineral.practice.util.items.ItemStacks;
 import gg.mineral.practice.util.messages.CC;
+import lombok.RequiredArgsConstructor;
 
+@ClickCancelled(true)
+@RequiredArgsConstructor
 public class EloMenu extends PracticeMenu {
 
-    ProfileData arg;
-    String strArg;
-
-    public EloMenu(ProfileData arg) {
-        super(CC.BLUE + arg.getName());
-        this.arg = arg;
-        setClickCancelled(true);
-    }
+    private final ProfileData arg;
 
     @Override
-    public boolean update() {
+    public void update() {
 
         QueuetypeManager.getQueuetypes().stream().filter(q -> q.isRanked())
                 .findFirst().ifPresent(queuetype -> {
@@ -74,14 +70,20 @@ public class EloMenu extends PracticeMenu {
                         itemBuild.lore(sb.toArray(new String[0]));
                         ItemStack item = itemBuild.build();
 
-                        setSlot(entry.getValue() + 18, item, interaction -> {
-                            Profile p = interaction.getProfile();
-                            p.openMenu(new CatagorizedEloMenu(arg, queuetype, c));
-                        });
+                        setSlot(entry.getValue() + 18, item, interaction -> interaction.getProfile()
+                                .openMenu(new CatagorizedEloMenu(arg, queuetype, c)));
                     }
 
                 });
+    }
 
+    @Override
+    public String getTitle() {
+        return CC.BLUE + arg.getName();
+    }
+
+    @Override
+    public boolean shouldUpdate() {
         return true;
     }
 }

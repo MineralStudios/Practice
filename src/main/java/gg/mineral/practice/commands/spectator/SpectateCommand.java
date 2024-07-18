@@ -31,8 +31,8 @@ public class SpectateCommand extends PlayerCommand {
 		}
 
 		Profile profileToSpectate = ProfileManager
-				.getProfile(p -> p.getName().equalsIgnoreCase(args[0])
-						&& (p.getPlayerStatus() == PlayerStatus.FIGHTING || p.isInEvent()));
+				.getProfile(args[0],
+						p -> p.getPlayerStatus() == PlayerStatus.FIGHTING || p.isInEvent());
 
 		if (profileToSpectate == null) {
 			profile.message(ErrorMessages.PLAYER_NOT_IN_MATCH_OR_EVENT);

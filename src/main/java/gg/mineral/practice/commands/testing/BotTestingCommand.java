@@ -12,7 +12,7 @@ import gg.mineral.practice.managers.ProfileManager;
 import gg.mineral.practice.managers.QueueEntryManager;
 import gg.mineral.practice.managers.QueuetypeManager;
 import gg.mineral.practice.match.TeamMatch;
-import gg.mineral.practice.match.data.MatchData;
+import gg.mineral.practice.match.data.QueueMatchData;
 import gg.mineral.practice.queue.QueueEntry;
 import gg.mineral.practice.queue.Queuetype;
 
@@ -35,19 +35,22 @@ public class BotTestingCommand extends PlayerCommand {
         Gametype gametype = GametypeManager.getGametypeByName(args[1]);
         QueueEntry queueEntry = QueueEntryManager.newEntry(queuetype, gametype);
 
+        Difficulty difficulty = profile.getMatchData().getBotDifficulty();
+
         List<Difficulty> friendlyTeam = new GlueList<>();
-        friendlyTeam.add(profile.getMatchData().getBotDifficulty());
-        friendlyTeam.add(profile.getMatchData().getBotDifficulty());
+        friendlyTeam.add(difficulty);
+        friendlyTeam.add(difficulty);
 
         List<Difficulty> opponentTeam = new GlueList<>();
-        opponentTeam.add(profile.getMatchData().getBotDifficulty());
-        opponentTeam.add(profile.getMatchData().getBotDifficulty());
+        opponentTeam.add(difficulty);
+        opponentTeam.add(difficulty);
 
+        TeamMatch m;
         for (int i = 0; i < amount; i++) {
-            TeamMatch m = new TeamMatch(new GlueList<>(), new GlueList<>(),
+            m = new TeamMatch(new GlueList<>(), new GlueList<>(),
                     friendlyTeam,
                     opponentTeam,
-                    new MatchData(queueEntry));
+                    profile.getMatchData().cloneBotAndArenaData(() -> new QueueMatchData(queueEntry)));
             m.start();
         }
 

@@ -9,17 +9,17 @@ import gg.mineral.practice.PracticePlugin;
 import gg.mineral.practice.bots.Difficulty;
 import gg.mineral.practice.entity.Profile;
 import gg.mineral.practice.managers.ProfileManager;
-import gg.mineral.practice.match.data.MatchData;
+import gg.mineral.practice.match.data.QueueMatchData;
 import gg.mineral.practice.util.PlayerUtil;
 import gg.mineral.practice.util.items.ItemStacks;
 import net.minecraft.server.v1_8_R3.EntityPlayer;
 
-public class BotMatch extends Match {
+public class BotMatch extends Match<QueueMatchData> {
 
     FakePlayer fakePlayer;
     Difficulty difficulty;
 
-    public BotMatch(Profile profile1, Difficulty difficulty, MatchData matchData) {
+    public BotMatch(Profile profile1, Difficulty difficulty, QueueMatchData matchData) {
         super(matchData);
         this.profile1 = profile1;
         this.difficulty = difficulty;
@@ -29,7 +29,7 @@ public class BotMatch extends Match {
     @Override
     public void teleportPlayers(Location location1, Location location2) {
         PlayerUtil.teleport(profile1.getPlayer(), location1);
-        fakePlayer = difficulty.spawn(profile1, location2, "");
+        this.fakePlayer = difficulty.spawn(profile1.getMatchData(), location2, "");
         this.profile2 = ProfileManager
                 .getOrCreateProfile(((EntityPlayer) fakePlayer.getServerSide()).getBukkitEntity());
         addParicipants(profile2);
@@ -41,7 +41,7 @@ public class BotMatch extends Match {
 
         fakePlayer.setSprintingHeld(true);
         fakePlayer.startMoving(FakePlayer.Direction.FORWARDS);
-        fakePlayer.getConfiguration().setPearlCooldown(data.getPearlCooldown());
+        fakePlayer.getConfiguration().setPearlCooldown(getData().getPearlCooldown());
         fakePlayer.startTasks();
     }
 

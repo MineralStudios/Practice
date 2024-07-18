@@ -29,7 +29,7 @@ import net.md_5.bungee.api.chat.ClickEvent;
 
 public class Event implements Spectatable {
 
-    GlueList<Match> matches = new GlueList<>();
+    GlueList<Match<MatchData>> matches = new GlueList<>();
     @Getter
     ConcurrentLinkedDeque<Profile> spectators = new ConcurrentLinkedDeque<>();
 
@@ -123,8 +123,7 @@ public class Event implements Spectatable {
 
             ChatMessage wonMessage = ChatMessages.WON_EVENT.clone().replace("%player%", winner.getName());
 
-            ProfileManager.broadcast(ProfileManager.getProfiles(),
-                    wonMessage);
+            ProfileManager.broadcast(wonMessage);
 
             return;
         }
@@ -149,7 +148,7 @@ public class Event implements Spectatable {
                 .replace("%player%", host).setTextEvent(new ClickEvent(ClickEvent.Action.RUN_COMMAND, "/join " + host),
                         ChatMessages.CLICK_TO_JOIN);
 
-        ProfileManager.broadcast(ProfileManager.getProfiles(), messageToBroadcast);
+        ProfileManager.broadcast(messageToBroadcast);
 
         new BukkitRunnable() {
             @Override
@@ -178,7 +177,7 @@ public class Event implements Spectatable {
         }.runTaskLater(PracticePlugin.INSTANCE, 600);
     }
 
-    public void removeMatch(Match m) {
+    public void removeMatch(Match<MatchData> m) {
         matches.remove(m);
 
         if (ended) {

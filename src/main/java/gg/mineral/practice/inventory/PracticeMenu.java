@@ -1,6 +1,5 @@
 package gg.mineral.practice.inventory;
 
-import java.util.Map;
 import java.util.function.Consumer;
 
 import org.bukkit.Bukkit;
@@ -8,37 +7,45 @@ import org.bukkit.Material;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
+import org.eclipse.jdt.annotation.Nullable;
 
 import gg.mineral.practice.entity.Profile;
 import gg.mineral.practice.util.items.ItemStacks;
 import gg.mineral.practice.util.math.MathUtil;
 import gg.mineral.practice.util.messages.CC;
+import it.unimi.dsi.fastutil.ints.Int2ObjectMap.Entry;
 import it.unimi.dsi.fastutil.ints.Int2ObjectOpenHashMap;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.RequiredArgsConstructor;
 import lombok.Setter;
 
-public class PracticeMenu implements Menu {
-	@Setter
-	@Getter
-	String title;
-	@Setter
-	Boolean clickCancelled = false;
+@NoArgsConstructor
+public abstract class PracticeMenu implements Menu {
 	protected Profile viewer;
 	@Getter
+	@Nullable
 	Page openPage;
 	Int2ObjectOpenHashMap<Page> pageMap = new Int2ObjectOpenHashMap<>();
 	@Setter
 	@Getter
 	boolean closed = true;
 
-	public PracticeMenu(String title) {
-		this.title = title;
+	public PracticeMenu(PracticeMenu menu) {
+		this.pageMap = menu.pageMap;
 	}
 
-	public PracticeMenu(PracticeMenu menu) {
-		this.title = menu.getTitle();
-		this.clickCancelled = menu.getClickCancelled();
-		this.pageMap = menu.pageMap;
+	public abstract String getTitle();
+
+	@Override
+	public boolean isClickCancelled() {
+		ClickCancelled annotation = getClass().getAnnotation(ClickCancelled.class);
+
+		if (annotation == null)
+			throw new IllegalArgumentException(
+					"ClickCancelled annotation not found on class " + getClass().getSimpleName());
+
+		return annotation.value();
 	}
 
 	public void setSlot(int slot, ItemStack item) {
@@ -52,9 +59,8 @@ public class PracticeMenu implements Menu {
 		if (page == null) {
 			pageMap.put(pageNumber, page = new Page(pageNumber));
 
-			if (pageMap.size() > 1) {
+			if (pageMap.size() > 1)
 				slotOnPage = slot % 45;
-			}
 		}
 
 		page.setSlot(slotOnPage, item);
@@ -66,23 +72,21 @@ public class PracticeMenu implements Menu {
 		int slotOnPage = firstPage ? slot : slot % pageSize;
 		int pageNumber = firstPage ? 0 : slot / pageSize;
 
+		@Nullable
 		Page page = pageMap.get(pageNumber);
 
 		if (page == null) {
 			pageMap.put(pageNumber, page = new Page(pageNumber));
 
-			if (pageMap.size() > 1) {
+			if (pageMap.size() > 1)
 				slotOnPage = slot % 45;
-			}
 		}
 
 		page.setSlot(slotOnPage, item, d);
 	}
 
 	public void setSlot(int slot, ItemStack item, Runnable d) {
-		setSlot(slot, item, p -> {
-			d.run();
-		});
+		setSlot(slot, item, p -> d.run());
 	}
 
 	public void add(ItemStack item) {
@@ -98,19 +102,17 @@ public class PracticeMenu implements Menu {
 	}
 
 	public void add(ItemStack item, Runnable d) {
-		add(item, p -> {
-			d.run();
-		});
+		add(item, p -> d.run());
 	}
 
-	public boolean update() {
-		return false;
-	}
+	public abstract void update();
+
+	public abstract boolean shouldUpdate();
 
 	public void onClose() {
-
 	}
 
+	@Nullable
 	public ItemStack getItemBySlot(int slot) {
 		int pageSize = pageMap.size() > 1 ? 45 : 54;
 		boolean firstPage = slot < pageSize;
@@ -119,20 +121,19 @@ public class PracticeMenu implements Menu {
 
 		Page page = pageMap.get(pageNumber);
 
-		if (page == null) {
+		if (page == null)
 			return null;
-		}
 
 		return page.getItemBySlot(slotOnPage);
 	}
 
+	@Nullable
 	public ItemStack getItemByType(Material m) {
 		for (Page page : pageMap.values()) {
 			ItemStack i = page.getItemByType(m);
 
-			if (i == null) {
+			if (i == null)
 				continue;
-			}
 
 			return i;
 		}
@@ -141,23 +142,17 @@ public class PracticeMenu implements Menu {
 	}
 
 	public boolean contains(ItemStack item) {
-		for (Page page : pageMap.values()) {
-			if (page.contains(item)) {
+		for (Page page : pageMap.values())
+			if (page.contains(item))
 				return true;
-			}
-		}
 
 		return false;
 	}
 
 	private Page findUnusedPage() {
-		for (Page page : pageMap.values()) {
-			if (page.full()) {
-				continue;
-			}
-
-			return page;
-		}
+		for (Page page : pageMap.values())
+			if (!page.full())
+				return page;
 
 		int pageNumber = pageMap.size();
 		Page page = new Page(pageNumber);
@@ -171,17 +166,20 @@ public class PracticeMenu implements Menu {
 		closed = false;
 		this.viewer = viewer;
 
-		if (needsUpdate) {
-			needsUpdate = update();
+		boolean hadUpdate = false;
+
+		if (needsUpdate || shouldUpdate()) {
+			update();
+			needsUpdate = false;
+			hadUpdate = true;
 		}
 
 		Page page = pageMap.get(pageNumber);
 
-		if (page == null) {
+		if (page == null)
 			pageMap.put(pageNumber, page = new Page(pageNumber));
-		}
 
-		page.open(viewer, needsUpdate);
+		page.open(viewer, hadUpdate);
 
 		openPage = page;
 
@@ -198,33 +196,29 @@ public class PracticeMenu implements Menu {
 	}
 
 	public void setContents(ItemStack[] contents) {
-		for (int i = 0; i < contents.length; i++) {
+		for (int i = 0; i < contents.length; i++)
 			setSlot(i, contents[i]);
-		}
 	}
 
+	@Nullable
 	public Consumer<Interaction> getTask(int slot) {
-		if (openPage == null) {
+		if (openPage == null)
 			return null;
-		}
 
 		return openPage.getTask(slot);
 	}
 
 	public void clear() {
-		for (Page page : pageMap.values()) {
+		for (Page page : pageMap.values())
 			page.clear();
-		}
 	}
 
+	@RequiredArgsConstructor
 	public class Page {
 		Int2ObjectOpenHashMap<Consumer<Interaction>> dataMap = new Int2ObjectOpenHashMap<>();
 		Int2ObjectOpenHashMap<ItemStack> items = new Int2ObjectOpenHashMap<>();
-		int size = 9, pageNumber;
-
-		public Page(int pageNumber) {
-			this.pageNumber = pageNumber;
-		}
+		private int size = 9;
+		private final int pageNumber;
 
 		public Page(Page page) {
 			this.dataMap = page.dataMap;
@@ -233,6 +227,7 @@ public class PracticeMenu implements Menu {
 			this.pageNumber = page.pageNumber;
 		}
 
+		@Nullable
 		public Consumer<Interaction> getTask(int i) {
 			return dataMap.get(i);
 		}
@@ -249,7 +244,6 @@ public class PracticeMenu implements Menu {
 
 		public void addNavigationBar() {
 			for (int i = 45; i <= 53; i++) {
-
 				switch (i) {
 					case 48:
 						setSlot(i, ItemStacks.PREVIOUS_PAGE.lore(
@@ -258,9 +252,8 @@ public class PracticeMenu implements Menu {
 								CC.BOARD_SEPARATOR, CC.ACCENT + "Click to go to the previous page.").build(),
 								interaction -> {
 									Profile p = interaction.getProfile();
-									if (pageNumber <= 0) {
+									if (pageNumber <= 0)
 										return;
-									}
 
 									PracticeMenu.this.open(p, pageNumber - 1);
 								});
@@ -272,9 +265,8 @@ public class PracticeMenu implements Menu {
 								CC.BOARD_SEPARATOR, CC.ACCENT + "Click to go to the next page.").build(),
 								interaction -> {
 									Profile p = interaction.getProfile();
-									if (pageNumber >= pageMap.size() - 1) {
+									if (pageNumber >= pageMap.size() - 1)
 										return;
-									}
 
 									PracticeMenu.this.open(p, pageNumber + 1);
 								});
@@ -288,41 +280,36 @@ public class PracticeMenu implements Menu {
 
 		protected Inventory toInventory(Player player) {
 			Inventory inventory = Bukkit.createInventory(player, Math.max(MathUtil.roundUp(size, 9), 9),
-					title.toString());
+					getTitle());
 
-			for (Map.Entry<Integer, ItemStack> e : items.entrySet()) {
-				inventory.setItem(e.getKey(), e.getValue());
-			}
+			for (Entry<ItemStack> e : items.int2ObjectEntrySet())
+				inventory.setItem(e.getIntKey(), e.getValue());
 
 			return inventory;
 		}
 
+		@Nullable
 		protected Inventory inv;
 
 		public void open(Profile profile, boolean updated) {
-
-			if (pageMap.size() > 1) {
+			if (pageMap.size() > 1)
 				addNavigationBar();
-			}
 
-			if (updated || inv == null) {
+			if (updated || inv == null)
 				inv = toInventory(profile.getPlayer());
-			}
 
 			profile.getPlayer().openInventory(inv);
 		}
 
 		public void setSlot(int slot, ItemStack item) {
 
-			if (item == null || slot < 0) {
+			if (item == null || slot < 0)
 				return;
-			}
 
 			items.put(slot, item);
 
-			if (slot > size - 1) {
+			if (slot > size - 1)
 				size = slot + 1;
-			}
 		}
 
 		public void setSlot(int slot, ItemStack item, Consumer<Interaction> d) {
@@ -331,21 +318,20 @@ public class PracticeMenu implements Menu {
 		}
 
 		public void setSlot(int slot, ItemStack item, Runnable d) {
-			setSlot(slot, item, p -> {
-				d.run();
-			});
+			setSlot(slot, item, p -> d.run());
 		}
 
+		@Nullable
 		public ItemStack getItemBySlot(int slot) {
 			return items.get(slot);
 		}
 
+		@Nullable
 		public ItemStack getItemByType(Material m) {
-			for (ItemStack i : items.values()) {
-				if (i.getType() == m) {
+			for (ItemStack i : items.values())
+				if (i.getType() == m)
 					return i;
-				}
-			}
+
 			return null;
 		}
 
@@ -353,21 +339,13 @@ public class PracticeMenu implements Menu {
 			return items.containsValue(item);
 		}
 
-		public Integer findUnusedSlot() {
-			for (int i = 0; i <= size; i++) {
-				if (items.get(i) == null) {
+		public int findUnusedSlot() {
+			for (int i = 0; i <= size; i++)
+				if (items.get(i) == null)
 					return i;
-				}
-			}
 
 			return -1;
 		}
-
-	}
-
-	@Override
-	public boolean getClickCancelled() {
-		return clickCancelled;
 	}
 
 	@Override

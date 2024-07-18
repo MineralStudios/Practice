@@ -78,7 +78,7 @@ public class CatagoryManager {
 	}
 
 	public static void setDefaults() {
-		Catagory catagory = new Catagory("Defualt");
+		Catagory catagory = new Catagory("Default");
 		catagory.setDefaults();
 		registerCatagory(catagory);
 	}

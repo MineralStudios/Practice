@@ -12,8 +12,9 @@ import gg.mineral.practice.entity.ProfileData;
 import gg.mineral.practice.gametype.Gametype;
 import gg.mineral.practice.queue.Queuetype;
 import gg.mineral.practice.util.collection.LeaderboardMap;
-import it.unimi.dsi.fastutil.objects.Object2IntMap.Entry;
-import it.unimi.dsi.fastutil.objects.Object2IntOpenHashMap;
+import it.unimi.dsi.fastutil.objects.Object2IntMap;
+import it.unimi.dsi.fastutil.objects.Object2LongMap;
+import it.unimi.dsi.fastutil.objects.Object2LongOpenHashMap;
 
 public class EloManager {
 	final static String TABLE = "elo";
@@ -125,48 +126,47 @@ public class EloManager {
 		// The ordered map with all global elo that is returned
 		LeaderboardMap map = new LeaderboardMap();
 
-		// The map that will be used to store the elo sum <Player, Elo Sum>
-		Object2IntOpenHashMap<ProfileData> globalEloMap = new Object2IntOpenHashMap<>();
-		Object2IntOpenHashMap<ProfileData> divisorMap = new Object2IntOpenHashMap<>();
+		// The map that will be used to store the elo sum and divisor <Player, Elo Sum
+		// and Divisor>
+		Object2LongOpenHashMap<ProfileData> globalEloMap = new Object2LongOpenHashMap<>();
 
-		// Iterates through every gametype in ranked, eg. NoDebuff, Debuff, Gapple
-		// etc.....
+		// Iterates through every gametype in ranked, eg. NoDebuff, Debuff, Gapple etc.
 		for (Gametype gametype : queuetype.getGametypes().keySet()) {
 
 			// Iterate through entries and put the sum of elo in the map for each player
-			for (Entry<ProfileData> e : gametype.getEloCache().object2IntEntrySet()) {
-				// Get elo sum for this player, if it doesn't exist return 0
-				Integer eloSum = globalEloMap.getOrDefault(e.getKey(), 0);
-				Integer divisor = divisorMap.getOrDefault(e.getKey(), 0);
+			for (Object2IntMap.Entry<ProfileData> e : gametype.getEloCache().object2IntEntrySet()) {
+				// Get the combined value (eloSum and divisor)
+				long combinedValue = globalEloMap.getOrDefault(e.getKey(), 0L);
+				int eloSum = (int) (combinedValue >>> 32);
+				int divisor = (int) combinedValue;
 
 				// Add elo
 				eloSum += e.getIntValue();
+				divisor += 1;
 
-				// Update the map
-				globalEloMap.put(e.getKey(), eloSum);
-				divisorMap.put(e.getKey(), divisor + 1);
-
+				// Update the map with the new combined value
+				globalEloMap.put(e.getKey(), (((long) eloSum) << 32) | (divisor & 0xFFFFFFFFL));
 			}
 		}
 
 		int maxDivisor = queuetype.getGametypes().size();
 
 		// Iterate through globalEloMap
-		for (Entry<ProfileData> e : globalEloMap.object2IntEntrySet()) {
-			int divisor = divisorMap.getOrDefault(e.getKey(), 0);
+		for (Object2LongMap.Entry<ProfileData> e : globalEloMap.object2LongEntrySet()) {
+			long combinedValue = e.getLongValue();
+			int eloSum = (int) (combinedValue >>> 32);
+			int divisor = (int) combinedValue;
 
 			if (divisor == 0) {
 				map.put(e.getKey().getName(), 1000);
 				continue;
 			}
 
-			int eloSum = e.getIntValue();
-
 			if (divisor < maxDivisor)
 				eloSum += 1000 * (maxDivisor - divisor);
 
 			// Calculate global elo from the sum and divisor
-			int globalElo = Math.round(eloSum / maxDivisor);
+			int globalElo = Math.round((float) eloSum / maxDivisor);
 			// Put in leaderboard map where it is put into the correct order
 			map.putNoDuplicate(e.getKey().getName(), globalElo);
 		}

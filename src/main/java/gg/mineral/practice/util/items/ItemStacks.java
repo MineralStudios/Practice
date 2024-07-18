@@ -232,6 +232,7 @@ public class ItemStacks {
                         VERTICAL_LIMIT = new ItemBuilder(Material.BEDROCK).lore("Click to change value."),
                         AIM_SPEED = new ItemBuilder(Material.ICE).lore("Click to change value."),
                         AIM_ACCURACY = new ItemBuilder(Material.ARROW).lore("Click to change value."),
+                        AIM_ERRATICNESS = new ItemBuilder(Material.LEVER).lore("Click to change value."),
                         AIM_REACTION_TIME = new ItemBuilder(Material.EMERALD).lore("Click to change value."),
                         BOW_AIMING_RADIUS = new ItemBuilder(Material.MAP)
                                         .lore("Click to change value."),

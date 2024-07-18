@@ -13,12 +13,13 @@ import gg.mineral.practice.catagory.Catagory;
 import gg.mineral.practice.entity.PlayerStatus;
 import gg.mineral.practice.entity.Profile;
 import gg.mineral.practice.gametype.Gametype;
+import gg.mineral.practice.inventory.ClickCancelled;
 import gg.mineral.practice.inventory.PracticeMenu;
 import gg.mineral.practice.managers.MatchManager;
 import gg.mineral.practice.managers.QueueEntryManager;
 import gg.mineral.practice.match.BotMatch;
 import gg.mineral.practice.match.TeamMatch;
-import gg.mineral.practice.match.data.MatchData;
+import gg.mineral.practice.match.data.QueueMatchData;
 import gg.mineral.practice.queue.QueueEntry;
 import gg.mineral.practice.queue.QueueSearchTask;
 import gg.mineral.practice.queue.QueueSearchTask2v2;
@@ -27,39 +28,28 @@ import gg.mineral.practice.util.items.ItemBuilder;
 import gg.mineral.practice.util.items.ItemStacks;
 import gg.mineral.practice.util.messages.CC;
 import gg.mineral.practice.util.messages.impl.ErrorMessages;
+import lombok.RequiredArgsConstructor;
 
+@ClickCancelled(true)
+@RequiredArgsConstructor
 public class SelectGametypeMenu extends PracticeMenu {
 
 	public enum Type {
 		QUEUE, KIT_EDITOR, UNRANKED
 	}
 
-	Queuetype queuetype;
-	Type type;
-
-	public SelectGametypeMenu(Queuetype queuetype, Type type) {
-		super(CC.BLUE + queuetype.getDisplayName());
-		this.type = type;
-		this.queuetype = queuetype;
-		setClickCancelled(true);
-	}
-
-	public SelectGametypeMenu(Queuetype queuetype, Type type, boolean botQueue) {
-		super(CC.BLUE + queuetype.getDisplayName());
-		this.type = type;
-		this.queuetype = queuetype;
-		setClickCancelled(true);
-	}
+	protected final Queuetype queuetype;
+	protected final Type type;
 
 	public void queue(QueueEntry queueEntry) {
-		List<QueueEntry> queueEntries = viewer.getMatchData().getTeam2v2()
+		List<QueueEntry> queueEntries = viewer.getMatchData().isTeam2v2()
 				? QueueSearchTask2v2.getQueueEntries(viewer)
 				: QueueSearchTask.getQueueEntries(viewer);
 
-		if (viewer.getMatchData().getTeam2v2()) {
+		if (viewer.getMatchData().isTeam2v2()) {
 
-			boolean botOpponents1 = viewer.getMatchData().getBotQueue() && queueEntry.getQueuetype().getBotsEnabled();
-			boolean botTeammate1 = viewer.getMatchData().getBotTeammate() && queueEntry.getQueuetype().getBotsEnabled();
+			boolean botOpponents1 = viewer.getMatchData().isBotQueue() && queueEntry.getQueuetype().getBotsEnabled();
+			boolean botTeammate1 = viewer.getMatchData().isBotTeammate() && queueEntry.getQueuetype().getBotsEnabled();
 
 			if (botOpponents1 && botTeammate1) {
 
@@ -71,7 +61,7 @@ public class SelectGametypeMenu extends PracticeMenu {
 				if (viewer.getPlayerStatus() == PlayerStatus.QUEUEING)
 					viewer.removeFromQueue();
 
-				if (viewer.getMatchData().getArenaSelection()) {
+				if (viewer.getMatchData().isArenaSelection()) {
 					viewer.openMenu(new QueueArenaEnableMenu(queueEntry));
 					return;
 				}
@@ -85,7 +75,7 @@ public class SelectGametypeMenu extends PracticeMenu {
 
 				TeamMatch m = new TeamMatch(Arrays.asList(viewer), new GlueList<>(), playerTeam,
 						opponentTeam,
-						new MatchData(queueEntry));
+						viewer.getMatchData().cloneBotAndArenaData(() -> new QueueMatchData(queueEntry)));
 				m.start();
 			} else if (botOpponents1 || botTeammate1) {
 				if (!(queueEntry.getGametype().getBotsEnabled()
@@ -99,7 +89,7 @@ public class SelectGametypeMenu extends PracticeMenu {
 					if (viewer.getPlayerStatus() == PlayerStatus.QUEUEING)
 						viewer.removeFromQueue();
 
-					if (viewer.getMatchData().getArenaSelection()) {
+					if (viewer.getMatchData().isArenaSelection()) {
 						viewer.openMenu(new QueueArenaEnableMenu(queueEntry));
 						return;
 					}
@@ -111,29 +101,26 @@ public class SelectGametypeMenu extends PracticeMenu {
 					TeamMatch m = new TeamMatch(viewer.getParty().getPartyMembers(), new GlueList<>(),
 							new GlueList<>(),
 							opponentTeam,
-							new MatchData(queueEntry));
+							viewer.getMatchData().cloneBotAndArenaData(() -> new QueueMatchData(queueEntry)));
 					m.start();
 					return;
 				}
 
-				if (queueEntries != null && queueEntries.contains(queueEntry)) {
+				if (queueEntries != null && queueEntries.contains(queueEntry))
 					viewer.removeFromQueue(queueEntry);
-				} else {
+				else
 					viewer.addPlayerToQueue(queueEntry);
-				}
-
 			} else {
-				if (queueEntries != null && queueEntries.contains(queueEntry)) {
+				if (queueEntries != null && queueEntries.contains(queueEntry))
 					viewer.removeFromQueue(queueEntry);
-				} else {
+				else
 					viewer.addPlayerToQueue(queueEntry);
-				}
 			}
 
 			return;
 		}
 
-		if (viewer.getMatchData().getBotQueue() && queueEntry.getQueuetype().getBotsEnabled()) {
+		if (viewer.getMatchData().isBotQueue() && queueEntry.getQueuetype().getBotsEnabled()) {
 
 			if (!(queueEntry.getGametype().getBotsEnabled())) {
 				ErrorMessages.COMING_SOON.send(viewer.getPlayer());
@@ -143,28 +130,27 @@ public class SelectGametypeMenu extends PracticeMenu {
 			if (viewer.getPlayerStatus() == PlayerStatus.QUEUEING)
 				viewer.removeFromQueue();
 
-			if (viewer.getMatchData().getArenaSelection()) {
+			if (viewer.getMatchData().isArenaSelection()) {
 				viewer.openMenu(new QueueArenaEnableMenu(queueEntry));
 				return;
 			}
 
 			viewer.getPlayer().closeInventory();
 			BotMatch m = new BotMatch(viewer, viewer.getMatchData().getBotDifficulty(),
-					new MatchData(queueEntry));
+					viewer.getMatchData().cloneBotAndArenaData(() -> new QueueMatchData(queueEntry)));
 			m.start();
 			return;
 		} else {
-			if (queueEntries != null && queueEntries.contains(queueEntry)) {
+			if (queueEntries != null && queueEntries.contains(queueEntry))
 				viewer.removeFromQueue(queueEntry);
-			} else {
+			else
 				viewer.addPlayerToQueue(queueEntry);
-			}
 		}
 
 	}
 
 	@Override
-	public boolean update() {
+	public void update() {
 
 		if (type == Type.UNRANKED) {
 			if (!viewer.isInParty()) {
@@ -174,11 +160,11 @@ public class SelectGametypeMenu extends PracticeMenu {
 										+ " match.",
 										" ",
 										CC.WHITE + "Currently:",
-										viewer.getMatchData().getTeam2v2() ? CC.GREEN + "Enabled" : CC.RED + "Disabled",
+										viewer.getMatchData().isTeam2v2() ? CC.GREEN + "Enabled" : CC.RED + "Disabled",
 										" ", CC.BOARD_SEPARATOR, CC.ACCENT + "Click to toggle 2v2.")
 								.build(),
 						interaction -> {
-							viewer.getMatchData().setTeam2v2(!viewer.getMatchData().getTeam2v2());
+							viewer.getMatchData().setTeam2v2(!viewer.getMatchData().isTeam2v2());
 							reload();
 						});
 			} else {
@@ -219,24 +205,23 @@ public class SelectGametypeMenu extends PracticeMenu {
 						} else if (interaction.getClickType() == ClickType.RIGHT) {
 							Profile p = interaction.getProfile();
 
-							if (p.getPlayer().hasPermission("practice.custombot")) {
+							if (p.getPlayer().hasPermission("practice.custombot"))
 								p.openMenu(new CustomBotDifficultyMenu(this));
-							} else {
+							else
 								ErrorMessages.RANK_REQUIRED.send(viewer.getPlayer());
-							}
 							return;
 						}
 
 						reload();
 					});
 
-			boolean botOpponents = viewer.getMatchData().getBotQueue();
-			boolean botTeammate = viewer.getMatchData().getBotTeammate();
+			boolean botOpponents = viewer.getMatchData().isBotQueue();
+			boolean botTeammate = viewer.getMatchData().isBotTeammate();
 
 			ItemStack item = ItemStacks.BOT_QUEUE_DISABLED;
 
-			if (viewer.getMatchData().getTeam2v2() && !viewer.isInParty()) {
-				if (botOpponents && botTeammate) {
+			if (viewer.getMatchData().isTeam2v2() && !viewer.isInParty()) {
+				if (botOpponents && botTeammate)
 					item = ItemStacks.BOT_QUEUE_ENABLED_2V2.lore(
 							CC.WHITE + "Allows you to queue in a " + CC.SECONDARY + "2v2 bot" + CC.WHITE
 									+ " match ",
@@ -248,7 +233,7 @@ public class SelectGametypeMenu extends PracticeMenu {
 							CC.BOARD_SEPARATOR,
 							CC.GREEN + "Left click to toggle bots.", CC.RED + "Right click to change team settings.")
 							.build();
-				} else if (botOpponents) {
+				else if (botOpponents)
 					item = ItemStacks.BOT_QUEUE_ENABLED_2V2.lore(
 							CC.WHITE + "Allows you to queue in a " + CC.SECONDARY + "2v2 bot" + CC.WHITE
 									+ " match ",
@@ -259,8 +244,7 @@ public class SelectGametypeMenu extends PracticeMenu {
 							" ", CC.WHITE + "Team Settings:", CC.GOLD + "Bot Opponents", " ", CC.BOARD_SEPARATOR,
 							CC.GREEN + "Left click to toggle bots.", CC.RED + "Right click to change team settings.")
 							.build();
-				} else if (botTeammate) {
-
+				else if (botTeammate)
 					item = ItemStacks.BOT_QUEUE_ENABLED_2V2.lore(
 							CC.WHITE + "Allows you to queue in a " + CC.SECONDARY + "2v2 bot" + CC.WHITE
 									+ " match ",
@@ -271,15 +255,13 @@ public class SelectGametypeMenu extends PracticeMenu {
 							" ", CC.WHITE + "Team Settings:", CC.AQUA + "Bot Teammate", " ", CC.BOARD_SEPARATOR,
 							CC.GREEN + "Left click to toggle bots.", CC.RED + "Right click to change team settings.")
 							.build();
-				}
-			} else if (viewer.getMatchData().getBotQueue()) {
+			} else if (viewer.getMatchData().isBotQueue())
 				item = ItemStacks.BOT_QUEUE_ENABLED;
-			}
 
 			setSlot(6,
 					item,
 					interaction -> {
-						if (interaction.getClickType() == ClickType.RIGHT && viewer.getMatchData().getTeam2v2()
+						if (interaction.getClickType() == ClickType.RIGHT && viewer.getMatchData().isTeam2v2()
 								&& !viewer.isInParty()) {
 							if (botOpponents && botTeammate) {
 								viewer.getMatchData().setBotTeammate(false);
@@ -304,7 +286,7 @@ public class SelectGametypeMenu extends PracticeMenu {
 
 			setSlot(48, ItemStacks.RANDOM_QUEUE, () -> {
 				QueueEntry queueEntry = QueueEntryManager.newEntry(queuetype,
-						viewer.getMatchData().getBotQueue() ? queuetype.randomGametypeWithBotsEnabled()
+						viewer.getMatchData().isBotQueue() ? queuetype.randomGametypeWithBotsEnabled()
 								: queuetype.randomGametype());
 
 				queue(queueEntry);
@@ -313,7 +295,7 @@ public class SelectGametypeMenu extends PracticeMenu {
 					viewer.getPlayer().closeInventory();
 			});
 
-			boolean arenaSelection = viewer.getMatchData().getArenaSelection();
+			boolean arenaSelection = viewer.getMatchData().isArenaSelection();
 
 			setSlot(50, ItemStacks.ARENA.lore(CC.WHITE + "Select an " + CC.SECONDARY + "arena" + CC.WHITE
 					+ " when you queue.",
@@ -321,7 +303,7 @@ public class SelectGametypeMenu extends PracticeMenu {
 					CC.WHITE + "Currently:",
 					arenaSelection ? CC.GREEN + "Enabled" : CC.RED + "Disabled",
 					" ", CC.BOARD_SEPARATOR, CC.ACCENT + "Click to toggle arena selection.").build(), () -> {
-						viewer.getMatchData().setArenaSelection(!viewer.getMatchData().getArenaSelection());
+						viewer.getMatchData().setArenaSelection(!viewer.getMatchData().isArenaSelection());
 						reload();
 					});
 		}
@@ -339,24 +321,22 @@ public class SelectGametypeMenu extends PracticeMenu {
 			QueueEntry queueEntry = QueueEntryManager.newEntry(queuetype, g);
 
 			if (type == Type.QUEUE || type == Type.UNRANKED) {
-				List<QueueEntry> queueEntries = viewer.getMatchData().getTeam2v2()
+				List<QueueEntry> queueEntries = viewer.getMatchData().isTeam2v2()
 						? QueueSearchTask2v2.getQueueEntries(viewer)
 						: QueueSearchTask.getQueueEntries(viewer);
 
-				if (queueEntries != null && queueEntries.contains(queueEntry)) {
+				if (queueEntries != null && queueEntries.contains(queueEntry))
 					itemBuild.lore(CC.RED + "Click to leave queue.");
-				} else {
-
-					itemBuild.lore(CC.SECONDARY + "In Queue: " + CC.WHITE + (viewer.getMatchData().getTeam2v2()
+				else
+					itemBuild.lore(CC.SECONDARY + "In Queue: " + CC.WHITE + (viewer.getMatchData().isTeam2v2()
 							? QueueSearchTask2v2.getNumberInQueue(queuetype, g)
 							: QueueSearchTask.getNumberInQueue(queuetype, g)),
 							CC.SECONDARY + "In Game: " + CC.WHITE + MatchManager.getInGameCount(queuetype, g),
 							CC.BOARD_SEPARATOR,
 							CC.ACCENT + "Click to queue.");
-				}
-			} else {
+			} else
 				itemBuild.lore();
-			}
+
 			ItemStack item = itemBuild.build();
 
 			setSlot(type == Type.UNRANKED ? entry.getValue() + 18 : entry.getValue(), item, () -> {
@@ -369,9 +349,8 @@ public class SelectGametypeMenu extends PracticeMenu {
 
 				queue(queueEntry);
 
-				if (viewer.getPlayerStatus() == PlayerStatus.QUEUEING) {
+				if (viewer.getPlayerStatus() == PlayerStatus.QUEUEING)
 					reload();
-				}
 			});
 		}
 
@@ -392,12 +371,18 @@ public class SelectGametypeMenu extends PracticeMenu {
 
 			itemBuild.lore(sb.toArray(new String[0]));
 			ItemStack item = itemBuild.build();
-			setSlot(type == Type.UNRANKED ? entry.getValue() + 18 : entry.getValue(), item, interaction -> {
-				Profile p = interaction.getProfile();
-				p.openMenu(new SelectCategorizedGametypeMenu(queuetype, c, type));
-			});
+			setSlot(type == Type.UNRANKED ? entry.getValue() + 18 : entry.getValue(), item, interaction -> interaction
+					.getProfile().openMenu(new SelectCategorizedGametypeMenu(queuetype, c, type)));
 		}
+	}
 
+	@Override
+	public String getTitle() {
+		return CC.BLUE + queuetype.getDisplayName();
+	}
+
+	@Override
+	public boolean shouldUpdate() {
 		return true;
 	}
 }

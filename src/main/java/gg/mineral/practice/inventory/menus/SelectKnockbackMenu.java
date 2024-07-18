@@ -1,32 +1,32 @@
 package gg.mineral.practice.inventory.menus;
 
-import gg.mineral.practice.entity.Profile;
+import gg.mineral.practice.inventory.ClickCancelled;
 import gg.mineral.practice.inventory.PracticeMenu;
 import gg.mineral.practice.util.items.ItemStacks;
 import gg.mineral.practice.util.messages.CC;
+import lombok.RequiredArgsConstructor;
 
+@ClickCancelled(true)
+@RequiredArgsConstructor
 public class SelectKnockbackMenu extends PracticeMenu {
-    MechanicsMenu menu;
-    final static String TITLE = CC.BLUE + "Select Knockback";
+    private final MechanicsMenu menu;
 
-    public SelectKnockbackMenu(MechanicsMenu menu) {
-        super(TITLE);
-        setClickCancelled(true);
-        this.menu = menu;
+    @Override
+    public void update() {
+        setSlot(2, ItemStacks.CHOOSE_EXISTING_KNOCKBACK,
+                interaction -> interaction.getProfile().openMenu(new SelectExistingKnockbackMenu(menu)));
+
+        setSlot(6, ItemStacks.CREATE_CUSTOM_KNOCKBACK,
+                interaction -> interaction.getProfile().openMenu(new CreateCustomKnockbackMenu(menu)));
     }
 
     @Override
-    public boolean update() {
-        setSlot(2, ItemStacks.CHOOSE_EXISTING_KNOCKBACK, interaction -> {
-            Profile p = interaction.getProfile();
-            p.openMenu(new SelectExistingKnockbackMenu(menu));
-        });
+    public String getTitle() {
+        return CC.BLUE + "Select Knockback";
+    }
 
-        setSlot(6, ItemStacks.CREATE_CUSTOM_KNOCKBACK, interaction -> {
-            Profile p = interaction.getProfile();
-            p.openMenu(new CreateCustomKnockbackMenu(menu));
-        });
-
+    @Override
+    public boolean shouldUpdate() {
         return true;
     }
 }

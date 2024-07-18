@@ -31,6 +31,7 @@ import gg.mineral.practice.managers.MatchManager;
 import gg.mineral.practice.managers.ProfileManager;
 import gg.mineral.practice.match.data.MatchData;
 import gg.mineral.practice.match.data.MatchStatisticCollector;
+import gg.mineral.practice.match.data.QueueMatchData;
 import gg.mineral.practice.queue.QueueSearchTask;
 import gg.mineral.practice.queue.QueueSearchTask2v2;
 import gg.mineral.practice.scoreboard.impl.BoxingScoreboard;
@@ -57,20 +58,22 @@ import net.md_5.bungee.api.chat.ComponentBuilder;
 import net.md_5.bungee.api.chat.HoverEvent;
 import net.md_5.bungee.api.chat.TextComponent;
 
-public class Match implements Spectatable {
+public class Match<D extends MatchData> implements Spectatable {
 
 	@Getter
-	ConcurrentLinkedDeque<Profile> spectators = new ConcurrentLinkedDeque<>();
+	ConcurrentLinkedDeque<Profile> spectators = new ConcurrentLinkedDeque<Profile>();
 	@Getter
 	ProfileList participants = new ProfileList();
 	@Getter
-	Profile profile1, profile2;
+	protected Profile profile1;
+	@Getter
+	protected Profile profile2;
 	@Getter
 	boolean ended = false;
 	@Getter
 	int placedTnt;
 	@Getter
-	MatchData data;
+	private final D data;
 	@Getter
 	GlueList<Location> buildLog = new GlueList<>();
 	@Getter
@@ -79,25 +82,25 @@ public class Match implements Spectatable {
 	Queue<Item> itemRemovalQueue = new ConcurrentLinkedQueue<>();
 	org.bukkit.World world = null;
 
-	public Match(Profile profile1, Profile profile2, MatchData matchData) {
+	public Match(Profile profile1, Profile profile2, D matchData) {
 		this(matchData);
 		this.profile1 = profile1;
 		this.profile2 = profile2;
 		addParicipants(profile1, profile2);
 	}
 
-	public Match(MatchData matchData) {
+	public Match(D matchData) {
 		this.data = matchData;
 	}
 
 	public void prepareForMatch(ProfileList profiles) {
-		for (Profile profile : profiles) {
+		for (Profile profile : profiles)
 			prepareForMatch(profile);
-		}
 	}
 
 	public Kit getKit(Profile p, int loadoutSlot) {
-		ItemStack[] customKit = data.getQueueEntry() != null ? data.getQueueEntry().getCustomKits(p).get(loadoutSlot)
+		ItemStack[] customKit = data instanceof QueueMatchData qData
+				? qData.getQueueEntry().getCustomKits(p).get(loadoutSlot)
 				: null;
 		return getKit(customKit);
 	}
@@ -105,9 +108,8 @@ public class Match implements Spectatable {
 	public Kit getKit(ItemStack[] customKit) {
 		Kit kit = getKit();
 
-		if (customKit != null) {
+		if (customKit != null)
 			kit.setContents(customKit);
-		}
 
 		return kit;
 	}
@@ -128,22 +130,19 @@ public class Match implements Spectatable {
 	}
 
 	public void setPotionEffects(Profile p) {
-		if (!data.getDamage()) {
+		if (!data.isDamage())
 			p.getPlayer().addPotionEffect(new PotionEffect(PotionEffectType.DAMAGE_RESISTANCE, 999999999, 255));
-		}
 
-		if (data.getBoxing()) {
+		if (data.isBoxing())
 			p.getPlayer().addPotionEffect(new PotionEffect(PotionEffectType.SPEED, 999999999, 1));
-		}
 	}
 
 	public void setVisibility(Profile p) {
 		for (Profile participant : participants)
 			p.getPlayer().showPlayer(participant.getPlayer());
 
-		for (Match match : MatchManager.getMatches())
+		for (Match<?> match : MatchManager.getMatches())
 			match.updateVisiblity(this, p);
-
 	}
 
 	public void prepareForMatch(Profile p) {
@@ -186,12 +185,10 @@ public class Match implements Spectatable {
 
 		for (int x = -radius; x <= radius; x++) {
 			for (int z = -radius; z <= radius; z++) {
-				if (x == -radius || x == radius || z == -radius || z == radius) {
-					for (int i = 0; i <= 2; i++) {
+				if (x == -radius || x == radius || z == -radius || z == radius)
+					for (int i = 0; i <= 2; i++)
 						BlockUtil.sendFakeBlock(profile,
 								blockData.clone().setType(Material.IRON_FENCE).translate(x, i, z));
-					}
-				}
 
 				BlockUtil.sendFakeBlock(profile, blockData.clone().translate(x, -1, z));
 				BlockUtil.sendFakeBlock(profile, blockData.clone().translate(x, 3, z));
@@ -201,14 +198,14 @@ public class Match implements Spectatable {
 
 	public void giveLoadoutSelection(Profile p) {
 
-		Int2ObjectOpenHashMap<ItemStack[]> map = data.getQueueEntry() == null ? null
-				: data.getQueueEntry().getCustomKits(p);
+		Int2ObjectOpenHashMap<ItemStack[]> map = data instanceof QueueMatchData qData
+				? qData.getQueueEntry().getCustomKits(p)
+				: null;
 
 		p.getInventory().clear();
 
-		if (map == null ? true : map.isEmpty()) {
+		if (map == null ? true : map.isEmpty())
 			return;
-		}
 
 		for (Entry<Integer, ItemStack[]> entry : map.int2ObjectEntrySet()) {
 			p.getInventory().setItem(entry.getKey(),
@@ -236,7 +233,7 @@ public class Match implements Spectatable {
 	}
 
 	public void setScoreboard(Profile p) {
-		if (data.getBoxing()) {
+		if (data.isBoxing()) {
 			p.setScoreboard(BoxingScoreboard.INSTANCE);
 			return;
 		}
@@ -244,10 +241,9 @@ public class Match implements Spectatable {
 		p.setScoreboard(InMatchScoreboard.INSTANCE);
 	}
 
-	public void updateVisiblity(Match match, Profile profile) {
-		if (match.equals(this) || !match.getData().getArena().equals(getData().getArena())) {
+	public void updateVisiblity(Match<?> match, Profile profile) {
+		if (match.equals(this) || !match.getData().getArena().equals(getData().getArena()))
 			return;
-		}
 
 		for (Profile participant : participants) {
 			participant.getPlayer().hidePlayer(profile.getPlayer(), false);
@@ -276,10 +272,12 @@ public class Match implements Spectatable {
 	}
 
 	public void handleOpponentMessages(Profile profile1, Profile profile2) {
-		StringBuilder sb = new StringBuilder("Opponent: " + CC.AQUA + profile2.getName())
-				.append(data.isRanked()
-						? CC.WHITE + "\nElo: " + CC.AQUA + data.getQueueEntry().getGametype().getElo(profile2)
-						: "");
+		StringBuilder sb = new StringBuilder("Opponent: " + CC.AQUA + profile2.getName());
+
+		if (data instanceof QueueMatchData qData)
+			sb.append(qData.isRanked()
+					? CC.WHITE + "\nElo: " + CC.AQUA + qData.getQueueEntry().getGametype().getElo(profile2)
+					: "");
 
 		profile1.getPlayer().sendMessage(CC.BOARD_SEPARATOR);
 		profile1.getPlayer().sendMessage(sb.toString());
@@ -307,7 +305,7 @@ public class Match implements Spectatable {
 
 	public void setupLocations(Location location1, Location location2) {
 
-		if (data.getGriefing() || data.getBuild()) {
+		if (data.isGriefing() || data.isBuild()) {
 			world = data.getArena().generate();
 			location1.setWorld(world);
 			location2.setWorld(world);
@@ -343,9 +341,8 @@ public class Match implements Spectatable {
 	}
 
 	public void end(Profile victim) {
-		if (isEnded()) {
+		if (isEnded())
 			return;
-		}
 
 		ended = true;
 		end(getOpponent(victim), victim);
@@ -360,7 +357,7 @@ public class Match implements Spectatable {
 		attacker.getMatchStatisticCollector().increaseHitCount();
 		victim.getMatchStatisticCollector().resetCombo();
 
-		if (attacker.getMatchStatisticCollector().getHitCount() >= 100 && getData().getBoxing()) {
+		if (attacker.getMatchStatisticCollector().getHitCount() >= 100 && getData().isBoxing()) {
 			end(victim);
 			return true;
 		}
@@ -368,8 +365,7 @@ public class Match implements Spectatable {
 		return false;
 	}
 
-	public CompletableFuture<Void> updateElo(Profile attacker, Profile victim) {
-		Gametype gametype = data.getQueueEntry().getGametype();
+	public CompletableFuture<Void> updateElo(Gametype gametype, Profile attacker, Profile victim) {
 		return gametype.getEloMap(attacker, victim)
 				.thenAccept(map -> {
 					int attackerElo = map.getInt(attacker.getUuid());
@@ -409,10 +405,8 @@ public class Match implements Spectatable {
 			profile.getPlayer().sendMessage(CC.SEPARATOR);
 		}
 
-		if (data.isRanked()) {
-			updateElo(attacker, victim);
-
-		}
+		if (data instanceof QueueMatchData qData && qData.isRanked())
+			updateElo(qData.getGametype(), attacker, victim);
 
 		resetPearlCooldown(attacker, victim);
 		attacker.setScoreboard(MatchEndScoreboard.INSTANCE);
@@ -426,9 +420,8 @@ public class Match implements Spectatable {
 		giveQueueAgainItem(attacker);
 
 		Bukkit.getServer().getScheduler().runTaskLater(PracticePlugin.INSTANCE, () -> {
-			if (attacker.getPlayerStatus() == PlayerStatus.FIGHTING && !attacker.getMatch().isEnded()) {
+			if (attacker.getPlayerStatus() == PlayerStatus.FIGHTING && !attacker.getMatch().isEnded())
 				return;
-			}
 
 			attacker.setScoreboard(DefaultScoreboard.INSTANCE);
 			sendBackToLobby(attacker);
@@ -493,16 +486,12 @@ public class Match implements Spectatable {
 	}
 
 	public void giveQueueAgainItem(Profile profile) {
-		if (getData().getQueueEntry() != null) {
-			Bukkit.getServer().getScheduler().runTaskLater(PracticePlugin.INSTANCE, () -> {
-				int slot = profile.getInventory().getHeldItemSlot();
-
-				profile.getInventory().setItem(slot, ItemStacks.QUEUE_AGAIN,
-						() -> {
-							profile.addPlayerToQueue(getData().getQueueEntry());
-						});
-			}, 20);
-		}
+		if (data instanceof QueueMatchData qData)
+			Bukkit.getServer().getScheduler().runTaskLater(PracticePlugin.INSTANCE,
+					() -> profile.getInventory().setItem(profile.getInventory().getHeldItemSlot(),
+							ItemStacks.QUEUE_AGAIN,
+							() -> profile.addPlayerToQueue(qData.getQueueEntry())),
+					20);
 	}
 
 	public void sendBackToLobby(Profile profile) {
@@ -512,15 +501,14 @@ public class Match implements Spectatable {
 	}
 
 	public void resetPearlCooldown(Profile... profiles) {
-		for (Profile profile : profiles) {
+		for (Profile profile : profiles)
 			profile.setPearlCooldown(0);
-		}
 	}
 
 	public void clearItems() {
 		boolean arenaInUse = false;
 
-		for (Match match : MatchManager.getMatches()) {
+		for (Match<?> match : MatchManager.getMatches()) {
 			if (!match.isEnded() && match.getData().getArena().equals(data.getArena())) {
 				arenaInUse = true;
 				break;
@@ -528,15 +516,14 @@ public class Match implements Spectatable {
 		}
 
 		for (Item item : arenaInUse ? itemRemovalQueue
-				: data.getArena().getLocation1().getWorld().getEntitiesByClass(Item.class)) {
+				: data.getArena().getLocation1().getWorld().getEntitiesByClass(Item.class))
 			item.remove();
-		}
 
 		for (Arrow arrow : data.getArena().getLocation1().getWorld().getEntitiesByClass(Arrow.class)) {
 			ProjectileSource shooter = arrow.getShooter();
 
-			if (shooter instanceof Player) {
-				Profile profile = ProfileManager.getProfile(p -> p.getUuid().equals(((Player) shooter).getUniqueId()));
+			if (shooter instanceof Player pShooter) {
+				Profile profile = ProfileManager.getProfile(pShooter.getUniqueId());
 
 				if (profile == null) {
 					arrow.remove();
@@ -560,54 +547,19 @@ public class Match implements Spectatable {
 				return;
 			}
 
-			for (Location location : buildLog) {
+			for (Location location : buildLog)
 				location.getBlock().setType(Material.AIR);
-			}
+
 		}, getPostMatchTime() + 1);
 	}
 
 	public InventoryStatsMenu setInventoryStats(Profile profile, MatchStatisticCollector matchStatisticCollector) {
 
-		InventoryStatsMenu menu = new InventoryStatsMenu(profile, getOpponent(profile).getName());
+		InventoryStatsMenu menu = new InventoryStatsMenu(profile, getOpponent(profile).getName(),
+				matchStatisticCollector);
 
-		menu.setContents(matchStatisticCollector.getInventoryContents());
-		menu.setSlot(36, matchStatisticCollector.getHelmet());
-		menu.setSlot(37, matchStatisticCollector.getChestplate());
-		menu.setSlot(38, matchStatisticCollector.getLeggings());
-		menu.setSlot(39, matchStatisticCollector.getBoots());
-
-		menu.setSlot(45, !matchStatisticCollector.isAlive() ? ItemStacks.NO_HEALTH
-				: ItemStacks.HEALTH
-						.name(CC.SECONDARY + CC.B + "Health")
-						.lore(" ", CC.WHITE + "Remaining:", CC.GOLD + matchStatisticCollector.getRemainingHealth())
-						.amount(matchStatisticCollector.getRemainingHealth()).build());
-
-		menu.setSlot(46, ItemStacks.HEALTH_POTIONS_LEFT
-				.lore(" ", CC.WHITE + "Thrown: " + CC.GOLD + matchStatisticCollector.getPotionsThrown(),
-						CC.WHITE + "Missed: " + CC.GOLD + matchStatisticCollector.getPotionsMissed(),
-						CC.WHITE + "Stolen: " + CC.GOLD + matchStatisticCollector.getPotionsStolen(),
-						CC.WHITE + "Accuracy: " + CC.GOLD + matchStatisticCollector.getPotionAccuracy() + "%")
-				.amount(Math.max(matchStatisticCollector.getPotionsRemaining(), 1)).build());
-
-		menu.setSlot(47, ItemStacks.SOUP_LEFT
-				.amount(Math.max(matchStatisticCollector.getSoupsRemaining(), 1)).build());
-
-		menu.setSlot(48, ItemStacks.HITS
-				.name(CC.SECONDARY + CC.B + profile.getMatchStatisticCollector().getHitCount() + " Hits")
-				.lore(CC.WHITE + "Longest Combo: " + CC.GOLD + matchStatisticCollector.getLongestCombo(),
-						CC.WHITE + "Average Combo: " + CC.GOLD + matchStatisticCollector.getAverageCombo(),
-						CC.WHITE + "W Tap Accuracy: " + CC.GOLD + matchStatisticCollector.getWTapAccuracy() + "%")
-				.build());
-
-		menu.setSlot(49, ItemStacks.CLICKS
-				.name(CC.SECONDARY + CC.B + "Highest CPS: " + matchStatisticCollector.getHighestCps()).build());
-
-		menu.setSlot(50, ItemStacks.POTION_EFFECTS
-				.lore(matchStatisticCollector.getPotionEffectStringArray()).build());
-
-		if (!(this instanceof PartyMatch || this instanceof TeamMatch)) {
+		if (!(this instanceof PartyMatch || this instanceof TeamMatch))
 			ProfileManager.setInventoryStats(profile, menu);
-		}
 
 		return menu;
 	}

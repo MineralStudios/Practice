@@ -47,7 +47,7 @@ public class InventoryListener implements Listener {
 
 		if (e.getSlot() < e.getView().getTopInventory().getSize())
 			e.setCancelled(
-					menu.getClickCancelled());
+					menu.isClickCancelled());
 
 		Consumer<Interaction> predicate = menu.getTask(e.getSlot());
 
@@ -67,9 +67,7 @@ public class InventoryListener implements Listener {
 		if (oldMenu != null && !oldMenu.isClosed() && e.getInventory().equals(oldMenu.getInventory())) {
 			oldMenu.setClosed(true);
 
-			Bukkit.getScheduler().scheduleSyncDelayedTask(PracticePlugin.INSTANCE, () -> {
-				oldMenu.onClose();
-			}, 1);
+			Bukkit.getScheduler().scheduleSyncDelayedTask(PracticePlugin.INSTANCE, () -> oldMenu.onClose(), 1);
 		}
 	}
 
@@ -102,7 +100,7 @@ public class InventoryListener implements Listener {
 			return;
 
 		e.setCancelled(ProfileManager
-				.getProfile(p -> p.getUuid().equals(e.getPlayer().getUniqueId())
-						&& p.getPlayerStatus() == PlayerStatus.FIGHTING) == null);
+				.getProfile(e.getPlayer().getUniqueId(),
+						p -> p.getPlayerStatus() == PlayerStatus.FIGHTING) == null);
 	}
 }

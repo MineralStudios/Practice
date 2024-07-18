@@ -25,24 +25,24 @@ public class BuildListener implements Listener {
 	public void onBlockBreak(BlockBreakEvent e) {
 
 		Profile profile = ProfileManager
-				.getProfile(p -> p.getUuid().equals(e.getPlayer().getUniqueId())
-						&& p.getPlayerStatus() == PlayerStatus.FIGHTING);
+				.getProfile(e.getPlayer().getUniqueId(),
+						p -> p.getPlayerStatus() == PlayerStatus.FIGHTING);
 
 		if (profile == null) {
 			e.setCancelled(!(e.getPlayer().isOp() && e.getPlayer().getGameMode().equals(GameMode.CREATIVE)));
 			return;
 		}
 
-		Match match = profile.getMatch();
+		Match<?> match = profile.getMatch();
 
 		Location location = e.getBlock().getLocation();
 
 		if (match.getBuildLog().contains(location)) {
-			e.setCancelled(!match.getData().getBuild());
+			e.setCancelled(!match.getData().isBuild());
 			return;
 		}
 
-		boolean canBreak = !match.getData().getGriefing();
+		boolean canBreak = !match.getData().isGriefing();
 
 		e.setCancelled(canBreak);
 
@@ -64,8 +64,8 @@ public class BuildListener implements Listener {
 	@EventHandler
 	public void onBlockPlace(BlockPlaceEvent e) {
 		Profile profile = ProfileManager
-				.getProfile(p -> p.getUuid().equals(e.getPlayer().getUniqueId())
-						&& p.getPlayerStatus() == PlayerStatus.FIGHTING);
+				.getProfile(e.getPlayer().getUniqueId(),
+						p -> p.getPlayerStatus() == PlayerStatus.FIGHTING);
 		boolean canPlace = e.getPlayer().isOp() && e.getPlayer().getGameMode().equals(GameMode.CREATIVE);
 
 		if (profile == null) {
@@ -73,8 +73,8 @@ public class BuildListener implements Listener {
 			return;
 		}
 
-		Match match = profile.getMatch();
-		e.setCancelled(!match.getData().getBuild());
+		Match<?> match = profile.getMatch();
+		e.setCancelled(!match.getData().isBuild());
 
 		if (e.getBlockPlaced().getType() == Material.TNT) {
 
@@ -93,8 +93,8 @@ public class BuildListener implements Listener {
 	@EventHandler
 	public void onPlayerBucketEmpty(PlayerBucketEmptyEvent e) {
 		Profile profile = ProfileManager
-				.getProfile(p -> p.getUuid().equals(e.getPlayer().getUniqueId())
-						&& p.getPlayerStatus() == PlayerStatus.FIGHTING);
+				.getProfile(e.getPlayer().getUniqueId(),
+						p -> p.getPlayerStatus() == PlayerStatus.FIGHTING);
 		boolean canPlace = e.getPlayer().isOp() && e.getPlayer().getGameMode().equals(GameMode.CREATIVE);
 
 		if (profile == null) {
@@ -102,7 +102,7 @@ public class BuildListener implements Listener {
 			return;
 		}
 
-		e.setCancelled(!profile.getMatch().getData().getBuild());
+		e.setCancelled(!profile.getMatch().getData().isBuild());
 	}
 
 	@EventHandler

@@ -62,7 +62,7 @@ public class Catagory implements SaveableData {
 	}
 
 	public void removeFromQueuetype(Queuetype queuetype) {
-		queuetype.getCatagories().remove(this);
+		queuetype.getCatagories().removeInt(this);
 		save();
 	}
 
@@ -98,8 +98,8 @@ public class Catagory implements SaveableData {
 		this.displayName = config.getString(path + "DisplayName", getName());
 
 		for (Queuetype q : QueuetypeManager.getQueuetypes()) {
-			if (config.getBoolean("Catagory." + getName() + "." + q.getName() + ".Enabled", false)) {
-				q.getCatagories().put(this, config.getInt(path + q.getName() + ".Slot", 0));
+			if (config.getBoolean(path + q.getName() + ".Enabled", false)) {
+				q.getCatagories().put(this, (int) config.getInt(path + q.getName() + ".Slot", 0));
 			}
 		}
 	}
@@ -110,7 +110,7 @@ public class Catagory implements SaveableData {
 		this.displayName = getName();
 
 		for (Queuetype q : QueuetypeManager.getQueuetypes()) {
-			if (config.getBoolean("Catagory." + getName() + "." + q.getName() + ".Enabled", false)) {
+			if (config.getBoolean(path + q.getName() + ".Enabled", false)) {
 				q.getCatagories().put(this, 0);
 			}
 		}

@@ -30,7 +30,7 @@ public class DuelCommand extends PlayerCommand {
 			return;
 		}
 
-		Profile duelReceiver = ProfileManager.getProfile(p -> p.getName().equalsIgnoreCase(args[0]));
+		Profile duelReceiver = ProfileManager.getProfile(args[0]);
 
 		if (duelReceiver == null) {
 			profile.message(ErrorMessages.PLAYER_NOT_ONLINE);

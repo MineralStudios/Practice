@@ -2,31 +2,25 @@ package gg.mineral.practice.inventory.menus;
 
 import org.bukkit.inventory.ItemStack;
 
-import gg.mineral.practice.entity.Profile;
+import gg.mineral.practice.inventory.ClickCancelled;
 import gg.mineral.practice.inventory.PracticeMenu;
 import gg.mineral.practice.managers.MatchManager;
 import gg.mineral.practice.match.Match;
-import gg.mineral.practice.queue.QueueEntry;
+import gg.mineral.practice.match.data.QueueMatchData;
 import gg.mineral.practice.util.items.ItemBuilder;
 import gg.mineral.practice.util.items.ItemStacks;
 import gg.mineral.practice.util.messages.CC;
 
+@ClickCancelled(true)
 public class SpectateMenu extends PracticeMenu {
 
-    final static String TITLE = CC.BLUE + "Spectate";
-
-    public SpectateMenu() {
-        super(TITLE);
-        setClickCancelled(true);
-    }
-
     @Override
-    public boolean update() {
+    public void update() {
         clear();
-        for (Match m : MatchManager.getMatches()) {
-            QueueEntry queueEntry = m.getData().getQueueEntry();
-            ItemStack item = queueEntry == null ? ItemStacks.WOOD_AXE
-                    : m.getData().getQueueEntry().getGametype().getDisplayItem().clone();
+        for (Match<?> m : MatchManager.getMatches()) {
+            ItemStack item = m.getData() instanceof QueueMatchData qData
+                    ? qData.getQueueEntry().getGametype().getDisplayItem().clone()
+                    : ItemStacks.WOOD_AXE;
 
             if (m.getProfile1() == null || m.getProfile2() == null)
                 continue;
@@ -35,16 +29,23 @@ public class SpectateMenu extends PracticeMenu {
                     .name(CC.SECONDARY + CC.B + m.getProfile1().getName() + " vs " + m.getProfile2().getName())
                     .lore(
                             CC.WHITE + "Game type:",
-                            CC.GOLD + (queueEntry == null ? "Custom"
-                                    : m.getData().getQueueEntry().getGametype().getName()),
+                            CC.GOLD + (m.getData() instanceof QueueMatchData qData
+                                    ? qData.getQueueEntry().getGametype().getName()
+                                    : "Custom"),
                             CC.BOARD_SEPARATOR, CC.ACCENT + "Click to spectate.")
                     .build();
-            add(skull, interaction -> {
-                Profile p = interaction.getProfile();
-                p.getPlayer().performCommand("spec " + m.getParticipants().getFirst().getName());
-            });
+            add(skull, interaction -> interaction.getProfile().getPlayer()
+                    .performCommand("spec " + m.getParticipants().getFirst().getName()));
         }
+    }
 
+    @Override
+    public String getTitle() {
+        return CC.BLUE + "Spectate";
+    }
+
+    @Override
+    public boolean shouldUpdate() {
         return true;
     }
 }

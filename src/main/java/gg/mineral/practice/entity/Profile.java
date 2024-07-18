@@ -8,6 +8,8 @@ import org.bukkit.GameMode;
 import org.bukkit.craftbukkit.v1_8_R3.entity.CraftPlayer;
 import org.bukkit.entity.Player;
 import org.bukkit.potion.PotionEffect;
+import org.eclipse.jdt.annotation.NonNull;
+import org.eclipse.jdt.annotation.Nullable;
 
 import gg.mineral.practice.PracticePlugin;
 import gg.mineral.practice.entity.handler.RequestHandler;
@@ -43,60 +45,38 @@ import gg.mineral.practice.util.world.BlockData;
 import lombok.Getter;
 import lombok.Setter;
 
+@Getter
 public class Profile extends ProfileData {
-	@Getter
-	final CraftPlayer player;
-	@Getter
-	final PlayerInventory inventory;
-	@Getter
-	Match match;
-	@Getter
+	@NonNull
+	private final CraftPlayer player;
+	private final PlayerInventory inventory;
+	private Match<?> match;
 	@Setter
-	Scoreboard scoreboard;
-	@Getter
-	ScoreboardHandler scoreboardHandler;
-	Integer scoreboardTaskId, fakeBlockTaskId;
-	@Getter
-	MatchData matchData;
-	@Getter
-	SpectateHandler spectateHandler = new SpectateHandler(this);
-	@Getter
-	RequestHandler requestHandler = new RequestHandler(this);
-	@Getter
-	MatchStatisticCollector matchStatisticCollector = new MatchStatisticCollector(this);
-	@Getter
-	boolean playersVisible = false, partyOpenCooldown = false, scoreboardEnabled = true;
-	@Getter
+	@Nullable
+	private Scoreboard scoreboard;
+	private ScoreboardHandler scoreboardHandler;
+	private int scoreboardTaskId, fakeBlockTaskId;
+	private MatchData matchData;
+	private SpectateHandler spectateHandler = new SpectateHandler(this);
+	private RequestHandler requestHandler = new RequestHandler(this);
+	private MatchStatisticCollector matchStatisticCollector = new MatchStatisticCollector(this);
+	private boolean playersVisible = false, partyOpenCooldown = false, scoreboardEnabled = true;
 	@Setter
-	boolean nightMode = false;
+	boolean nightMode = false, dead = false;
 	@Setter
-	@Getter
-	Menu openMenu;
-	@Getter
-	PlayerStatus playerStatus = PlayerStatus.IDLE;
-	@Getter
-	Party party;
-	@Getter
-	KitEditor kitEditor;
-	@Getter
-	KitCreator kitCreator;
-	@Getter
-	Tournament tournament;
-	@Getter
-	Event event;
-	@Getter
+	private Menu openMenu;
+	private PlayerStatus playerStatus = PlayerStatus.IDLE;
+	private Party party;
+	private KitEditor kitEditor;
+	private KitCreator kitCreator;
+	private Tournament tournament;
+	private Event event;
 	@Setter
-	Profile killer;
-	@Getter
-	PearlCooldown pearlCooldown = new PearlCooldown(this);
-	@Getter
+	private Profile killer;
+	private PearlCooldown pearlCooldown = new PearlCooldown(this);
 	@Setter
-	boolean kitLoaded = false, inMatchCountdown = false;
-	@Getter
-	Registry<BlockData, String> fakeBlocks = new Registry<>(BlockData::toString);
-	@Getter
-	@Setter
-	boolean dead = false;
+	private boolean kitLoaded = false, inMatchCountdown = false;
+	private Registry<BlockData, String> fakeBlocks = new Registry<>(BlockData::toString);
 
 	public Profile(org.bukkit.entity.Player player) {
 		super(player.getUniqueId(), player.getName());
@@ -145,7 +125,7 @@ public class Profile extends ProfileData {
 		this.player.setFireTicks(0);
 	}
 
-	public void setMatch(Match match) {
+	public void setMatch(Match<?> match) {
 		this.match = match;
 		setPlayerStatus(PlayerStatus.FIGHTING);
 	}
@@ -214,7 +194,7 @@ public class Profile extends ProfileData {
 
 	public void removeFromQueue(QueueEntry queueEntry) {
 
-		if ((getMatchData().getTeam2v2() && QueueSearchTask2v2.removePlayer(this, queueEntry))
+		if ((getMatchData().isTeam2v2() && QueueSearchTask2v2.removePlayer(this, queueEntry))
 				|| QueueSearchTask.removePlayer(this, queueEntry)) {
 			removeFromQueue();
 			player.closeInventory();
@@ -241,7 +221,7 @@ public class Profile extends ProfileData {
 									: "")
 					.replace("%gametype%", queueEntry.getGametype().getDisplayName()));
 
-			if (getMatchData().getTeam2v2()) {
+			if (getMatchData().isTeam2v2()) {
 				if (isInParty())
 					QueueSearchTask2v2.addParty(this.getParty(), queueEntry);
 				else
@@ -322,9 +302,9 @@ public class Profile extends ProfileData {
 
 	public void setPlayerStatus(PlayerStatus newPlayerStatus) {
 		if ((playerStatus == PlayerStatus.IDLE || playerStatus == PlayerStatus.QUEUEING)
-				&& this.getPlayer().hasPermission("practice.fly")) {
+				&& this.getPlayer().hasPermission("practice.fly"))
 			this.getPlayer().setAllowFlight(true);
-		} else if (this.getPlayer().getAllowFlight()) {
+		else if (this.getPlayer().getAllowFlight()) {
 			this.getPlayer().setAllowFlight(false);
 			this.getPlayer().setFlying(false);
 		}
@@ -423,8 +403,7 @@ public class Profile extends ProfileData {
 		if (b) {
 			this.scoreboardHandler = new ScoreboardHandler(player);
 			setScoreboard(new DefaultScoreboard());
-		} else {
+		} else
 			disableScoreboard();
-		}
 	}
 }

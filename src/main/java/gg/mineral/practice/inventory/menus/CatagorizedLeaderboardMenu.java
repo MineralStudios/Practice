@@ -5,25 +5,24 @@ import org.bukkit.inventory.meta.ItemMeta;
 
 import gg.mineral.practice.catagory.Catagory;
 import gg.mineral.practice.gametype.Gametype;
+import gg.mineral.practice.inventory.ClickCancelled;
 import gg.mineral.practice.inventory.PracticeMenu;
 import gg.mineral.practice.queue.Queuetype;
 import gg.mineral.practice.util.items.ItemBuilder;
 import gg.mineral.practice.util.messages.CC;
+import lombok.RequiredArgsConstructor;
 
+@ClickCancelled(true)
+@RequiredArgsConstructor
 public class CatagorizedLeaderboardMenu extends PracticeMenu {
-    Catagory catagory;
-    Queuetype queuetype;
+    private final Queuetype queuetype;
+    private final Catagory catagory;
 
-    public CatagorizedLeaderboardMenu(Queuetype queuetype, Catagory catagory) {
-        super(CC.BLUE + catagory.getDisplayName());
-        this.catagory = catagory;
-        this.queuetype = queuetype;
-        setClickCancelled(true);
-    }
+    private int numberOfGametypes;
 
     @Override
-    public boolean update() {
-
+    public void update() {
+        numberOfGametypes = catagory.getGametypes().size();
         for (Gametype gametype : catagory.getGametypes()) {
 
             ItemStack item = new ItemBuilder(gametype.getDisplayItem().clone())
@@ -39,7 +38,15 @@ public class CatagorizedLeaderboardMenu extends PracticeMenu {
             item.setItemMeta(meta);
             setSlot(queuetype.getGametypes().getInt(gametype), item);
         }
+    }
 
-        return true;
+    @Override
+    public String getTitle() {
+        return CC.BLUE + catagory.getDisplayName();
+    }
+
+    @Override
+    public boolean shouldUpdate() {
+        return numberOfGametypes != catagory.getGametypes().size();
     }
 }

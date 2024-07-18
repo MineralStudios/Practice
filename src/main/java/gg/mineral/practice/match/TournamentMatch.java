@@ -15,7 +15,7 @@ import gg.mineral.practice.util.messages.impl.Strings;
 import gg.mineral.practice.util.messages.impl.TextComponents;
 import net.md_5.bungee.api.chat.TextComponent;
 
-public class TournamentMatch extends Match {
+public class TournamentMatch extends Match<MatchData> {
 
     Tournament tournament;
 

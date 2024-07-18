@@ -27,7 +27,7 @@ public class FollowCommand extends PlayerCommand {
 		}
 
 		String playerName = args[0];
-		Profile profileToFollow = ProfileManager.getProfile(p -> p.getName().equalsIgnoreCase(playerName));
+		Profile profileToFollow = ProfileManager.getProfile(playerName);
 
 		if (profileToFollow == null) {
 			profile.message(ErrorMessages.PLAYER_NOT_ONLINE);

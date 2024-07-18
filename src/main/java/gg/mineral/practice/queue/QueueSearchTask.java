@@ -3,12 +3,14 @@ package gg.mineral.practice.queue;
 import java.util.List;
 import java.util.Map.Entry;
 
+import org.eclipse.jdt.annotation.Nullable;
+
 import gg.mineral.api.collection.GlueList;
 import gg.mineral.practice.entity.PlayerStatus;
 import gg.mineral.practice.entity.Profile;
 import gg.mineral.practice.gametype.Gametype;
 import gg.mineral.practice.match.Match;
-import gg.mineral.practice.match.data.MatchData;
+import gg.mineral.practice.match.data.QueueMatchData;
 import it.unimi.dsi.fastutil.objects.Object2ObjectOpenHashMap;
 
 public class QueueSearchTask {
@@ -25,7 +27,8 @@ public class QueueSearchTask {
 		}
 
 		removePlayer(found);
-		Match m = new Match(profile, found, new MatchData(queueEntry));
+		Match<QueueMatchData> m = new Match<>(profile, found,
+				profile.getMatchData().cloneBotAndArenaData(() -> new QueueMatchData(queueEntry)));
 		m.start();
 	}
 
@@ -36,9 +39,8 @@ public class QueueSearchTask {
 	public static boolean removePlayer(Profile profile, QueueEntry queueEntry) {
 		List<QueueEntry> queueEntries = map.get(profile);
 
-		if (queueEntries == null) {
+		if (queueEntries == null)
 			return true;
-		}
 
 		queueEntries.remove(queueEntry);
 
@@ -51,14 +53,12 @@ public class QueueSearchTask {
 		return map.get(profile);
 	}
 
+	@Nullable
 	private static Profile searchForMatch(QueueEntry queueEntry) {
-
-		for (Entry<Profile, List<QueueEntry>> e : map.entrySet()) {
-			if (e.getValue().contains(queueEntry)) {
+		for (Entry<Profile, List<QueueEntry>> e : map.entrySet())
+			if (e.getValue().contains(queueEntry))
 				if (e.getKey().getPlayerStatus() == PlayerStatus.QUEUEING)
 					return e.getKey();
-			}
-		}
 
 		return null;
 	}
@@ -66,13 +66,10 @@ public class QueueSearchTask {
 	public static int getNumberInQueue(Queuetype queuetype, Gametype gametype) {
 		int i = 0;
 
-		for (List<QueueEntry> queueEntries : map.values()) {
-			for (QueueEntry queueEntry : queueEntries) {
-				if (queueEntry.getGametype().equals(gametype) && queueEntry.getQueuetype().equals(queuetype)) {
+		for (List<QueueEntry> queueEntries : map.values())
+			for (QueueEntry queueEntry : queueEntries)
+				if (queueEntry.getGametype().equals(gametype) && queueEntry.getQueuetype().equals(queuetype))
 					i++;
-				}
-			}
-		}
 
 		return i;
 	}

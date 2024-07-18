@@ -1,7 +1,5 @@
 package gg.mineral.practice.match.data;
 
-import java.util.concurrent.ConcurrentLinkedQueue;
-
 import gg.mineral.api.knockback.Knockback;
 import gg.mineral.practice.arena.Arena;
 import gg.mineral.practice.bots.CustomDifficulty;
@@ -11,46 +9,35 @@ import gg.mineral.practice.kit.Kit;
 import gg.mineral.practice.managers.ArenaManager;
 import gg.mineral.practice.managers.GametypeManager;
 import gg.mineral.practice.match.CustomKnockback;
-import gg.mineral.practice.queue.QueueEntry;
 import gg.mineral.practice.util.messages.CC;
 import gg.mineral.server.combat.KnockbackProfileList;
+import it.unimi.dsi.fastutil.objects.Object2BooleanOpenHashMap;
 import lombok.Getter;
 import lombok.Setter;
+import java.util.function.Supplier;
+import java.util.Collection;
 
+@Getter
 public class MatchData {
 	@Setter
-	@Getter
 	Arena arena;
 	@Setter
-	@Getter
 	Kit kit;
 	@Setter
-	@Getter
 	Knockback knockback;
 	@Setter
-	@Getter
 	CustomKnockback customKnockback;
 	@Setter
-	@Getter
 	CustomDifficulty customBotDifficulty;
-	@Getter
 	Gametype gametype;
 	@Setter
-	@Getter
 	int noDamageTicks = 20, pearlCooldown = 15;
 	@Setter
-	@Getter
 	Difficulty botDifficulty = Difficulty.EASY;
 	@Setter
-	@Getter
-	Boolean hunger = true, boxing = false, build = false, damage = true, griefing = false, deadlyWater = false,
+	boolean hunger = true, boxing = false, build = false, damage = true, griefing = false, deadlyWater = false,
 			regeneration = true, team2v2 = false, botTeammate = false, botQueue = false, arenaSelection = true;
-	@Getter
-	QueueEntry queueEntry;
-	@Getter
-	boolean ranked = false;
-	@Getter
-	ConcurrentLinkedQueue<Arena> enabledArenas = new ConcurrentLinkedQueue<>();
+	protected Object2BooleanOpenHashMap<Arena> enabledArenas = new Object2BooleanOpenHashMap<>();
 
 	public MatchData() {
 
@@ -63,21 +50,47 @@ public class MatchData {
 		this.knockback = KnockbackProfileList.getDefaultKnockbackProfile();
 	}
 
-	public MatchData(QueueEntry queueEntry) {
-		this.queueEntry = queueEntry;
-		setGametype(queueEntry.getGametype());
-		knockback = queueEntry.getQueuetype().getKnockback();
-		arena = queueEntry.getQueuetype().nextArena(this.gametype);
-		ranked = queueEntry.getQueuetype().isRanked();
+	public void setEnabledArenas(Collection<Arena> enabledArenas) {
+		for (Arena arena : enabledArenas)
+			this.enabledArenas.put(arena, true);
 	}
 
-	public MatchData(QueueEntry queueEntry, ConcurrentLinkedQueue<Arena> enabledArenas) {
-		this.queueEntry = queueEntry;
-		this.enabledArenas = enabledArenas;
-		setGametype(queueEntry.getGametype());
-		knockback = queueEntry.getQueuetype().getKnockback();
-		arena = queueEntry.getQueuetype().nextArena(this, this.gametype);
-		ranked = queueEntry.getQueuetype().isRanked();
+	public <D extends MatchData> D newClone(Supplier<D> supplier) {
+		D data = supplier.get();
+		data.kit = this.kit;
+		data.knockback = this.knockback;
+		data.customKnockback = this.customKnockback;
+		data.customBotDifficulty = this.customBotDifficulty;
+		data.gametype = this.gametype;
+		data.noDamageTicks = this.noDamageTicks;
+		data.pearlCooldown = this.pearlCooldown;
+		data.botDifficulty = this.botDifficulty;
+		data.hunger = this.hunger;
+		data.boxing = this.boxing;
+		data.build = this.build;
+		data.damage = this.damage;
+		data.griefing = this.griefing;
+		data.deadlyWater = this.deadlyWater;
+		data.regeneration = this.regeneration;
+		data.team2v2 = this.team2v2;
+		data.botTeammate = this.botTeammate;
+		data.botQueue = this.botQueue;
+		data.arenaSelection = this.arenaSelection;
+		data.enabledArenas = new Object2BooleanOpenHashMap<>(this.enabledArenas);
+		return data;
+	}
+
+	public <D extends MatchData> D cloneBotAndArenaData(Supplier<D> supplier) {
+		D data = supplier.get();
+		data.customBotDifficulty = this.customBotDifficulty;
+		data.botDifficulty = this.botDifficulty;
+		data.botTeammate = this.botTeammate;
+		data.botQueue = this.botQueue;
+		data.arenaSelection = this.arenaSelection;
+
+		if (data.arenaSelection && !this.enabledArenas.isEmpty())
+			data.enabledArenas = new Object2BooleanOpenHashMap<>(this.enabledArenas);
+		return data;
 	}
 
 	public void setGametype(Gametype gametype) {
@@ -94,12 +107,8 @@ public class MatchData {
 		pearlCooldown = gametype.getPearlCooldown();
 	}
 
-	public void enableArena(Arena arena, Boolean enabled) {
-		if (enabled) {
-			enabledArenas.add(arena);
-		} else {
-			enabledArenas.remove(arena);
-		}
+	public void enableArena(Arena arena, boolean enabled) {
+		enabledArenas.put(arena, enabled);
 	}
 
 	public String toString() {

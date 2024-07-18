@@ -15,24 +15,22 @@ public class HealthListener implements Listener {
 	@EventHandler
 	public void onEntityRegainHealth(EntityRegainHealthEvent e) {
 		Profile profile = ProfileManager
-				.getProfile(p -> p.getUuid().equals(e.getEntity().getUniqueId())
-						&& p.getPlayerStatus() == PlayerStatus.FIGHTING);
+				.getProfile(e.getEntity().getUniqueId(),
+						p -> p.getPlayerStatus() == PlayerStatus.FIGHTING);
 
 		if (profile == null)
 			return;
 
-		if (!profile.getMatch().getData().getRegeneration()) {
-			if (e.getRegainReason() == RegainReason.SATIATED || e.getRegainReason() == RegainReason.REGEN) {
+		if (!profile.getMatch().getData().isRegeneration())
+			if (e.getRegainReason() == RegainReason.SATIATED || e.getRegainReason() == RegainReason.REGEN)
 				e.setCancelled(true);
-			}
-		}
 	}
 
 	@EventHandler
 	public void onFoodLevelChange(FoodLevelChangeEvent e) {
 		Profile profile = ProfileManager
-				.getProfile(p -> p.getUuid().equals(e.getEntity().getUniqueId())
-						&& p.getPlayerStatus() == PlayerStatus.FIGHTING);
+				.getProfile(e.getEntity().getUniqueId(),
+						p -> p.getPlayerStatus() == PlayerStatus.FIGHTING);
 
 		if (profile == null) {
 			e.setCancelled(true);
@@ -44,6 +42,6 @@ public class HealthListener implements Listener {
 			return;
 		}
 
-		e.setCancelled(!profile.getMatch().getData().getHunger());
+		e.setCancelled(!profile.getMatch().getData().isHunger());
 	}
 }
