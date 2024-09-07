@@ -2,9 +2,11 @@ package gg.mineral.practice.match;
 
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
+import org.bukkit.entity.Player;
 
-import gg.mineral.botapi.BotAPIPlugin;
-import gg.mineral.botapi.entity.player.self.FakePlayer;
+import gg.mineral.bot.ai.goal.MeleeCombatGoal;
+import gg.mineral.bot.api.BotAPI;
+import gg.mineral.bot.api.entity.living.player.FakePlayer;
 import gg.mineral.practice.PracticePlugin;
 import gg.mineral.practice.bots.Difficulty;
 import gg.mineral.practice.entity.Profile;
@@ -12,7 +14,6 @@ import gg.mineral.practice.managers.ProfileManager;
 import gg.mineral.practice.match.data.QueueMatchData;
 import gg.mineral.practice.util.PlayerUtil;
 import gg.mineral.practice.util.items.ItemStacks;
-import net.minecraft.server.v1_8_R3.EntityPlayer;
 
 public class BotMatch extends Match<QueueMatchData> {
 
@@ -26,12 +27,28 @@ public class BotMatch extends Match<QueueMatchData> {
         addParicipants(profile1);
     }
 
+    public void spawnBots() {
+        Location location2 = getData().getArena().getLocation2().clone();
+        this.fakePlayer = difficulty.spawn(profile1.getMatchData(), location2, "");
+    }
+
+    @Override
+    public void start() {
+        spawnBots();
+        super.start();
+    }
+
     @Override
     public void teleportPlayers(Location location1, Location location2) {
         PlayerUtil.teleport(profile1.getPlayer(), location1);
-        this.fakePlayer = difficulty.spawn(profile1.getMatchData(), location2, "");
+
+        Player bukkitPl = Bukkit.getPlayer(fakePlayer.getUuid());
+
+        if (bukkitPl == null)
+            throw new NullPointerException("Fake player is null");
+
         this.profile2 = ProfileManager
-                .getOrCreateProfile(((EntityPlayer) fakePlayer.getServerSide()).getBukkitEntity());
+                .getOrCreateProfile(bukkitPl);
         addParicipants(profile2);
     }
 
@@ -39,22 +56,20 @@ public class BotMatch extends Match<QueueMatchData> {
     public void onMatchStart() {
         super.onMatchStart();
 
-        fakePlayer.setSprintingHeld(true);
-        fakePlayer.startMoving(FakePlayer.Direction.FORWARDS);
         fakePlayer.getConfiguration().setPearlCooldown(getData().getPearlCooldown());
-        fakePlayer.startTasks();
+        fakePlayer.startGoals(new MeleeCombatGoal(fakePlayer));
     }
 
     @Override
     public void end(Profile victim) {
         super.end(victim);
 
-        BotAPIPlugin.INSTANCE.getFakePlayerUtil().destroy(victim.getPlayer());
+        BotAPI.INSTANCE.despawn(victim.getPlayer().getUniqueId());
     }
 
     @Override
     public void giveQueueAgainItem(Profile profile) {
-        if (BotAPIPlugin.INSTANCE.getFakePlayerUtil().isFakePlayer(profile.getPlayer()))
+        if (BotAPI.INSTANCE.isFakePlayer(profile.getPlayer().getUniqueId()))
             return;
         if (getData().getQueueEntry() != null) {
             Bukkit.getServer().getScheduler().runTaskLater(PracticePlugin.INSTANCE, () -> {
@@ -74,8 +89,8 @@ public class BotMatch extends Match<QueueMatchData> {
     public void end(Profile attacker, Profile victim) {
         super.end(attacker, victim);
 
-        BotAPIPlugin.INSTANCE.getFakePlayerUtil().destroy(attacker.getPlayer());
-        BotAPIPlugin.INSTANCE.getFakePlayerUtil().destroy(victim.getPlayer());
+        BotAPI.INSTANCE.despawn(attacker.getPlayer().getUniqueId());
+        BotAPI.INSTANCE.despawn(victim.getPlayer().getUniqueId());
     }
 
 }

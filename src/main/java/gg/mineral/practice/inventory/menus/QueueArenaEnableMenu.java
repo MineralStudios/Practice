@@ -12,6 +12,7 @@ import gg.mineral.practice.bots.Difficulty;
 import gg.mineral.practice.inventory.ClickCancelled;
 import gg.mineral.practice.inventory.PracticeMenu;
 import gg.mineral.practice.match.BotMatch;
+import gg.mineral.practice.match.BotTeamMatch;
 import gg.mineral.practice.match.TeamMatch;
 import gg.mineral.practice.match.data.QueueMatchData;
 import gg.mineral.practice.queue.QueueEntry;
@@ -69,7 +70,7 @@ public class QueueArenaEnableMenu extends PracticeMenu {
                 opponentTeam.add(difficulty);
                 opponentTeam.add(difficulty);
 
-                TeamMatch m = new TeamMatch(viewer.getParty().getPartyMembers(), new GlueList<>(),
+                TeamMatch m = new BotTeamMatch(viewer.getParty().getPartyMembers(), new GlueList<>(),
                         new GlueList<>(),
                         opponentTeam,
                         data);
@@ -88,7 +89,7 @@ public class QueueArenaEnableMenu extends PracticeMenu {
                 opponentTeam.add(Difficulty.RANDOM);
                 opponentTeam.add(Difficulty.RANDOM);
 
-                TeamMatch m = new TeamMatch(Arrays.asList(viewer), new GlueList<>(), playerTeam,
+                TeamMatch m = new BotTeamMatch(Arrays.asList(viewer), new GlueList<>(), playerTeam,
                         opponentTeam,
                         data);
                 m.start();

@@ -37,7 +37,7 @@ public class CreateCustomKnockbackMenu extends PracticeMenu {
                                 .build(),
                                 interaction -> interaction.getProfile()
                                                 .openMenu(ConfigureValueMenu.of(this,
-                                                                value -> kb.knockbackFriction = value, double.class)));
+                                                                value -> kb.setFriction(value), double.class)));
 
                 setSlot(1, ItemStacks.HORIZONTAL.name(CC.SECONDARY + CC.B + "Horizontal")
                                 .lore(CC.WHITE + "The " + CC.SECONDARY + "horizontal" + CC.WHITE + " knockback.", " ",
@@ -47,7 +47,7 @@ public class CreateCustomKnockbackMenu extends PracticeMenu {
                                 .build(),
                                 interaction -> interaction.getProfile()
                                                 .openMenu(ConfigureValueMenu.of(this,
-                                                                value -> kb.knockbackHorizontal = value,
+                                                                value -> kb.setHorizontal(value),
                                                                 double.class)));
 
                 setSlot(2, ItemStacks.VERTICAL.name(CC.SECONDARY + CC.B + "Vertical")
@@ -58,7 +58,7 @@ public class CreateCustomKnockbackMenu extends PracticeMenu {
                                 .build(),
                                 interaction -> interaction.getProfile()
                                                 .openMenu(ConfigureValueMenu.of(this,
-                                                                value -> kb.knockbackVertical = value, double.class)));
+                                                                value -> kb.setVertical(value), double.class)));
 
                 setSlot(4, ItemStacks.APPLY, interaction -> {
                         Profile p = interaction.getProfile();
@@ -71,24 +71,24 @@ public class CreateCustomKnockbackMenu extends PracticeMenu {
                                 .lore(CC.WHITE + "The " + CC.SECONDARY + "horizontal knockback" + CC.WHITE + " added",
                                                 CC.WHITE + "when sprinting/sprint resetting.", " ",
                                                 CC.WHITE + "Currently:",
-                                                CC.GOLD + DECIMAL_FORMAT.format(kb.getExtraHorizontal()),
+                                                CC.GOLD + DECIMAL_FORMAT.format(kb.getHorizontalExtra()),
                                                 CC.BOARD_SEPARATOR, CC.ACCENT + "Click to change value.")
                                 .build(),
                                 interaction -> interaction.getProfile()
                                                 .openMenu(ConfigureValueMenu.of(this,
-                                                                value -> kb.knockbackExtraHorizontal = value,
+                                                                value -> kb.setHorizontalExtra(value),
                                                                 double.class)));
 
                 setSlot(7, ItemStacks.EXTRA_VERTICAL.name(CC.SECONDARY + CC.B + "Extra Vertical")
                                 .lore(CC.WHITE + "The " + CC.SECONDARY + "vertical knockback" + CC.WHITE + " added",
                                                 CC.WHITE + "when sprinting/sprint resetting.", " ",
                                                 CC.WHITE + "Currently:",
-                                                CC.GOLD + DECIMAL_FORMAT.format(kb.getExtraVertical()),
+                                                CC.GOLD + DECIMAL_FORMAT.format(kb.getVerticalExtra()),
                                                 CC.BOARD_SEPARATOR, CC.ACCENT + "Click to change value.")
                                 .build(),
                                 interaction -> interaction.getProfile()
                                                 .openMenu(ConfigureValueMenu.of(this,
-                                                                value -> kb.knockbackExtraVertical = value,
+                                                                value -> kb.setVerticalExtra(value),
                                                                 double.class)));
 
                 setSlot(8, ItemStacks.VERTICAL_LIMIT.name(CC.SECONDARY + CC.B + "Vertical Limit")
@@ -100,7 +100,7 @@ public class CreateCustomKnockbackMenu extends PracticeMenu {
                                 .build(),
                                 interaction -> interaction.getProfile()
                                                 .openMenu(ConfigureValueMenu.of(this,
-                                                                value -> kb.knockbackVerticalLimit = value,
+                                                                value -> kb.setVerticalLimit(value),
                                                                 double.class)));
         }
 

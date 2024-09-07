@@ -7,15 +7,13 @@ import gg.mineral.practice.PracticePlugin;
 import gg.mineral.practice.entity.Profile;
 import gg.mineral.practice.managers.ProfileManager;
 import gg.mineral.practice.match.Match;
-import gg.mineral.practice.util.messages.ChatMessage;
 import gg.mineral.practice.util.messages.impl.ChatMessages;
 
 public class Countdown {
 	int time, taskID;
-	ChatMessage message;
-	Match match;
+	private final Match<?> match;
 
-	public Countdown(int seconds, Match match) {
+	public Countdown(int seconds, Match<?> match) {
 		this.time = seconds;
 		this.match = match;
 	}
@@ -36,11 +34,9 @@ public class Countdown {
 				return;
 			}
 
-			message = ChatMessages.BEGINS_IN.clone().replace("%time%", "" + time);
-
-			ProfileManager.broadcast(match.getParticipants(), message);
-
-			time = time - 1;
+			ProfileManager.broadcast(match.getParticipants(),
+					ChatMessages.BEGINS_IN.clone().replace("%time%", "" + time));
+			--time;
 		}, 0L, 20L);
 	}
 

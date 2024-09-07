@@ -59,6 +59,11 @@ public class Event implements Spectatable {
             return;
         }
 
+        if (participants.contains(p)) {
+            p.message(ErrorMessages.ALREADY_IN_EVENT);
+            return;
+        }
+
         PlayerUtil.teleport(p.getPlayer(), eventArena.getWaitingLocation());
         p.setEvent(this);
         participants.add(p);
@@ -100,6 +105,7 @@ public class Event implements Spectatable {
 
     public void removePlayer(Profile p) {
         participants.remove(p);
+        p.setEvent(null);
 
         ChatMessage leftMessage = ChatMessages.LEFT_EVENT.clone().replace("%player%", p.getName());
         ProfileManager.broadcast(participants, leftMessage);
@@ -114,9 +120,8 @@ public class Event implements Spectatable {
             Profile winner = participants.getFirst();
             winner.removeFromEvent();
 
-            for (Profile spectator : getSpectators()) {
+            for (Profile spectator : getSpectators())
                 spectator.getSpectateHandler().stopSpectating();
-            }
 
             EventManager.remove(this);
             ended = true;
@@ -162,9 +167,8 @@ public class Event implements Spectatable {
                     Profile winner = participants.getFirst();
                     winner.removeFromEvent();
 
-                    for (Profile spectator : getSpectators()) {
+                    for (Profile spectator : getSpectators())
                         spectator.getSpectateHandler().stopSpectating();
-                    }
 
                     ErrorMessages.EVENT_NOT_ENOUGH_PLAYERS.send(winner.getPlayer());
                     EventManager.remove(Event.this);

@@ -11,6 +11,7 @@ import gg.mineral.practice.managers.GametypeManager;
 import gg.mineral.practice.managers.ProfileManager;
 import gg.mineral.practice.managers.QueueEntryManager;
 import gg.mineral.practice.managers.QueuetypeManager;
+import gg.mineral.practice.match.BotTeamMatch;
 import gg.mineral.practice.match.TeamMatch;
 import gg.mineral.practice.match.data.QueueMatchData;
 import gg.mineral.practice.queue.QueueEntry;
@@ -47,7 +48,7 @@ public class BotTestingCommand extends PlayerCommand {
 
         TeamMatch m;
         for (int i = 0; i < amount; i++) {
-            m = new TeamMatch(new GlueList<>(), new GlueList<>(),
+            m = new BotTeamMatch(new GlueList<>(), new GlueList<>(),
                     friendlyTeam,
                     opponentTeam,
                     profile.getMatchData().cloneBotAndArenaData(() -> new QueueMatchData(queueEntry)));

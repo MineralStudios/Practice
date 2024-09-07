@@ -102,46 +102,7 @@ public class CustomBotDifficultyMenu extends PracticeMenu {
                                                                 float.class));
                                 });
 
-                setSlot(3, ItemStacks.AIM_REACTION_TIME.name(CC.SECONDARY + CC.B + "Aim Reaction Time")
-                                .lore(CC.WHITE + "The " + CC.SECONDARY + "reaction time" + CC.WHITE
-                                                + " the bot has in ticks.",
-                                                CC.WHITE + "One tick is equal to " + CC.SECONDARY + "50 milliseconds"
-                                                                + CC.WHITE + ".",
-                                                " ",
-                                                CC.WHITE + "Currently:",
-                                                CC.GOLD + DECIMAL_FORMAT.format(difficulty.getReactionTimeTicks()),
-                                                CC.BOARD_SEPARATOR, CC.ACCENT + "Click to change value.")
-                                .build(),
-                                interaction -> interaction.getProfile().openMenu(
-                                                ConfigureValueMenu.of(this,
-                                                                value -> difficulty.setReactionTimeTicks(value),
-                                                                float.class)));
-
-                setSlot(4, ItemStacks.BOW_AIMING_RADIUS.name(CC.SECONDARY + CC.B + "Bow Aiming Radius")
-                                .lore(CC.WHITE + "The " + CC.SECONDARY + "radius" + CC.WHITE
-                                                + " around the player that ",
-                                                CC.WHITE + "the bot will " + CC.SECONDARY + "target with the bow.", " ",
-                                                CC.WHITE + "Currently:",
-                                                CC.GOLD + DECIMAL_FORMAT.format(difficulty.getBowAimingRadius()),
-                                                CC.BOARD_SEPARATOR, CC.ACCENT + "Click to change value.")
-                                .build(),
-                                interaction -> interaction.getProfile()
-                                                .openMenu(ConfigureValueMenu.of(this,
-                                                                value -> difficulty.setBowAimingRadius(value),
-                                                                float.class)));
-
-                setSlot(5, ItemStacks.REACH.name(CC.SECONDARY + CC.B + "Reach")
-                                .lore(CC.WHITE + "The " + CC.SECONDARY + "distance" + CC.WHITE
-                                                + " the bot can hit from.", " ",
-                                                CC.WHITE + "Currently:",
-                                                CC.GOLD + DECIMAL_FORMAT.format(difficulty.getReach()),
-                                                CC.BOARD_SEPARATOR, CC.ACCENT + "Click to change value.")
-                                .build(),
-                                interaction -> interaction.getProfile()
-                                                .openMenu(ConfigureValueMenu.of(this,
-                                                                value -> difficulty.setReach(value), float.class)));
-
-                setSlot(6, ItemStacks.SPRINT_RESET_ACCURACY.name(CC.SECONDARY + CC.B + "Sprint Reset Accuracy")
+                setSlot(3, ItemStacks.SPRINT_RESET_ACCURACY.name(CC.SECONDARY + CC.B + "Sprint Reset Accuracy")
                                 .lore(CC.WHITE + "The " + CC.SECONDARY + "accuracy" + CC.WHITE
                                                 + " the bot has when",
                                                 CC.WHITE + "sprint resetting for the purpose of ",
@@ -158,7 +119,7 @@ public class CustomBotDifficultyMenu extends PracticeMenu {
                                                                 value -> difficulty.setSprintResetAccuracy(value),
                                                                 float.class)));
 
-                setSlot(7, ItemStacks.HIT_SELECT_ACCURACY.name(CC.SECONDARY + CC.B + "Hit Select Accuracy")
+                setSlot(4, ItemStacks.HIT_SELECT_ACCURACY.name(CC.SECONDARY + CC.B + "Hit Select Accuracy")
                                 .lore(CC.WHITE + "The " + CC.SECONDARY + "accuracy" + CC.WHITE
                                                 + " the bot has when",
                                                 CC.WHITE + "hit selecting for the purpose of ",
@@ -174,33 +135,7 @@ public class CustomBotDifficultyMenu extends PracticeMenu {
                                                                 value -> difficulty.setHitSelectAccuracy(value),
                                                                 float.class)));
 
-                setSlot(8, ItemStacks.DISTANCING_MINIMUM.name(CC.SECONDARY + CC.B + "Distancing Minimum")
-                                .lore(CC.WHITE + "The " + CC.SECONDARY + "minimum distance" + CC.WHITE
-                                                + " the bot aims to ",
-                                                CC.WHITE + "position itself at during combat.", " ",
-                                                CC.WHITE + "Currently:",
-                                                CC.GOLD + DECIMAL_FORMAT.format(difficulty.getDistancingMin()),
-                                                CC.BOARD_SEPARATOR, CC.ACCENT + "Click to change value.")
-                                .build(),
-                                interaction -> interaction.getProfile()
-                                                .openMenu(ConfigureValueMenu.of(this,
-                                                                value -> difficulty.setDistancingMin(value),
-                                                                float.class)));
-
-                setSlot(9, ItemStacks.DISTANCING_MAXIMUM.name(CC.SECONDARY + CC.B + "Distancing Maximum")
-                                .lore(CC.WHITE + "The " + CC.SECONDARY + "maximum distance" + CC.WHITE
-                                                + " the bot aims to ",
-                                                CC.WHITE + "position itself at during combat.", " ",
-                                                CC.WHITE + "Currently:",
-                                                CC.GOLD + DECIMAL_FORMAT.format(difficulty.getDistancingMax()),
-                                                CC.BOARD_SEPARATOR, CC.ACCENT + "Click to change value.")
-                                .build(),
-                                interaction -> interaction.getProfile()
-                                                .openMenu(ConfigureValueMenu.of(this,
-                                                                value -> difficulty.setDistancingMax(value),
-                                                                float.class)));
-
-                setSlot(10, ItemStacks.CPS.name(CC.SECONDARY + CC.B + "CPS")
+                setSlot(5, ItemStacks.CPS.name(CC.SECONDARY + CC.B + "CPS")
                                 .lore(CC.WHITE + "The " + CC.SECONDARY + "amount of clicks" + CC.WHITE
                                                 + " each second.", " ",
                                                 CC.WHITE + "Currently:",
@@ -211,7 +146,7 @@ public class CustomBotDifficultyMenu extends PracticeMenu {
                                                 .openMenu(ConfigureValueMenu.of(this,
                                                                 value -> difficulty.setCps(value), float.class)));
 
-                setSlot(11, ItemStacks.PING.name(CC.SECONDARY + CC.B + "Ping")
+                setSlot(6, ItemStacks.PING.name(CC.SECONDARY + CC.B + "Ping")
                                 .lore(CC.WHITE + "Simulates the " + CC.SECONDARY + "amount of time", CC.WHITE
                                                 + "it takes for packets to be",
                                                 CC.SECONDARY + "transported" + CC.WHITE + ".", " ",
@@ -223,7 +158,7 @@ public class CustomBotDifficultyMenu extends PracticeMenu {
                                                 .openMenu(ConfigureValueMenu.of(this,
                                                                 value -> difficulty.setLatency(value), float.class)));
 
-                setSlot(12, ItemStacks.PING_DEVIATION.name(CC.SECONDARY + CC.B + "Ping Deviation")
+                setSlot(7, ItemStacks.PING_DEVIATION.name(CC.SECONDARY + CC.B + "Ping Deviation")
                                 .lore(CC.WHITE + "Simulates the " + CC.SECONDARY + "variation in time", CC.WHITE
                                                 + "it takes for packets to be",
                                                 CC.SECONDARY + "transported" + CC.WHITE + ".", " ",
@@ -250,9 +185,8 @@ public class CustomBotDifficultyMenu extends PracticeMenu {
                                 });
 
                 setSlot(33, ItemStacks.RANDOM_DIFFICULTY, interaction -> {
-                        Profile p = interaction.getProfile();
                         difficulty.randomize();
-                        p.getMatchData().setCustomBotDifficulty(difficulty);
+                        interaction.getProfile().getMatchData().setCustomBotDifficulty(difficulty);
                         reload();
                 });
         }

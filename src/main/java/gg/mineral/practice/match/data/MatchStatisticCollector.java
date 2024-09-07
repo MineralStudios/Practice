@@ -78,7 +78,7 @@ public class MatchStatisticCollector {
         hitCount++;
         currentCombo++;
 
-        if (profile.getPlayer().getHandle().isExtraKnockback())
+        if (profile.getPlayer().getHandle().isSprinting())
             wTapCount++;
 
         if (currentCombo > 1) {

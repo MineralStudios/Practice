@@ -9,7 +9,7 @@ import org.bukkit.Location;
 import org.bukkit.scoreboard.Team;
 
 import gg.mineral.api.collection.GlueList;
-import gg.mineral.botapi.BotAPIPlugin;
+import gg.mineral.bot.api.BotAPI;
 import gg.mineral.practice.PracticePlugin;
 import gg.mineral.practice.entity.Profile;
 import gg.mineral.practice.inventory.menus.InventoryStatsMenu;
@@ -21,6 +21,7 @@ import gg.mineral.practice.scoreboard.impl.DefaultScoreboard;
 import gg.mineral.practice.scoreboard.impl.MatchEndScoreboard;
 import gg.mineral.practice.scoreboard.impl.PartyBoxingScoreboard;
 import gg.mineral.practice.scoreboard.impl.PartyMatchScoreboard;
+import gg.mineral.practice.util.CoreConnector;
 import gg.mineral.practice.util.PlayerUtil;
 import gg.mineral.practice.util.collection.ProfileList;
 import gg.mineral.practice.util.messages.CC;
@@ -177,12 +178,10 @@ public class PartyMatch extends Match<MatchData> {
 			victim.removeFromMatch();
 			victim.getSpectateHandler().spectate(victimTeam.getFirst());
 
-			/*
-			 * if (CoreConnector.connected()) {
-			 * CoreConnector.INSTANCE.getNameTagAPI().giveTagAfterMatch(victim.getPlayer(),
-			 * victim.getPlayer());
-			 * }
-			 */
+			if (CoreConnector.connected()) {
+				CoreConnector.INSTANCE.getNameTagAPI().giveTagAfterMatch(victim.getPlayer(),
+						victim.getPlayer());
+			}
 
 			return;
 		}
@@ -229,12 +228,10 @@ public class PartyMatch extends Match<MatchData> {
 			profile.getPlayer().spigot().sendMessage(loseMessage);
 			profile.getPlayer().sendMessage(CC.SEPARATOR);
 
-			/*
-			 * if (CoreConnector.connected()) {
-			 * CoreConnector.INSTANCE.getNameTagAPI().giveTagAfterMatch(profile.getPlayer(),
-			 * profile.getPlayer());
-			 * }
-			 */
+			if (CoreConnector.connected()) {
+				CoreConnector.INSTANCE.getNameTagAPI().giveTagAfterMatch(profile.getPlayer(),
+						profile.getPlayer());
+			}
 
 		}
 
@@ -250,7 +247,7 @@ public class PartyMatch extends Match<MatchData> {
 
 		victim.removeFromMatch();
 
-		BotAPIPlugin.INSTANCE.getFakePlayerUtil().destroy(victim.getPlayer());
+		BotAPI.INSTANCE.despawn(victim.getPlayer().getUniqueId());
 
 		for (Profile spectator : this.getSpectators()) {
 			spectator.getPlayer().sendMessage(CC.SEPARATOR);
@@ -286,14 +283,14 @@ public class PartyMatch extends Match<MatchData> {
 
 		Bukkit.getServer().getScheduler().runTaskLater(PracticePlugin.INSTANCE, () -> {
 			attacker.teleportToLobby();
-			if (attacker.isInParty()) {
+			if (attacker.isInParty())
 				attacker.getInventory().setInventoryForParty();
-			} else {
+			else
 				attacker.getInventory().setInventoryForLobby();
-			}
+
 			attacker.removeFromMatch();
 			attacker.setScoreboard(DefaultScoreboard.INSTANCE);
-			BotAPIPlugin.INSTANCE.getFakePlayerUtil().destroy(attacker.getPlayer());
+			BotAPI.INSTANCE.despawn(attacker.getPlayer().getUniqueId());
 		}, getPostMatchTime());
 	}
 

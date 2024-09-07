@@ -19,6 +19,7 @@ import org.bukkit.inventory.ItemStack;
 import org.bukkit.potion.PotionEffect;
 import org.bukkit.potion.PotionEffectType;
 import org.bukkit.projectiles.ProjectileSource;
+import org.bukkit.scheduler.BukkitScheduler;
 
 import gg.mineral.api.collection.GlueList;
 import gg.mineral.practice.PracticePlugin;
@@ -39,6 +40,7 @@ import gg.mineral.practice.scoreboard.impl.DefaultScoreboard;
 import gg.mineral.practice.scoreboard.impl.InMatchScoreboard;
 import gg.mineral.practice.scoreboard.impl.MatchEndScoreboard;
 import gg.mineral.practice.traits.Spectatable;
+import gg.mineral.practice.util.CoreConnector;
 import gg.mineral.practice.util.PlayerUtil;
 import gg.mineral.practice.util.collection.ProfileList;
 import gg.mineral.practice.util.items.ItemStacks;
@@ -155,17 +157,15 @@ public class Match<D extends MatchData> implements Spectatable {
 		p.getMatchStatisticCollector().start();
 		p.setKitLoaded(false);
 
-		/*
-		 * if (CoreConnector.connected()) {
-		 * if (this instanceof PartyMatch || this instanceof TeamMatch) {
-		 * CoreConnector.INSTANCE.getNameTagAPI().clearTagOnMatchStart(p.getPlayer(),
-		 * p.getPlayer());
-		 * } else {
-		 * CoreConnector.INSTANCE.getNameTagAPI().giveTagAfterMatch(p.getPlayer(),
-		 * p.getPlayer());
-		 * }
-		 * }
-		 */
+		if (CoreConnector.connected()) {
+			if (this instanceof PartyMatch || this instanceof TeamMatch) {
+				CoreConnector.INSTANCE.getNameTagAPI().clearTagOnMatchStart(p.getPlayer(),
+						p.getPlayer());
+			} else {
+				CoreConnector.INSTANCE.getNameTagAPI().giveTagAfterMatch(p.getPlayer(),
+						p.getPlayer());
+			}
+		}
 
 		giveLoadoutSelection(p);
 		setAttributes(p);
@@ -335,9 +335,14 @@ public class Match<D extends MatchData> implements Spectatable {
 
 		setupLocations(location1, location2);
 		teleportPlayers(location1, location2);
-		prepareForMatch(participants);
-		handleOpponentMessages();
-		startCountdown();
+
+		BukkitScheduler scheduler = Bukkit.getServer().getScheduler();
+
+		scheduler.scheduleSyncDelayedTask(PracticePlugin.INSTANCE, () -> {
+			prepareForMatch(participants);
+			handleOpponentMessages();
+			startCountdown();
+		}, 5L);
 	}
 
 	public void end(Profile victim) {
@@ -426,20 +431,19 @@ public class Match<D extends MatchData> implements Spectatable {
 			attacker.setScoreboard(DefaultScoreboard.INSTANCE);
 			sendBackToLobby(attacker);
 
-			/*
-			 * if (CoreConnector.connected()) {
-			 * //
-			 * CoreConnector.INSTANCE.getNameTagAPI().giveTagAfterMatch(profile1.getPlayer()
-			 * ,
-			 * // profile2.getPlayer());
-			 * CoreConnector.INSTANCE.getUuidChecker().check(attacker.getPlayer().
-			 * getDisplayName());
-			 * int mineralsAmount = data.isRanked() ? 100 : 20;
-			 * CoreConnector.INSTANCE.getMineralsSQL().addMinerals(attacker.getPlayer(),
-			 * de.jeezycore.utils.UUIDChecker.uuid, mineralsAmount,
-			 * "&7You &2successfully &7earned &9" + mineralsAmount + " &fminerals&7.");
-			 * }
-			 */
+			if (CoreConnector.connected()) {
+
+				CoreConnector.INSTANCE.getNameTagAPI().giveTagAfterMatch(profile1.getPlayer(),
+						profile2.getPlayer());
+				/*
+				 * CoreConnector.INSTANCE.getUuidChecker().check(attacker.getPlayer().
+				 * getDisplayName());
+				 * int mineralsAmount = data.isRanked() ? 100 : 20;
+				 * CoreConnector.INSTANCE.getMineralsSQL().addMinerals(attacker.getPlayer(),
+				 * de.jeezycore.utils.UUIDChecker.uuid, mineralsAmount,
+				 * "&7You &2successfully &7earned &9" + mineralsAmount + " &fminerals&7.");
+				 */
+			}
 
 		}, getPostMatchTime());
 

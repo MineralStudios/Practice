@@ -13,6 +13,9 @@ dependencies {
     compileOnly files('lib/spigot.jar')
     compileOnly files('lib/MineralBotAPI.jar')
     compileOnly files('lib/MineralDatabaseAPI.jar')
+    compileOnly files('lib/JeezyCore-1.0-SNAPSHOT-jar-with-dependencies.jar')
+    compileOnly files('lib/MineralCoreAPI.jar')
+    compileOnly files('lib/bot-intelligence-1.0-SNAPSHOT.jar')
     compileOnly 'org.projectlombok:lombok:1.18.32'
     annotationProcessor 'org.projectlombok:lombok:1.18.32'
     compileOnly 'org.eclipse.jdt:org.eclipse.jdt.annotation:2.3.0'
@@ -28,7 +31,12 @@ java {
 jar {
     archiveFileName = 'MineralPractice.jar'
     from {
-        configurations.runtimeClasspath.collect { it.isDirectory() ? it : zipTree(it) }
+        configurations.runtimeClasspath.collect { it.isDirectory() ? it : zipTree(it) }.collect {
+            it.filter { file ->
+                !file.name.startsWith('META-INF')
+            }
+        }
     }
     duplicatesStrategy = DuplicatesStrategy.EXCLUDE
 }
+

@@ -31,6 +31,11 @@ public class JoinCommand extends PlayerCommand {
             return;
         }
 
+        if (profile.isInEvent()) {
+            profile.message(ErrorMessages.ALREADY_IN_EVENT);
+            return;
+        }
+
         if (profile.getPlayerStatus() != PlayerStatus.IDLE) {
             profile.message(ErrorMessages.YOU_ARE_NOT_IN_LOBBY);
             return;
@@ -38,17 +43,15 @@ public class JoinCommand extends PlayerCommand {
 
         Event event = EventManager.getEventByName(args[0]);
 
-        if (event != null) {
+        if (event != null)
             event.addPlayer(profile);
-        }
 
         Tournament tournament = TournamentManager.getTournamentByName(args[0]);
 
-        if (tournament == null) {
-            profile.message(ErrorMessages.TOURNAMENT_NOT_EXIST);
-            return;
-        }
+        if (tournament != null)
+            tournament.addPlayer(profile);
 
-        tournament.addPlayer(profile);
+        if (event == null && tournament == null)
+            profile.message(ErrorMessages.EVENT_TOURNAMENT_NOT_EXIST);
     }
 }

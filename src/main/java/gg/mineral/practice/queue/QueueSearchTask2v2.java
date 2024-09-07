@@ -7,6 +7,7 @@ import gg.mineral.api.collection.GlueList;
 import gg.mineral.practice.bots.Difficulty;
 import gg.mineral.practice.entity.Profile;
 import gg.mineral.practice.gametype.Gametype;
+import gg.mineral.practice.match.BotTeamMatch;
 import gg.mineral.practice.match.TeamMatch;
 import gg.mineral.practice.match.data.QueueMatchData;
 import gg.mineral.practice.party.Party;
@@ -51,7 +52,7 @@ public class QueueSearchTask2v2 {
                                 for (int i = 0; i < 2; i++)
                                     team2Difficulties.add(Difficulty.RANDOM);
 
-                                TeamMatch m = new TeamMatch(found.getProfiles(), new GlueList<>(),
+                                TeamMatch m = new BotTeamMatch(found.getProfiles(), new GlueList<>(),
                                         new GlueList<>(),
                                         team2Difficulties,
                                         profile.getMatchData()
@@ -96,7 +97,7 @@ public class QueueSearchTask2v2 {
                     for (int i = 0; i < opponent.getBotCount(); i++)
                         team2Difficulties.add(Difficulty.RANDOM);
 
-                TeamMatch m = new TeamMatch(found.getProfiles(), opponent.getProfiles(), team1Difficulties,
+                TeamMatch m = new BotTeamMatch(found.getProfiles(), opponent.getProfiles(), team1Difficulties,
                         team2Difficulties,
                         profile.getMatchData().cloneBotAndArenaData(() -> new QueueMatchData(queueEntry)));
                 formedTeams.remove(queueEntry);
@@ -134,7 +135,7 @@ public class QueueSearchTask2v2 {
                 for (int i = 0; i < opponent.getBotCount(); i++)
                     team2Difficulties.add(Difficulty.RANDOM);
 
-            TeamMatch m = new TeamMatch(found.getProfiles(), opponent.getProfiles(), team1Difficulties,
+            TeamMatch m = new BotTeamMatch(found.getProfiles(), opponent.getProfiles(), team1Difficulties,
                     team2Difficulties,
                     new QueueMatchData(queueEntry));
             formedTeams.remove(queueEntry);

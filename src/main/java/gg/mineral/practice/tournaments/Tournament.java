@@ -56,6 +56,7 @@ public class Tournament {
 
     public void removePlayer(Profile p) {
         players.remove(p);
+        p.setTournament(null);
 
         ChatMessage leftMessage = ChatMessages.LEFT_TOURNAMENT.clone().replace("%player%", p.getName());
         ProfileManager.broadcast(players, leftMessage);

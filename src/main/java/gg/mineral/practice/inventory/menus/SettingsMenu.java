@@ -31,8 +31,7 @@ public class SettingsMenu extends PracticeMenu {
 								CC.BOARD_SEPARATOR, CC.ACCENT + "Click to change value.")
 						.build(),
 				interaction -> {
-					Profile p = interaction.getProfile();
-					p.getPlayer().performCommand("toggleduelrequests");
+					interaction.getProfile().getPlayer().performCommand("toggleduelrequests");
 					reload();
 				});
 		setSlot(19,
@@ -45,8 +44,7 @@ public class SettingsMenu extends PracticeMenu {
 								CC.BOARD_SEPARATOR, CC.ACCENT + "Click to change value.")
 						.build(),
 				interaction -> {
-					Profile p = interaction.getProfile();
-					p.getPlayer().performCommand("togglepartyrequests");
+					interaction.getProfile().getPlayer().performCommand("togglepartyrequests");
 					reload();
 				});
 		setSlot(20,
@@ -59,8 +57,7 @@ public class SettingsMenu extends PracticeMenu {
 								CC.BOARD_SEPARATOR, CC.ACCENT + "Click to change value.")
 						.build(),
 				interaction -> {
-					Profile p = interaction.getProfile();
-					p.getPlayer().performCommand("togglescoreboard");
+					interaction.getProfile().getPlayer().performCommand("togglescoreboard");
 					reload();
 				});
 
@@ -191,6 +188,7 @@ public class SettingsMenu extends PracticeMenu {
 		 * });
 		 * }
 		 */
+
 	}
 
 	@Override

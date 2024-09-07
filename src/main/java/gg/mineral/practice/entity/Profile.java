@@ -354,12 +354,14 @@ public class Profile extends ProfileData {
 	}
 
 	public void setTournament(Tournament tournament) {
-		getInventory().setInventoryForTournament();
+		if (tournament != null)
+			getInventory().setInventoryForTournament();
 		this.tournament = tournament;
 	}
 
 	public void setEvent(Event event) {
-		getInventory().setInventoryForEvent();
+		if (event != null)
+			getInventory().setInventoryForEvent();
 		this.event = event;
 	}
 

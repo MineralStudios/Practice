@@ -72,11 +72,11 @@ public class ErrorMessages {
 					"That team's inventory was not found");
 	// Tournament
 	public static final Message ALREADY_IN_TOURNAMENT = new ErrorMessage("You are already in a tournament."),
-			TOURNAMENT_NOT_EXIST = new ErrorMessage("That tournament no longer exists."),
 			TOURNAMENT_STARTED = new ErrorMessage("That tournament has already started."),
 			TOURNAMENT_NOT_ENOUGH_PLAYERS = new ErrorMessage(
 					"There was not enough players to start the tournament."),
-			EVENT_NOT_EXIST = new ErrorMessage("That event no longer exists."),
+			ALREADY_IN_EVENT = new ErrorMessage("You are already in an event."),
+			EVENT_TOURNAMENT_NOT_EXIST = new ErrorMessage("That event/tournament no longer exists."),
 			EVENT_STARTED = new ErrorMessage("That event has already started."),
 			EVENT_NOT_ENOUGH_PLAYERS = new ErrorMessage(
 					"There was not enough players to start the event.");

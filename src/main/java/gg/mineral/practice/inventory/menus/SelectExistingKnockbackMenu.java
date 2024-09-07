@@ -15,7 +15,7 @@ public class SelectExistingKnockbackMenu extends PracticeMenu {
 
     @Override
     public void update() {
-        for (KnockbackProfile knockback : KnockbackProfileList.getKnockbackProfiles()) {
+        for (KnockbackProfile knockback : KnockbackProfileList.getProfiles()) {
 
             if (knockback == null)
                 continue;

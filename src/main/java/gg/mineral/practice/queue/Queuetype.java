@@ -117,13 +117,13 @@ public class Queuetype implements SaveableData {
 		if (arenas.isEmpty() || g.getArenas().isEmpty())
 			return null;
 
+		arenaQueue.removeIf(a -> !g.getArenas().contains(a));
+
 		if (arenaQueue.isEmpty())
 			arenaQueue.addAll(filterArenasByGametype(g));
 
 		if (arenaQueue.isEmpty())
 			return null;
-
-		arenaQueue.removeIf(a -> !g.getArenas().contains(a));
 
 		return arenaQueue.poll();
 	}

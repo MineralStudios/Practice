@@ -7,7 +7,7 @@ import gg.mineral.practice.util.messages.impl.ChatMessages;
 public class ListConfigCommands extends PlayerCommand {
 
 	public ListConfigCommands() {
-		super("practice", "practice.config");
+		super("practice", "config");
 		setAliases("practiceconfig", "practicecommandslist");
 	}
 
