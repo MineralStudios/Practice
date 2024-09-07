@@ -7,17 +7,37 @@ version = '1.0-SNAPSHOT'
 
 repositories {
     mavenCentral()
+    maven {
+        url = uri("https://maven.pkg.github.com/MineralStudios/MineralSpigot")
+        credentials {
+            username = project.findProperty("gpr.user") ?: System.getenv("USERNAME")
+            password = project.findProperty("gpr.token") ?: System.getenv("TOKEN")
+        }
+    }
+    maven {
+        url = uri("https://maven.pkg.github.com/MineralStudios/Mineral-Bot")
+        credentials {
+            username = project.findProperty("gpr.user") ?: System.getenv("USERNAME")
+            password = project.findProperty("gpr.token") ?: System.getenv("TOKEN")
+        }
+    }
+    maven {
+        url = uri("https://maven.pkg.github.com/MineralStudios/DatabaseAPI")
+        credentials {
+            username = project.findProperty("gpr.user") ?: System.getenv("USERNAME")
+            password = project.findProperty("gpr.token") ?: System.getenv("TOKEN")
+        }
+    }
 }
 
 dependencies {
-    compileOnly files('lib/spigot.jar')
-    compileOnly files('lib/MineralBotAPI.jar')
-    compileOnly files('lib/MineralDatabaseAPI.jar')
+    compileOnly 'gg.mineral.mineralspigot:mineralspigot-server:20240906-10.04.46'
+    compileOnly 'gg.mineral:bot-api:20240907-09.17.43'
+    compileOnly 'gg.mineral:database-api:20240907-14.33.18'
     compileOnly files('lib/JeezyCore-1.0-SNAPSHOT-jar-with-dependencies.jar')
-    compileOnly files('lib/MineralCoreAPI.jar')
-    compileOnly files('lib/bot-intelligence-1.0-SNAPSHOT.jar')
-    compileOnly 'org.projectlombok:lombok:1.18.32'
-    annotationProcessor 'org.projectlombok:lombok:1.18.32'
+    compileOnly 'gg.mineral:bot-intelligence:20240907-09.17.43'
+    compileOnly 'org.projectlombok:lombok:1.18.34'
+    annotationProcessor 'org.projectlombok:lombok:1.18.34'
     compileOnly 'org.eclipse.jdt:org.eclipse.jdt.annotation:2.3.0'
     annotationProcessor 'org.eclipse.jdt:org.eclipse.jdt.annotation:2.3.0'
 }
