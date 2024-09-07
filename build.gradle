@@ -3,7 +3,7 @@ plugins {
 }
 
 group = 'gg.mineral'
-version = '1.0-SNAPSHOT'
+version = new Date().format('yyyyMMdd')
 
 repositories {
     mavenCentral()
@@ -58,5 +58,27 @@ jar {
         }
     }
     duplicatesStrategy = DuplicatesStrategy.EXCLUDE
+}
+
+afterEvaluate {project ->
+    publishing {
+        publications {
+            mavenJava(MavenPublication) {
+                from components.java
+                artifactId = project.name
+                version = new Date().format("yyyyMMdd-HH.mm.ss")
+            }
+        }
+
+        repositories {
+            maven {
+                url = uri("https://maven.pkg.github.com/MineralStudios/Practice")
+                credentials {
+                    username = project.findProperty("gpr.user") ?: System.getenv("USERNAME")
+                    password = project.findProperty("gpr.token") ?: System.getenv("TOKEN")
+                }
+            }
+        }
+    }
 }
 
