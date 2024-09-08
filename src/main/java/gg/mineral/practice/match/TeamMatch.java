@@ -156,8 +156,8 @@ public class TeamMatch extends Match<QueueMatchData> {
             victim.getSpectateHandler().spectate(victimTeam.getFirst());
 
             if (CoreConnector.connected()) {
-                CoreConnector.INSTANCE.getNameTagAPI().giveTagAfterMatch(victim.getPlayer(),
-                        victim.getPlayer());
+                // CoreConnector.INSTANCE.getNameTagAPI().giveTagAfterMatch(victim.getPlayer(),
+                // victim.getPlayer());
             }
 
             return;
@@ -204,8 +204,8 @@ public class TeamMatch extends Match<QueueMatchData> {
             profile.getPlayer().sendMessage(CC.SEPARATOR);
 
             if (CoreConnector.connected()) {
-                CoreConnector.INSTANCE.getNameTagAPI().giveTagAfterMatch(profile.getPlayer(),
-                        profile.getPlayer());
+                // CoreConnector.INSTANCE.getNameTagAPI().giveTagAfterMatch(profile.getPlayer(),
+                // profile.getPlayer());
             }
 
         }

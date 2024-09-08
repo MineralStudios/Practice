@@ -21,7 +21,6 @@
 
 # Exclude gradle-wrapper.jar from being ignored
 !gradle/wrapper/gradle-wrapper.jar
-!lib/JeezyCore-1.0-SNAPSHOT-jar-with-dependencies.jar
 
 # virtual machine crash logs, see http://www.java.com/en/download/help/error_hotspot.xml
 hs_err_pid*

@@ -159,11 +159,11 @@ public class Match<D extends MatchData> implements Spectatable {
 
 		if (CoreConnector.connected()) {
 			if (this instanceof PartyMatch || this instanceof TeamMatch) {
-				CoreConnector.INSTANCE.getNameTagAPI().clearTagOnMatchStart(p.getPlayer(),
-						p.getPlayer());
+				// CoreConnector.INSTANCE.getNameTagAPI().clearTagOnMatchStart(p.getPlayer(),
+				// p.getPlayer());
 			} else {
-				CoreConnector.INSTANCE.getNameTagAPI().giveTagAfterMatch(p.getPlayer(),
-						p.getPlayer());
+				// CoreConnector.INSTANCE.getNameTagAPI().giveTagAfterMatch(p.getPlayer(),
+				// p.getPlayer());
 			}
 		}
 
@@ -433,8 +433,8 @@ public class Match<D extends MatchData> implements Spectatable {
 
 			if (CoreConnector.connected()) {
 
-				CoreConnector.INSTANCE.getNameTagAPI().giveTagAfterMatch(profile1.getPlayer(),
-						profile2.getPlayer());
+				// CoreConnector.INSTANCE.getNameTagAPI().giveTagAfterMatch(profile1.getPlayer(),
+				// profile2.getPlayer());
 				/*
 				 * CoreConnector.INSTANCE.getUuidChecker().check(attacker.getPlayer().
 				 * getDisplayName());

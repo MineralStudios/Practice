@@ -78,7 +78,8 @@ public class EventMatch extends Match<MatchData> {
             attacker.removeFromMatch();
 
             if (CoreConnector.connected()) {
-                CoreConnector.INSTANCE.getNameTagAPI().giveTagAfterMatch(profile1.getPlayer(), profile2.getPlayer());
+                // CoreConnector.INSTANCE.getNameTagAPI().giveTagAfterMatch(profile1.getPlayer(),
+                // profile2.getPlayer());
             }
 
         }, getPostMatchTime());

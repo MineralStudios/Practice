@@ -179,8 +179,8 @@ public class PartyMatch extends Match<MatchData> {
 			victim.getSpectateHandler().spectate(victimTeam.getFirst());
 
 			if (CoreConnector.connected()) {
-				CoreConnector.INSTANCE.getNameTagAPI().giveTagAfterMatch(victim.getPlayer(),
-						victim.getPlayer());
+				// CoreConnector.INSTANCE.getNameTagAPI().giveTagAfterMatch(victim.getPlayer(),
+				// victim.getPlayer());
 			}
 
 			return;
@@ -229,8 +229,8 @@ public class PartyMatch extends Match<MatchData> {
 			profile.getPlayer().sendMessage(CC.SEPARATOR);
 
 			if (CoreConnector.connected()) {
-				CoreConnector.INSTANCE.getNameTagAPI().giveTagAfterMatch(profile.getPlayer(),
-						profile.getPlayer());
+				// CoreConnector.INSTANCE.getNameTagAPI().giveTagAfterMatch(profile.getPlayer(),
+				// profile.getPlayer());
 			}
 
 		}
