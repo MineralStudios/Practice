@@ -20,7 +20,7 @@ public class EntryListener implements Listener {
 		event.setJoinMessage(null);
 		ProfileManager.removeIfExists(event.getPlayer());
 		Profile profile = ProfileManager.getOrCreateProfile(event.getPlayer());
-		profile.getPlayer().setGameMode(GameMode.SURVIVAL);
+		profile.setGameMode(GameMode.SURVIVAL);
 		profile.heal();
 
 		if (BotAPI.INSTANCE.isFakePlayer(profile.getPlayer().getUniqueId()))
@@ -33,12 +33,10 @@ public class EntryListener implements Listener {
 
 		profile.setScoreboard(DefaultScoreboard.INSTANCE);
 
-		if (profile.getPlayer().hasPermission("practice.fly")) {
-			profile.getPlayer().setAllowFlight(true);
-		} else if (profile.getPlayer().getAllowFlight()) {
-			profile.getPlayer().setAllowFlight(false);
-			profile.getPlayer().setFlying(false);
-		}
+		boolean canFly = profile.getPlayerStatus().getCanFly().apply(profile);
+
+		profile.getPlayer().setAllowFlight(canFly);
+		profile.getPlayer().setFlying(canFly);
 	}
 
 	@EventHandler

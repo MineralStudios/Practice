@@ -44,9 +44,8 @@ public class SpectateHandler {
         profile.getInventory().setInventoryToFollow();
         profile.setScoreboard(FollowingScoreboard.INSTANCE);
 
-        if (following.getPlayerStatus() == PlayerStatus.FIGHTING || following.isInEvent()) {
+        if (following.getPlayerStatus() == PlayerStatus.FIGHTING || following.isInEvent())
             spectate(this.following);
-        }
     }
 
     public void stopSpectating() {
@@ -62,12 +61,12 @@ public class SpectateHandler {
 
         profile.teleportToLobby();
 
-        profile.getPlayer().setGameMode(GameMode.SURVIVAL);
-        if (profile.isInParty()) {
+        profile.setGameMode(GameMode.SURVIVAL);
+        if (profile.isInParty())
             profile.getInventory().setInventoryForParty();
-        } else {
+        else
             profile.getInventory().setInventoryForLobby();
-        }
+
         profile.setScoreboard(DefaultScoreboard.INSTANCE);
     }
 
@@ -115,25 +114,23 @@ public class SpectateHandler {
 
         spectatable.getSpectators().add(profile);
 
-        profile.getPlayer().setGameMode(GameMode.SPECTATOR);
+        profile.setGameMode(GameMode.SPECTATOR);
 
         PlayerUtil.teleport(profile.getPlayer(),
                 toBeSpectated.isInEvent() ? toBeSpectated.getEvent().getEventArena().getWaitingLocation()
                         : toBeSpectated.getPlayer().getLocation());
 
-        if (toBeSpectated.isInEvent()) {
+        if (toBeSpectated.isInEvent())
             ChatMessages.SPECTATING_EVENT.send(profile.getPlayer());
-        } else {
+        else
             ChatMessages.SPECTATING.clone().replace("%player%", toBeSpectated.getName()).send(profile.getPlayer());
-        }
 
         ChatMessages.STOP_SPECTATING.send(profile.getPlayer());
 
         updateVisiblity();
 
-        if (profile.getPlayerStatus() == PlayerStatus.FOLLOWING) {
+        if (profile.getPlayerStatus() == PlayerStatus.FOLLOWING)
             return;
-        }
 
         profile.getInventory().setInventoryForSpectating();
         profile.setPlayerStatus(PlayerStatus.SPECTATING);
@@ -141,24 +138,19 @@ public class SpectateHandler {
     }
 
     private void updateVisiblity() {
-        for (Profile profile : getSpectatable().getParticipants()) {
+        for (Profile profile : getSpectatable().getParticipants())
             this.profile.getPlayer().showPlayer(profile.getPlayer());
-        }
 
-        if (getSpectatable() instanceof Match) {
-            Match spectatingMatch = (Match) getSpectatable();
-            for (Match match : MatchManager.getMatches()) {
+        if (getSpectatable() instanceof Match spectatingMatch) {
+            for (Match<?> match : MatchManager.getMatches())
                 match.updateVisiblity(spectatingMatch, profile);
-            }
 
             return;
         }
 
-        if (getSpectatable() instanceof Event) {
-            Event spectatingEvent = (Event) getSpectatable();
-            for (Event event : EventManager.getEvents()) {
+        if (getSpectatable() instanceof Event spectatingEvent)
+            for (Event event : EventManager.getEvents())
                 event.updateVisiblity(spectatingEvent, profile);
-            }
-        }
+
     }
 }

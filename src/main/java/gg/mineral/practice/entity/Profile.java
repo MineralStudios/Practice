@@ -301,15 +301,21 @@ public class Profile extends ProfileData {
 	}
 
 	public void setPlayerStatus(PlayerStatus newPlayerStatus) {
-		if ((playerStatus == PlayerStatus.IDLE || playerStatus == PlayerStatus.QUEUEING)
-				&& this.getPlayer().hasPermission("practice.fly"))
-			this.getPlayer().setAllowFlight(true);
-		else if (this.getPlayer().getAllowFlight()) {
-			this.getPlayer().setAllowFlight(false);
-			this.getPlayer().setFlying(false);
-		}
+		boolean canFly = newPlayerStatus.getCanFly().apply(this);
 
-		playerStatus = newPlayerStatus;
+		this.getPlayer().setAllowFlight(canFly);
+		this.getPlayer().setFlying(canFly);
+
+		this.playerStatus = newPlayerStatus;
+	}
+
+	public void setGameMode(GameMode gameMode) {
+		this.player.setGameMode(gameMode);
+
+		boolean canFly = this.playerStatus.getCanFly().apply(this);
+
+		this.getPlayer().setAllowFlight(canFly);
+		this.getPlayer().setFlying(canFly);
 	}
 
 	public void updateVisiblity() {

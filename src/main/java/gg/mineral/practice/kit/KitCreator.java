@@ -34,6 +34,6 @@ public class KitCreator {
         for (Player player : profile.getPlayer().getWorld().getPlayers())
             profile.getPlayer().hidePlayer(player, false);
 
-        profile.getPlayer().setGameMode(GameMode.CREATIVE);
+        profile.setGameMode(GameMode.CREATIVE);
     }
 }

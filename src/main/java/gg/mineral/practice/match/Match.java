@@ -125,7 +125,6 @@ public class Match<D extends MatchData> implements Spectatable {
 		p.setDead(false);
 		p.getPlayer().setMaximumNoDamageTicks(data.getNoDamageTicks());
 		p.getPlayer().setKnockback(data.getKnockback());
-		p.getPlayer().setAllowFlight(false);
 		p.getInventory().setInventoryClickCancelled(false);
 		p.getPlayer().setSaturation(20);
 		p.getPlayer().setFoodLevel(20);

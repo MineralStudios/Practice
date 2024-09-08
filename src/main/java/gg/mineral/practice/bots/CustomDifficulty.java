@@ -22,8 +22,8 @@ public class CustomDifficulty {
         this.sprintResetAccuracy = 0.25f + r.nextFloat() * (1.0f - 0.25f);
         this.hitSelectAccuracy = r.nextFloat();
         this.cps = r.nextInt((20 - 5) + 1) + 5;
-        this.latency = r.nextInt((250 - 5) + 1) + 5;
-        this.latencyDeviation = Math.min(r.nextInt(25 + 1), latency / 3);
+        this.latency = r.nextInt((150 - 5) + 1) + 5;
+        this.latencyDeviation = r.nextInt((int) ((latency / 30) + 1));
     }
 
 }

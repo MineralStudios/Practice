@@ -17,8 +17,8 @@ import gg.mineral.practice.util.items.ItemStacks;
 
 public class BotMatch extends Match<QueueMatchData> {
 
-    FakePlayer fakePlayer;
-    Difficulty difficulty;
+    private FakePlayer fakePlayer;
+    private final Difficulty difficulty;
 
     public BotMatch(Profile profile1, Difficulty difficulty, QueueMatchData matchData) {
         super(matchData);
@@ -71,18 +71,13 @@ public class BotMatch extends Match<QueueMatchData> {
     public void giveQueueAgainItem(Profile profile) {
         if (BotAPI.INSTANCE.isFakePlayer(profile.getPlayer().getUniqueId()))
             return;
-        if (getData().getQueueEntry() != null) {
-            Bukkit.getServer().getScheduler().runTaskLater(PracticePlugin.INSTANCE, () -> {
-                int slot = profile.getInventory().getHeldItemSlot();
-
-                profile.getInventory().setItem(slot, ItemStacks.QUEUE_AGAIN,
-                        () -> {
-                            BotMatch m = new BotMatch(profile, profile.getMatchData().getBotDifficulty(),
-                                    BotMatch.this.getData());
-                            m.start();
-                        });
-            }, 20);
-        }
+        if (getData().getQueueEntry() != null)
+            Bukkit.getServer().getScheduler().runTaskLater(PracticePlugin.INSTANCE,
+                    () -> profile.getInventory().setItem(profile.getInventory().getHeldItemSlot(),
+                            ItemStacks.QUEUE_AGAIN,
+                            () -> new BotMatch(profile, profile.getMatchData().getBotDifficulty(),
+                                    BotMatch.this.getData()).start()),
+                    20);
     }
 
     @Override
