@@ -26,7 +26,7 @@ public class Countdown {
 				profile.setInMatchCountdown(true);
 				match.onCountdownStart(profile);
 			}
-		}, 4L);
+		}, 1L);
 
 		taskID = scheduler.scheduleSyncRepeatingTask(PracticePlugin.INSTANCE, () -> {
 			if (time == 0) {
