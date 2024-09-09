@@ -1,7 +1,6 @@
 package gg.mineral.practice.match;
 
 import java.util.Arrays;
-import java.util.Map.Entry;
 import java.util.Queue;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ConcurrentLinkedDeque;
@@ -53,6 +52,7 @@ import gg.mineral.practice.util.messages.impl.TextComponents;
 import gg.mineral.practice.util.world.BlockData;
 import gg.mineral.practice.util.world.BlockUtil;
 import gg.mineral.practice.util.world.WorldUtil;
+import it.unimi.dsi.fastutil.ints.Int2ObjectMap.Entry;
 import it.unimi.dsi.fastutil.ints.Int2ObjectOpenHashMap;
 import lombok.Getter;
 import net.md_5.bungee.api.chat.ClickEvent;
@@ -139,11 +139,11 @@ public class Match<D extends MatchData> implements Spectatable {
 	}
 
 	public void setVisibility(Profile p) {
-		for (Profile participant : participants)
-			p.getPlayer().showPlayer(participant.getPlayer());
-
 		for (Match<?> match : MatchManager.getMatches())
 			match.updateVisiblity(this, p);
+
+		for (Profile participant : participants)
+			p.getPlayer().showPlayer(participant.getPlayer());
 	}
 
 	public void prepareForMatch(Profile p) {
@@ -206,14 +206,17 @@ public class Match<D extends MatchData> implements Spectatable {
 		if (map == null ? true : map.isEmpty())
 			return;
 
-		for (Entry<Integer, ItemStack[]> entry : map.int2ObjectEntrySet()) {
-			p.getInventory().setItem(entry.getKey(),
-					ItemStacks.LOAD_KIT.name(CC.B + CC.GOLD + "Load Kit #" + entry.getKey()).build(), profile -> {
+		if (map.size() == 1) {
+			p.giveKit(getKit(map.values().iterator().next()));
+			return;
+		}
+
+		for (Entry<ItemStack[]> entry : map.int2ObjectEntrySet())
+			p.getInventory().setItem(entry.getIntKey(),
+					ItemStacks.LOAD_KIT.name(CC.B + CC.GOLD + "Load Kit #" + entry.getIntKey()).build(), profile -> {
 						p.giveKit(getKit(entry.getValue()));
 						return true;
 					});
-		}
-
 	}
 
 	public void onCountdownStart(Profile p) {
@@ -241,7 +244,7 @@ public class Match<D extends MatchData> implements Spectatable {
 	}
 
 	public void updateVisiblity(Match<?> match, Profile profile) {
-		if (match.equals(this) || !match.getData().getArena().equals(getData().getArena()))
+		if (match.getParticipants().contains(profile) || match.getSpectators().contains(profile))
 			return;
 
 		for (Profile participant : participants) {

@@ -9,6 +9,7 @@ import gg.mineral.practice.util.messages.CC;
 
 public class ItemStacks {
         // Item Stacks
+        @SuppressWarnings("deprecation")
         public static final ItemStack STOP_FOLLOWING = new ItemBuilder(new ItemStack(351, 1, (short) 1))
                         .name(CC.SECONDARY + CC.B + "Stop Following").lore(CC.ACCENT + "Right click to stop following.")
                         .build(),
@@ -181,6 +182,7 @@ public class ItemStacks {
                                         .build();
 
         // Item Builders
+        @SuppressWarnings("deprecation")
         public static final ItemBuilder LOAD_KIT = new ItemBuilder(Material.ENCHANTED_BOOK),
                         TEAMFIGHT = new ItemBuilder(Material.ITEM_FRAME)
                                         .name(CC.SECONDARY + CC.B + "2v2"),

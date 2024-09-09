@@ -138,8 +138,6 @@ public class SpectateHandler {
     }
 
     private void updateVisiblity() {
-        for (Profile profile : getSpectatable().getParticipants())
-            this.profile.getPlayer().showPlayer(profile.getPlayer());
 
         if (getSpectatable() instanceof Match spectatingMatch) {
             for (Match<?> match : MatchManager.getMatches())
@@ -151,6 +149,9 @@ public class SpectateHandler {
         if (getSpectatable() instanceof Event spectatingEvent)
             for (Event event : EventManager.getEvents())
                 event.updateVisiblity(spectatingEvent, profile);
+
+        for (Profile profile : getSpectatable().getParticipants())
+            this.profile.getPlayer().showPlayer(profile.getPlayer());
 
     }
 }
