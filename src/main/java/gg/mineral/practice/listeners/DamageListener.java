@@ -124,7 +124,8 @@ public class DamageListener implements Listener {
 			return;
 		}
 
-		if (attacker.getMatch().incrementTeamHitCount(attacker, victim)) {
+		if (victim.getPlayer().getNoDamageTicks() <= victim.getPlayer().getMaximumNoDamageTicks() / 2.0f
+				&& attacker.getMatch().incrementTeamHitCount(attacker, victim)) {
 			e.setCancelled(true);
 			return;
 		}
@@ -136,9 +137,8 @@ public class DamageListener implements Listener {
 	public void onPlayerDamageByArrow(PlayerDamageByArrowEvent e) {
 		Arrow arrow = e.getDamager();
 
-		if (!(arrow.getShooter() instanceof Player)) {
+		if (!(arrow.getShooter() instanceof Player))
 			return;
-		}
 
 		Player shooter = (Player) arrow.getShooter();
 		Profile attacker = ProfileManager
@@ -197,8 +197,7 @@ public class DamageListener implements Listener {
 			return;
 		}
 
-		if (attacker.isInParty()) {
+		if (attacker.isInParty())
 			e.setCancelled(attacker.getMatch().getTeam(attacker).contains(victim));
-		}
 	}
 }
