@@ -6,6 +6,7 @@ import org.bukkit.Bukkit;
 import org.bukkit.Location;
 
 import gg.mineral.api.collection.GlueList;
+import gg.mineral.bot.ai.goal.DrinkPotionGoal;
 import gg.mineral.bot.ai.goal.MeleeCombatGoal;
 import gg.mineral.bot.api.entity.living.player.FakePlayer;
 import gg.mineral.practice.bots.Difficulty;
@@ -35,12 +36,12 @@ public class BotTeamMatch extends TeamMatch {
 
         for (FakePlayer fakePlayer : team1FakePlayers) {
             fakePlayer.getConfiguration().setPearlCooldown(getData().getPearlCooldown());
-            fakePlayer.startGoals(new MeleeCombatGoal(fakePlayer));
+            fakePlayer.startGoals(new DrinkPotionGoal(fakePlayer), new MeleeCombatGoal(fakePlayer));
         }
 
         for (FakePlayer fakePlayer : team2FakePlayers) {
             fakePlayer.getConfiguration().setPearlCooldown(getData().getPearlCooldown());
-            fakePlayer.startGoals(new MeleeCombatGoal(fakePlayer));
+            fakePlayer.startGoals(new DrinkPotionGoal(fakePlayer), new MeleeCombatGoal(fakePlayer));
         }
     }
 

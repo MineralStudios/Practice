@@ -35,13 +35,13 @@ jobs:
     - name: Build with Gradle
       run: ./gradlew build
       env:
-        USERNAME: ${{ github.actor }}
-        TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        USERNAME: ${{ secrets.REPOSILITE_USERNAME }}
+        TOKEN: ${{ secrets.REPOSILITE_PASSWORD }}
 
     # The USERNAME and TOKEN need to correspond to the credentials environment variables used in
     # the publishing section of your build.gradle
-    - name: Publish to GitHub Packages
+    - name: Publish to Reposilite
       run: ./gradlew publish
       env:
-        USERNAME: ${{ github.actor }}
-        TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        USERNAME: ${{ secrets.REPOSILITE_USERNAME }}
+        TOKEN: ${{ secrets.REPOSILITE_PASSWORD }}

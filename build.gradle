@@ -9,28 +9,8 @@ version = new Date().format('yyyyMMdd')
 repositories {
     mavenCentral()
     maven {
-        url = uri("https://maven.pkg.github.com/MineralStudios/MineralSpigot")
-        credentials {
-            username = project.findProperty("gpr.user") ?: System.getenv("USERNAME")
-            password = project.findProperty("gpr.token") ?: System.getenv("TOKEN")
-        }
-    }
-    maven {
-        url = uri("https://maven.pkg.github.com/MineralStudios/Mineral-Bot")
-        credentials {
-            username = project.findProperty("gpr.user") ?: System.getenv("USERNAME")
-            password = project.findProperty("gpr.token") ?: System.getenv("TOKEN")
-        }
-    }
-    maven {
-        url = uri("https://maven.pkg.github.com/MineralStudios/DatabaseAPI")
-        credentials {
-            username = project.findProperty("gpr.user") ?: System.getenv("USERNAME")
-            password = project.findProperty("gpr.token") ?: System.getenv("TOKEN")
-        }
-    }
-    maven {
-        url = uri("https://maven.pkg.github.com/MineralStudios/MineralCore")
+        name "mineralDevPrivate"
+        url "https://repo.mineral.gg/private"
         credentials {
             username = project.findProperty("gpr.user") ?: System.getenv("USERNAME")
             password = project.findProperty("gpr.token") ?: System.getenv("TOKEN")
@@ -42,11 +22,11 @@ repositories {
 }
 
 dependencies {
-    compileOnly 'gg.mineral.mineralspigot:mineralspigot-server:20240906-10.04.46'
-    compileOnly 'gg.mineral:bot-api:20240907-09.17.43'
-    compileOnly 'gg.mineral:database-api:20240907-14.33.18'
-    compileOnly 'de.jeezycore:jeezy-core:1.0-SNAPSHOT'
-    compileOnly 'gg.mineral:bot-intelligence:20240907-09.17.43'
+    compileOnly 'gg.mineral.mineralspigot:mineralspigot-server:20240919-15.40.23'
+    compileOnly 'gg.mineral:bot-api:20240919-15.52.07'
+    compileOnly 'gg.mineral:database-api:20240919-16.58.32'
+    compileOnly 'de.jeezycore:jeezy-core:20240920-09.14.42'
+    compileOnly 'gg.mineral:bot-intelligence:20240919-15.52.07'
     compileOnly 'org.projectlombok:lombok:1.18.34'
     annotationProcessor 'org.projectlombok:lombok:1.18.34'
     compileOnly 'org.eclipse.jdt:org.eclipse.jdt.annotation:2.3.0'
@@ -83,7 +63,7 @@ afterEvaluate {project ->
 
         repositories {
             maven {
-                url = uri("https://maven.pkg.github.com/MineralStudios/Practice")
+                url = uri("https://repo.mineral.gg/private")
                 credentials {
                     username = project.findProperty("gpr.user") ?: System.getenv("USERNAME")
                     password = project.findProperty("gpr.token") ?: System.getenv("TOKEN")
