@@ -5,6 +5,7 @@ import org.bukkit.Location;
 import org.bukkit.entity.Player;
 
 import gg.mineral.bot.ai.goal.DrinkPotionGoal;
+import gg.mineral.bot.ai.goal.EatGappleGoal;
 import gg.mineral.bot.ai.goal.MeleeCombatGoal;
 import gg.mineral.bot.api.BotAPI;
 import gg.mineral.bot.api.entity.living.player.FakePlayer;
@@ -58,7 +59,8 @@ public class BotMatch extends Match<QueueMatchData> {
         super.onMatchStart();
 
         fakePlayer.getConfiguration().setPearlCooldown(getData().getPearlCooldown());
-        fakePlayer.startGoals(new DrinkPotionGoal(fakePlayer), new MeleeCombatGoal(fakePlayer));
+        fakePlayer.startGoals(new DrinkPotionGoal(fakePlayer), new EatGappleGoal(fakePlayer),
+                new MeleeCombatGoal(fakePlayer));
     }
 
     @Override
