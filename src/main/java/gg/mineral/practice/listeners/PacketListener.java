@@ -65,7 +65,7 @@ public class PacketListener implements Listener {
                         if (bot instanceof CraftPlayer craftBot) {
                             EntityPlayer craftBotHandle = craftBot.getHandle();
                             if (craftBotHandle.playerConnection.networkManager.channel == null) {
-                                if (action != PacketPlayOutPlayerInfo.EnumPlayerInfoAction.REMOVE_PLAYER) {
+                                if (action == PacketPlayOutPlayerInfo.EnumPlayerInfoAction.ADD_PLAYER) {
                                     PacketPlayOutPlayerInfo newInfoPacket = new PacketPlayOutPlayerInfo(
                                             PacketPlayOutPlayerInfo.EnumPlayerInfoAction.REMOVE_PLAYER,
                                             craftBotHandle);
