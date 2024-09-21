@@ -2,6 +2,7 @@ package gg.mineral.practice.listeners;
 
 import java.util.Iterator;
 
+import org.bukkit.Bukkit;
 import org.bukkit.craftbukkit.v1_8_R3.entity.CraftPlayer;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
@@ -10,6 +11,7 @@ import org.bukkit.event.player.PlayerJoinEvent;
 import org.bukkit.event.player.PlayerQuitEvent;
 
 import gg.mineral.bot.api.BotAPI;
+import groovy.xml.Entity;
 import io.netty.channel.Channel;
 import io.netty.channel.ChannelDuplexHandler;
 import io.netty.channel.ChannelHandlerContext;
@@ -58,13 +60,16 @@ public class PacketListener implements Listener {
 
                     while (infoData.hasNext()) {
                         PlayerInfoData data = infoData.next();
-                        if (BotAPI.INSTANCE.isFakePlayer(data.a().getId())) {
-                            if (action != PacketPlayOutPlayerInfo.EnumPlayerInfoAction.REMOVE_PLAYER) {
-                                PacketPlayOutPlayerInfo newInfoPacket = new PacketPlayOutPlayerInfo(
-                                        PacketPlayOutPlayerInfo.EnumPlayerInfoAction.REMOVE_PLAYER,
-                                        new EntityPlayer[0]);
-                                newInfoPacket.getB().add(data);
-                                entityPlayer.playerConnection.sendPacket(newInfoPacket);
+                        Player bot = Bukkit.getPlayer(data.a().getName());
+                        if (bot instanceof CraftPlayer craftBot) {
+                            EntityPlayer craftBotHandle = craftBot.getHandle();
+                            if (craftBotHandle.playerConnection.networkManager.channel == null) {
+                                if (action != PacketPlayOutPlayerInfo.EnumPlayerInfoAction.REMOVE_PLAYER) {
+                                    PacketPlayOutPlayerInfo newInfoPacket = new PacketPlayOutPlayerInfo(
+                                            PacketPlayOutPlayerInfo.EnumPlayerInfoAction.REMOVE_PLAYER,
+                                            craftBotHandle);
+                                    entityPlayer.playerConnection.sendPacket(newInfoPacket);
+                                }
                             }
                         }
                     }
