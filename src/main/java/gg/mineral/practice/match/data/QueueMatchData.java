@@ -19,7 +19,7 @@ public class QueueMatchData extends MatchData {
 
     public QueueMatchData(QueueEntry queueEntry, Object2BooleanOpenHashMap<Arena> enabledArenas) {
         if (!enabledArenas.isEmpty())
-            this.enabledArenas.putAll(this.enabledArenas);
+            this.enabledArenas.putAll(enabledArenas);
 
         setQueueEntry(queueEntry);
     }
