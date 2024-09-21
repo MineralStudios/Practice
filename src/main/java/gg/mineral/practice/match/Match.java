@@ -21,7 +21,6 @@ import org.bukkit.projectiles.ProjectileSource;
 import org.bukkit.scheduler.BukkitScheduler;
 
 import gg.mineral.api.collection.GlueList;
-import gg.mineral.bot.api.BotAPI;
 import gg.mineral.practice.PracticePlugin;
 import gg.mineral.practice.entity.PlayerStatus;
 import gg.mineral.practice.entity.Profile;
@@ -142,6 +141,9 @@ public class Match<D extends MatchData> implements Spectatable {
 	public void setVisibility(Profile p) {
 		for (Match<?> match : MatchManager.getMatches())
 			match.updateVisiblity(this, p);
+
+		for (Profile participant : participants)
+			p.getPlayer().showPlayer(participant.getPlayer());
 	}
 
 	public void prepareForMatch(Profile p) {
@@ -204,16 +206,17 @@ public class Match<D extends MatchData> implements Spectatable {
 		if (map == null ? true : map.isEmpty())
 			return;
 
-		if (map.size() == 1)
+		if (map.size() == 1) {
 			p.giveKit(getKit(map.values().iterator().next()));
-		else
-			for (Entry<ItemStack[]> entry : map.int2ObjectEntrySet())
-				p.getInventory().setItem(entry.getIntKey(),
-						ItemStacks.LOAD_KIT.name(CC.B + CC.GOLD + "Load Kit #" + entry.getIntKey()).build(),
-						profile -> {
-							p.giveKit(getKit(entry.getValue()));
-							return true;
-						});
+			return;
+		}
+
+		for (Entry<ItemStack[]> entry : map.int2ObjectEntrySet())
+			p.getInventory().setItem(entry.getIntKey(),
+					ItemStacks.LOAD_KIT.name(CC.B + CC.GOLD + "Load Kit #" + entry.getIntKey()).build(), profile -> {
+						p.giveKit(getKit(entry.getValue()));
+						return true;
+					});
 	}
 
 	public void onCountdownStart(Profile p) {
@@ -232,36 +235,21 @@ public class Match<D extends MatchData> implements Spectatable {
 	}
 
 	public void setScoreboard(Profile p) {
-		p.setScoreboard(data.isBoxing() ? BoxingScoreboard.INSTANCE : InMatchScoreboard.INSTANCE);
+		if (data.isBoxing()) {
+			p.setScoreboard(BoxingScoreboard.INSTANCE);
+			return;
+		}
+
+		p.setScoreboard(InMatchScoreboard.INSTANCE);
 	}
 
 	public void updateVisiblity(Match<?> match, Profile profile) {
-		boolean isSpectator = match.getSpectators().contains(profile),
-				isParticipant = match.getParticipants().contains(profile);
-		if (isParticipant || isSpectator) {
-			for (Profile participant : ProfileManager.getProfiles().values()) {
-				boolean isProfileParticipant = match.getParticipants().contains(participant);
-
-				if (isProfileParticipant) {
-					if (isParticipant && !isSpectator)
-						participant.getPlayer().showPlayer(profile.getPlayer());
-					else
-						participant.getPlayer().hidePlayer(profile.getPlayer(),
-								BotAPI.INSTANCE.isFakePlayer(profile.getPlayer().getUniqueId()));
-					profile.getPlayer().showPlayer(participant.getPlayer());
-				}
-
-				participant.getPlayer().hidePlayer(profile.getPlayer(),
-						BotAPI.INSTANCE.isFakePlayer(profile.getPlayer().getUniqueId()));
-			}
+		if (match.getParticipants().contains(profile) || match.getSpectators().contains(profile))
 			return;
-		} else {
-			for (Profile participant : ProfileManager.getProfiles().values()) {
-				participant.getPlayer().hidePlayer(profile.getPlayer(),
-						BotAPI.INSTANCE.isFakePlayer(profile.getPlayer().getUniqueId()));
-				profile.getPlayer().hidePlayer(participant.getPlayer(),
-						BotAPI.INSTANCE.isFakePlayer(participant.getPlayer().getUniqueId()));
-			}
+
+		for (Profile participant : participants) {
+			participant.getPlayer().hidePlayer(profile.getPlayer(), false);
+			profile.getPlayer().hidePlayer(participant.getPlayer(), false);
 		}
 	}
 
@@ -500,8 +488,7 @@ public class Match<D extends MatchData> implements Spectatable {
 		attacker.heal();
 		attacker.removePotionEffects();
 		attacker.getInventory().clear();
-		attacker.getPlayer().hidePlayer(victim.getPlayer(),
-				BotAPI.INSTANCE.isFakePlayer(victim.getPlayer().getUniqueId()));
+		attacker.getPlayer().hidePlayer(victim.getPlayer(), false);
 	}
 
 	public void giveQueueAgainItem(Profile profile) {
@@ -544,7 +531,12 @@ public class Match<D extends MatchData> implements Spectatable {
 			if (shooter instanceof Player pShooter) {
 				Profile profile = ProfileManager.getProfile(pShooter.getUniqueId());
 
-				if (profile == null || profile.getPlayerStatus() != PlayerStatus.FIGHTING
+				if (profile == null) {
+					arrow.remove();
+					continue;
+				}
+
+				if (profile.getPlayerStatus() != PlayerStatus.FIGHTING
 						|| (profile.getPlayerStatus() == PlayerStatus.FIGHTING && profile.getMatch().isEnded()))
 					arrow.remove();
 			}

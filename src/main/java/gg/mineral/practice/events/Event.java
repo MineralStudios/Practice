@@ -8,7 +8,6 @@ import org.bukkit.entity.Player;
 import org.bukkit.scheduler.BukkitRunnable;
 
 import gg.mineral.api.collection.GlueList;
-import gg.mineral.bot.api.BotAPI;
 import gg.mineral.practice.PracticePlugin;
 import gg.mineral.practice.arena.Arena;
 import gg.mineral.practice.bukkit.events.PlayerEventInitializeEvent;
@@ -210,10 +209,8 @@ public class Event implements Spectatable {
         }
 
         for (Profile participant : participants) {
-            participant.getPlayer().hidePlayer(profile.getPlayer(),
-                    BotAPI.INSTANCE.isFakePlayer(profile.getPlayer().getUniqueId()));
-            profile.getPlayer().hidePlayer(participant.getPlayer(),
-                    BotAPI.INSTANCE.isFakePlayer(participant.getPlayer().getUniqueId()));
+            participant.getPlayer().hidePlayer(profile.getPlayer(), false);
+            profile.getPlayer().hidePlayer(participant.getPlayer(), false);
         }
     }
 }

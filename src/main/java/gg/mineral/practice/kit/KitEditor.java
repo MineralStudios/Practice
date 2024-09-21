@@ -4,7 +4,6 @@ import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 
 import gg.mineral.api.config.FileConfiguration;
-import gg.mineral.bot.api.BotAPI;
 import gg.mineral.practice.entity.Profile;
 import gg.mineral.practice.managers.KitEditorManager;
 import gg.mineral.practice.managers.ProfileManager;
@@ -68,7 +67,7 @@ public class KitEditor {
         profile.getInventory().clear();
 
         for (Player player : profile.getPlayer().getWorld().getPlayers())
-            profile.getPlayer().hidePlayer(player, BotAPI.INSTANCE.isFakePlayer(player.getUniqueId()));
+            profile.getPlayer().hidePlayer(player, false);
 
         profile.getInventory().setContents(queueEntry.getGametype().getKit().getContents());
     }

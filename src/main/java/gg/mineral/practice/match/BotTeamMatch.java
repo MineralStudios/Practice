@@ -4,6 +4,7 @@ import java.util.Collection;
 
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
+import org.bukkit.entity.Player;
 
 import gg.mineral.api.collection.GlueList;
 import gg.mineral.bot.ai.goal.DrinkPotionGoal;
@@ -70,13 +71,21 @@ public class BotTeamMatch extends TeamMatch {
         if (noArenas())
             return;
 
-        for (FakePlayer fakePlayer : team1FakePlayers)
+        for (FakePlayer fakePlayer : team1FakePlayers) {
+            Player p = Bukkit.getPlayer(fakePlayer.getUuid());
             this.team1RemainingPlayers
-                    .add(ProfileManager.getOrCreateProfile(Bukkit.getPlayer(fakePlayer.getUuid())));
+                    .add(ProfileManager.getOrCreateProfile(p));
+            for (Player player : Bukkit.getOnlinePlayers())
+                player.hidePlayer(p, true);
+        }
 
-        for (FakePlayer fakePlayer : team2FakePlayers)
+        for (FakePlayer fakePlayer : team2FakePlayers) {
+            Player p = Bukkit.getPlayer(fakePlayer.getUuid());
             this.team2RemainingPlayers
-                    .add(ProfileManager.getOrCreateProfile(Bukkit.getPlayer(fakePlayer.getUuid())));
+                    .add(ProfileManager.getOrCreateProfile(p));
+            for (Player player : Bukkit.getOnlinePlayers())
+                player.hidePlayer(p, true);
+        }
 
         MatchManager.registerMatch(this);
         Location location1 = getData().getArena().getLocation1().clone();
