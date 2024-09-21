@@ -99,9 +99,8 @@ public class Queuetype implements SaveableData {
 		lore.add(CC.WHITE + "The " + CC.SECONDARY + "global" + CC.WHITE + " elo leaderboard.");
 		lore.add(" ");
 
-		for (gg.mineral.practice.util.collection.LeaderboardMap.Entry entry : leaderboardMap.getEntries()) {
+		for (gg.mineral.practice.util.collection.LeaderboardMap.Entry entry : leaderboardMap.getEntries())
 			lore.add(CC.SECONDARY + entry.getKey() + ": " + CC.WHITE + entry.getValue());
-		}
 
 		if (lore.size() <= 2)
 			lore.add(CC.ACCENT + "No Data");
@@ -128,6 +127,8 @@ public class Queuetype implements SaveableData {
 
 	public Arena nextArena(MatchData matchData, Gametype g) {
 		Random rand = new Random();
+
+		System.out.println("Enabled arenas: " + matchData.getEnabledArenas());
 
 		// If there are no enabled arenas in the MatchData, revert to the other method
 		if (matchData.getEnabledArenas().isEmpty())
