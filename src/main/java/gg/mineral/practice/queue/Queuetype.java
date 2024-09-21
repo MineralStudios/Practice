@@ -51,6 +51,7 @@ public class Queuetype implements SaveableData {
 	ConcurrentLinkedQueue<Arena> arenas = new ConcurrentLinkedQueue<>();
 	@Getter
 	Object2IntOpenHashMap<Catagory> catagories = new Object2IntOpenHashMap<>();
+	private long arenaIndex = 0;
 
 	public Queuetype(String name) {
 		this.name = name;
@@ -126,7 +127,6 @@ public class Queuetype implements SaveableData {
 	}
 
 	public Arena nextArena(MatchData matchData, Gametype g) {
-		Random rand = new Random();
 
 		// If there are no enabled arenas in the MatchData, revert to the other method
 		if (matchData.getEnabledArenas().isEmpty())
@@ -146,7 +146,7 @@ public class Queuetype implements SaveableData {
 			return nextArena(g);
 
 		// Select a random arena from the filtered list
-		int randomIndex = rand.nextInt(filteredArenas.size());
+		int randomIndex = (int) (arenaIndex++ % filteredArenas.size());
 		Arena selectedArena = filteredArenas.get(randomIndex);
 
 		// Remove the selected arena from the main queue to avoid repetition
