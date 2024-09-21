@@ -212,7 +212,8 @@ public class Event implements Spectatable {
                 if (isParticipant && !isSpectator)
                     participant.getPlayer().showPlayer(profile.getPlayer());
                 else
-                    participant.getPlayer().hidePlayer(profile.getPlayer(), false);
+                    participant.getPlayer().hidePlayer(profile.getPlayer(),
+                            BotAPI.INSTANCE.isFakePlayer(profile.getUuid()));
                 profile.getPlayer().showPlayer(participant.getPlayer());
             }
         } else {

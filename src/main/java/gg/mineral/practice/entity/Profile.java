@@ -325,15 +325,15 @@ public class Profile extends ProfileData {
 
 		for (Player player : players) {
 
-			getPlayer().hidePlayer(player, false);
-			//
-			player.hidePlayer(getPlayer(), false);
-
 			for (FakePlayer fakePlayer : BotAPI.INSTANCE.getFakePlayers()) {
 				Player p = Bukkit.getPlayer(fakePlayer.getUuid());
 				getPlayer().hidePlayer(p, true);
-				player.hidePlayer(getPlayer(), true);
+				player.hidePlayer(p, true);
 			}
+
+			getPlayer().hidePlayer(player, BotAPI.INSTANCE.isFakePlayer(player.getUniqueId()));
+			//
+			player.hidePlayer(getPlayer(), BotAPI.INSTANCE.isFakePlayer(getPlayer().getUniqueId()));
 
 			if (getPlayer().hasPermission("practice.visible") && this.isPlayersVisible()) {
 				// getPlayer().showPlayer(player);

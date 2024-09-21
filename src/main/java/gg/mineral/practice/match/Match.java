@@ -252,7 +252,8 @@ public class Match<D extends MatchData> implements Spectatable {
 				if (isParticipant && !isSpectator)
 					participant.getPlayer().showPlayer(profile.getPlayer());
 				else
-					participant.getPlayer().hidePlayer(profile.getPlayer(), false);
+					participant.getPlayer().hidePlayer(profile.getPlayer(),
+							BotAPI.INSTANCE.isFakePlayer(profile.getUuid()));
 				profile.getPlayer().showPlayer(participant.getPlayer());
 			}
 		} else {
@@ -504,7 +505,7 @@ public class Match<D extends MatchData> implements Spectatable {
 		attacker.heal();
 		attacker.removePotionEffects();
 		attacker.getInventory().clear();
-		attacker.getPlayer().hidePlayer(victim.getPlayer(), false);
+		attacker.getPlayer().hidePlayer(victim.getPlayer(), BotAPI.INSTANCE.isFakePlayer(victim.getUuid()));
 	}
 
 	public void giveQueueAgainItem(Profile profile) {
