@@ -11,13 +11,13 @@ import org.bukkit.event.player.PlayerJoinEvent;
 import org.bukkit.event.player.PlayerQuitEvent;
 
 import gg.mineral.bot.api.BotAPI;
-import groovy.xml.Entity;
 import io.netty.channel.Channel;
 import io.netty.channel.ChannelDuplexHandler;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.channel.ChannelPipeline;
 import io.netty.channel.ChannelPromise;
 import net.minecraft.server.v1_8_R3.EntityPlayer;
+import net.minecraft.server.v1_8_R3.MinecraftServer;
 import net.minecraft.server.v1_8_R3.PacketPlayOutPlayerInfo;
 import net.minecraft.server.v1_8_R3.PacketPlayOutPlayerInfo.PlayerInfoData;
 
@@ -68,7 +68,8 @@ public class PacketListener implements Listener {
                                     PacketPlayOutPlayerInfo newInfoPacket = new PacketPlayOutPlayerInfo(
                                             PacketPlayOutPlayerInfo.EnumPlayerInfoAction.REMOVE_PLAYER,
                                             craftBotHandle);
-                                    entityPlayer.playerConnection.sendPacket(newInfoPacket);
+                                    MinecraftServer.getServer().postToMainThread(
+                                            () -> entityPlayer.playerConnection.sendPacket(newInfoPacket));
                                 }
                             }
                         }
