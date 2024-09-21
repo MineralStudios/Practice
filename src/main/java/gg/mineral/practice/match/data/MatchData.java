@@ -88,8 +88,10 @@ public class MatchData {
 		data.botQueue = this.botQueue;
 		data.arenaSelection = this.arenaSelection;
 
-		if (data.arenaSelection && !this.enabledArenas.isEmpty())
-			data.enabledArenas = new Object2BooleanOpenHashMap<>(this.enabledArenas);
+		if (!this.enabledArenas.isEmpty())
+			data.enabledArenas.putAll(this.enabledArenas);
+
+		System.out.println("Enabled arenas: " + data.enabledArenas.size());
 		return data;
 	}
 

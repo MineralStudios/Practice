@@ -137,13 +137,10 @@ public class Queuetype implements SaveableData {
 
 		// Filter arenas based on Gametype and MatchData
 		List<Arena> filteredArenas = filterArenasByGametype(g);
-		System.out.println("Filtered arenas: " + filteredArenas.size());
 
 		for (Entry<Arena> e : matchData.getEnabledArenas().object2BooleanEntrySet())
 			if (!e.getBooleanValue())
 				filteredArenas.remove(e.getKey());
-
-		System.out.println("Filtered arenas after MatchData: " + filteredArenas.size());
 
 		if (filteredArenas.isEmpty())
 			return nextArena(g);
