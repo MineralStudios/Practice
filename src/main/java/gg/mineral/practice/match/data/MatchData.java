@@ -91,6 +91,7 @@ public class MatchData {
 		if (!this.enabledArenas.isEmpty())
 			data.enabledArenas.putAll(this.enabledArenas);
 
+		Thread.dumpStack();
 		System.out.println("Enabled arenas: " + data.enabledArenas.size());
 		return data;
 	}
