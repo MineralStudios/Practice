@@ -128,8 +128,6 @@ public class Queuetype implements SaveableData {
 	public Arena nextArena(MatchData matchData, Gametype g) {
 		Random rand = new Random();
 
-		System.out.println("Enabled arenas: " + matchData.getEnabledArenas());
-
 		// If there are no enabled arenas in the MatchData, revert to the other method
 		if (matchData.getEnabledArenas().isEmpty())
 			return nextArena(g);
@@ -137,9 +135,13 @@ public class Queuetype implements SaveableData {
 		// Filter arenas based on Gametype and MatchData
 		List<Arena> filteredArenas = filterArenasByGametype(g);
 
+		System.out.println("Filtered arenas: " + filteredArenas);
+
 		for (Entry<Arena> e : matchData.getEnabledArenas().object2BooleanEntrySet())
 			if (!e.getBooleanValue())
 				filteredArenas.remove(e.getKey());
+
+		System.out.println("Filtered arenas after: " + filteredArenas);
 
 		if (filteredArenas.isEmpty())
 			return nextArena(g);
