@@ -11,6 +11,7 @@ import gg.mineral.bot.api.BotAPI;
 import gg.mineral.bot.api.entity.living.player.FakePlayer;
 import gg.mineral.practice.PracticePlugin;
 import gg.mineral.practice.bots.Difficulty;
+import gg.mineral.practice.entity.PlayerStatus;
 import gg.mineral.practice.entity.Profile;
 import gg.mineral.practice.managers.ProfileManager;
 import gg.mineral.practice.match.data.QueueMatchData;
@@ -78,8 +79,14 @@ public class BotMatch extends Match<QueueMatchData> {
             Bukkit.getServer().getScheduler().runTaskLater(PracticePlugin.INSTANCE,
                     () -> profile.getInventory().setItem(profile.getInventory().getHeldItemSlot(),
                             ItemStacks.QUEUE_AGAIN,
-                            () -> new BotMatch(profile, profile.getMatchData().getBotDifficulty(),
-                                    BotMatch.this.getData()).start()),
+                            () -> {
+                                if (profile.getPlayerStatus() != PlayerStatus.QUEUEING) {
+                                    profile.setPlayerStatus(PlayerStatus.QUEUEING);
+
+                                    new BotMatch(profile, profile.getMatchData().getBotDifficulty(),
+                                            BotMatch.this.getData()).start();
+                                }
+                            }),
                     20);
     }
 

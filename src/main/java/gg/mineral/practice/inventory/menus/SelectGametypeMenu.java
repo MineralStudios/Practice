@@ -168,9 +168,8 @@ public class SelectGametypeMenu extends PracticeMenu {
 							viewer.getMatchData().setTeam2v2(!viewer.getMatchData().isTeam2v2());
 							reload();
 						});
-			} else {
+			} else
 				viewer.getMatchData().setTeam2v2(true);
-			}
 
 			setSlot(viewer.isInParty() ? 2 : 4,
 					ItemStacks.BOT_SETTINGS
