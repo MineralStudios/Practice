@@ -51,7 +51,8 @@ public class BotTestingCommand extends PlayerCommand {
             m = new BotTeamMatch(new GlueList<>(), new GlueList<>(),
                     friendlyTeam,
                     opponentTeam,
-                    profile.getMatchData().cloneBotAndArenaData(() -> new QueueMatchData(queueEntry)));
+                    profile.getMatchData()
+                            .cloneBotAndArenaData(enabledArenas -> new QueueMatchData(queueEntry, enabledArenas)));
             m.start();
         }
 

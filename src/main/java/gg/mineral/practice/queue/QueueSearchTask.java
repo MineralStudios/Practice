@@ -28,7 +28,8 @@ public class QueueSearchTask {
 
 		removePlayer(found);
 		Match<QueueMatchData> m = new Match<>(profile, found,
-				profile.getMatchData().cloneBotAndArenaData(() -> new QueueMatchData(queueEntry)));
+				profile.getMatchData()
+						.cloneBotAndArenaData(enabledArenas -> new QueueMatchData(queueEntry, enabledArenas)));
 		m.start();
 	}
 

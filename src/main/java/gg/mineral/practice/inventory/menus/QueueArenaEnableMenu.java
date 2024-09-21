@@ -62,7 +62,8 @@ public class QueueArenaEnableMenu extends PracticeMenu {
         });
 
         setSlot(31, ItemStacks.APPLY, interaction -> {
-            QueueMatchData data = viewer.getMatchData().cloneBotAndArenaData(() -> new QueueMatchData(queueEntry));
+            QueueMatchData data = viewer.getMatchData()
+                    .cloneBotAndArenaData(enabledArenas -> new QueueMatchData(queueEntry, enabledArenas));
 
             if (viewer.isInParty()) {
                 List<Difficulty> opponentTeam = new GlueList<>();

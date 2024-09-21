@@ -3,14 +3,19 @@ package gg.mineral.practice.queue;
 import java.util.List;
 import java.util.Map.Entry;
 
+import org.eclipse.jdt.annotation.Nullable;
+
 import gg.mineral.api.collection.GlueList;
+import gg.mineral.practice.arena.Arena;
 import gg.mineral.practice.bots.Difficulty;
 import gg.mineral.practice.entity.Profile;
 import gg.mineral.practice.gametype.Gametype;
 import gg.mineral.practice.match.BotTeamMatch;
 import gg.mineral.practice.match.TeamMatch;
+import gg.mineral.practice.match.data.MatchData;
 import gg.mineral.practice.match.data.QueueMatchData;
 import gg.mineral.practice.party.Party;
+import it.unimi.dsi.fastutil.objects.Object2BooleanOpenHashMap;
 import it.unimi.dsi.fastutil.objects.Object2ObjectOpenHashMap;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
@@ -56,7 +61,8 @@ public class QueueSearchTask2v2 {
                                         new GlueList<>(),
                                         team2Difficulties,
                                         profile.getMatchData()
-                                                .cloneBotAndArenaData(() -> new QueueMatchData(queueEntry)));
+                                                .cloneBotAndArenaData(enabledArenas -> new QueueMatchData(queueEntry,
+                                                        enabledArenas)));
                                 teams.remove(found);
                                 formedTeams.put(queueEntry, teams);
                                 m.start();
@@ -99,7 +105,8 @@ public class QueueSearchTask2v2 {
 
                 TeamMatch m = new BotTeamMatch(found.getProfiles(), opponent.getProfiles(), team1Difficulties,
                         team2Difficulties,
-                        profile.getMatchData().cloneBotAndArenaData(() -> new QueueMatchData(queueEntry)));
+                        profile.getMatchData()
+                                .cloneBotAndArenaData(enabledArenas -> new QueueMatchData(queueEntry, enabledArenas)));
                 formedTeams.remove(queueEntry);
                 m.start();
                 return;
@@ -119,11 +126,25 @@ public class QueueSearchTask2v2 {
         formedTeams.put(queueEntry, teams);
 
         Team opponent = null;
+
+        Object2BooleanOpenHashMap<Arena> foundEnabledArenas = found.getMatchData().getEnabledArenas();
+        foundEnabledArenas.object2BooleanEntrySet().removeIf(e -> !e.getBooleanValue());
+        Object2BooleanOpenHashMap<Arena> commonArenas = null;
+
         for (Team team : teams) {
-            for (Profile profile : party.getPartyMembers()) {
-                if (!team.getProfiles().contains(profile)) {
-                    opponent = team;
-                    break;
+
+            Object2BooleanOpenHashMap<Arena> teamEnabledArenas = team.getMatchData().getEnabledArenas();
+            teamEnabledArenas.object2BooleanEntrySet().removeIf(e -> !e.getBooleanValue());
+
+            commonArenas = new Object2BooleanOpenHashMap<>(foundEnabledArenas);
+            commonArenas.object2BooleanEntrySet().removeIf(e -> !teamEnabledArenas.containsKey(e.getKey()));
+
+            if (!commonArenas.isEmpty()) {
+                for (Profile profile : party.getPartyMembers()) {
+                    if (!team.getProfiles().contains(profile)) {
+                        opponent = team;
+                        break;
+                    }
                 }
             }
         }
@@ -135,9 +156,12 @@ public class QueueSearchTask2v2 {
                 for (int i = 0; i < opponent.getBotCount(); i++)
                     team2Difficulties.add(Difficulty.RANDOM);
 
+            if (commonArenas == null)
+                commonArenas = new Object2BooleanOpenHashMap<>();
+
             TeamMatch m = new BotTeamMatch(found.getProfiles(), opponent.getProfiles(), team1Difficulties,
                     team2Difficulties,
-                    new QueueMatchData(queueEntry));
+                    new QueueMatchData(queueEntry, commonArenas));
             formedTeams.remove(queueEntry);
             m.start();
             return;
@@ -146,16 +170,14 @@ public class QueueSearchTask2v2 {
     }
 
     public static void removePlayer(Profile profile) {
-        for (List<Team> teams : formedTeams.values()) {
+        for (List<Team> teams : formedTeams.values())
             teams.forEach(team -> team.getProfiles().remove(profile));
-        }
     }
 
     public static boolean removePlayer(Profile profile, QueueEntry queueEntry) {
         List<Team> teams = formedTeams.get(queueEntry);
-        if (teams == null) {
+        if (teams == null)
             return true;
-        }
 
         teams.forEach(team -> team.getProfiles().remove(profile));
 
@@ -168,11 +190,10 @@ public class QueueSearchTask2v2 {
         List<QueueEntry> profileQueueEntries = new GlueList<>();
         for (Entry<QueueEntry, List<Team>> entry : formedTeams.entrySet()) {
             List<Team> teams = entry.getValue();
-            for (Team team : teams) {
-                if (team.getProfiles().contains(profile)) {
+            for (Team team : teams)
+                if (team.getProfiles().contains(profile))
                     profileQueueEntries.add(entry.getKey());
-                }
-            }
+
         }
         return profileQueueEntries;
     }
@@ -180,18 +201,13 @@ public class QueueSearchTask2v2 {
     public static int getNumberInQueue(Queuetype queuetype, Gametype gametype) {
         int i = 0;
 
-        for (List<Team> teams : formedTeams.values()) {
-            for (Team team : teams) {
-                for (Profile profile : team.getProfiles()) {
-                    for (QueueEntry queueEntry : getQueueEntries(profile)) {
+        for (List<Team> teams : formedTeams.values())
+            for (Team team : teams)
+                for (Profile profile : team.getProfiles())
+                    for (QueueEntry queueEntry : getQueueEntries(profile))
                         if (queueEntry.getGametype().equals(gametype)
-                                && queueEntry.getQueuetype().equals(queuetype)) {
+                                && queueEntry.getQueuetype().equals(queuetype))
                             i++;
-                        }
-                    }
-                }
-            }
-        }
 
         return i;
     }
@@ -203,6 +219,13 @@ public class QueueSearchTask2v2 {
         List<Profile> profiles = new GlueList<>();
         @Getter
         final boolean bots;
+
+        @Nullable
+        public MatchData getMatchData() {
+            if (profiles.isEmpty())
+                return null;
+            return profiles.get(0).getMatchData();
+        }
 
         public int getBotCount() {
             return size - profiles.size();

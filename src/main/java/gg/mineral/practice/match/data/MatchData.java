@@ -1,5 +1,9 @@
 package gg.mineral.practice.match.data;
 
+import java.util.Collection;
+import java.util.function.Function;
+import java.util.function.Supplier;
+
 import gg.mineral.api.knockback.Knockback;
 import gg.mineral.practice.arena.Arena;
 import gg.mineral.practice.bots.CustomDifficulty;
@@ -14,8 +18,6 @@ import gg.mineral.server.combat.KnockbackProfileList;
 import it.unimi.dsi.fastutil.objects.Object2BooleanOpenHashMap;
 import lombok.Getter;
 import lombok.Setter;
-import java.util.function.Supplier;
-import java.util.Collection;
 
 @Getter
 public class MatchData {
@@ -80,19 +82,13 @@ public class MatchData {
 		return data;
 	}
 
-	public <D extends MatchData> D cloneBotAndArenaData(Supplier<D> supplier) {
-		D data = supplier.get();
+	public <D extends MatchData> D cloneBotAndArenaData(Function<Object2BooleanOpenHashMap<Arena>, D> fucntion) {
+		D data = fucntion.apply(enabledArenas);
 		data.customBotDifficulty = this.customBotDifficulty;
 		data.botDifficulty = this.botDifficulty;
 		data.botTeammate = this.botTeammate;
 		data.botQueue = this.botQueue;
 		data.arenaSelection = this.arenaSelection;
-
-		if (!this.enabledArenas.isEmpty())
-			data.enabledArenas.putAll(this.enabledArenas);
-
-		Thread.dumpStack();
-		System.out.println("Enabled arenas: " + data.enabledArenas.size());
 		return data;
 	}
 

@@ -76,7 +76,8 @@ public class SelectGametypeMenu extends PracticeMenu {
 
 				TeamMatch m = new BotTeamMatch(Arrays.asList(viewer), new GlueList<>(), playerTeam,
 						opponentTeam,
-						viewer.getMatchData().cloneBotAndArenaData(() -> new QueueMatchData(queueEntry)));
+						viewer.getMatchData()
+								.cloneBotAndArenaData(enabledArenas -> new QueueMatchData(queueEntry, enabledArenas)));
 				m.start();
 			} else if (botOpponents1 || botTeammate1) {
 				if (!(queueEntry.getGametype().isBotsEnabled()
@@ -102,7 +103,8 @@ public class SelectGametypeMenu extends PracticeMenu {
 					TeamMatch m = new BotTeamMatch(viewer.getParty().getPartyMembers(), new GlueList<>(),
 							new GlueList<>(),
 							opponentTeam,
-							viewer.getMatchData().cloneBotAndArenaData(() -> new QueueMatchData(queueEntry)));
+							viewer.getMatchData().cloneBotAndArenaData(
+									enabledArenas -> new QueueMatchData(queueEntry, enabledArenas)));
 					m.start();
 					return;
 				}
@@ -138,7 +140,8 @@ public class SelectGametypeMenu extends PracticeMenu {
 
 			viewer.getPlayer().closeInventory();
 			BotMatch m = new BotMatch(viewer, viewer.getMatchData().getBotDifficulty(),
-					viewer.getMatchData().cloneBotAndArenaData(() -> new QueueMatchData(queueEntry)));
+					viewer.getMatchData()
+							.cloneBotAndArenaData(enabledArenas -> new QueueMatchData(queueEntry, enabledArenas)));
 			m.start();
 			return;
 		} else {

@@ -5,9 +5,9 @@ import org.eclipse.jdt.annotation.Nullable;
 
 import gg.mineral.practice.arena.Arena;
 import gg.mineral.practice.queue.QueueEntry;
+import it.unimi.dsi.fastutil.objects.Object2BooleanOpenHashMap;
 import lombok.Getter;
 
-import java.util.concurrent.ConcurrentLinkedQueue;
 import java.util.function.Supplier;
 
 public class QueueMatchData extends MatchData {
@@ -17,13 +17,11 @@ public class QueueMatchData extends MatchData {
     @Getter
     private boolean ranked = false;
 
-    public QueueMatchData(QueueEntry queueEntry) {
-        setQueueEntry(queueEntry);
-    }
+    public QueueMatchData(QueueEntry queueEntry, Object2BooleanOpenHashMap<Arena> enabledArenas) {
+        if (!enabledArenas.isEmpty())
+            this.enabledArenas.putAll(this.enabledArenas);
 
-    public QueueMatchData(QueueEntry queueEntry, ConcurrentLinkedQueue<Arena> enabledArenas) {
-        this(queueEntry);
-        setEnabledArenas(enabledArenas);
+        setQueueEntry(queueEntry);
     }
 
     public QueueMatchData setQueueEntry(@Nullable QueueEntry queueEntry) {
