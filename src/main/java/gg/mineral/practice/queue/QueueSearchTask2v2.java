@@ -93,6 +93,27 @@ public class QueueSearchTask2v2 {
             }
 
             if (opponent != null && opponent.isFull()) {
+                Object2BooleanOpenHashMap<Arena> profileEnabledArenas = profile.getMatchData().getEnabledArenas(); // TODO:
+                                                                                                                   // make
+                                                                                                                   // sure
+                                                                                                                   // for
+                                                                                                                   // each
+                                                                                                                   // individual
+                                                                                                                   // profile
+                                                                                                                   // that
+                                                                                                                   // the
+                                                                                                                   // arenas
+                                                                                                                   // are
+                                                                                                                   // common
+                profileEnabledArenas.object2BooleanEntrySet().removeIf(e -> !e.getBooleanValue());
+                Object2BooleanOpenHashMap<Arena> foundEnabledArenas = opponent.getMatchData().getEnabledArenas();
+                foundEnabledArenas.object2BooleanEntrySet().removeIf(e -> !e.getBooleanValue());
+
+                Object2BooleanOpenHashMap<Arena> commonEnabledArenas = new Object2BooleanOpenHashMap<>(
+                        profileEnabledArenas);
+                commonEnabledArenas.object2BooleanEntrySet().removeIf(e -> !foundEnabledArenas.getBoolean(e.getKey()));
+
+                QueueMatchData matchData = new QueueMatchData(queueEntry, commonEnabledArenas);
                 List<Difficulty> team1Difficulties = new GlueList<>(), team2Difficulties = new GlueList<>();
 
                 if (found.isBots())
@@ -105,8 +126,7 @@ public class QueueSearchTask2v2 {
 
                 TeamMatch m = new BotTeamMatch(found.getProfiles(), opponent.getProfiles(), team1Difficulties,
                         team2Difficulties,
-                        profile.getMatchData()
-                                .cloneBotAndArenaData(enabledArenas -> new QueueMatchData(queueEntry, enabledArenas)));
+                        matchData);
                 formedTeams.remove(queueEntry);
                 m.start();
                 return;

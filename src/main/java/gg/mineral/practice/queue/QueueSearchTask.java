@@ -6,11 +6,13 @@ import java.util.Map.Entry;
 import org.eclipse.jdt.annotation.Nullable;
 
 import gg.mineral.api.collection.GlueList;
+import gg.mineral.practice.arena.Arena;
 import gg.mineral.practice.entity.PlayerStatus;
 import gg.mineral.practice.entity.Profile;
 import gg.mineral.practice.gametype.Gametype;
 import gg.mineral.practice.match.Match;
 import gg.mineral.practice.match.data.QueueMatchData;
+import it.unimi.dsi.fastutil.objects.Object2BooleanOpenHashMap;
 import it.unimi.dsi.fastutil.objects.Object2ObjectOpenHashMap;
 
 public class QueueSearchTask {
@@ -18,6 +20,21 @@ public class QueueSearchTask {
 
 	public static void addPlayer(Profile profile, QueueEntry queueEntry) {
 		Profile found = searchForMatch(queueEntry);
+
+		QueueMatchData matchData = null;
+
+		if (found != null) {
+			Object2BooleanOpenHashMap<Arena> profileEnabledArenas = profile.getMatchData().getEnabledArenas();
+			profileEnabledArenas.object2BooleanEntrySet().removeIf(e -> !e.getBooleanValue());
+			Object2BooleanOpenHashMap<Arena> foundEnabledArenas = found.getMatchData().getEnabledArenas();
+			foundEnabledArenas.object2BooleanEntrySet().removeIf(e -> !e.getBooleanValue());
+
+			Object2BooleanOpenHashMap<Arena> commonEnabledArenas = new Object2BooleanOpenHashMap<>(
+					profileEnabledArenas);
+			commonEnabledArenas.object2BooleanEntrySet().removeIf(e -> !foundEnabledArenas.getBoolean(e.getKey()));
+
+			matchData = new QueueMatchData(queueEntry, commonEnabledArenas);
+		}
 
 		if (found == null) {
 			List<QueueEntry> queueEntries = map.getOrDefault(profile, new GlueList<>());
@@ -28,8 +45,7 @@ public class QueueSearchTask {
 
 		removePlayer(found);
 		Match<QueueMatchData> m = new Match<>(profile, found,
-				profile.getMatchData()
-						.cloneBotAndArenaData(enabledArenas -> new QueueMatchData(queueEntry, enabledArenas)));
+				matchData);
 		m.start();
 	}
 
