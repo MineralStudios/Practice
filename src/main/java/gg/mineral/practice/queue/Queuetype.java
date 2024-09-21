@@ -1,5 +1,6 @@
 package gg.mineral.practice.queue;
 
+import java.util.Iterator;
 import java.util.List;
 import java.util.Random;
 import java.util.concurrent.ConcurrentLinkedQueue;
@@ -24,7 +25,6 @@ import gg.mineral.practice.util.items.ItemStacks;
 import gg.mineral.practice.util.messages.CC;
 import gg.mineral.server.combat.KnockbackProfile;
 import gg.mineral.server.combat.KnockbackProfileList;
-import it.unimi.dsi.fastutil.objects.Object2BooleanMap.Entry;
 import it.unimi.dsi.fastutil.objects.Object2IntOpenHashMap;
 import it.unimi.dsi.fastutil.objects.ObjectSet;
 import lombok.Getter;
@@ -135,13 +135,12 @@ public class Queuetype implements SaveableData {
 		// Filter arenas based on Gametype and MatchData
 		List<Arena> filteredArenas = filterArenasByGametype(g);
 
-		System.out.println("Filtered arenas: " + filteredArenas);
-
-		for (Entry<Arena> e : matchData.getEnabledArenas().object2BooleanEntrySet())
-			if (!e.getBooleanValue())
-				filteredArenas.remove(e.getKey());
-
-		System.out.println("Filtered arenas after: " + filteredArenas);
+		Iterator<Arena> iterator = filteredArenas.iterator();
+		while (iterator.hasNext()) {
+			Arena arena = iterator.next();
+			if (!matchData.getEnabledArenas().getBoolean(arena))
+				iterator.remove();
+		}
 
 		if (filteredArenas.isEmpty())
 			return nextArena(g);
