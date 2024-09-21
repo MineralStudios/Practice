@@ -206,17 +206,16 @@ public class Match<D extends MatchData> implements Spectatable {
 		if (map == null ? true : map.isEmpty())
 			return;
 
-		if (map.size() == 1) {
+		if (map.size() == 1)
 			p.giveKit(getKit(map.values().iterator().next()));
-			return;
-		}
-
-		for (Entry<ItemStack[]> entry : map.int2ObjectEntrySet())
-			p.getInventory().setItem(entry.getIntKey(),
-					ItemStacks.LOAD_KIT.name(CC.B + CC.GOLD + "Load Kit #" + entry.getIntKey()).build(), profile -> {
-						p.giveKit(getKit(entry.getValue()));
-						return true;
-					});
+		else
+			for (Entry<ItemStack[]> entry : map.int2ObjectEntrySet())
+				p.getInventory().setItem(entry.getIntKey(),
+						ItemStacks.LOAD_KIT.name(CC.B + CC.GOLD + "Load Kit #" + entry.getIntKey()).build(),
+						profile -> {
+							p.giveKit(getKit(entry.getValue()));
+							return true;
+						});
 	}
 
 	public void onCountdownStart(Profile p) {
@@ -235,12 +234,7 @@ public class Match<D extends MatchData> implements Spectatable {
 	}
 
 	public void setScoreboard(Profile p) {
-		if (data.isBoxing()) {
-			p.setScoreboard(BoxingScoreboard.INSTANCE);
-			return;
-		}
-
-		p.setScoreboard(InMatchScoreboard.INSTANCE);
+		p.setScoreboard(data.isBoxing() ? BoxingScoreboard.INSTANCE : InMatchScoreboard.INSTANCE);
 	}
 
 	public void updateVisiblity(Match<?> match, Profile profile) {
@@ -541,12 +535,7 @@ public class Match<D extends MatchData> implements Spectatable {
 			if (shooter instanceof Player pShooter) {
 				Profile profile = ProfileManager.getProfile(pShooter.getUniqueId());
 
-				if (profile == null) {
-					arrow.remove();
-					continue;
-				}
-
-				if (profile.getPlayerStatus() != PlayerStatus.FIGHTING
+				if (profile == null || profile.getPlayerStatus() != PlayerStatus.FIGHTING
 						|| (profile.getPlayerStatus() == PlayerStatus.FIGHTING && profile.getMatch().isEnded()))
 					arrow.remove();
 			}
