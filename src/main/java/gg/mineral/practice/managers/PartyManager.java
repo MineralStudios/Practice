@@ -20,7 +20,7 @@ public class PartyManager {
 	@Getter
 	static String displayName;
 	@Getter
-	static Boolean enabled;
+	static boolean enabled;
 	static FileConfiguration config = new FileConfiguration("parties.yml", "plugins/Practice");
 
 	public static void registerParty(Party party) {
@@ -32,20 +32,17 @@ public class PartyManager {
 	}
 
 	public boolean contains(Party party) {
-		for (Party p : parties) {
-			if (p.equals(party)) {
+		for (Party p : parties)
+			if (p.equals(party))
 				return true;
-			}
-		}
+
 		return false;
 	}
 
 	public Party getParty(UUID u) {
-		for (Party p : parties) {
-			if (p.getPartyLeader().getUuid().equals(u)) {
+		for (Party p : parties)
+			if (p.getPartyLeader().getUuid().equals(u))
 				return p;
-			}
-		}
 
 		return null;
 	}
@@ -65,7 +62,7 @@ public class PartyManager {
 		save();
 	}
 
-	public static void setSlot(Integer slot) {
+	public static void setSlot(int slot) {
 		PartyManager.slot = slot;
 		save();
 	}

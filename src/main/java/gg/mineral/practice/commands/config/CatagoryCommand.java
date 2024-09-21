@@ -109,7 +109,7 @@ public class CatagoryCommand extends PlayerCommand {
 				if (slotName.equalsIgnoreCase("false")) {
 					catagory.removeFromQueuetype(queuetype);
 				} else {
-					Integer slot;
+					int slot;
 
 					try {
 						slot = Integer.parseInt(slotName);

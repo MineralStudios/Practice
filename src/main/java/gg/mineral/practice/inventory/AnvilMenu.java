@@ -207,7 +207,7 @@ public abstract class AnvilMenu implements Menu {
         setSlot(slot, item);
     }
 
-    public Integer findUnusedSlot() {
+    public int findUnusedSlot() {
         for (int i = 0; i <= 3; i++)
             if (items.get(i) == null)
                 return i;

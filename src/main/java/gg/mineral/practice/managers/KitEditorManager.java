@@ -17,7 +17,7 @@ public class KitEditorManager {
 	@Getter
 	static int slot;
 	@Getter
-	static Boolean enabled;
+	static boolean enabled;
 	@Getter
 	static Location location;
 
@@ -31,7 +31,7 @@ public class KitEditorManager {
 		save();
 	}
 
-	public static void setSlot(Integer slot) {
+	public static void setSlot(int slot) {
 		KitEditorManager.slot = slot;
 		save();
 	}

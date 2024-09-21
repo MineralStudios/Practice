@@ -18,7 +18,7 @@ import lombok.RequiredArgsConstructor;
 public class MatchStatisticCollector {
     final Profile profile;
     @Getter
-    Integer hitCount, currentCombo, longestCombo, averageCombo, highestCps, wTapCount, wTapAccuracy,
+    int hitCount, currentCombo, longestCombo, averageCombo, highestCps, wTapCount, wTapAccuracy,
             potionsThrown, potionsMissed, potionsStolen, potionsRemaining, potionAccuracy, soupsRemaining,
             remainingHealth;
     int clicks;

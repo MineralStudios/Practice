@@ -36,7 +36,7 @@ public class Gametype implements SaveableData {
 	final FileConfiguration config = GametypeManager.getConfig();
 
 	@Getter
-	Boolean regeneration, deadlyWater, griefing, build, looting, damage, hunger, boxing, event, botsEnabled;
+	boolean regeneration, deadlyWater, griefing, build, looting, damage, hunger, boxing, event, botsEnabled;
 	@Setter
 	@Getter
 	boolean inCatagory;
@@ -65,7 +65,7 @@ public class Gametype implements SaveableData {
 		this.path = "Gametype." + getName() + ".";
 	}
 
-	public Integer getElo(ProfileData profile) {
+	public int getElo(ProfileData profile) {
 		int elo = eloMap.getInt(profile);
 
 		if (profile.getUuid() == null)
@@ -123,7 +123,7 @@ public class Gametype implements SaveableData {
 		EloManager.update(profile, getName(), elo);
 	}
 
-	public void setRegeneration(Boolean regeneration) {
+	public void setRegeneration(boolean regeneration) {
 		this.regeneration = regeneration;
 		save();
 	}
@@ -156,47 +156,47 @@ public class Gametype implements SaveableData {
 		save();
 	}
 
-	public void setDeadlyWater(Boolean deadlyWater) {
+	public void setDeadlyWater(boolean deadlyWater) {
 		this.deadlyWater = deadlyWater;
 		save();
 	}
 
-	public void setGriefing(Boolean griefing) {
+	public void setGriefing(boolean griefing) {
 		this.griefing = griefing;
 		save();
 	}
 
-	public void setBuild(Boolean build) {
+	public void setBuild(boolean build) {
 		this.build = build;
 		save();
 	}
 
-	public void setLooting(Boolean looting) {
+	public void setLooting(boolean looting) {
 		this.looting = looting;
 		save();
 	}
 
-	public void setDamage(Boolean damage) {
+	public void setDamage(boolean damage) {
 		this.damage = damage;
 		save();
 	}
 
-	public void setHunger(Boolean hunger) {
+	public void setHunger(boolean hunger) {
 		this.hunger = hunger;
 		save();
 	}
 
-	public void setBoxing(Boolean boxing) {
+	public void setBoxing(boolean boxing) {
 		this.boxing = boxing;
 		save();
 	}
 
-	public void setBotsEnabled(Boolean bots) {
+	public void setBotsEnabled(boolean bots) {
 		this.botsEnabled = bots;
 		save();
 	}
 
-	public void setPearlCooldown(Integer pearlCooldown) {
+	public void setPearlCooldown(int pearlCooldown) {
 		this.pearlCooldown = pearlCooldown;
 		save();
 	}
@@ -216,7 +216,7 @@ public class Gametype implements SaveableData {
 		save();
 	}
 
-	public void enableArena(Arena arena, Boolean enabled) {
+	public void enableArena(Arena arena, boolean enabled) {
 		if (enabled) {
 			arenas.add(arena);
 		} else {

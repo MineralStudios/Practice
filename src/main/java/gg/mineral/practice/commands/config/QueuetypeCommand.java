@@ -227,7 +227,7 @@ public class QueuetypeCommand extends PlayerCommand {
 					return;
 				}
 
-				Integer slot;
+				int slot;
 				String slotName = args[2];
 
 				try {

@@ -97,13 +97,13 @@ public class MatchData {
 		this.gametype = gametype;
 		kit = gametype.getKit();
 		noDamageTicks = gametype.getNoDamageTicks();
-		hunger = gametype.getHunger();
-		boxing = gametype.getBoxing();
-		build = gametype.getBuild();
-		damage = gametype.getDamage();
-		griefing = gametype.getGriefing();
-		deadlyWater = gametype.getDeadlyWater();
-		regeneration = gametype.getRegeneration();
+		hunger = gametype.isHunger();
+		boxing = gametype.isBoxing();
+		build = gametype.isBuild();
+		damage = gametype.isDamage();
+		griefing = gametype.isGriefing();
+		deadlyWater = gametype.isDeadlyWater();
+		regeneration = gametype.isRegeneration();
 		pearlCooldown = gametype.getPearlCooldown();
 	}
 

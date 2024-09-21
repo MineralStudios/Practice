@@ -162,7 +162,7 @@ public class GametypeCommand extends PlayerCommand {
 
 				String noDamageTicksStr = args[2];
 
-				Integer ndt;
+				int ndt;
 
 				try {
 					ndt = Integer.parseInt(noDamageTicksStr);
@@ -296,7 +296,7 @@ public class GametypeCommand extends PlayerCommand {
 				if (slotName.equalsIgnoreCase("false")) {
 					gametype.removeFromQueuetype(queuetype);
 				} else {
-					Integer slot;
+					int slot;
 
 					try {
 						slot = Integer.parseInt(slotName);
@@ -519,7 +519,7 @@ public class GametypeCommand extends PlayerCommand {
 
 				String cooldownStr = args[2];
 
-				Integer number;
+				int number;
 
 				try {
 					number = Integer.parseInt(cooldownStr);

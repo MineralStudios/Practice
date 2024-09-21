@@ -39,11 +39,9 @@ public class Queuetype implements SaveableData {
 	@Getter
 	String displayName;
 	@Getter
-	Integer slotNumber;
+	int slotNumber;
 	@Getter
-	Boolean botsEnabled;
-	@Getter
-	boolean ranked, community, unranked;
+	boolean ranked, community, unranked, botsEnabled;
 	final String path;
 	@Getter
 	KnockbackProfile knockback = null;
@@ -68,7 +66,7 @@ public class Queuetype implements SaveableData {
 	}
 
 	public Gametype randomGametypeWithBotsEnabled() {
-		List<Gametype> list = new GlueList<>(gametypes.keySet()).stream().filter(g -> g.getBotsEnabled())
+		List<Gametype> list = new GlueList<>(gametypes.keySet()).stream().filter(g -> g.isBotsEnabled())
 				.collect(Collectors.toList());
 		Random rand = new Random();
 		return list.get(rand.nextInt(list.size()));
@@ -165,7 +163,7 @@ public class Queuetype implements SaveableData {
 		save();
 	}
 
-	public void setSlotNumber(Integer slotNumber) {
+	public void setSlotNumber(int slotNumber) {
 		this.slotNumber = slotNumber;
 		save();
 	}
@@ -175,7 +173,7 @@ public class Queuetype implements SaveableData {
 		save();
 	}
 
-	public void setBotsEnabled(Boolean bots) {
+	public void setBotsEnabled(boolean bots) {
 		this.botsEnabled = bots;
 		save();
 	}
@@ -195,7 +193,7 @@ public class Queuetype implements SaveableData {
 		save();
 	}
 
-	public void enableArena(Arena arena, Boolean enabled) {
+	public void enableArena(Arena arena, boolean enabled) {
 		if (enabled) {
 			arenas.add(arena);
 		} else {

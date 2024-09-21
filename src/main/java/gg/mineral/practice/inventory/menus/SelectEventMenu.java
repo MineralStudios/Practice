@@ -16,7 +16,7 @@ public class SelectEventMenu extends PracticeMenu {
     @Override
     public void update() {
         for (Gametype g : GametypeManager.getGametypes()) {
-            if (!g.getEvent())
+            if (!g.isEvent())
                 continue;
 
             ItemStack item = new ItemBuilder(g.getDisplayItem())

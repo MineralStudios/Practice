@@ -4,13 +4,18 @@ import org.bukkit.inventory.ItemStack;
 
 import gg.mineral.api.config.FileConfiguration;
 import gg.mineral.practice.util.items.ItemStacks;
+import lombok.Getter;
 
 public class SpectateManager {
     final static FileConfiguration config = new FileConfiguration("spectateoptions.yml", "plugins/Practice");
+    @Getter
     static int slot;
+    @Getter
     static ItemStack displayItem;
+    @Getter
     static String displayName;
-    static Boolean enabled;
+    @Getter
+    static boolean enabled;
 
     public static void setEnabled(boolean enabled) {
         SpectateManager.enabled = enabled;
@@ -27,25 +32,9 @@ public class SpectateManager {
         save();
     }
 
-    public static void setSlot(Integer slot) {
+    public static void setSlot(int slot) {
         SpectateManager.slot = slot;
         save();
-    }
-
-    public static Boolean getEnabled() {
-        return enabled;
-    }
-
-    public static ItemStack getDisplayItem() {
-        return displayItem;
-    }
-
-    public static String getDisplayName() {
-        return displayName;
-    }
-
-    public static int getSlot() {
-        return slot;
     }
 
     public static void save() {

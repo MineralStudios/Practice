@@ -294,7 +294,7 @@ public class PlayerInventory extends CraftInventoryPlayer {
                     });
         }
 
-        if (KitEditorManager.getEnabled()) {
+        if (KitEditorManager.isEnabled()) {
             ItemStack editor = new ItemBuilder(KitEditorManager.getDisplayItem())
                     .name(CC.SECONDARY + CC.B + KitEditorManager.getDisplayName())
                     .lore(CC.ACCENT + "Right click to edit a kit.")
@@ -306,7 +306,7 @@ public class PlayerInventory extends CraftInventoryPlayer {
                     });
         }
 
-        if (PartyManager.getEnabled()) {
+        if (PartyManager.isEnabled()) {
             ItemStack parties = new ItemBuilder(PartyManager.getDisplayItem())
                     .name(CC.SECONDARY + CC.B + PartyManager.getDisplayName())
                     .lore(CC.ACCENT + "Right click to create a party.")
@@ -315,7 +315,7 @@ public class PlayerInventory extends CraftInventoryPlayer {
                     p -> p.getPlayer().performCommand("p create"));
         }
 
-        if (PlayerSettingsManager.getEnabled()) {
+        if (PlayerSettingsManager.isEnabled()) {
             ItemStack settings = new ItemBuilder(PlayerSettingsManager.getDisplayItem())
                     .name(CC.SECONDARY + CC.B + PlayerSettingsManager.getDisplayName())
                     .lore(CC.ACCENT + "Right click to open settings.")
@@ -324,7 +324,7 @@ public class PlayerInventory extends CraftInventoryPlayer {
                     p -> p.getPlayer().performCommand("settings"));
         }
 
-        if (SpectateManager.getEnabled()) {
+        if (SpectateManager.isEnabled()) {
             ItemStack spectate = new ItemBuilder(SpectateManager.getDisplayItem())
                     .name(CC.SECONDARY + CC.B + SpectateManager.getDisplayName())
                     .lore(CC.ACCENT + "Right click to spectate.")
@@ -333,7 +333,7 @@ public class PlayerInventory extends CraftInventoryPlayer {
                     p -> p.getPlayer().performCommand("spectate"));
         }
 
-        if (LeaderboardManager.getEnabled()) {
+        if (LeaderboardManager.isEnabled()) {
             ItemStack leaderboard = new ItemBuilder(LeaderboardManager.getDisplayItem())
                     .name(CC.SECONDARY + CC.B + LeaderboardManager.getDisplayName())
                     .lore(CC.ACCENT + "Right click to view.")

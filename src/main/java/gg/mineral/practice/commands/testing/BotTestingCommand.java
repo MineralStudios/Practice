@@ -30,7 +30,7 @@ public class BotTestingCommand extends PlayerCommand {
         if (args.length < 2)
             return;
 
-        Integer amount = Integer.valueOf(args[0]);
+        int amount = Integer.valueOf(args[0]);
 
         Queuetype queuetype = QueuetypeManager.getQueuetypeByName("Unranked");
         Gametype gametype = GametypeManager.getGametypeByName(args[1]);

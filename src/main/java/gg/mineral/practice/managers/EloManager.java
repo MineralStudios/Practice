@@ -54,7 +54,7 @@ public class EloManager {
 					.executeQuery("SELECT * FROM " + TABLE + " WHERE GAMETYPE=? AND UUID=?", gametype.getName(),
 							uuid.toString())
 					.thenApply(queryResult -> {
-						Integer elo = 1000;
+						int elo = 1000;
 						try (ResultSet r = queryResult.getResultSet()) {
 
 							if (r.next())
@@ -77,7 +77,7 @@ public class EloManager {
 					.executeQuery("SELECT * FROM " + TABLE + " WHERE PLAYER=? AND GAMETYPE=?", playerName,
 							gametype.getName())
 					.thenApply(queryResult -> {
-						Integer elo = 1000;
+						int elo = 1000;
 						try (ResultSet r = queryResult.getResultSet()) {
 							if (r.next())
 								elo = r.getInt("ELO");
