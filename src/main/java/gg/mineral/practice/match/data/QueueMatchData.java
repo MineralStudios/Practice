@@ -21,6 +21,9 @@ public class QueueMatchData extends MatchData {
         if (!enabledArenas.isEmpty())
             this.enabledArenas.putAll(this.enabledArenas);
 
+        Thread.dumpStack();
+        System.out.println("Enabled arenas: " + enabledArenas);
+
         setQueueEntry(queueEntry);
     }
 

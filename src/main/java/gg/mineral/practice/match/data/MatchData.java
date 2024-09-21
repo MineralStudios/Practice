@@ -83,7 +83,9 @@ public class MatchData {
 	}
 
 	public <D extends MatchData> D cloneBotAndArenaData(Function<Object2BooleanOpenHashMap<Arena>, D> fucntion) {
-		D data = fucntion.apply(enabledArenas);
+		Thread.dumpStack();
+		System.out.println("Enabled arenas: " + enabledArenas);
+		D data = fucntion.apply(this.enabledArenas);
 		data.customBotDifficulty = this.customBotDifficulty;
 		data.botDifficulty = this.botDifficulty;
 		data.botTeammate = this.botTeammate;
