@@ -11,6 +11,7 @@ import org.bukkit.event.player.PlayerJoinEvent;
 import org.bukkit.event.player.PlayerQuitEvent;
 
 import gg.mineral.bot.api.BotAPI;
+import gg.mineral.practice.PracticePlugin;
 import io.netty.channel.Channel;
 import io.netty.channel.ChannelDuplexHandler;
 import io.netty.channel.ChannelHandlerContext;
@@ -68,8 +69,8 @@ public class PacketListener implements Listener {
                                     PacketPlayOutPlayerInfo newInfoPacket = new PacketPlayOutPlayerInfo(
                                             PacketPlayOutPlayerInfo.EnumPlayerInfoAction.REMOVE_PLAYER,
                                             craftBotHandle);
-                                    MinecraftServer.getServer().postToMainThread(
-                                            () -> entityPlayer.playerConnection.sendPacket(newInfoPacket));
+                                    Bukkit.getScheduler().scheduleSyncDelayedTask(PracticePlugin.INSTANCE,
+                                            () -> entityPlayer.playerConnection.sendPacket(newInfoPacket), 2);
                                 }
                             }
                         }
