@@ -29,7 +29,7 @@ public class EntryListener implements Listener {
 		EloManager.updateName(profile);
 		profile.getInventory().setInventoryForLobby();
 		profile.removePotionEffects();
-		profile.updateVisiblity();
+		profile.updateLobbyVisiblity();
 
 		profile.setScoreboard(DefaultScoreboard.INSTANCE);
 

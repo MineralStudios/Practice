@@ -21,6 +21,7 @@ import org.bukkit.projectiles.ProjectileSource;
 import org.bukkit.scheduler.BukkitScheduler;
 
 import gg.mineral.api.collection.GlueList;
+import gg.mineral.bot.api.BotAPI;
 import gg.mineral.practice.PracticePlugin;
 import gg.mineral.practice.entity.PlayerStatus;
 import gg.mineral.practice.entity.Profile;
@@ -245,14 +246,17 @@ public class Match<D extends MatchData> implements Spectatable {
 				if (isParticipant && !isSpectator)
 					participant.getPlayer().showPlayer(profile.getPlayer());
 				else
-					participant.getPlayer().hidePlayer(profile.getPlayer(), false);
+					participant.getPlayer().hidePlayer(profile.getPlayer(),
+							BotAPI.INSTANCE.isFakePlayer(profile.getPlayer().getUniqueId()));
 				profile.getPlayer().showPlayer(participant.getPlayer());
 			}
 			return;
 		} else {
 			for (Profile participant : participants) {
-				participant.getPlayer().hidePlayer(profile.getPlayer(), false);
-				profile.getPlayer().hidePlayer(participant.getPlayer(), false);
+				participant.getPlayer().hidePlayer(profile.getPlayer(),
+						BotAPI.INSTANCE.isFakePlayer(profile.getPlayer().getUniqueId()));
+				profile.getPlayer().hidePlayer(participant.getPlayer(),
+						BotAPI.INSTANCE.isFakePlayer(participant.getPlayer().getUniqueId()));
 			}
 		}
 	}
@@ -492,7 +496,8 @@ public class Match<D extends MatchData> implements Spectatable {
 		attacker.heal();
 		attacker.removePotionEffects();
 		attacker.getInventory().clear();
-		attacker.getPlayer().hidePlayer(victim.getPlayer(), false);
+		attacker.getPlayer().hidePlayer(victim.getPlayer(),
+				BotAPI.INSTANCE.isFakePlayer(victim.getPlayer().getUniqueId()));
 	}
 
 	public void giveQueueAgainItem(Profile profile) {

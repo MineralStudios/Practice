@@ -3,6 +3,7 @@ package gg.mineral.practice.kit;
 import org.bukkit.GameMode;
 import org.bukkit.entity.Player;
 
+import gg.mineral.bot.api.BotAPI;
 import gg.mineral.practice.entity.Profile;
 import gg.mineral.practice.inventory.SubmitAction;
 import gg.mineral.practice.managers.KitEditorManager;
@@ -32,7 +33,7 @@ public class KitCreator {
         profile.getInventory().clear();
 
         for (Player player : profile.getPlayer().getWorld().getPlayers())
-            profile.getPlayer().hidePlayer(player, false);
+            profile.getPlayer().hidePlayer(player, BotAPI.INSTANCE.isFakePlayer(player.getUniqueId()));
 
         profile.setGameMode(GameMode.CREATIVE);
     }

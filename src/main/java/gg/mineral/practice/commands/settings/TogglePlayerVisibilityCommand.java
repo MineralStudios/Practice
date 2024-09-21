@@ -2,6 +2,7 @@ package gg.mineral.practice.commands.settings;
 
 import java.util.List;
 
+import gg.mineral.bot.api.BotAPI;
 import gg.mineral.practice.commands.PlayerCommand;
 import gg.mineral.practice.entity.Profile;
 import gg.mineral.practice.managers.ProfileManager;
@@ -29,7 +30,7 @@ public class TogglePlayerVisibilityCommand extends PlayerCommand {
 		} else {
 			for (i = 0; i < list.size(); i++) {
 				org.bukkit.entity.Player p = list.get(i);
-				pl.hidePlayer(p, false);
+				pl.hidePlayer(p, BotAPI.INSTANCE.isFakePlayer(p.getUniqueId()));
 			}
 		}
 

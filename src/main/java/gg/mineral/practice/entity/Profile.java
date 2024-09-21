@@ -1,7 +1,7 @@
 package gg.mineral.practice.entity;
 
+import java.util.Collection;
 import java.util.Iterator;
-import java.util.List;
 
 import org.bukkit.Bukkit;
 import org.bukkit.GameMode;
@@ -11,6 +11,7 @@ import org.bukkit.potion.PotionEffect;
 import org.eclipse.jdt.annotation.NonNull;
 import org.eclipse.jdt.annotation.Nullable;
 
+import gg.mineral.bot.api.BotAPI;
 import gg.mineral.practice.PracticePlugin;
 import gg.mineral.practice.entity.handler.RequestHandler;
 import gg.mineral.practice.entity.handler.SpectateHandler;
@@ -239,7 +240,7 @@ public class Profile extends ProfileData {
 			return;
 
 		PlayerUtil.teleport(this.getPlayer(), ProfileManager.getSpawnLocation());
-		updateVisiblity();
+		updateLobbyVisiblity();
 
 		if (playerStatus != PlayerStatus.FOLLOWING && playerStatus != PlayerStatus.QUEUEING)
 			setPlayerStatus(PlayerStatus.IDLE);
@@ -318,14 +319,14 @@ public class Profile extends ProfileData {
 		this.getPlayer().setFlying(canFly);
 	}
 
-	public void updateVisiblity() {
-		List<org.bukkit.entity.Player> playersInWorld = getPlayer().getWorld().getPlayers();
+	public void updateLobbyVisiblity() {
+		Collection<? extends Player> players = Bukkit.getOnlinePlayers();
 		if (!this.isPlayersVisible()) {
-			for (Player player : playersInWorld) {
+			for (Player player : players) {
 
-				getPlayer().hidePlayer(player, false);
+				getPlayer().hidePlayer(player, BotAPI.INSTANCE.isFakePlayer(player.getUniqueId()));
 				//
-				player.hidePlayer(getPlayer(), false);
+				player.hidePlayer(getPlayer(), BotAPI.INSTANCE.isFakePlayer(player.getUniqueId()));
 
 				if (getPlayer().hasPermission("practice.visible")) {
 					// getPlayer().showPlayer(player);
@@ -340,7 +341,7 @@ public class Profile extends ProfileData {
 			return;
 		}
 
-		for (Player player : playersInWorld)
+		for (Player player : players)
 			getPlayer().showPlayer(player);
 	}
 
