@@ -11,6 +11,8 @@ import org.bukkit.potion.PotionEffect;
 import org.eclipse.jdt.annotation.NonNull;
 import org.eclipse.jdt.annotation.Nullable;
 
+import gg.mineral.bot.api.BotAPI;
+import gg.mineral.bot.api.entity.living.player.FakePlayer;
 import gg.mineral.practice.PracticePlugin;
 import gg.mineral.practice.entity.handler.RequestHandler;
 import gg.mineral.practice.entity.handler.SpectateHandler;
@@ -319,29 +321,32 @@ public class Profile extends ProfileData {
 	}
 
 	public void updateVisiblity() {
-		List<org.bukkit.entity.Player> playersInWorld = getPlayer().getWorld().getPlayers();
-		if (!this.isPlayersVisible()) {
-			for (Player player : playersInWorld) {
+		List<org.bukkit.entity.Player> players = getPlayer().getWorld().getPlayers();
 
-				getPlayer().hidePlayer(player, false);
-				//
-				player.hidePlayer(getPlayer(), false);
+		for (Player player : players) {
 
-				if (getPlayer().hasPermission("practice.visible")) {
-					// getPlayer().showPlayer(player);
-					player.showPlayer(getPlayer());
-				}
+			getPlayer().hidePlayer(player, false);
+			//
+			player.hidePlayer(getPlayer(), false);
 
-				if (player.hasPermission("practice.visible")) {
-					// getPlayer().showPlayer(player);
-					getPlayer().showPlayer(player);
-				}
+			for (FakePlayer fakePlayer : BotAPI.INSTANCE.getFakePlayers()) {
+				Player p = Bukkit.getPlayer(fakePlayer.getUuid());
+				getPlayer().hidePlayer(p, true);
+				player.hidePlayer(getPlayer(), true);
 			}
-			return;
-		}
 
-		for (Player player : playersInWorld)
-			getPlayer().showPlayer(player);
+			if (getPlayer().hasPermission("practice.visible") && this.isPlayersVisible()) {
+				// getPlayer().showPlayer(player);
+				player.showPlayer(getPlayer());
+			}
+
+			Profile profile = ProfileManager.getOrCreateProfile(player);
+
+			if (player.hasPermission("practice.visible") && profile.isPlayersVisible()) {
+				// getPlayer().showPlayer(player);
+				getPlayer().showPlayer(player);
+			}
+		}
 	}
 
 	public void resetMatchData() {

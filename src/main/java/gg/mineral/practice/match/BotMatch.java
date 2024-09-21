@@ -33,9 +33,6 @@ public class BotMatch extends Match<QueueMatchData> {
     public void spawnBots() {
         Location location2 = getData().getArena().getLocation2().clone();
         this.fakePlayer = difficulty.spawn(profile1.getMatchData(), location2, "");
-
-        for (Player player : Bukkit.getOnlinePlayers())
-            player.hidePlayer(profile1.getPlayer(), true);
     }
 
     @Override

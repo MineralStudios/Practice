@@ -21,6 +21,7 @@ import org.bukkit.projectiles.ProjectileSource;
 import org.bukkit.scheduler.BukkitScheduler;
 
 import gg.mineral.api.collection.GlueList;
+import gg.mineral.bot.api.BotAPI;
 import gg.mineral.practice.PracticePlugin;
 import gg.mineral.practice.entity.PlayerStatus;
 import gg.mineral.practice.entity.Profile;
@@ -244,12 +245,27 @@ public class Match<D extends MatchData> implements Spectatable {
 	}
 
 	public void updateVisiblity(Match<?> match, Profile profile) {
-		if (match.getParticipants().contains(profile) || match.getSpectators().contains(profile))
-			return;
+		boolean isSpectator = match.getSpectators().contains(profile),
+				isParticipant = match.getParticipants().contains(profile);
+		if (isParticipant || isSpectator) {
+			for (Profile participant : participants) {
+				if (isParticipant && !isSpectator)
+					participant.getPlayer().showPlayer(profile.getPlayer());
+				else
+					participant.getPlayer().hidePlayer(profile.getPlayer(), false);
+				profile.getPlayer().showPlayer(participant.getPlayer());
+			}
+		} else {
+			boolean isFakePlayer = BotAPI.INSTANCE.isFakePlayer(profile.getUuid());
+			for (Profile participant : isFakePlayer
+					? ProfileManager.getProfiles().values()
+					: participants) {
 
-		for (Profile participant : participants) {
-			participant.getPlayer().hidePlayer(profile.getPlayer(), false);
-			profile.getPlayer().hidePlayer(participant.getPlayer(), false);
+				if (isFakePlayer && this.participants.contains(participant))
+					continue;
+				participant.getPlayer().hidePlayer(profile.getPlayer(), isFakePlayer);
+				profile.getPlayer().hidePlayer(participant.getPlayer(), isFakePlayer);
+			}
 		}
 	}
 
