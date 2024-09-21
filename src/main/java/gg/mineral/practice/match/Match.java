@@ -142,9 +142,6 @@ public class Match<D extends MatchData> implements Spectatable {
 	public void setVisibility(Profile p) {
 		for (Match<?> match : MatchManager.getMatches())
 			match.updateVisiblity(this, p);
-
-		for (Profile participant : participants)
-			p.getPlayer().showPlayer(participant.getPlayer());
 	}
 
 	public void prepareForMatch(Profile p) {
@@ -242,17 +239,24 @@ public class Match<D extends MatchData> implements Spectatable {
 		boolean isSpectator = match.getSpectators().contains(profile),
 				isParticipant = match.getParticipants().contains(profile);
 		if (isParticipant || isSpectator) {
-			for (Profile participant : participants) {
-				if (isParticipant && !isSpectator)
-					participant.getPlayer().showPlayer(profile.getPlayer());
-				else
-					participant.getPlayer().hidePlayer(profile.getPlayer(),
-							BotAPI.INSTANCE.isFakePlayer(profile.getPlayer().getUniqueId()));
-				profile.getPlayer().showPlayer(participant.getPlayer());
+			for (Profile participant : ProfileManager.getProfiles().values()) {
+				boolean isProfileParticipant = match.getParticipants().contains(participant);
+
+				if (isProfileParticipant) {
+					if (isParticipant && !isSpectator)
+						participant.getPlayer().showPlayer(profile.getPlayer());
+					else
+						participant.getPlayer().hidePlayer(profile.getPlayer(),
+								BotAPI.INSTANCE.isFakePlayer(profile.getPlayer().getUniqueId()));
+					profile.getPlayer().showPlayer(participant.getPlayer());
+				}
+
+				participant.getPlayer().hidePlayer(profile.getPlayer(),
+						BotAPI.INSTANCE.isFakePlayer(profile.getPlayer().getUniqueId()));
 			}
 			return;
 		} else {
-			for (Profile participant : participants) {
+			for (Profile participant : ProfileManager.getProfiles().values()) {
 				participant.getPlayer().hidePlayer(profile.getPlayer(),
 						BotAPI.INSTANCE.isFakePlayer(profile.getPlayer().getUniqueId()));
 				profile.getPlayer().hidePlayer(participant.getPlayer(),
