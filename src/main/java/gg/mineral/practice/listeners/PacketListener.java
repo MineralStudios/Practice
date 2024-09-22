@@ -17,7 +17,7 @@ import io.netty.channel.ChannelDuplexHandler;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.channel.ChannelPipeline;
 import io.netty.channel.ChannelPromise;
-
+import net.minecraft.server.v1_8_R3.EntityPlayer;
 import net.minecraft.server.v1_8_R3.PacketPlayOutEntityDestroy;
 import net.minecraft.server.v1_8_R3.PacketPlayOutNamedEntitySpawn;
 import net.minecraft.server.v1_8_R3.PacketPlayOutPlayerInfo;
@@ -85,7 +85,12 @@ public class PacketListener implements Listener {
                         if (!profile.testTabVisibility(uuid)
                                 && action == PacketPlayOutPlayerInfo.EnumPlayerInfoAction.ADD_PLAYER) {
                             profile.getVisiblePlayersOnTab().remove(uuid);
-                            data.remove();
+                            PacketPlayOutPlayerInfo newInfo = new PacketPlayOutPlayerInfo(
+                                    PacketPlayOutPlayerInfo.EnumPlayerInfoAction.REMOVE_PLAYER,
+                                    new EntityPlayer[0]);
+                            newInfo.getB().add(playerInfoData);
+                            profile.getPlayer().getHandle().playerConnection.sendPacket(newInfo);
+
                             continue;
                         }
 
