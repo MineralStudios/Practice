@@ -1,7 +1,7 @@
 package gg.mineral.practice.entity;
 
+import java.util.Collection;
 import java.util.Iterator;
-import java.util.List;
 import java.util.Set;
 import java.util.UUID;
 
@@ -435,7 +435,7 @@ public class Profile extends ProfileData {
 
 	public void updateVisiblity() {
 
-		List<Player> players = getPlayer().getWorld().getPlayers();
+		Collection<? extends Player> players = Bukkit.getOnlinePlayers();
 
 		for (UUID uuid : getVisiblePlayers())
 			if (!testVisibility(uuid))
