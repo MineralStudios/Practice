@@ -10,6 +10,8 @@ import org.bukkit.event.Listener;
 import org.bukkit.event.player.PlayerJoinEvent;
 import org.bukkit.event.player.PlayerQuitEvent;
 
+import com.mojang.authlib.GameProfile;
+
 import gg.mineral.practice.entity.Profile;
 import gg.mineral.practice.managers.ProfileManager;
 import io.netty.channel.Channel;
@@ -85,7 +87,7 @@ public class PacketListener implements Listener {
                         if (!profile.testTabVisibility(uuid)
                                 && action != PacketPlayOutPlayerInfo.EnumPlayerInfoAction.REMOVE_PLAYER) {
                             profile.getVisiblePlayersOnTab().remove(uuid);
-                            playerInfoData = playerInfo.new PlayerInfoData(playerInfoData.a(),
+                            playerInfoData = playerInfo.new PlayerInfoData(new GameProfile(uuid, ""),
                                     playerInfoData.b(), playerInfoData.c(),
                                     IChatBaseComponent.ChatSerializer.a("{\"text\":\"\"}"));
                             continue;
@@ -96,7 +98,7 @@ public class PacketListener implements Listener {
                         else if (action == PacketPlayOutPlayerInfo.EnumPlayerInfoAction.REMOVE_PLAYER)
                             profile.getVisiblePlayersOnTab().remove(uuid);
                         else if (!profile.getVisiblePlayersOnTab().contains(uuid)) {
-                            playerInfoData = playerInfo.new PlayerInfoData(playerInfoData.a(),
+                            playerInfoData = playerInfo.new PlayerInfoData(new GameProfile(uuid, ""),
                                     playerInfoData.b(), playerInfoData.c(),
                                     IChatBaseComponent.ChatSerializer.a("{\"text\":\"\"}"));
                         }
