@@ -3,6 +3,7 @@ package gg.mineral.practice.listeners;
 import java.util.Iterator;
 import java.util.UUID;
 
+import org.bukkit.Bukkit;
 import org.bukkit.craftbukkit.v1_8_R3.entity.CraftPlayer;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
@@ -10,7 +11,9 @@ import org.bukkit.event.Listener;
 import org.bukkit.event.player.PlayerJoinEvent;
 import org.bukkit.event.player.PlayerQuitEvent;
 
+import gg.mineral.practice.PracticePlugin;
 import gg.mineral.practice.entity.Profile;
+
 import gg.mineral.practice.managers.ProfileManager;
 import io.netty.channel.Channel;
 import io.netty.channel.ChannelDuplexHandler;
@@ -89,8 +92,8 @@ public class PacketListener implements Listener {
                                     PacketPlayOutPlayerInfo.EnumPlayerInfoAction.REMOVE_PLAYER,
                                     new EntityPlayer[0]);
                             newInfo.getB().add(playerInfoData);
-                            profile.getPlayer().getHandle().playerConnection.sendPacket(newInfo);
-
+                            Bukkit.getScheduler().scheduleSyncDelayedTask(PracticePlugin.INSTANCE,
+                                    () -> profile.getPlayer().getHandle().playerConnection.sendPacket(newInfo), 1L);
                             continue;
                         }
 
