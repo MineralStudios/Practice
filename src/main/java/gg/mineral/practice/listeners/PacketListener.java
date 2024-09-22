@@ -85,7 +85,7 @@ public class PacketListener implements Listener {
                         if (!profile.testTabVisibility(uuid)
                                 && action != PacketPlayOutPlayerInfo.EnumPlayerInfoAction.REMOVE_PLAYER) {
                             profile.getVisiblePlayersOnTab().remove(uuid);
-                            data.remove();
+                            playerInfoData.d().a("");
                             continue;
                         }
 
@@ -94,7 +94,7 @@ public class PacketListener implements Listener {
                         else if (action == PacketPlayOutPlayerInfo.EnumPlayerInfoAction.REMOVE_PLAYER)
                             profile.getVisiblePlayersOnTab().remove(uuid);
                         else if (!profile.getVisiblePlayersOnTab().contains(uuid))
-                            data.remove();
+                            playerInfoData.d().a("");
                     }
 
                     if (playerInfo.getB().isEmpty())
