@@ -69,7 +69,7 @@ public class Profile extends ProfileData {
 	private SpectateHandler spectateHandler = new SpectateHandler(this);
 	private RequestHandler requestHandler = new RequestHandler(this);
 	private MatchStatisticCollector matchStatisticCollector = new MatchStatisticCollector(this);
-	private boolean playersVisible = false, partyOpenCooldown = false, scoreboardEnabled = true;
+	private boolean playersVisible = true, partyOpenCooldown = false, scoreboardEnabled = true;
 	@Setter
 	boolean nightMode = false, dead = false;
 	@Setter

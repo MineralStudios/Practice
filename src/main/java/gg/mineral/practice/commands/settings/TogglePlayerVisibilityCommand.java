@@ -8,7 +8,7 @@ import gg.mineral.practice.util.messages.impl.ChatMessages;
 public class TogglePlayerVisibilityCommand extends PlayerCommand {
 
 	public TogglePlayerVisibilityCommand() {
-		super("toggleplayervisibility", "practice.admin");
+		super("toggleplayervisibility");
 	}
 
 	@Override

@@ -13,14 +13,6 @@ public class SettingsMenu extends PracticeMenu {
 	public void update() {
 		setSlot(4, ItemStacks.SETTINGS);
 
-		/*
-		 * setSlot(0,
-		 * ItemStacks.TOGGLE_PLAYER_VISIBILITY,
-		 * interaction -> {
-		 * Profile p = interaction.getProfile();
-		 * p.getPlayer().performCommand("toggleplayervisibility");
-		 * });
-		 */
 		setSlot(18,
 				ItemStacks.TOGGLE_DUEL_REQUESTS
 						.lore(CC.WHITE + "Toggles " + CC.SECONDARY + "duel requests" + CC.WHITE + ".",
@@ -73,6 +65,19 @@ public class SettingsMenu extends PracticeMenu {
 					Profile p = interaction.getProfile();
 					p.getPlayer().performCommand(p.isNightMode() ? "day" : "night");
 					reload();
+				});
+		setSlot(22,
+				ItemStacks.TOGGLE_PLAYER_VISIBILITY
+						.lore(CC.WHITE + "Toggles " + CC.SECONDARY + "visibility in the lobby" + CC.WHITE + ".",
+								" ",
+								CC.WHITE + "Currently:",
+								viewer.isPlayersVisible() ? CC.GREEN + "Enabled"
+										: CC.RED + "Disabled",
+								CC.BOARD_SEPARATOR, CC.ACCENT + "Click to change value.")
+						.build(),
+				interaction -> {
+					Profile p = interaction.getProfile();
+					p.getPlayer().performCommand("toggleplayervisibility");
 				});
 
 		/*
