@@ -440,11 +440,29 @@ public class Profile extends ProfileData {
 				removeFromTab(uuid);
 
 		for (Player player : players) {
+			Profile profile = ProfileManager.getProfile(player.getUniqueId());
+
+			if (profile == null)
+				continue;
 			if (testVisibility(player.getUniqueId()))
 				showPlayer(player.getUniqueId());
+			else
+				removeFromView(player.getUniqueId());
+
+			if (profile.testVisibility(player.getUniqueId()))
+				profile.showPlayer(uuid);
+			else
+				profile.removeFromView(uuid);
 
 			if (testTabVisibility(player.getUniqueId()))
 				showOnTab(player.getUniqueId());
+			else
+				removeFromTab(player.getUniqueId());
+
+			if (profile.testTabVisibility(player.getUniqueId()))
+				profile.showOnTab(uuid);
+			else
+				profile.removeFromTab(uuid);
 		}
 	}
 
