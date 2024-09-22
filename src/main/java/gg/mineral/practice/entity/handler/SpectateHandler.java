@@ -4,11 +4,7 @@ import org.bukkit.GameMode;
 
 import gg.mineral.practice.entity.PlayerStatus;
 import gg.mineral.practice.entity.Profile;
-import gg.mineral.practice.events.Event;
-import gg.mineral.practice.managers.EventManager;
-import gg.mineral.practice.managers.MatchManager;
 import gg.mineral.practice.managers.ProfileManager;
-import gg.mineral.practice.match.Match;
 import gg.mineral.practice.scoreboard.impl.DefaultScoreboard;
 import gg.mineral.practice.scoreboard.impl.FollowingScoreboard;
 import gg.mineral.practice.scoreboard.impl.SpectatorScoreboard;
@@ -127,7 +123,7 @@ public class SpectateHandler {
 
         ChatMessages.STOP_SPECTATING.send(profile.getPlayer());
 
-        updateVisiblity();
+        spectatable.getVisibilityGroup().addUUID(profile.getUuid(), false);
 
         if (profile.getPlayerStatus() == PlayerStatus.FOLLOWING)
             return;
@@ -135,23 +131,5 @@ public class SpectateHandler {
         profile.getInventory().setInventoryForSpectating();
         profile.setPlayerStatus(PlayerStatus.SPECTATING);
         profile.setScoreboard(SpectatorScoreboard.INSTANCE);
-    }
-
-    private void updateVisiblity() {
-
-        if (getSpectatable() instanceof Match spectatingMatch) {
-            for (Match<?> match : MatchManager.getMatches())
-                match.updateVisiblity(spectatingMatch, profile);
-
-            return;
-        }
-
-        if (getSpectatable() instanceof Event spectatingEvent)
-            for (Event event : EventManager.getEvents())
-                event.updateVisiblity(spectatingEvent, profile);
-
-        for (Profile profile : getSpectatable().getParticipants())
-            this.profile.getPlayer().showPlayer(profile.getPlayer());
-
     }
 }

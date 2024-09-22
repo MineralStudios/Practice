@@ -86,6 +86,7 @@ public class Match<D extends MatchData> implements Spectatable {
 	static int postMatchTime = 60;
 	@Getter
 	Queue<Item> itemRemovalQueue = new ConcurrentLinkedQueue<>();
+	@Getter
 	private final VisibilityGroup visibilityGroup = new VisibilityGroup();
 	org.bukkit.World world = null;
 

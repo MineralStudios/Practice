@@ -30,7 +30,7 @@ public class EntryListener implements Listener {
 		EloManager.updateName(profile);
 		profile.getInventory().setInventoryForLobby();
 		profile.removePotionEffects();
-		PracticePlugin.getLobbyVisibilityGroup().addUUID(profile.getUuid(), true);
+		PracticePlugin.getLobbyVisibilityGroup().addUUID(profile.getUuid(), false);
 
 		profile.setScoreboard(DefaultScoreboard.INSTANCE);
 

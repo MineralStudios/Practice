@@ -8,6 +8,7 @@ import org.bukkit.entity.Player;
 import org.bukkit.scheduler.BukkitRunnable;
 
 import gg.mineral.api.collection.GlueList;
+import gg.mineral.api.entity.VisibilityGroup;
 import gg.mineral.bot.api.BotAPI;
 import gg.mineral.practice.PracticePlugin;
 import gg.mineral.practice.arena.Arena;
@@ -44,6 +45,8 @@ public class Event implements Spectatable {
     ProfileList participants = new ProfileList();
     @Getter
     Arena eventArena;
+    @Getter
+    private final VisibilityGroup visibilityGroup = new VisibilityGroup();
 
     public Event(Profile p, Arena eventArena) {
         this.matchData = p.getMatchData();
