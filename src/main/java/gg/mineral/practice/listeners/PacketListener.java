@@ -61,25 +61,19 @@ public class PacketListener implements Listener {
                     throws Exception {
 
                 if (packet instanceof PacketPlayOutNamedEntitySpawn namedEntitySpawn) {
-
                     UUID uuid = namedEntitySpawn.getB();
-                    if (!profile.testVisibility(uuid))
+                    if (!profile.testVisibility(uuid)) {
+                        profile.getVisiblePlayers().remove(uuid);
                         return;
+                    }
                     profile.getVisiblePlayers().add(uuid);
                 }
 
-                if (packet instanceof PacketPlayOutEntityDestroy destroy) {
-                    IntIterator set = new IntOpenHashSet(destroy.getA()).intIterator();
-                    while (set.hasNext()) {
-                        int id = set.nextInt();
-                        for (UUID uuid : profile.getVisiblePlayers()) {
-                            if (profile.getPlayer().getHandle().getId() == id) {
+                if (packet instanceof PacketPlayOutEntityDestroy destroy)
+                    for (int id : destroy.getA())
+                        for (UUID uuid : profile.getVisiblePlayers())
+                            if (profile.getPlayer().getHandle().getId() == id)
                                 profile.getVisiblePlayers().remove(uuid);
-                                set.remove();
-                            }
-                        }
-                    }
-                }
 
                 if (packet instanceof PacketPlayOutPlayerInfo playerInfo) {
                     PacketPlayOutPlayerInfo.EnumPlayerInfoAction action = playerInfo.getA();
@@ -91,6 +85,7 @@ public class PacketListener implements Listener {
 
                         if (!profile.testTabVisibility(uuid)
                                 && action == PacketPlayOutPlayerInfo.EnumPlayerInfoAction.ADD_PLAYER) {
+                            profile.getVisiblePlayersOnTab().remove(uuid);
                             data.remove();
                             continue;
                         }
@@ -115,7 +110,7 @@ public class PacketListener implements Listener {
 
         ChannelPipeline pipeline = profile.getPlayer().getHandle().playerConnection.networkManager.channel
                 .pipeline();
-        pipeline.addBefore("packet_handler", profile.getName(), channelDuplexHandler);
+        pipeline.addBefore("practice_packet_handler", profile.getName(), channelDuplexHandler);
     }
 
     protected void removePlayer(Player player) {
