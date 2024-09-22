@@ -2,6 +2,8 @@ package gg.mineral.practice.entity;
 
 import java.util.Iterator;
 import java.util.List;
+import java.util.Set;
+import java.util.UUID;
 
 import org.bukkit.Bukkit;
 import org.bukkit.GameMode;
@@ -12,7 +14,6 @@ import org.eclipse.jdt.annotation.NonNull;
 import org.eclipse.jdt.annotation.Nullable;
 
 import gg.mineral.bot.api.BotAPI;
-import gg.mineral.bot.api.entity.living.player.FakePlayer;
 import gg.mineral.practice.PracticePlugin;
 import gg.mineral.practice.entity.handler.RequestHandler;
 import gg.mineral.practice.entity.handler.SpectateHandler;
@@ -37,6 +38,7 @@ import gg.mineral.practice.scoreboard.Scoreboard;
 import gg.mineral.practice.scoreboard.ScoreboardHandler;
 import gg.mineral.practice.scoreboard.impl.DefaultScoreboard;
 import gg.mineral.practice.tournaments.Tournament;
+import gg.mineral.practice.traits.Spectatable;
 import gg.mineral.practice.util.PlayerUtil;
 import gg.mineral.practice.util.collection.Registry;
 import gg.mineral.practice.util.math.PearlCooldown;
@@ -44,8 +46,13 @@ import gg.mineral.practice.util.messages.Message;
 import gg.mineral.practice.util.messages.impl.ChatMessages;
 import gg.mineral.practice.util.messages.impl.ErrorMessages;
 import gg.mineral.practice.util.world.BlockData;
+import it.unimi.dsi.fastutil.objects.ObjectOpenHashSet;
 import lombok.Getter;
 import lombok.Setter;
+import net.minecraft.server.v1_8_R3.EntityTrackerEntry;
+import net.minecraft.server.v1_8_R3.PacketPlayOutPlayerInfo;
+import net.minecraft.server.v1_8_R3.PacketPlayOutPlayerInfo.EnumPlayerInfoAction;
+import net.minecraft.server.v1_8_R3.WorldServer;
 
 @Getter
 public class Profile extends ProfileData {
@@ -79,6 +86,11 @@ public class Profile extends ProfileData {
 	@Setter
 	private boolean kitLoaded = false, inMatchCountdown = false;
 	private Registry<BlockData, String> fakeBlocks = new Registry<>(BlockData::toString);
+
+	@Getter
+	private final Set<UUID> visiblePlayers = new ObjectOpenHashSet<>();
+	@Getter
+	private final Set<UUID> visiblePlayersOnTab = new ObjectOpenHashSet<>();
 
 	public Profile(org.bukkit.entity.Player player) {
 		super(player.getUniqueId(), player.getName());
@@ -183,6 +195,52 @@ public class Profile extends ProfileData {
 		}
 	}
 
+	public boolean testVisibility(UUID uuid) {
+		Profile p = ProfileManager.getProfile(uuid);
+
+		if (playerStatus == PlayerStatus.FIGHTING && p.getPlayerStatus() == PlayerStatus.FIGHTING
+				&& match.getParticipants().contains(p))
+			return true;
+
+		Spectatable spectatable = spectateHandler.getSpectatable();
+
+		if (spectatable != null) {
+			if ((playerStatus == PlayerStatus.FOLLOWING || playerStatus == PlayerStatus.SPECTATING)
+					&& p.getPlayerStatus() == PlayerStatus.FIGHTING
+					&& spectatable.getParticipants().contains(p))
+				return true;
+		}
+
+		if (this.isPlayersVisible())
+			if ((playerStatus == PlayerStatus.QUEUEING || playerStatus == PlayerStatus.IDLE)
+					&& (p.getPlayerStatus() == PlayerStatus.QUEUEING || p.getPlayerStatus() == PlayerStatus.IDLE)
+					&& p.getPlayer().hasPermission("practice.visible"))
+				return true;
+
+		return false;
+	}
+
+	public boolean testTabVisibility(UUID uuid) {
+		Profile p = ProfileManager.getProfile(uuid);
+
+		boolean isBot = BotAPI.INSTANCE.isFakePlayer(uuid);
+
+		if (!isBot && playerStatus == PlayerStatus.FIGHTING && p.getPlayerStatus() == PlayerStatus.FIGHTING
+				&& match.getParticipants().contains(p))
+			return true;
+
+		Spectatable spectatable = spectateHandler.getSpectatable();
+
+		if (spectatable != null) {
+			if (!isBot && (playerStatus == PlayerStatus.FOLLOWING || playerStatus == PlayerStatus.SPECTATING)
+					&& p.getPlayerStatus() == PlayerStatus.FIGHTING
+					&& spectatable.getParticipants().contains(p))
+				return true;
+		}
+
+		return false;
+	}
+
 	public void message(Message m) {
 		m.send(this.getPlayer());
 	}
@@ -241,7 +299,7 @@ public class Profile extends ProfileData {
 			return;
 
 		PlayerUtil.teleport(this.getPlayer(), ProfileManager.getSpawnLocation());
-		PracticePlugin.getLobbyVisibilityGroup().addUUID(player.getUniqueId(), false);
+		updateVisiblity();
 
 		if (playerStatus != PlayerStatus.FOLLOWING && playerStatus != PlayerStatus.QUEUEING)
 			setPlayerStatus(PlayerStatus.IDLE);
@@ -308,6 +366,8 @@ public class Profile extends ProfileData {
 		this.getPlayer().setAllowFlight(canFly);
 		this.getPlayer().setFlying(canFly);
 
+		this.updateVisiblity();
+
 		this.playerStatus = newPlayerStatus;
 	}
 
@@ -320,32 +380,71 @@ public class Profile extends ProfileData {
 		this.getPlayer().setFlying(canFly);
 	}
 
+	public void removeFromTab(UUID uuid) {
+		if (!visiblePlayersOnTab.contains(uuid))
+			return;
+		Profile profile = ProfileManager.getProfile(uuid);
+		if (profile == null)
+			return;
+
+		this.getPlayer().getHandle().playerConnection.sendPacket(
+				new PacketPlayOutPlayerInfo(EnumPlayerInfoAction.REMOVE_PLAYER,
+						profile.getPlayer().getHandle()));
+	}
+
+	public void showOnTab(UUID uuid) {
+		if (visiblePlayersOnTab.contains(uuid))
+			return;
+		Profile profile = ProfileManager.getProfile(uuid);
+		if (profile == null)
+			return;
+
+		this.getPlayer().getHandle().playerConnection.sendPacket(
+				new PacketPlayOutPlayerInfo(EnumPlayerInfoAction.ADD_PLAYER, profile.getPlayer().getHandle()));
+	}
+
+	public void removeFromView(UUID uuid) {
+		if (!visiblePlayers.contains(uuid))
+			return;
+		Profile profile = ProfileManager.getProfile(uuid);
+		if (profile == null)
+			return;
+		EntityTrackerEntry entry = ((WorldServer) getPlayer().getHandle().getWorld()).tracker.trackedEntities
+				.get(profile.getPlayer().getHandle().getId());
+		if (entry != null && !entry.trackedPlayers.contains(this.getPlayer().getHandle()))
+			entry.clear(this.getPlayer().getHandle());
+	}
+
+	public void showPlayer(UUID uuid) {
+		if (visiblePlayers.contains(uuid))
+			return;
+		Profile profile = ProfileManager.getProfile(uuid);
+		if (profile == null)
+			return;
+		EntityTrackerEntry entry = ((WorldServer) getPlayer().getHandle().getWorld()).tracker.trackedEntities
+				.get(profile.getPlayer().getHandle().getId());
+		if (entry != null && !entry.trackedPlayers.contains(this.getPlayer().getHandle()))
+			entry.updatePlayer(this.getPlayer().getHandle());
+	}
+
 	public void updateVisiblity() {
-		List<org.bukkit.entity.Player> players = getPlayer().getWorld().getPlayers();
+
+		List<Player> players = getPlayer().getWorld().getPlayers();
+
+		for (UUID uuid : getVisiblePlayers())
+			if (!testVisibility(uuid))
+				removeFromView(uuid);
+
+		for (UUID uuid : getVisiblePlayersOnTab())
+			if (!testTabVisibility(uuid))
+				removeFromTab(uuid);
 
 		for (Player player : players) {
+			if (testVisibility(player.getUniqueId()))
+				showPlayer(player.getUniqueId());
 
-			for (FakePlayer fakePlayer : BotAPI.INSTANCE.getFakePlayers()) {
-				Player p = Bukkit.getPlayer(fakePlayer.getUuid());
-				getPlayer().hidePlayer(p, true);
-				player.hidePlayer(p, true);
-			}
-
-			getPlayer().hidePlayer(player, BotAPI.INSTANCE.isFakePlayer(player.getUniqueId()));
-			//
-			player.hidePlayer(getPlayer(), BotAPI.INSTANCE.isFakePlayer(getPlayer().getUniqueId()));
-
-			if (getPlayer().hasPermission("practice.visible") && this.isPlayersVisible()) {
-				// getPlayer().showPlayer(player);
-				player.showPlayer(getPlayer());
-			}
-
-			Profile profile = ProfileManager.getOrCreateProfile(player);
-
-			if (player.hasPermission("practice.visible") && profile.isPlayersVisible()) {
-				// getPlayer().showPlayer(player);
-				getPlayer().showPlayer(player);
-			}
+			if (testTabVisibility(player.getUniqueId()))
+				showOnTab(player.getUniqueId());
 		}
 	}
 

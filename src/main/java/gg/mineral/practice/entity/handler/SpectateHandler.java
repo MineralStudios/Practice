@@ -4,6 +4,7 @@ import org.bukkit.GameMode;
 
 import gg.mineral.practice.entity.PlayerStatus;
 import gg.mineral.practice.entity.Profile;
+
 import gg.mineral.practice.managers.ProfileManager;
 import gg.mineral.practice.scoreboard.impl.DefaultScoreboard;
 import gg.mineral.practice.scoreboard.impl.FollowingScoreboard;
@@ -123,7 +124,7 @@ public class SpectateHandler {
 
         ChatMessages.STOP_SPECTATING.send(profile.getPlayer());
 
-        spectatable.getVisibilityGroup().addUUID(profile.getUuid(), false);
+        updateVisiblity();
 
         if (profile.getPlayerStatus() == PlayerStatus.FOLLOWING)
             return;
@@ -131,5 +132,9 @@ public class SpectateHandler {
         profile.getInventory().setInventoryForSpectating();
         profile.setPlayerStatus(PlayerStatus.SPECTATING);
         profile.setScoreboard(SpectatorScoreboard.INSTANCE);
+    }
+
+    private void updateVisiblity() {
+        profile.updateVisiblity();
     }
 }

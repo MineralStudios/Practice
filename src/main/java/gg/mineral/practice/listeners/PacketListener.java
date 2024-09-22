@@ -1,0 +1,124 @@
+package gg.mineral.practice.listeners;
+
+import java.util.Iterator;
+import java.util.UUID;
+
+import org.bukkit.craftbukkit.v1_8_R3.entity.CraftPlayer;
+import org.bukkit.entity.Player;
+import org.bukkit.event.EventHandler;
+import org.bukkit.event.Listener;
+import org.bukkit.event.player.PlayerJoinEvent;
+import org.bukkit.event.player.PlayerQuitEvent;
+
+import gg.mineral.bot.api.BotAPI;
+import gg.mineral.practice.entity.Profile;
+import gg.mineral.practice.managers.ProfileManager;
+import io.netty.channel.Channel;
+import io.netty.channel.ChannelDuplexHandler;
+import io.netty.channel.ChannelHandlerContext;
+import io.netty.channel.ChannelPipeline;
+import io.netty.channel.ChannelPromise;
+import it.unimi.dsi.fastutil.ints.IntIterator;
+import it.unimi.dsi.fastutil.ints.IntOpenHashSet;
+import net.minecraft.server.v1_8_R3.PacketPlayOutEntityDestroy;
+import net.minecraft.server.v1_8_R3.PacketPlayOutNamedEntitySpawn;
+import net.minecraft.server.v1_8_R3.PacketPlayOutPlayerInfo;
+import net.minecraft.server.v1_8_R3.PacketPlayOutPlayerInfo.PlayerInfoData;
+
+public class PacketListener implements Listener {
+
+    @EventHandler
+    public void onJoin(PlayerJoinEvent event) {
+
+        if (BotAPI.INSTANCE.isFakePlayer(event.getPlayer().getUniqueId()))
+            return;
+
+        Profile profile = ProfileManager.getOrCreateProfile(event.getPlayer());
+
+        injectPlayer(profile);
+    }
+
+    @EventHandler
+    public void onLeave(PlayerQuitEvent event) {
+        if (BotAPI.INSTANCE.isFakePlayer(event.getPlayer().getUniqueId()))
+            return;
+
+        removePlayer(event.getPlayer());
+    }
+
+    protected void injectPlayer(Profile profile) {
+
+        ChannelDuplexHandler channelDuplexHandler = new ChannelDuplexHandler() {
+
+            @Override
+            public void channelRead(ChannelHandlerContext channelHandlerContext, Object packet) throws Exception {
+                super.channelRead(channelHandlerContext, packet);
+            }
+
+            @Override
+            public void write(ChannelHandlerContext channelHandlerContext, Object packet, ChannelPromise channelPromise)
+                    throws Exception {
+
+                if (packet instanceof PacketPlayOutNamedEntitySpawn namedEntitySpawn) {
+
+                    UUID uuid = namedEntitySpawn.getB();
+                    if (!profile.testVisibility(uuid))
+                        return;
+                    profile.getVisiblePlayers().add(uuid);
+                }
+
+                if (packet instanceof PacketPlayOutEntityDestroy destroy) {
+                    IntIterator set = new IntOpenHashSet(destroy.getA()).intIterator();
+                    while (set.hasNext()) {
+                        int id = set.nextInt();
+                        for (UUID uuid : profile.getVisiblePlayers()) {
+                            if (profile.getPlayer().getHandle().getId() == id) {
+                                profile.getVisiblePlayers().remove(uuid);
+                                set.remove();
+                            }
+                        }
+                    }
+                }
+
+                if (packet instanceof PacketPlayOutPlayerInfo playerInfo) {
+                    PacketPlayOutPlayerInfo.EnumPlayerInfoAction action = playerInfo.getA();
+                    Iterator<PlayerInfoData> data = playerInfo.getB().iterator();
+
+                    while (data.hasNext()) {
+                        PlayerInfoData playerInfoData = data.next();
+                        UUID uuid = playerInfoData.a().getId();
+
+                        if (!profile.testTabVisibility(uuid)
+                                && action != PacketPlayOutPlayerInfo.EnumPlayerInfoAction.REMOVE_PLAYER) {
+                            data.remove();
+                            continue;
+                        }
+
+                        if (action == PacketPlayOutPlayerInfo.EnumPlayerInfoAction.ADD_PLAYER)
+                            profile.getVisiblePlayersOnTab().add(uuid);
+                        else if (action == PacketPlayOutPlayerInfo.EnumPlayerInfoAction.REMOVE_PLAYER)
+                            profile.getVisiblePlayersOnTab().remove(uuid);
+                        else if (!profile.getVisiblePlayersOnTab().contains(uuid))
+                            data.remove();
+                    }
+
+                }
+
+                super.write(channelHandlerContext, packet, channelPromise);
+            }
+
+        };
+
+        ChannelPipeline pipeline = profile.getPlayer().getHandle().playerConnection.networkManager.channel
+                .pipeline();
+        pipeline.addBefore("packet_handler", profile.getName(), channelDuplexHandler);
+    }
+
+    protected void removePlayer(Player player) {
+        Channel channel = ((CraftPlayer) player).getHandle().playerConnection.networkManager.channel;
+        channel.eventLoop().submit(() -> {
+            channel.pipeline().remove(player.getName());
+            return null;
+        });
+    }
+}

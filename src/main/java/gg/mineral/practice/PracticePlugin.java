@@ -6,7 +6,6 @@ import org.bukkit.event.Listener;
 import org.bukkit.generator.ChunkGenerator;
 import org.bukkit.plugin.java.JavaPlugin;
 
-import gg.mineral.api.entity.VisibilityGroup;
 import gg.mineral.practice.commands.config.ArenaCommand;
 import gg.mineral.practice.commands.config.CatagoryCommand;
 import gg.mineral.practice.commands.config.GametypeCommand;
@@ -51,6 +50,7 @@ import gg.mineral.practice.listeners.HealthListener;
 import gg.mineral.practice.listeners.InteractListener;
 import gg.mineral.practice.listeners.InventoryListener;
 import gg.mineral.practice.listeners.MovementListener;
+import gg.mineral.practice.listeners.PacketListener;
 import gg.mineral.practice.listeners.ProjectileListener;
 import gg.mineral.practice.managers.ArenaManager;
 import gg.mineral.practice.managers.CatagoryManager;
@@ -63,15 +63,11 @@ import gg.mineral.practice.managers.ProfileManager;
 import gg.mineral.practice.managers.QueuetypeManager;
 import gg.mineral.practice.managers.SpectateManager;
 import gg.mineral.practice.util.world.VoidWorldGenerator;
-import lombok.Getter;
 import net.minecraft.server.v1_8_R3.MinecraftServer;
 
 public class PracticePlugin extends JavaPlugin {
 
 	public static PracticePlugin INSTANCE;
-
-	@Getter
-	private static VisibilityGroup lobbyVisibilityGroup = new VisibilityGroup();
 
 	@Override
 	public void onEnable() {
@@ -105,7 +101,7 @@ public class PracticePlugin extends JavaPlugin {
 
 		registerListeners(new BuildListener(), new InteractListener(), new ComsumeListener(), new InventoryListener(),
 				new DeathListener(), new DamageListener(), new EntryListener(), new HealthListener(),
-				new MovementListener(), new ProjectileListener(), new CommandListener());
+				new MovementListener(), new ProjectileListener(), new CommandListener(), new PacketListener());
 	}
 
 	@Override

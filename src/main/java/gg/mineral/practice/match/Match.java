@@ -18,10 +18,8 @@ import org.bukkit.inventory.ItemStack;
 import org.bukkit.potion.PotionEffect;
 import org.bukkit.potion.PotionEffectType;
 import org.bukkit.projectiles.ProjectileSource;
-import org.bukkit.scheduler.BukkitScheduler;
 
 import gg.mineral.api.collection.GlueList;
-import gg.mineral.api.entity.VisibilityGroup;
 import gg.mineral.bot.api.BotAPI;
 import gg.mineral.practice.PracticePlugin;
 import gg.mineral.practice.entity.PlayerStatus;
@@ -57,13 +55,11 @@ import gg.mineral.practice.util.world.WorldUtil;
 import it.unimi.dsi.fastutil.ints.Int2ObjectMap.Entry;
 import it.unimi.dsi.fastutil.ints.Int2ObjectOpenHashMap;
 import lombok.Getter;
-import lombok.RequiredArgsConstructor;
 import net.md_5.bungee.api.chat.ClickEvent;
 import net.md_5.bungee.api.chat.ComponentBuilder;
 import net.md_5.bungee.api.chat.HoverEvent;
 import net.md_5.bungee.api.chat.TextComponent;
 
-@RequiredArgsConstructor
 public class Match<D extends MatchData> implements Spectatable {
 
 	@Getter
@@ -86,8 +82,6 @@ public class Match<D extends MatchData> implements Spectatable {
 	static int postMatchTime = 60;
 	@Getter
 	Queue<Item> itemRemovalQueue = new ConcurrentLinkedQueue<>();
-	@Getter
-	private final VisibilityGroup visibilityGroup = new VisibilityGroup();
 	org.bukkit.World world = null;
 
 	public Match(Profile profile1, Profile profile2, D matchData) {
@@ -95,6 +89,10 @@ public class Match<D extends MatchData> implements Spectatable {
 		this.profile1 = profile1;
 		this.profile2 = profile2;
 		addParicipants(profile1, profile2);
+	}
+
+	public Match(D matchData) {
+		this.data = matchData;
 	}
 
 	public void prepareForMatch(ProfileList profiles) {
@@ -140,10 +138,6 @@ public class Match<D extends MatchData> implements Spectatable {
 			p.getPlayer().addPotionEffect(new PotionEffect(PotionEffectType.SPEED, 999999999, 1));
 	}
 
-	public void setVisibility(Profile p) {
-		visibilityGroup.addUUID(p.getUuid(), !BotAPI.INSTANCE.isFakePlayer(p.getUuid()));
-	}
-
 	public void prepareForMatch(Profile p) {
 
 		QueueSearchTask.removePlayer(p);
@@ -167,7 +161,7 @@ public class Match<D extends MatchData> implements Spectatable {
 		giveLoadoutSelection(p);
 		setAttributes(p);
 		setPotionEffects(p);
-		setVisibility(p);
+		p.updateVisiblity();
 		// setDisplayNames(p);
 		setScoreboard(p);
 		handleFollowers(p);
@@ -233,33 +227,12 @@ public class Match<D extends MatchData> implements Spectatable {
 	}
 
 	public void setScoreboard(Profile p) {
-		p.setScoreboard(data.isBoxing() ? BoxingScoreboard.INSTANCE : InMatchScoreboard.INSTANCE);
-	}
-
-	public void updateVisiblity(Match<?> match, Profile profile) {
-		boolean isSpectator = match.getSpectators().contains(profile),
-				isParticipant = match.getParticipants().contains(profile);
-		if (isParticipant || isSpectator) {
-			for (Profile participant : participants) {
-				if (isParticipant && !isSpectator)
-					participant.getPlayer().showPlayer(profile.getPlayer());
-				else
-					participant.getPlayer().hidePlayer(profile.getPlayer(),
-							BotAPI.INSTANCE.isFakePlayer(profile.getUuid()));
-				profile.getPlayer().showPlayer(participant.getPlayer());
-			}
-		} else {
-			boolean isFakePlayer = BotAPI.INSTANCE.isFakePlayer(profile.getUuid());
-			for (Profile participant : isFakePlayer
-					? ProfileManager.getProfiles().values()
-					: participants) {
-
-				if (isFakePlayer && this.participants.contains(participant))
-					continue;
-				participant.getPlayer().hidePlayer(profile.getPlayer(), isFakePlayer);
-				profile.getPlayer().hidePlayer(participant.getPlayer(), isFakePlayer);
-			}
+		if (data.isBoxing()) {
+			p.setScoreboard(BoxingScoreboard.INSTANCE);
+			return;
 		}
+
+		p.setScoreboard(InMatchScoreboard.INSTANCE);
 	}
 
 	public void increasePlacedTnt() {
@@ -271,10 +244,8 @@ public class Match<D extends MatchData> implements Spectatable {
 	}
 
 	public void handleFollowers(Profile profile) {
-		for (Profile p : profile.getSpectateHandler().getFollowers()) {
-			p.getPlayer().showPlayer(profile.getPlayer());
+		for (Profile p : profile.getSpectateHandler().getFollowers())
 			p.getSpectateHandler().spectate(profile);
-		}
 	}
 
 	public void handleOpponentMessages() {
@@ -347,13 +318,9 @@ public class Match<D extends MatchData> implements Spectatable {
 		setupLocations(location1, location2);
 		teleportPlayers(location1, location2);
 
-		BukkitScheduler scheduler = Bukkit.getServer().getScheduler();
-
-		scheduler.scheduleSyncDelayedTask(PracticePlugin.INSTANCE, () -> {
-			prepareForMatch(participants);
-			handleOpponentMessages();
-			startCountdown();
-		}, 5L);
+		prepareForMatch(participants);
+		handleOpponentMessages();
+		startCountdown();
 	}
 
 	public void end(Profile victim) {
