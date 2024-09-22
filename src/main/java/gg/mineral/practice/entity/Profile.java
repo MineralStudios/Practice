@@ -231,18 +231,21 @@ public class Profile extends ProfileData {
 
 		boolean isBot = BotAPI.INSTANCE.isFakePlayer(uuid);
 
-		if (!isBot && playerStatus == PlayerStatus.FIGHTING && p.getPlayerStatus() == PlayerStatus.FIGHTING
+		if (playerStatus == PlayerStatus.FIGHTING && p.getPlayerStatus() == PlayerStatus.FIGHTING
 				&& match.getParticipants().contains(p))
 			return true;
 
 		Spectatable spectatable = spectateHandler.getSpectatable();
 
 		if (spectatable != null) {
-			if (!isBot && (playerStatus == PlayerStatus.FOLLOWING || playerStatus == PlayerStatus.SPECTATING)
+			if ((playerStatus == PlayerStatus.FOLLOWING || playerStatus == PlayerStatus.SPECTATING)
 					&& p.getPlayerStatus() == PlayerStatus.FIGHTING
 					&& spectatable.getParticipants().contains(p))
 				return true;
 		}
+
+		if (!isBot)
+			return true;
 
 		return uuid == this.getUuid();
 	}

@@ -90,7 +90,7 @@ public class PacketListener implements Listener {
                         UUID uuid = playerInfoData.a().getId();
 
                         if (!profile.testTabVisibility(uuid)
-                                && action != PacketPlayOutPlayerInfo.EnumPlayerInfoAction.REMOVE_PLAYER) {
+                                && action == PacketPlayOutPlayerInfo.EnumPlayerInfoAction.ADD_PLAYER) {
                             data.remove();
                             continue;
                         }
