@@ -217,7 +217,7 @@ public class Profile extends ProfileData {
 					&& p.getPlayer().hasPermission("practice.visible"))
 				return true;
 
-		return false;
+		return uuid == this.getUuid();
 	}
 
 	public boolean testTabVisibility(UUID uuid) {
@@ -238,7 +238,7 @@ public class Profile extends ProfileData {
 				return true;
 		}
 
-		return false;
+		return uuid == this.getUuid();
 	}
 
 	public void message(Message m) {

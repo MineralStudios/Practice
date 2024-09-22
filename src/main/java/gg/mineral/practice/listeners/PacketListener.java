@@ -10,7 +10,6 @@ import org.bukkit.event.Listener;
 import org.bukkit.event.player.PlayerJoinEvent;
 import org.bukkit.event.player.PlayerQuitEvent;
 
-import gg.mineral.bot.api.BotAPI;
 import gg.mineral.practice.entity.Profile;
 import gg.mineral.practice.managers.ProfileManager;
 import io.netty.channel.Channel;
@@ -100,10 +99,10 @@ public class PacketListener implements Listener {
                             profile.getVisiblePlayersOnTab().add(uuid);
                         else if (action == PacketPlayOutPlayerInfo.EnumPlayerInfoAction.REMOVE_PLAYER)
                             profile.getVisiblePlayersOnTab().remove(uuid);
-                        else if (!profile.getVisiblePlayersOnTab().contains(uuid))
-                            data.remove();
                     }
 
+                    if (playerInfo.getB().isEmpty())
+                        return;
                 }
 
                 super.write(channelHandlerContext, packet, channelPromise);
