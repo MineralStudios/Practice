@@ -198,6 +198,9 @@ public class Profile extends ProfileData {
 	public boolean testVisibility(UUID uuid) {
 		Profile p = ProfileManager.getProfile(uuid);
 
+		if (p == null)
+			return false;
+
 		if (playerStatus == PlayerStatus.FIGHTING && p.getPlayerStatus() == PlayerStatus.FIGHTING
 				&& match.getParticipants().contains(p))
 			return true;
@@ -222,6 +225,9 @@ public class Profile extends ProfileData {
 
 	public boolean testTabVisibility(UUID uuid) {
 		Profile p = ProfileManager.getProfile(uuid);
+
+		if (p == null)
+			return false;
 
 		boolean isBot = BotAPI.INSTANCE.isFakePlayer(uuid);
 
