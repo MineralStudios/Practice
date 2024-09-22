@@ -369,9 +369,9 @@ public class Profile extends ProfileData {
 		this.getPlayer().setAllowFlight(canFly);
 		this.getPlayer().setFlying(canFly);
 
-		this.updateVisiblity();
-
 		this.playerStatus = newPlayerStatus;
+
+		this.updateVisiblity();
 	}
 
 	public void setGameMode(GameMode gameMode) {

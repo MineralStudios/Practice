@@ -3,7 +3,6 @@ package gg.mineral.practice.listeners;
 import java.util.Iterator;
 import java.util.UUID;
 
-import org.bukkit.Bukkit;
 import org.bukkit.craftbukkit.v1_8_R3.entity.CraftPlayer;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
@@ -11,7 +10,6 @@ import org.bukkit.event.Listener;
 import org.bukkit.event.player.PlayerJoinEvent;
 import org.bukkit.event.player.PlayerQuitEvent;
 
-import gg.mineral.practice.PracticePlugin;
 import gg.mineral.practice.entity.Profile;
 import gg.mineral.practice.managers.ProfileManager;
 import io.netty.channel.Channel;
@@ -19,7 +17,7 @@ import io.netty.channel.ChannelDuplexHandler;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.channel.ChannelPipeline;
 import io.netty.channel.ChannelPromise;
-import net.minecraft.server.v1_8_R3.EntityPlayer;
+
 import net.minecraft.server.v1_8_R3.PacketPlayOutEntityDestroy;
 import net.minecraft.server.v1_8_R3.PacketPlayOutNamedEntitySpawn;
 import net.minecraft.server.v1_8_R3.PacketPlayOutPlayerInfo;
@@ -87,12 +85,7 @@ public class PacketListener implements Listener {
                         if (!profile.testTabVisibility(uuid)
                                 && action != PacketPlayOutPlayerInfo.EnumPlayerInfoAction.REMOVE_PLAYER) {
                             profile.getVisiblePlayersOnTab().remove(uuid);
-                            PacketPlayOutPlayerInfo newPlayerInfo = new PacketPlayOutPlayerInfo(
-                                    PacketPlayOutPlayerInfo.EnumPlayerInfoAction.REMOVE_PLAYER, new EntityPlayer[0]);
-                            newPlayerInfo.getB().add(playerInfoData);
-                            Bukkit.getScheduler().scheduleSyncDelayedTask(PracticePlugin.INSTANCE,
-                                    () -> profile.getPlayer().getHandle().playerConnection.sendPacket(newPlayerInfo),
-                                    500);
+                            data.remove();
                             continue;
                         }
 
@@ -100,6 +93,8 @@ public class PacketListener implements Listener {
                             profile.getVisiblePlayersOnTab().add(uuid);
                         else if (action == PacketPlayOutPlayerInfo.EnumPlayerInfoAction.REMOVE_PLAYER)
                             profile.getVisiblePlayersOnTab().remove(uuid);
+                        else if (!profile.getVisiblePlayersOnTab().contains(uuid))
+                            data.remove();
                     }
 
                     if (playerInfo.getB().isEmpty())
