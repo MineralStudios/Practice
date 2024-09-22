@@ -92,7 +92,7 @@ public class PacketListener implements Listener {
                             newPlayerInfo.getB().add(playerInfoData);
                             Bukkit.getScheduler().scheduleSyncDelayedTask(PracticePlugin.INSTANCE,
                                     () -> profile.getPlayer().getHandle().playerConnection.sendPacket(newPlayerInfo),
-                                    5);
+                                    500);
                             continue;
                         }
 
@@ -100,8 +100,6 @@ public class PacketListener implements Listener {
                             profile.getVisiblePlayersOnTab().add(uuid);
                         else if (action == PacketPlayOutPlayerInfo.EnumPlayerInfoAction.REMOVE_PLAYER)
                             profile.getVisiblePlayersOnTab().remove(uuid);
-                        else if (!profile.getVisiblePlayersOnTab().contains(uuid))
-                            data.remove();
                     }
 
                     if (playerInfo.getB().isEmpty())
