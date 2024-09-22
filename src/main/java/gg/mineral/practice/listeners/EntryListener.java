@@ -8,6 +8,7 @@ import org.bukkit.event.player.PlayerJoinEvent;
 import org.bukkit.event.player.PlayerQuitEvent;
 
 import gg.mineral.bot.api.BotAPI;
+import gg.mineral.practice.PracticePlugin;
 import gg.mineral.practice.entity.Profile;
 import gg.mineral.practice.managers.EloManager;
 import gg.mineral.practice.managers.ProfileManager;
@@ -29,7 +30,7 @@ public class EntryListener implements Listener {
 		EloManager.updateName(profile);
 		profile.getInventory().setInventoryForLobby();
 		profile.removePotionEffects();
-		profile.updateVisiblity();
+		PracticePlugin.getLobbyVisibilityGroup().addUUID(profile.getUuid(), true);
 
 		profile.setScoreboard(DefaultScoreboard.INSTANCE);
 

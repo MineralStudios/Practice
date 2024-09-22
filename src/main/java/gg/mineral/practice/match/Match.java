@@ -21,6 +21,7 @@ import org.bukkit.projectiles.ProjectileSource;
 import org.bukkit.scheduler.BukkitScheduler;
 
 import gg.mineral.api.collection.GlueList;
+import gg.mineral.api.entity.VisibilityGroup;
 import gg.mineral.bot.api.BotAPI;
 import gg.mineral.practice.PracticePlugin;
 import gg.mineral.practice.entity.PlayerStatus;
@@ -56,11 +57,13 @@ import gg.mineral.practice.util.world.WorldUtil;
 import it.unimi.dsi.fastutil.ints.Int2ObjectMap.Entry;
 import it.unimi.dsi.fastutil.ints.Int2ObjectOpenHashMap;
 import lombok.Getter;
+import lombok.RequiredArgsConstructor;
 import net.md_5.bungee.api.chat.ClickEvent;
 import net.md_5.bungee.api.chat.ComponentBuilder;
 import net.md_5.bungee.api.chat.HoverEvent;
 import net.md_5.bungee.api.chat.TextComponent;
 
+@RequiredArgsConstructor
 public class Match<D extends MatchData> implements Spectatable {
 
 	@Getter
@@ -83,6 +86,7 @@ public class Match<D extends MatchData> implements Spectatable {
 	static int postMatchTime = 60;
 	@Getter
 	Queue<Item> itemRemovalQueue = new ConcurrentLinkedQueue<>();
+	private final VisibilityGroup visibilityGroup = new VisibilityGroup();
 	org.bukkit.World world = null;
 
 	public Match(Profile profile1, Profile profile2, D matchData) {
@@ -90,10 +94,6 @@ public class Match<D extends MatchData> implements Spectatable {
 		this.profile1 = profile1;
 		this.profile2 = profile2;
 		addParicipants(profile1, profile2);
-	}
-
-	public Match(D matchData) {
-		this.data = matchData;
 	}
 
 	public void prepareForMatch(ProfileList profiles) {
@@ -140,11 +140,7 @@ public class Match<D extends MatchData> implements Spectatable {
 	}
 
 	public void setVisibility(Profile p) {
-		for (Match<?> match : MatchManager.getMatches())
-			match.updateVisiblity(this, p);
-
-		for (Profile participant : participants)
-			p.getPlayer().showPlayer(participant.getPlayer());
+		visibilityGroup.addUUID(p.getUuid(), !BotAPI.INSTANCE.isFakePlayer(p.getUuid()));
 	}
 
 	public void prepareForMatch(Profile p) {
@@ -236,12 +232,7 @@ public class Match<D extends MatchData> implements Spectatable {
 	}
 
 	public void setScoreboard(Profile p) {
-		if (data.isBoxing()) {
-			p.setScoreboard(BoxingScoreboard.INSTANCE);
-			return;
-		}
-
-		p.setScoreboard(InMatchScoreboard.INSTANCE);
+		p.setScoreboard(data.isBoxing() ? BoxingScoreboard.INSTANCE : InMatchScoreboard.INSTANCE);
 	}
 
 	public void updateVisiblity(Match<?> match, Profile profile) {

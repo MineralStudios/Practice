@@ -241,7 +241,7 @@ public class Profile extends ProfileData {
 			return;
 
 		PlayerUtil.teleport(this.getPlayer(), ProfileManager.getSpawnLocation());
-		updateVisiblity();
+		PracticePlugin.getLobbyVisibilityGroup().addUUID(player.getUniqueId(), true);
 
 		if (playerStatus != PlayerStatus.FOLLOWING && playerStatus != PlayerStatus.QUEUEING)
 			setPlayerStatus(PlayerStatus.IDLE);

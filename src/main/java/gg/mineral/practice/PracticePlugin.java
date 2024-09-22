@@ -6,6 +6,7 @@ import org.bukkit.event.Listener;
 import org.bukkit.generator.ChunkGenerator;
 import org.bukkit.plugin.java.JavaPlugin;
 
+import gg.mineral.api.entity.VisibilityGroup;
 import gg.mineral.practice.commands.config.ArenaCommand;
 import gg.mineral.practice.commands.config.CatagoryCommand;
 import gg.mineral.practice.commands.config.GametypeCommand;
@@ -62,11 +63,15 @@ import gg.mineral.practice.managers.ProfileManager;
 import gg.mineral.practice.managers.QueuetypeManager;
 import gg.mineral.practice.managers.SpectateManager;
 import gg.mineral.practice.util.world.VoidWorldGenerator;
+import lombok.Getter;
 import net.minecraft.server.v1_8_R3.MinecraftServer;
 
 public class PracticePlugin extends JavaPlugin {
 
 	public static PracticePlugin INSTANCE;
+
+	@Getter
+	private static VisibilityGroup lobbyVisibilityGroup = new VisibilityGroup();
 
 	@Override
 	public void onEnable() {
@@ -114,14 +119,12 @@ public class PracticePlugin extends JavaPlugin {
 	}
 
 	public void registerCommands(Command... cmds) {
-		for (Command c : cmds) {
+		for (Command c : cmds)
 			MinecraftServer.getServer().server.getCommandMap().registerOverride(c.getName(), "Practice", c);
-		}
 	}
 
 	public void registerListeners(Listener... listeners) {
-		for (Listener l : listeners) {
+		for (Listener l : listeners)
 			Bukkit.getPluginManager().registerEvents(l, this);
-		}
 	}
 }
