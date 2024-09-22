@@ -22,8 +22,7 @@ public enum Difficulty {
         @Override
         public FakePlayer spawn(MatchData matchData, Location location, String suffix) {
 
-            BotConfiguration config = BotConfiguration.builder().username(getDisplay() + "Bot" + suffix)
-                    .skin(Skins.MINERAL_GREEN)
+            BotConfiguration config = BotConfiguration.builder().username("EasyBot" + suffix).skin(Skins.MINERAL_GREEN)
                     .horizontalAimSpeed(0.3F)
                     .verticalAimSpeed(0.3F).horizontalAimAccuracy(0.3F).verticalAimAccuracy(0.25F)
                     .horizontalErraticness(0.3f).averageCps(5).latency(50).sprintResetAccuracy(0.25F)
@@ -70,7 +69,7 @@ public enum Difficulty {
     MEDIUM(CC.YELLOW + "Medium") {
         @Override
         public FakePlayer spawn(MatchData matchData, Location location, String suffix) {
-            BotConfiguration config = BotConfiguration.builder().username(getDisplay() + "Bot" + suffix)
+            BotConfiguration config = BotConfiguration.builder().username("MediumBot" + suffix)
                     .skin(Skins.MINERAL_YELLOW).horizontalAimSpeed(0.4F)
                     .verticalAimSpeed(0.4F).horizontalAimAccuracy(0.35F).verticalAimAccuracy(0.35F).averageCps(8)
                     .latency(50).sprintResetAccuracy(0.45F).hitSelectAccuracy(0.3f).build();
@@ -115,8 +114,7 @@ public enum Difficulty {
     HARD(CC.GOLD + "Hard") {
         @Override
         public FakePlayer spawn(MatchData matchData, Location location, String suffix) {
-            BotConfiguration config = BotConfiguration.builder().username(getDisplay() + "Bot" + suffix)
-                    .skin(Skins.MINERAL_ORANGE)
+            BotConfiguration config = BotConfiguration.builder().username("HardBot" + suffix).skin(Skins.MINERAL_ORANGE)
                     .horizontalAimSpeed(0.5F)
                     .verticalAimSpeed(0.5F).horizontalAimAccuracy(0.6F).verticalAimAccuracy(0.6F).averageCps(11)
                     .latency(50).sprintResetAccuracy(0.8F).hitSelectAccuracy(0.6f).build();
@@ -161,8 +159,7 @@ public enum Difficulty {
     EXPERT(CC.RED + "Expert") {
         @Override
         public FakePlayer spawn(MatchData matchData, Location location, String suffix) {
-            BotConfiguration config = BotConfiguration.builder().username(getDisplay() + "Bot" + suffix)
-                    .skin(Skins.MINERAL_RED)
+            BotConfiguration config = BotConfiguration.builder().username("ExpertBot" + suffix).skin(Skins.MINERAL_RED)
                     .horizontalAimSpeed(0.8F)
                     .verticalAimSpeed(0.8F).horizontalAimAccuracy(0.8F).verticalAimAccuracy(0.8F).averageCps(14)
                     .latency(50).sprintResetAccuracy(0.85F).hitSelectAccuracy(0.9f).build();
@@ -207,8 +204,7 @@ public enum Difficulty {
     PRO(CC.PURPLE + "Pro") {
         @Override
         public FakePlayer spawn(MatchData matchData, Location location, String suffix) {
-            BotConfiguration config = BotConfiguration.builder().username(getDisplay() + "Bot" + suffix)
-                    .skin(Skins.MINERAL_PURPLE)
+            BotConfiguration config = BotConfiguration.builder().username("ProBot" + suffix).skin(Skins.MINERAL_PURPLE)
                     .horizontalAimSpeed(0.95F)
                     .verticalAimSpeed(0.95F).horizontalAimAccuracy(0.95F).verticalAimAccuracy(0.95F).averageCps(17)
                     .latency(50).sprintResetAccuracy(0.95F).hitSelectAccuracy(0.98f).build();
@@ -254,7 +250,7 @@ public enum Difficulty {
         @Override
         public FakePlayer spawn(MatchData matchData, Location location, String suffix) {
 
-            BotConfiguration config = BotConfiguration.builder().username(getDisplay() + "Bot" + suffix)
+            BotConfiguration config = BotConfiguration.builder().username("HardcoreBot" + suffix)
                     .skin(Skins.MINERAL_PINK)
                     .horizontalAimSpeed(1.1F).verticalAimSpeed(1.1F).horizontalAimAccuracy(1.1F)
                     .verticalAimAccuracy(1.1F).averageCps(20).latency(50).sprintResetAccuracy(1.0F)
@@ -302,7 +298,7 @@ public enum Difficulty {
         public FakePlayer spawn(MatchData matchData, Location location, String suffix) {
             CustomDifficulty difficulty = matchData.getCustomBotDifficulty();
 
-            BotConfiguration config = BotConfiguration.builder().username(getDisplay() + "Bot" + suffix)
+            BotConfiguration config = BotConfiguration.builder().username("CustomBot" + suffix)
                     .horizontalAimSpeed(difficulty.getHorizontalAimSpeed())
                     .verticalAimSpeed(difficulty.getVerticalAimSpeed())
                     .horizontalAimAccuracy(difficulty.getHorizontalAimAccuracy())
@@ -356,7 +352,7 @@ public enum Difficulty {
         public FakePlayer spawn(MatchData matchData, Location location, String suffix) {
             CustomDifficulty difficulty = new CustomDifficulty();
             difficulty.randomize();
-            BotConfiguration config = BotConfiguration.builder().username(getDisplay() + "Bot" + suffix)
+            BotConfiguration config = BotConfiguration.builder().username("RandomBot" + suffix)
                     .horizontalAimSpeed(difficulty.getHorizontalAimSpeed())
                     .verticalAimSpeed(difficulty.getVerticalAimSpeed())
                     .horizontalAimAccuracy(difficulty.getHorizontalAimAccuracy())
