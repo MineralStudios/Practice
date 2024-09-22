@@ -1,7 +1,7 @@
 package gg.mineral.practice.entity;
 
-import java.util.Collection;
 import java.util.Iterator;
+import java.util.List;
 import java.util.Set;
 import java.util.UUID;
 
@@ -402,9 +402,6 @@ public class Profile extends ProfileData {
 		if (profile == null)
 			return;
 
-		if (profile.getName().contains("Bot"))
-			Thread.dumpStack();
-
 		this.getPlayer().getHandle().playerConnection.sendPacket(
 				new PacketPlayOutPlayerInfo(EnumPlayerInfoAction.ADD_PLAYER, profile.getPlayer().getHandle()));
 	}
@@ -435,7 +432,7 @@ public class Profile extends ProfileData {
 
 	public void updateVisiblity() {
 
-		Collection<? extends Player> players = Bukkit.getOnlinePlayers();
+		List<Player> players = getPlayer().getWorld().getPlayers();
 
 		for (UUID uuid : getVisiblePlayers())
 			if (!testVisibility(uuid))
@@ -446,13 +443,16 @@ public class Profile extends ProfileData {
 				removeFromTab(uuid);
 
 		for (Player player : players) {
+			boolean removedFromTab = false;
 
 			if (testTabVisibility(player.getUniqueId()))
 				showOnTab(player.getUniqueId());
-			else
+			else {
 				removeFromTab(player.getUniqueId());
+				removedFromTab = true;
+			}
 
-			if (testVisibility(player.getUniqueId()))
+			if (!removedFromTab && testVisibility(player.getUniqueId()))
 				showPlayer(player.getUniqueId());
 			else
 				removeFromView(player.getUniqueId());
@@ -462,12 +462,16 @@ public class Profile extends ProfileData {
 			if (profile == null)
 				continue;
 
+			removedFromTab = false;
+
 			if (profile.testTabVisibility(player.getUniqueId()))
 				profile.showOnTab(uuid);
-			else
+			else {
 				profile.removeFromTab(uuid);
+				removedFromTab = true;
+			}
 
-			if (profile.testVisibility(player.getUniqueId()))
+			if (!removedFromTab && profile.testVisibility(player.getUniqueId()))
 				profile.showPlayer(uuid);
 			else
 				profile.removeFromView(uuid);
