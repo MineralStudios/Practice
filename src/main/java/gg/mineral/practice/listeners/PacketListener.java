@@ -99,6 +99,8 @@ public class PacketListener implements Listener {
                             profile.getVisiblePlayersOnTab().add(uuid);
                         else if (action == PacketPlayOutPlayerInfo.EnumPlayerInfoAction.REMOVE_PLAYER)
                             profile.getVisiblePlayersOnTab().remove(uuid);
+                        else if (!profile.getVisiblePlayersOnTab().contains(uuid))
+                            data.remove();
                     }
 
                     if (playerInfo.getB().isEmpty())
