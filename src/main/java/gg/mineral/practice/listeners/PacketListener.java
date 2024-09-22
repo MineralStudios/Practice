@@ -30,8 +30,9 @@ public class PacketListener implements Listener {
     @EventHandler
     public void onJoin(PlayerJoinEvent event) {
 
-        if (BotAPI.INSTANCE.isFakePlayer(event.getPlayer().getUniqueId()))
-            return;
+        if (event.getPlayer() instanceof CraftPlayer cp)
+            if (cp.getHandle().playerConnection.networkManager.channel == null)
+                return;
 
         Profile profile = ProfileManager.getOrCreateProfile(event.getPlayer());
 
@@ -40,8 +41,9 @@ public class PacketListener implements Listener {
 
     @EventHandler
     public void onLeave(PlayerQuitEvent event) {
-        if (BotAPI.INSTANCE.isFakePlayer(event.getPlayer().getUniqueId()))
-            return;
+        if (event.getPlayer() instanceof CraftPlayer cp)
+            if (cp.getHandle().playerConnection.networkManager.channel == null)
+                return;
 
         removePlayer(event.getPlayer());
     }
