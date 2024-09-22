@@ -17,7 +17,7 @@ import io.netty.channel.ChannelDuplexHandler;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.channel.ChannelPipeline;
 import io.netty.channel.ChannelPromise;
-
+import net.minecraft.server.v1_8_R3.IChatBaseComponent;
 import net.minecraft.server.v1_8_R3.PacketPlayOutEntityDestroy;
 import net.minecraft.server.v1_8_R3.PacketPlayOutNamedEntitySpawn;
 import net.minecraft.server.v1_8_R3.PacketPlayOutPlayerInfo;
@@ -85,7 +85,9 @@ public class PacketListener implements Listener {
                         if (!profile.testTabVisibility(uuid)
                                 && action != PacketPlayOutPlayerInfo.EnumPlayerInfoAction.REMOVE_PLAYER) {
                             profile.getVisiblePlayersOnTab().remove(uuid);
-                            playerInfoData.d().a("");
+                            playerInfoData = playerInfo.new PlayerInfoData(playerInfoData.a(),
+                                    playerInfoData.b(), playerInfoData.c(),
+                                    IChatBaseComponent.ChatSerializer.a("{\"text\":\"\"}"));
                             continue;
                         }
 
@@ -93,8 +95,11 @@ public class PacketListener implements Listener {
                             profile.getVisiblePlayersOnTab().add(uuid);
                         else if (action == PacketPlayOutPlayerInfo.EnumPlayerInfoAction.REMOVE_PLAYER)
                             profile.getVisiblePlayersOnTab().remove(uuid);
-                        else if (!profile.getVisiblePlayersOnTab().contains(uuid))
-                            playerInfoData.d().a("");
+                        else if (!profile.getVisiblePlayersOnTab().contains(uuid)) {
+                            playerInfoData = playerInfo.new PlayerInfoData(playerInfoData.a(),
+                                    playerInfoData.b(), playerInfoData.c(),
+                                    IChatBaseComponent.ChatSerializer.a("{\"text\":\"\"}"));
+                        }
                     }
 
                     if (playerInfo.getB().isEmpty())
