@@ -447,29 +447,30 @@ public class Profile extends ProfileData {
 
 		for (Player player : players) {
 
-			if (testVisibility(player.getUniqueId()))
-				showPlayer(player.getUniqueId());
-			else
-				removeFromView(player.getUniqueId());
-
 			if (testTabVisibility(player.getUniqueId()))
 				showOnTab(player.getUniqueId());
 			else
 				removeFromTab(player.getUniqueId());
 
+			if (testVisibility(player.getUniqueId()))
+				showPlayer(player.getUniqueId());
+			else
+				removeFromView(player.getUniqueId());
+
 			Profile profile = ProfileManager.getProfile(player.getUniqueId());
 
 			if (profile == null)
 				continue;
-			if (profile.testVisibility(player.getUniqueId()))
-				profile.showPlayer(uuid);
-			else
-				profile.removeFromView(uuid);
 
 			if (profile.testTabVisibility(player.getUniqueId()))
 				profile.showOnTab(uuid);
 			else
 				profile.removeFromTab(uuid);
+
+			if (profile.testVisibility(player.getUniqueId()))
+				profile.showPlayer(uuid);
+			else
+				profile.removeFromView(uuid);
 		}
 	}
 
