@@ -408,6 +408,9 @@ public class Profile extends ProfileData {
 		if (profile == null)
 			return;
 
+		if (profile.getName().contains("Bot"))
+			Thread.dumpStack();
+
 		this.getPlayer().getHandle().playerConnection.sendPacket(
 				new PacketPlayOutPlayerInfo(EnumPlayerInfoAction.ADD_PLAYER, profile.getPlayer().getHandle()));
 	}
