@@ -196,25 +196,22 @@ public class Profile extends ProfileData {
 	}
 
 	public boolean testVisibility(UUID uuid) {
+		@Nullable
 		Profile p = ProfileManager.getProfile(uuid);
 
-		if (p == null)
-			return false;
-
-		if (playerStatus == PlayerStatus.FIGHTING && p.getPlayerStatus() == PlayerStatus.FIGHTING
-				&& match.getParticipants().contains(p))
+		Match<?> match = getMatch();
+		if (playerStatus == PlayerStatus.FIGHTING
+				&& match != null && p != null && match.getParticipants().contains(p))
 			return true;
 
 		Spectatable spectatable = spectateHandler.getSpectatable();
 
-		if (spectatable != null) {
+		if (spectatable != null)
 			if ((playerStatus == PlayerStatus.FOLLOWING || playerStatus == PlayerStatus.SPECTATING)
-					&& p.getPlayerStatus() == PlayerStatus.FIGHTING
-					&& spectatable.getParticipants().contains(p))
+					&& p != null && spectatable.getParticipants().contains(p))
 				return true;
-		}
 
-		if (this.isPlayersVisible())
+		if (this.isPlayersVisible() && p != null)
 			if ((playerStatus == PlayerStatus.QUEUEING || playerStatus == PlayerStatus.IDLE)
 					&& (p.getPlayerStatus() == PlayerStatus.QUEUEING || p.getPlayerStatus() == PlayerStatus.IDLE)
 					&& p.getPlayer().hasPermission("practice.visible"))
@@ -224,25 +221,22 @@ public class Profile extends ProfileData {
 	}
 
 	public boolean testTabVisibility(UUID uuid) {
+		@Nullable
 		Profile p = ProfileManager.getProfile(uuid);
-
-		if (p == null)
-			return false;
 
 		boolean isBot = BotAPI.INSTANCE.isFakePlayer(uuid);
 
-		if (playerStatus == PlayerStatus.FIGHTING && p.getPlayerStatus() == PlayerStatus.FIGHTING
-				&& match.getParticipants().contains(p))
+		Match<?> match = getMatch();
+		if (playerStatus == PlayerStatus.FIGHTING
+				&& match != null && p != null && match.getParticipants().contains(p))
 			return true;
 
 		Spectatable spectatable = spectateHandler.getSpectatable();
 
-		if (spectatable != null) {
+		if (spectatable != null)
 			if ((playerStatus == PlayerStatus.FOLLOWING || playerStatus == PlayerStatus.SPECTATING)
-					&& p.getPlayerStatus() == PlayerStatus.FIGHTING
-					&& spectatable.getParticipants().contains(p))
+					&& p != null && spectatable.getParticipants().contains(p))
 				return true;
-		}
 
 		if (!isBot)
 			return true;
