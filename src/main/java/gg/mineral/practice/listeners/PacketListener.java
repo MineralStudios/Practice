@@ -17,8 +17,7 @@ import io.netty.channel.ChannelDuplexHandler;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.channel.ChannelPipeline;
 import io.netty.channel.ChannelPromise;
-import it.unimi.dsi.fastutil.ints.IntIterator;
-import it.unimi.dsi.fastutil.ints.IntOpenHashSet;
+
 import net.minecraft.server.v1_8_R3.PacketPlayOutEntityDestroy;
 import net.minecraft.server.v1_8_R3.PacketPlayOutNamedEntitySpawn;
 import net.minecraft.server.v1_8_R3.PacketPlayOutPlayerInfo;
@@ -110,7 +109,7 @@ public class PacketListener implements Listener {
 
         ChannelPipeline pipeline = profile.getPlayer().getHandle().playerConnection.networkManager.channel
                 .pipeline();
-        pipeline.addBefore("practice_packet_handler", profile.getName(), channelDuplexHandler);
+        pipeline.addBefore("packet_handler", profile.getName(), channelDuplexHandler);
     }
 
     protected void removePlayer(Player player) {
