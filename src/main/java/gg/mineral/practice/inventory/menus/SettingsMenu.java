@@ -78,6 +78,7 @@ public class SettingsMenu extends PracticeMenu {
 				interaction -> {
 					Profile p = interaction.getProfile();
 					p.getPlayer().performCommand("toggleplayervisibility");
+					reload();
 				});
 
 		/*
