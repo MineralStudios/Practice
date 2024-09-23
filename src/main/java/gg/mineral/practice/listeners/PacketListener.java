@@ -28,10 +28,6 @@ public class PacketListener implements Listener {
 
     @EventHandler
     public void onLeave(PlayerQuitEvent event) {
-        if (event.getPlayer() instanceof CraftPlayer cp)
-            if (cp.getHandle().playerConnection.networkManager.channel == null)
-                return;
-
         removePlayer(event.getPlayer());
     }
 
