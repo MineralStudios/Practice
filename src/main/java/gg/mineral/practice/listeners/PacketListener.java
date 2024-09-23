@@ -12,11 +12,6 @@ import org.bukkit.event.player.PlayerQuitEvent;
 
 import gg.mineral.practice.entity.Profile;
 import gg.mineral.practice.managers.ProfileManager;
-import io.netty.channel.Channel;
-import io.netty.channel.ChannelDuplexHandler;
-import io.netty.channel.ChannelHandlerContext;
-import io.netty.channel.ChannelPipeline;
-import io.netty.channel.ChannelPromise;
 
 import net.minecraft.server.v1_8_R3.PacketPlayOutEntityDestroy;
 import net.minecraft.server.v1_8_R3.PacketPlayOutNamedEntitySpawn;
@@ -27,13 +22,7 @@ public class PacketListener implements Listener {
 
     @EventHandler
     public void onJoin(PlayerJoinEvent event) {
-
-        if (event.getPlayer() instanceof CraftPlayer cp)
-            if (cp.getHandle().playerConnection.networkManager.channel == null)
-                return;
-
         Profile profile = ProfileManager.getOrCreateProfile(event.getPlayer());
-
         injectPlayer(profile);
     }
 
@@ -48,74 +37,57 @@ public class PacketListener implements Listener {
 
     protected void injectPlayer(Profile profile) {
 
-        ChannelDuplexHandler channelDuplexHandler = new ChannelDuplexHandler() {
-
-            @Override
-            public void channelRead(ChannelHandlerContext channelHandlerContext, Object packet) throws Exception {
-                super.channelRead(channelHandlerContext, packet);
+        profile.getPlayer().getHandle().playerConnection.getOutgoingPacketListeners().add(packet -> {
+            if (packet instanceof PacketPlayOutNamedEntitySpawn namedEntitySpawn) {
+                UUID uuid = namedEntitySpawn.getB();
+                if (!profile.testVisibility(uuid)) {
+                    profile.getVisiblePlayers().remove(uuid);
+                    return true;
+                }
+                profile.getVisiblePlayers().add(uuid);
             }
 
-            @Override
-            public void write(ChannelHandlerContext channelHandlerContext, Object packet, ChannelPromise channelPromise)
-                    throws Exception {
+            if (packet instanceof PacketPlayOutEntityDestroy destroy)
+                for (int id : destroy.getA())
+                    for (UUID uuid : profile.getVisiblePlayers())
+                        if (profile.getPlayer().getHandle().getId() == id)
+                            profile.getVisiblePlayers().remove(uuid);
 
-                if (packet instanceof PacketPlayOutNamedEntitySpawn namedEntitySpawn) {
-                    UUID uuid = namedEntitySpawn.getB();
-                    if (!profile.testVisibility(uuid)) {
-                        profile.getVisiblePlayers().remove(uuid);
-                        return;
-                    }
-                    profile.getVisiblePlayers().add(uuid);
-                }
+            if (packet instanceof PacketPlayOutPlayerInfo playerInfo) {
+                PacketPlayOutPlayerInfo.EnumPlayerInfoAction action = playerInfo.getA();
+                Iterator<PlayerInfoData> data = playerInfo.getB().iterator();
 
-                if (packet instanceof PacketPlayOutEntityDestroy destroy)
-                    for (int id : destroy.getA())
-                        for (UUID uuid : profile.getVisiblePlayers())
-                            if (profile.getPlayer().getHandle().getId() == id)
-                                profile.getVisiblePlayers().remove(uuid);
+                while (data.hasNext()) {
+                    PlayerInfoData playerInfoData = data.next();
 
-                if (packet instanceof PacketPlayOutPlayerInfo playerInfo) {
-                    PacketPlayOutPlayerInfo.EnumPlayerInfoAction action = playerInfo.getA();
-                    Iterator<PlayerInfoData> data = playerInfo.getB().iterator();
+                    if (playerInfoData == null)
+                        continue;
+                    UUID uuid = playerInfoData.a().getId();
 
-                    while (data.hasNext()) {
-                        PlayerInfoData playerInfoData = data.next();
-                        UUID uuid = playerInfoData.a().getId();
-
-                        if (!profile.testTabVisibility(uuid)
-                                && action != PacketPlayOutPlayerInfo.EnumPlayerInfoAction.REMOVE_PLAYER) {
-                            profile.getVisiblePlayersOnTab().remove(uuid);
-                            data.remove();
-                            continue;
-                        }
-
-                        if (action == PacketPlayOutPlayerInfo.EnumPlayerInfoAction.ADD_PLAYER)
-                            profile.getVisiblePlayersOnTab().add(uuid);
-                        else if (action == PacketPlayOutPlayerInfo.EnumPlayerInfoAction.REMOVE_PLAYER)
-                            profile.getVisiblePlayersOnTab().remove(uuid);
-                        else if (!profile.getVisiblePlayersOnTab().contains(uuid))
-                            data.remove();
+                    if (!profile.testTabVisibility(uuid)
+                            && action != PacketPlayOutPlayerInfo.EnumPlayerInfoAction.REMOVE_PLAYER) {
+                        profile.getVisiblePlayersOnTab().remove(uuid);
+                        data.remove();
+                        continue;
                     }
 
-                    if (playerInfo.getB().isEmpty())
-                        return;
+                    if (action == PacketPlayOutPlayerInfo.EnumPlayerInfoAction.ADD_PLAYER)
+                        profile.getVisiblePlayersOnTab().add(uuid);
+                    else if (action == PacketPlayOutPlayerInfo.EnumPlayerInfoAction.REMOVE_PLAYER)
+                        profile.getVisiblePlayersOnTab().remove(uuid);
+                    else if (!profile.getVisiblePlayersOnTab().contains(uuid))
+                        data.remove();
                 }
 
-                super.write(channelHandlerContext, packet, channelPromise);
+                if (playerInfo.getB().isEmpty())
+                    return true;
             }
 
-        };
-
-        ChannelPipeline pipeline = profile.getPlayer().getHandle().playerConnection.networkManager.channel
-                .pipeline();
-        pipeline.addBefore("packet_handler", profile.getName(), channelDuplexHandler);
+            return false;
+        });
     }
 
     protected void removePlayer(Player player) {
-        Channel channel = ((CraftPlayer) player).getHandle().playerConnection.networkManager.channel;
-        channel.eventLoop().submit(() -> {
-            channel.pipeline().remove(player.getName());
-            return null;
-        });
+        ((CraftPlayer) player).getHandle().playerConnection.getOutgoingPacketListeners().clear();
     }
 }
