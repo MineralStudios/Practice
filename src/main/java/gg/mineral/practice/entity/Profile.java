@@ -2,8 +2,8 @@ package gg.mineral.practice.entity;
 
 import java.util.Iterator;
 import java.util.List;
-import java.util.Set;
 import java.util.UUID;
+import java.util.concurrent.ConcurrentLinkedQueue;
 
 import org.bukkit.Bukkit;
 import org.bukkit.GameMode;
@@ -46,7 +46,6 @@ import gg.mineral.practice.util.messages.Message;
 import gg.mineral.practice.util.messages.impl.ChatMessages;
 import gg.mineral.practice.util.messages.impl.ErrorMessages;
 import gg.mineral.practice.util.world.BlockData;
-import it.unimi.dsi.fastutil.objects.ObjectOpenHashSet;
 import lombok.Getter;
 import lombok.Setter;
 import net.minecraft.server.v1_8_R3.EntityTrackerEntry;
@@ -88,9 +87,9 @@ public class Profile extends ProfileData {
 	private Registry<BlockData, String> fakeBlocks = new Registry<>(BlockData::toString);
 
 	@Getter
-	private final Set<UUID> visiblePlayers = new ObjectOpenHashSet<>();
+	private final ConcurrentLinkedQueue<UUID> visiblePlayers = new ConcurrentLinkedQueue<>();
 	@Getter
-	private final Set<UUID> visiblePlayersOnTab = new ObjectOpenHashSet<>();
+	private final ConcurrentLinkedQueue<UUID> visiblePlayersOnTab = new ConcurrentLinkedQueue<>();
 
 	public Profile(org.bukkit.entity.Player player) {
 		super(player.getUniqueId(), player.getName());
