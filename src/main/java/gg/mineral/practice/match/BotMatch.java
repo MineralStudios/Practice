@@ -43,8 +43,6 @@ public class BotMatch extends Match<QueueMatchData> {
         setupLocations(location1, location2);
 
         teleportPlayers(location1, location2);
-        handleOpponentMessages();
-        startCountdown();
 
         this.fakePlayer = difficulty.spawn(profile1.getMatchData(), location2, "");
         Player bukkitPl = Bukkit.getPlayer(fakePlayer.getUuid());
@@ -54,6 +52,9 @@ public class BotMatch extends Match<QueueMatchData> {
 
         this.profile2 = ProfileManager
                 .getOrCreateProfile(bukkitPl);
+
+        handleOpponentMessages();
+        startCountdown();
         addParicipants(profile2);
 
         prepareForMatch(participants);
