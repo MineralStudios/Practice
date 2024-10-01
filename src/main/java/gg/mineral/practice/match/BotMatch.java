@@ -13,6 +13,7 @@ import gg.mineral.practice.PracticePlugin;
 import gg.mineral.practice.bots.Difficulty;
 import gg.mineral.practice.entity.PlayerStatus;
 import gg.mineral.practice.entity.Profile;
+import gg.mineral.practice.managers.MatchManager;
 import gg.mineral.practice.managers.ProfileManager;
 import gg.mineral.practice.match.data.QueueMatchData;
 import gg.mineral.practice.util.PlayerUtil;
@@ -30,21 +31,20 @@ public class BotMatch extends Match<QueueMatchData> {
         addParicipants(profile1);
     }
 
-    public void spawnBots() {
-        Location location2 = getData().getArena().getLocation2().clone();
-        this.fakePlayer = difficulty.spawn(profile1.getMatchData(), location2, "");
-    }
-
     @Override
     public void start() {
-        spawnBots();
-        super.start();
-    }
+        if (noArenas())
+            return;
 
-    @Override
-    public void teleportPlayers(Location location1, Location location2) {
-        PlayerUtil.teleport(profile1.getPlayer(), location1);
+        MatchManager.registerMatch(this);
+        Location location1 = getData().getArena().getLocation1().clone();
+        Location location2 = getData().getArena().getLocation2().clone();
 
+        setupLocations(location1, location2);
+
+        teleportPlayers(location1, location2);
+
+        this.fakePlayer = difficulty.spawn(profile1.getMatchData(), location2, "");
         Player bukkitPl = Bukkit.getPlayer(fakePlayer.getUuid());
 
         if (bukkitPl == null)
@@ -53,6 +53,15 @@ public class BotMatch extends Match<QueueMatchData> {
         this.profile2 = ProfileManager
                 .getOrCreateProfile(bukkitPl);
         addParicipants(profile2);
+
+        prepareForMatch(participants);
+        handleOpponentMessages();
+        startCountdown();
+    }
+
+    @Override
+    public void teleportPlayers(Location location1, Location location2) {
+        PlayerUtil.teleport(profile1.getPlayer(), location1);
     }
 
     @Override

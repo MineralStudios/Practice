@@ -49,39 +49,41 @@ public class BotTeamMatch extends TeamMatch {
     }
 
     public void spawnBots() {
-        Location location1 = getData().getArena().getLocation1().clone();
-        Location location2 = getData().getArena().getLocation2().clone();
-        int suffix = 0;
 
-        for (Difficulty difficulty : team1Bots) {
-            FakePlayer fakePlayer = difficulty.spawn(getData(), location1, "" + (suffix++));
-            team1FakePlayers.add(fakePlayer);
-        }
-
-        for (Difficulty difficulty : team2Bots) {
-            FakePlayer fakePlayer = difficulty.spawn(getData(), location2, "" + (suffix++));
-            team2FakePlayers.add(fakePlayer);
-        }
     }
 
     @Override
     public void start() {
-        spawnBots();
         if (noArenas())
             return;
-
-        for (FakePlayer fakePlayer : team1FakePlayers)
-            this.team1RemainingPlayers
-                    .add(ProfileManager.getOrCreateProfile(Bukkit.getPlayer(fakePlayer.getUuid())));
-
-        for (FakePlayer fakePlayer : team2FakePlayers)
-            this.team2RemainingPlayers
-                    .add(ProfileManager.getOrCreateProfile(Bukkit.getPlayer(fakePlayer.getUuid())));
 
         MatchManager.registerMatch(this);
         Location location1 = getData().getArena().getLocation1().clone();
         Location location2 = getData().getArena().getLocation2().clone();
         setupLocations(location1, location2);
+        spawnBots();
+
+        for (Profile teamMember : team1RemainingPlayers)
+            PlayerUtil.teleport(teamMember.getPlayer(), location1);
+
+        for (Profile teamMember : team2RemainingPlayers)
+            PlayerUtil.teleport(teamMember.getPlayer(), location2);
+
+        int suffix = 0;
+
+        for (Difficulty difficulty : team1Bots) {
+            FakePlayer fakePlayer = difficulty.spawn(getData(), location1, "" + (suffix++));
+            this.team1RemainingPlayers
+                    .add(ProfileManager.getOrCreateProfile(Bukkit.getPlayer(fakePlayer.getUuid())));
+            team1FakePlayers.add(fakePlayer);
+        }
+
+        for (Difficulty difficulty : team2Bots) {
+            FakePlayer fakePlayer = difficulty.spawn(getData(), location2, "" + (suffix++));
+            this.team2RemainingPlayers
+                    .add(ProfileManager.getOrCreateProfile(Bukkit.getPlayer(fakePlayer.getUuid())));
+            team2FakePlayers.add(fakePlayer);
+        }
 
         this.participants.addAll(team1RemainingPlayers);
         this.participants.addAll(team2RemainingPlayers);
@@ -98,16 +100,12 @@ public class BotTeamMatch extends TeamMatch {
 
         for (Profile teamMember : team1RemainingPlayers) {
             prepareForMatch(teamMember, team1sb);
-            PlayerUtil.teleport(teamMember.getPlayer(), location1);
-
             for (FakePlayer fakePlayer : team1FakePlayers)
                 fakePlayer.getFriendlyEntityUUIDs().add(teamMember.getUuid());
         }
 
         for (Profile teamMember : team2RemainingPlayers) {
             prepareForMatch(teamMember, team2sb);
-            PlayerUtil.teleport(teamMember.getPlayer(), location2);
-
             for (FakePlayer fakePlayer : team2FakePlayers)
                 fakePlayer.getFriendlyEntityUUIDs().add(teamMember.getUuid());
         }
