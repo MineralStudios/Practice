@@ -48,10 +48,6 @@ public class BotTeamMatch extends TeamMatch {
         }
     }
 
-    public void spawnBots() {
-
-    }
-
     @Override
     public void start() {
         if (noArenas())
@@ -61,13 +57,14 @@ public class BotTeamMatch extends TeamMatch {
         Location location1 = getData().getArena().getLocation1().clone();
         Location location2 = getData().getArena().getLocation2().clone();
         setupLocations(location1, location2);
-        spawnBots();
 
         for (Profile teamMember : team1RemainingPlayers)
             PlayerUtil.teleport(teamMember.getPlayer(), location1);
 
         for (Profile teamMember : team2RemainingPlayers)
             PlayerUtil.teleport(teamMember.getPlayer(), location2);
+
+        startCountdown();
 
         int suffix = 0;
 
@@ -109,8 +106,6 @@ public class BotTeamMatch extends TeamMatch {
             for (FakePlayer fakePlayer : team2FakePlayers)
                 fakePlayer.getFriendlyEntityUUIDs().add(teamMember.getUuid());
         }
-
-        startCountdown();
     }
 
 }
