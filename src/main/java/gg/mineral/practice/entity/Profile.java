@@ -87,9 +87,35 @@ public class Profile extends ProfileData {
 	private Registry<BlockData, String> fakeBlocks = new Registry<>(BlockData::toString);
 
 	@Getter
-	private final ConcurrentLinkedQueue<UUID> visiblePlayers = new ConcurrentLinkedQueue<>();
+	private final ConcurrentLinkedQueue<UUID> visiblePlayers = new ConcurrentLinkedQueue<UUID>() {
+		@Override
+		public boolean add(UUID uuid) {
+			getPlayer().getHiddenPlayers().remove(uuid);
+			return super.add(uuid);
+		}
+
+		@Override
+		public boolean remove(Object o) {
+			if (o instanceof UUID uuid)
+				getPlayer().getHiddenPlayers().add(uuid);
+			return super.remove(o);
+		}
+	};
 	@Getter
-	private final ConcurrentLinkedQueue<UUID> visiblePlayersOnTab = new ConcurrentLinkedQueue<>();
+	private final ConcurrentLinkedQueue<UUID> visiblePlayersOnTab = new ConcurrentLinkedQueue<UUID>() {
+		@Override
+		public boolean add(UUID uuid) {
+			getPlayer().getHiddenPlayersOnTab().remove(uuid);
+			return super.add(uuid);
+		}
+
+		@Override
+		public boolean remove(Object o) {
+			if (o instanceof UUID uuid)
+				getPlayer().getHiddenPlayersOnTab().add(uuid);
+			return super.remove(o);
+		}
+	};
 
 	public Profile(org.bukkit.entity.Player player) {
 		super(player.getUniqueId(), player.getName());
