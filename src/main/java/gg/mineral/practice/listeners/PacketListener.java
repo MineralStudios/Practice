@@ -149,9 +149,13 @@ public class PacketListener implements Listener {
                         if (player == null)
                             continue;
 
-                        boolean one = (location.getX() * 8.0D) == x;
-                        boolean two = (location.getY() * 8.0D) == y;
-                        boolean three = (location.getZ() * 8.0D) == z;
+                        boolean one = (int) (location.getX() * 8.0D) == x;
+                        boolean two = (int) (location.getY() * 8.0D) == y;
+                        boolean three = (int) (location.getZ() * 8.0D) == z;
+
+                        System.out.println("One: " + one + " " + (int) (location.getX() * 8.0D) + " " + x);
+                        System.out.println("Two: " + two + " " + (int) (location.getY() * 8.0D) + " " + y);
+                        System.out.println("Three: " + three + " " + (int) (location.getZ() * 8.0D) + " " + z);
 
                         if (!one || !two || !three)
                             continue;
