@@ -149,8 +149,6 @@ public class PacketListener implements Listener {
                         if (player == null)
                             continue;
 
-                        System.out.println("Sound: " + sound);
-
                         boolean one = (location.getX() * 8.0D) == x;
                         boolean two = (location.getY() * 8.0D) == y;
                         boolean three = (location.getZ() * 8.0D) == z;
@@ -159,6 +157,8 @@ public class PacketListener implements Listener {
                             continue;
 
                         boolean pass = false;
+
+                        System.out.println("Sound: " + sound);
 
                         switch (sound) {
                             case "RANDOM.bow": {
