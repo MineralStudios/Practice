@@ -120,6 +120,9 @@ public class PacketListener implements Listener {
 
             if (packet instanceof PacketPlayOutNamedSoundEffect soundEffect) {
                 String sound = soundEffect.getA();
+
+                if (sound == null)
+                    return false;
                 if (sound.equals("RANDOM.bow") || sound.equals("RANDOM.bowhit") || sound.equals("RANDOM.pop")
                         || sound.equals("game.player.hurt")) {
 
