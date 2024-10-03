@@ -90,17 +90,9 @@ public class Profile extends ProfileData {
 	private final ConcurrentLinkedQueue<UUID> visiblePlayers = new ConcurrentLinkedQueue<UUID>() {
 		@Override
 		public boolean add(UUID uuid) {
-			getPlayer().getHiddenPlayers().remove(uuid);
 			if (contains(uuid))
 				return false;
 			return super.add(uuid);
-		}
-
-		@Override
-		public boolean remove(Object o) {
-			if (o instanceof UUID)
-				getPlayer().getHiddenPlayers().add((UUID) o);
-			return super.remove(o);
 		}
 	};
 
@@ -108,17 +100,9 @@ public class Profile extends ProfileData {
 	private final ConcurrentLinkedQueue<UUID> visiblePlayersOnTab = new ConcurrentLinkedQueue<UUID>() {
 		@Override
 		public boolean add(UUID uuid) {
-			getPlayer().getHiddenPlayersOnTab().remove(uuid);
 			if (contains(uuid))
 				return false;
 			return super.add(uuid);
-		}
-
-		@Override
-		public boolean remove(Object o) {
-			if (o instanceof UUID)
-				getPlayer().getHiddenPlayers().add((UUID) o);
-			return super.remove(o);
 		}
 	};
 
