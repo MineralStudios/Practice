@@ -153,16 +153,10 @@ public class PacketListener implements Listener {
                         boolean two = (int) (location.getY() * 8.0D) == y;
                         boolean three = (int) (location.getZ() * 8.0D) == z;
 
-                        System.out.println("One: " + one + " " + (int) (location.getX() * 8.0D) + " " + x);
-                        System.out.println("Two: " + two + " " + (int) (location.getY() * 8.0D) + " " + y);
-                        System.out.println("Three: " + three + " " + (int) (location.getZ() * 8.0D) + " " + z);
-
                         if (!one || !two || !three)
                             continue;
 
                         boolean pass = false;
-
-                        System.out.println("Sound: " + sound);
 
                         switch (sound) {
                             case "RANDOM.bow": {
@@ -189,16 +183,11 @@ public class PacketListener implements Listener {
                             }
                         }
 
-                        System.out.println("Pass: " + pass);
-
                         if (pass) {
                             isInMatch = true;
                             if (profile.getVisiblePlayers().contains(player.getUniqueId()))
                                 isVisible = true;
                         }
-
-                        System.out.println("IsInMatch: " + isInMatch);
-                        System.out.println("IsVisible: " + isVisible);
                     }
 
                     if (isInMatch && !isVisible)
