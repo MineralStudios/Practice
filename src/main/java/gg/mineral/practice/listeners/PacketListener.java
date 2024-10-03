@@ -126,8 +126,6 @@ public class PacketListener implements Listener {
                 if (sound.equals("RANDOM.bow") || sound.equals("RANDOM.bowhit") || sound.equals("RANDOM.pop")
                         || sound.equals("game.player.hurt")) {
 
-                    int x = soundEffect.getB(), y = soundEffect.getC(), z = soundEffect.getD();
-
                     boolean isVisible = false, isInMatch = false;
 
                     for (Entity entity : profile.getPlayer().getWorld().getEntitiesByClasses(Player.class,
@@ -136,7 +134,6 @@ public class PacketListener implements Listener {
                             continue;
 
                         Player player = null;
-                        Location location = entity.getLocation();
 
                         if (entity instanceof Player)
                             player = (Player) entity;
@@ -146,13 +143,6 @@ public class PacketListener implements Listener {
                                 player = (Player) projectile.getShooter();
 
                         if (player == null)
-                            continue;
-
-                        boolean one = (location.getX() * 8.0D) == x;
-                        boolean two = (location.getY() * 8.0D) == y;
-                        boolean three = (location.getZ() * 8.0D) == z;
-
-                        if (!one || !two || !three)
                             continue;
 
                         boolean pass = false;
