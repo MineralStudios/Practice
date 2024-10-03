@@ -124,7 +124,6 @@ public class PacketListener implements Listener {
                 if (sound == null)
                     return false;
 
-                System.out.println("Sound: " + sound);
                 if (sound.equals("RANDOM.bow") || sound.equals("RANDOM.bowhit") || sound.equals("RANDOM.pop")
                         || sound.equals("game.player.hurt")) {
 
@@ -150,6 +149,8 @@ public class PacketListener implements Listener {
                         if (player == null)
                             continue;
 
+                        System.out.println("Sound: " + sound);
+
                         boolean one = (location.getX() * 8.0D) == x;
                         boolean two = (location.getY() * 8.0D) == y;
                         boolean three = (location.getZ() * 8.0D) == z;
@@ -165,9 +166,9 @@ public class PacketListener implements Listener {
                                 if (hand == null)
                                     break;
                                 if (hand.getType() == Material.POTION || hand.getType() == Material.BOW
-                                        || hand.getType() == Material.ENDER_PEARL) {
+                                        || hand.getType() == Material.ENDER_PEARL)
                                     pass = true;
-                                }
+
                                 break;
                             }
                             case "RANDOM.bowhit": {
