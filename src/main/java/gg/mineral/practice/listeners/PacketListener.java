@@ -123,6 +123,8 @@ public class PacketListener implements Listener {
 
                 if (sound == null)
                     return false;
+
+                System.out.println("Sound: " + sound);
                 if (sound.equals("RANDOM.bow") || sound.equals("RANDOM.bowhit") || sound.equals("RANDOM.pop")
                         || sound.equals("game.player.hurt")) {
 
