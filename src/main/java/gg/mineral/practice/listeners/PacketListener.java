@@ -330,7 +330,7 @@ public class PacketListener implements Listener {
     }
 
     private UUID getPlayerWhoDropped(Item item) {
-        if (((CraftEntity) item).getHandle() instanceof EntityItem entityItem)
+        if (((CraftEntity) item).getHandle() instanceof EntityItem entityItem && entityItem.lastHolder != null)
             return entityItem.lastHolder.getUniqueID();
 
         return null;
