@@ -316,11 +316,9 @@ public class Profile extends ProfileData {
 			return;
 
 		PlayerUtil.teleport(this.getPlayer(), ProfileManager.getSpawnLocation());
-		updateVisiblity();
 
 		if (playerStatus != PlayerStatus.FOLLOWING && playerStatus != PlayerStatus.QUEUEING)
 			setPlayerStatus(PlayerStatus.IDLE);
-
 	}
 
 	public void leaveKitEditor() {
