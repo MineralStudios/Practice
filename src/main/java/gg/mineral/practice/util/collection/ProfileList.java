@@ -7,12 +7,14 @@ import java.util.concurrent.ConcurrentLinkedQueue;
 
 import gg.mineral.api.collection.GlueList;
 import gg.mineral.practice.entity.Profile;
+import lombok.Getter;
 
 public class ProfileList extends ConcurrentLinkedQueue<Profile> {
 
     /**
      *
      */
+    @Getter
     String name;
     private static final long serialVersionUID = 1L;
 
@@ -34,29 +36,28 @@ public class ProfileList extends ConcurrentLinkedQueue<Profile> {
         super(c);
     }
 
-    public String getName() {
-        return name;
+    @Override
+    public boolean add(Profile profile) {
+        if (contains(profile))
+            return false;
+        return super.add(profile);
     }
 
     public boolean contains(Profile p) {
 
-        if (p == null) {
+        if (p == null)
             return false;
-        }
 
-        for (Profile profile : this) {
-            if (p.getUuid().equals(profile.getUuid())) {
+        for (Profile profile : this)
+            if (p.getUuid().equals(profile.getUuid()))
                 return true;
-            }
-        }
 
         return false;
     }
 
     public List<Profile> subList(int fromIndex, int toIndex) {
-        if (fromIndex < 0 || toIndex > size() || fromIndex > toIndex) {
+        if (fromIndex < 0 || toIndex > size() || fromIndex > toIndex)
             throw new IndexOutOfBoundsException();
-        }
 
         List<Profile> subList = new GlueList<>();
         Iterator<Profile> iterator = iterator();

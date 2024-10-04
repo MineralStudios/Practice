@@ -20,7 +20,7 @@ import org.bukkit.potion.PotionEffectType;
 import org.bukkit.projectiles.ProjectileSource;
 
 import gg.mineral.api.collection.GlueList;
-import gg.mineral.bot.api.BotAPI;
+
 import gg.mineral.practice.PracticePlugin;
 import gg.mineral.practice.entity.PlayerStatus;
 import gg.mineral.practice.entity.Profile;
@@ -464,7 +464,7 @@ public class Match<D extends MatchData> implements Spectatable {
 		attacker.heal();
 		attacker.removePotionEffects();
 		attacker.getInventory().clear();
-		attacker.getPlayer().hidePlayer(victim.getPlayer(), BotAPI.INSTANCE.isFakePlayer(victim.getUuid()));
+		attacker.removeFromView(victim.getUuid());
 	}
 
 	public void giveQueueAgainItem(Profile profile) {
