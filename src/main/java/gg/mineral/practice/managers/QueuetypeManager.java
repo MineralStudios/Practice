@@ -1,8 +1,8 @@
 package gg.mineral.practice.managers;
 
 import org.bukkit.configuration.ConfigurationSection;
+import org.eclipse.jdt.annotation.Nullable;
 
-import gg.mineral.api.collection.GlueList;
 import gg.mineral.api.config.FileConfiguration;
 import gg.mineral.practice.queue.Queuetype;
 import lombok.Getter;
@@ -11,23 +11,24 @@ public class QueuetypeManager {
 	@Getter
 	final static FileConfiguration config = new FileConfiguration("queues.yml", "plugins/Practice");
 	@Getter
-	final static GlueList<Queuetype> queuetypes = new GlueList<>();
+	final static Queuetype[] queuetypes = new Queuetype[0];
+	public static byte CURRENT_ID = 0;
 
 	public static void registerQueuetype(Queuetype queuetype) {
-		queuetypes.add(queuetype);
+		queuetypes[queuetype.getId()] = queuetype;
 	}
 
 	public static void remove(Queuetype queuetype) {
-		queuetypes.remove(queuetype);
+		queuetypes[queuetype.getId()] = null;
 		queuetype.delete();
 	}
 
+	@Nullable
 	public static Queuetype getQueuetypeByName(String string) {
-		for (int i = 0; i < queuetypes.size(); i++) {
-			Queuetype q = queuetypes.get(i);
-			if (q.getName().equalsIgnoreCase(string)) {
+		for (int i = 0; i < queuetypes.length; i++) {
+			Queuetype q = queuetypes[i];
+			if (q.getName().equalsIgnoreCase(string))
 				return q;
-			}
 		}
 
 		return null;
@@ -35,9 +36,8 @@ public class QueuetypeManager {
 
 	public void save() {
 
-		for (Queuetype queuetype : getQueuetypes()) {
+		for (Queuetype queuetype : getQueuetypes())
 			queuetype.save();
-		}
 
 		config.save();
 	}
@@ -52,11 +52,10 @@ public class QueuetypeManager {
 
 		for (String key : configSection.getKeys(false)) {
 
-			if (key == null) {
+			if (key == null)
 				continue;
-			}
 
-			Queuetype queuetype = new Queuetype(key);
+			Queuetype queuetype = new Queuetype(key, CURRENT_ID++);
 
 			queuetype.load();
 
@@ -65,7 +64,7 @@ public class QueuetypeManager {
 	}
 
 	public static void setDefaults() {
-		Queuetype queuetype = new Queuetype("Default");
+		Queuetype queuetype = new Queuetype("Default", CURRENT_ID++);
 		queuetype.setDefaults();
 		registerQueuetype(queuetype);
 	}

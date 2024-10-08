@@ -28,14 +28,14 @@ public class SelectEventMenu extends PracticeMenu {
             add(item, () -> {
                 viewer.getPlayer().closeInventory();
 
-                viewer.getMatchData().setGametype(g);
+                viewer.getDuelSettings().setGametype(g);
 
-                if (g.getEventArena() == null) {
+                if (g.getEventArenaId() == -1) {
                     viewer.message(ErrorMessages.ARENA_NOT_FOUND);
                     return;
                 }
 
-                Event event = new Event(viewer, g.getEventArena());
+                Event event = new Event(viewer, g.getEventArenaId());
                 event.start();
             });
         }

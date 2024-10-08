@@ -12,7 +12,9 @@ import gg.mineral.practice.PracticePlugin;
 import gg.mineral.practice.arena.Arena;
 import gg.mineral.practice.bukkit.events.PlayerEventInitializeEvent;
 import gg.mineral.practice.bukkit.events.PlayerEventStartEvent;
+import gg.mineral.practice.duel.DuelSettings;
 import gg.mineral.practice.entity.Profile;
+import gg.mineral.practice.managers.ArenaManager;
 import gg.mineral.practice.managers.EventManager;
 import gg.mineral.practice.managers.ProfileManager;
 import gg.mineral.practice.match.EventMatch;
@@ -29,7 +31,7 @@ import net.md_5.bungee.api.chat.ClickEvent;
 
 public class Event implements Spectatable {
 
-    GlueList<Match<MatchData>> matches = new GlueList<>();
+    GlueList<Match> matches = new GlueList<>();
     @Getter
     ConcurrentLinkedDeque<Profile> spectators = new ConcurrentLinkedDeque<>();
 
@@ -42,13 +44,14 @@ public class Event implements Spectatable {
     @Getter
     ProfileList participants = new ProfileList();
     @Getter
-    Arena eventArena;
+    byte eventArenaId;
 
-    public Event(Profile p, Arena eventArena) {
-        this.matchData = p.getMatchData();
+    public Event(Profile p, byte eventArenaId) {
+        DuelSettings duelSettings = p.getDuelSettings();
+        duelSettings.setArenaId(eventArenaId);
+        this.matchData = new MatchData(duelSettings);
         this.host = p.getName();
-        this.eventArena = eventArena;
-        matchData.setArena(eventArena);
+        this.eventArenaId = eventArenaId;
         addPlayer(p);
     }
 
@@ -64,6 +67,8 @@ public class Event implements Spectatable {
             return;
         }
 
+        Arena eventArena = ArenaManager.getArenas()[eventArenaId];
+
         PlayerUtil.teleport(p.getPlayer(), eventArena.getWaitingLocation());
         p.setEvent(this);
         participants.add(p);
@@ -78,9 +83,8 @@ public class Event implements Spectatable {
             Profile winner = participants.getFirst();
             winner.removeFromEvent();
 
-            for (Profile spectator : getSpectators()) {
+            for (Profile spectator : getSpectators())
                 spectator.getSpectateHandler().stopSpectating();
-            }
 
             ended = true;
             EventManager.remove(this);
@@ -181,7 +185,7 @@ public class Event implements Spectatable {
         }.runTaskLater(PracticePlugin.INSTANCE, 600);
     }
 
-    public void removeMatch(Match<MatchData> m) {
+    public void removeMatch(Match m) {
         matches.remove(m);
 
         if (ended) {

@@ -12,6 +12,7 @@ import gg.mineral.practice.gametype.Gametype;
 import gg.mineral.practice.inventory.ClickCancelled;
 import gg.mineral.practice.inventory.PracticeMenu;
 import gg.mineral.practice.managers.QueuetypeManager;
+import gg.mineral.practice.queue.Queuetype;
 import gg.mineral.practice.util.items.ItemBuilder;
 import gg.mineral.practice.util.items.ItemStacks;
 import gg.mineral.practice.util.messages.CC;
@@ -21,66 +22,69 @@ public class LeaderboardMenu extends PracticeMenu {
 
     @Override
     public void update() {
-        QueuetypeManager.getQueuetypes().stream().filter(q -> q.isRanked())
-                .findFirst().ifPresent(queuetype -> {
+        Queuetype[] queuetypes = QueuetypeManager.getQueuetypes();
 
-                    ItemStack global = ItemStacks.GLOBAL_ELO.name(CC.SECONDARY + CC.B + "Global").build();
-                    ItemMeta globalMeta = global.getItemMeta();
+        for (Queuetype queuetype : queuetypes) {
+            if (!queuetype.isRanked())
+                continue;
 
-                    try {
-                        globalMeta.setLore(queuetype.getGlobalLeaderboardLore());
-                    } catch (Exception e) {
-                        globalMeta.setLore(null);
-                    }
+            ItemStack global = ItemStacks.GLOBAL_ELO.name(CC.SECONDARY + CC.B + "Global").build();
+            ItemMeta globalMeta = global.getItemMeta();
 
-                    global.setItemMeta(globalMeta);
+            try {
+                globalMeta.setLore(queuetype.getGlobalLeaderboardLore());
+            } catch (Exception e) {
+                globalMeta.setLore(null);
+            }
 
-                    setSlot(4, global);
+            global.setItemMeta(globalMeta);
 
-                    for (Entry<Gametype, Integer> entry : queuetype.getGametypes().object2IntEntrySet()) {
+            setSlot(4, global);
 
-                        Gametype gametype = entry.getKey();
+            for (Entry<Gametype, Integer> entry : queuetype.getGametypes().object2IntEntrySet()) {
 
-                        if (gametype.isInCatagory())
-                            continue;
+                Gametype gametype = entry.getKey();
 
-                        ItemStack item = new ItemBuilder(gametype.getDisplayItem().clone())
-                                .name(CC.SECONDARY + CC.B + gametype.getDisplayName()).build();
-                        ItemMeta meta = item.getItemMeta();
+                if (gametype.isInCatagory())
+                    continue;
 
-                        try {
-                            meta.setLore(gametype.getLeaderboardLore());
-                        } catch (Exception e) {
-                            meta.setLore(null);
-                        }
+                ItemStack item = new ItemBuilder(gametype.getDisplayItem().clone())
+                        .name(CC.SECONDARY + CC.B + gametype.getDisplayName()).build();
+                ItemMeta meta = item.getItemMeta();
 
-                        item.setItemMeta(meta);
-                        setSlot(entry.getValue() + 18, item);
-                    }
+                try {
+                    meta.setLore(gametype.getLeaderboardLore());
+                } catch (Exception e) {
+                    meta.setLore(null);
+                }
 
-                    for (Entry<Catagory, Integer> entry : queuetype.getCatagories().object2IntEntrySet()) {
-                        Catagory c = entry.getKey();
-                        ItemBuilder itemBuild = new ItemBuilder(c.getDisplayItem())
-                                .name(CC.SECONDARY + CC.B + c.getDisplayName());
+                item.setItemMeta(meta);
+                setSlot(entry.getValue() + 18, item);
+            }
 
-                        List<String> sb = new GlueList<String>();
-                        sb.add(CC.SECONDARY + "Includes:");
+            for (Entry<Catagory, Integer> entry : queuetype.getCatagories().object2IntEntrySet()) {
+                Catagory c = entry.getKey();
+                ItemBuilder itemBuild = new ItemBuilder(c.getDisplayItem())
+                        .name(CC.SECONDARY + CC.B + c.getDisplayName());
 
-                        for (Gametype g : c.getGametypes())
-                            sb.add(CC.WHITE + g.getDisplayName());
+                List<String> sb = new GlueList<String>();
+                sb.add(CC.SECONDARY + "Includes:");
 
-                        sb.add(" ");
-                        sb.add(CC.BOARD_SEPARATOR);
-                        sb.add(CC.ACCENT + "Click to view catagory.");
+                for (Gametype g : c.getGametypes())
+                    sb.add(CC.WHITE + g.getDisplayName());
 
-                        itemBuild.lore(sb.toArray(new String[0]));
-                        ItemStack item = itemBuild.build();
+                sb.add(" ");
+                sb.add(CC.BOARD_SEPARATOR);
+                sb.add(CC.ACCENT + "Click to view catagory.");
 
-                        setSlot(entry.getValue() + 18, item, interaction -> interaction.getProfile()
-                                .openMenu(new CatagorizedLeaderboardMenu(queuetype, c)));
-                    }
+                itemBuild.lore(sb.toArray(new String[0]));
+                ItemStack item = itemBuild.build();
 
-                });
+                setSlot(entry.getValue() + 18, item, interaction -> interaction.getProfile()
+                        .openMenu(new CatagorizedLeaderboardMenu(queuetype, c)));
+            }
+        }
+
     }
 
     @Override

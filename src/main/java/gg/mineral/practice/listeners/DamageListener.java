@@ -18,7 +18,6 @@ import gg.mineral.practice.bukkit.events.PlayerDamageEvent;
 import gg.mineral.practice.entity.PlayerStatus;
 import gg.mineral.practice.entity.Profile;
 import gg.mineral.practice.managers.ProfileManager;
-import gg.mineral.practice.match.PartyMatch;
 import gg.mineral.practice.match.TeamMatch;
 import gg.mineral.practice.util.messages.impl.ChatMessages;
 
@@ -118,7 +117,7 @@ public class DamageListener implements Listener {
 			return;
 		}
 
-		if ((attacker.getMatch() instanceof PartyMatch || attacker.getMatch() instanceof TeamMatch)
+		if (attacker.getMatch() instanceof TeamMatch
 				&& attacker.getMatch().getTeam(attacker).contains(victim)) {
 			e.setCancelled(true);
 			return;
@@ -163,7 +162,7 @@ public class DamageListener implements Listener {
 			return;
 		}
 
-		if ((attacker.getMatch() instanceof PartyMatch || attacker.getMatch() instanceof TeamMatch)
+		if (attacker.getMatch() instanceof TeamMatch
 				&& attacker.getMatch().getTeam(attacker).contains(victim)) {
 			e.setCancelled(true);
 			return;

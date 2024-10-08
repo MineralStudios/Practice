@@ -1,9 +1,7 @@
 package gg.mineral.practice.queue;
 
-import java.util.Iterator;
 import java.util.List;
 import java.util.Random;
-import java.util.concurrent.ConcurrentLinkedQueue;
 import java.util.stream.Collectors;
 
 import org.bukkit.inventory.ItemStack;
@@ -25,6 +23,9 @@ import gg.mineral.practice.util.items.ItemStacks;
 import gg.mineral.practice.util.messages.CC;
 import gg.mineral.server.combat.KnockbackProfile;
 import gg.mineral.server.combat.KnockbackProfileList;
+import it.unimi.dsi.fastutil.bytes.ByteIterator;
+import it.unimi.dsi.fastutil.bytes.ByteOpenHashSet;
+import it.unimi.dsi.fastutil.bytes.ByteSet;
 import it.unimi.dsi.fastutil.objects.Object2IntOpenHashMap;
 import it.unimi.dsi.fastutil.objects.ObjectSet;
 import lombok.Getter;
@@ -48,17 +49,20 @@ public class Queuetype implements SaveableData {
 	@Getter
 	Object2IntOpenHashMap<Gametype> gametypes = new Object2IntOpenHashMap<>();
 	@Getter
-	ConcurrentLinkedQueue<Arena> arenas = new ConcurrentLinkedQueue<>();
+	ByteSet arenas = new ByteOpenHashSet();
 	@Getter
 	Object2IntOpenHashMap<Catagory> catagories = new Object2IntOpenHashMap<>();
+	@Getter
+	private final byte id;
 	private long arenaIndex = 0;
 
-	public Queuetype(String name) {
+	public Queuetype(String name, byte id) {
 		this.name = name;
+		this.id = id;
 		this.path = "Queue." + getName() + ".";
 	}
 
-	ConcurrentLinkedQueue<Arena> arenaQueue = new ConcurrentLinkedQueue<>();
+	ByteSet arenaQueue = new ByteOpenHashSet();
 
 	public Gametype randomGametype() {
 		List<Gametype> list = new GlueList<>(gametypes.keySet());
@@ -74,9 +78,10 @@ public class Queuetype implements SaveableData {
 	}
 
 	// Helper method to filter available arenas based on a Gametype
-	public List<Arena> filterArenasByGametype(Gametype g) {
-		List<Arena> filteredArenas = new GlueList<>(this.arenas);
-		filteredArenas.retainAll(g.getArenas());
+	public ByteSet filterArenasByGametype(Gametype g) {
+		ByteSet filteredArenas = new ByteOpenHashSet(this.arenas);
+		filteredArenas
+				.retainAll(g.getArenas());
 		return filteredArenas;
 	}
 
@@ -110,49 +115,54 @@ public class Queuetype implements SaveableData {
 	}
 
 	@Nullable
-	public Arena nextArena(Gametype g) {
+	public byte nextArenaId(Gametype g) {
 		// Return early if there are no arenas
 		if (arenas.isEmpty() || g.getArenas().isEmpty())
-			return null;
+			return -1;
 
-		arenaQueue.removeIf(a -> !g.getArenas().contains(a));
+		arenaQueue.removeIf(arenaId -> !g.getArenas().contains(arenaId));
 
 		if (arenaQueue.isEmpty())
 			arenaQueue.addAll(filterArenasByGametype(g));
 
 		if (arenaQueue.isEmpty())
-			return null;
+			return -1;
 
-		return arenaQueue.poll();
+		ByteIterator iterator = arenaQueue.iterator();
+
+		byte nextArenaId = iterator.nextByte();
+		iterator.remove();
+
+		return nextArenaId;
 	}
 
-	public Arena nextArena(MatchData matchData, Gametype g) {
+	public byte nextArenaId(MatchData matchData, Gametype g) {
 
 		// If there are no enabled arenas in the MatchData, revert to the other method
 		if (matchData.getEnabledArenas().isEmpty())
-			return nextArena(g);
+			return nextArenaId(g);
 
 		// Filter arenas based on Gametype and MatchData
-		List<Arena> filteredArenas = filterArenasByGametype(g);
+		ByteSet filteredArenas = filterArenasByGametype(g);
 
-		Iterator<Arena> iterator = filteredArenas.iterator();
+		ByteIterator iterator = filteredArenas.iterator();
 		while (iterator.hasNext()) {
-			Arena arena = iterator.next();
-			if (!matchData.getEnabledArenas().getBoolean(arena))
+			byte arenaId = iterator.nextByte();
+			if (!matchData.getEnabledArenas().get(arenaId))
 				iterator.remove();
 		}
 
 		if (filteredArenas.isEmpty())
-			return nextArena(g);
+			return nextArenaId(g);
 
 		// Select a random arena from the filtered list
 		int randomIndex = (int) (arenaIndex++ % filteredArenas.size());
-		Arena selectedArena = filteredArenas.get(randomIndex);
+		byte selectedArenaId = filteredArenas.toArray(new byte[0])[randomIndex];
 
 		// Remove the selected arena from the main queue to avoid repetition
-		arenaQueue.remove(selectedArena);
+		arenaQueue.remove(selectedArenaId);
 
-		return selectedArena;
+		return selectedArenaId;
 	}
 
 	public void setDisplayName(String displayName) {
@@ -197,10 +207,10 @@ public class Queuetype implements SaveableData {
 
 	public void enableArena(Arena arena, boolean enabled) {
 		if (enabled) {
-			arenas.add(arena);
+			arenas.add(arena.getId());
 		} else {
-			arenas.remove(arena);
-			arenaQueue.remove(arena);
+			arenas.remove(arena.getId());
+			arenaQueue.remove(arena.getId());
 		}
 		save();
 	}
@@ -229,14 +239,12 @@ public class Queuetype implements SaveableData {
 		config.set(path + "DisplayItem", displayItem);
 		config.set(path + "Bots", botsEnabled);
 
-		if (knockback != null) {
+		if (knockback != null)
 			config.set(path + "Knockback", knockback.getName());
-		}
 
-		for (Arena arena : ArenaManager.getArenas()) {
-			config.set(path + "Arenas." + arena.getName(), getArenas().stream()
-					.filter(a -> a.getName().equalsIgnoreCase(arena.getName())).findFirst().isPresent());
-		}
+		for (Arena arena : ArenaManager.getArenas())
+			config.set(path + "Arenas." + arena.getName(), getArenas().intStream()
+					.filter(id -> id == arena.getId()).findFirst().isPresent());
 
 		config.save();
 	}
@@ -257,12 +265,11 @@ public class Queuetype implements SaveableData {
 			this.knockback = KnockbackProfileList.getKnockbackProfileByName(kbprofile);
 		}
 
-		for (int i = 0; i < ArenaManager.getArenas().size(); i++) {
-			Arena a = ArenaManager.getArenas().get(i);
+		for (int i = 0; i < ArenaManager.getArenas().length; i++) {
+			Arena a = ArenaManager.getArenas()[i];
 
-			if (config.getBoolean(path + "Arenas." + a.getName(), false)) {
-				arenas.add(a);
-			}
+			if (config.getBoolean(path + "Arenas." + a.getName(), false))
+				arenas.add(a.getId());
 		}
 	}
 

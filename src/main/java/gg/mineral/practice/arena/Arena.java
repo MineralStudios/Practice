@@ -24,9 +24,12 @@ public class Arena implements SaveableData {
 	ItemStack displayItem;
 	int currentNameID = 0;
 	World world;
+	@Getter
+	private final byte id;
 
-	public Arena(String name) {
+	public Arena(String name, byte id) {
 		this.name = name;
+		this.id = id;
 		this.path = "Arena." + getName() + ".";
 	}
 

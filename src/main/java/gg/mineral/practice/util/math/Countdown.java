@@ -11,9 +11,9 @@ import gg.mineral.practice.util.messages.impl.ChatMessages;
 
 public class Countdown {
 	int time, taskID;
-	private final Match<?> match;
+	private final Match match;
 
-	public Countdown(int seconds, Match<?> match) {
+	public Countdown(int seconds, Match match) {
 		this.time = seconds;
 		this.match = match;
 	}

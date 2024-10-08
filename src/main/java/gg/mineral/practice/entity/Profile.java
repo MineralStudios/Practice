@@ -1,5 +1,6 @@
 package gg.mineral.practice.entity;
 
+import java.util.Collections;
 import java.util.Iterator;
 import java.util.List;
 import java.util.UUID;
@@ -7,17 +8,21 @@ import java.util.concurrent.ConcurrentLinkedQueue;
 
 import org.bukkit.Bukkit;
 import org.bukkit.GameMode;
+import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.craftbukkit.v1_8_R3.entity.CraftPlayer;
 import org.bukkit.entity.Player;
+import org.bukkit.inventory.ItemStack;
 import org.bukkit.potion.PotionEffect;
 import org.eclipse.jdt.annotation.NonNull;
 import org.eclipse.jdt.annotation.Nullable;
 
 import gg.mineral.bot.api.BotAPI;
 import gg.mineral.practice.PracticePlugin;
+import gg.mineral.practice.duel.DuelSettings;
 import gg.mineral.practice.entity.handler.RequestHandler;
 import gg.mineral.practice.entity.handler.SpectateHandler;
 import gg.mineral.practice.events.Event;
+import gg.mineral.practice.gametype.Gametype;
 import gg.mineral.practice.inventory.Menu;
 import gg.mineral.practice.inventory.PlayerInventory;
 import gg.mineral.practice.inventory.SubmitAction;
@@ -28,12 +33,14 @@ import gg.mineral.practice.kit.KitEditor;
 import gg.mineral.practice.managers.KitEditorManager;
 import gg.mineral.practice.managers.ProfileManager;
 import gg.mineral.practice.match.Match;
-import gg.mineral.practice.match.data.MatchData;
+
 import gg.mineral.practice.match.data.MatchStatisticCollector;
 import gg.mineral.practice.party.Party;
-import gg.mineral.practice.queue.QueueEntry;
-import gg.mineral.practice.queue.QueueSearchTask;
-import gg.mineral.practice.queue.QueueSearchTask2v2;
+
+import gg.mineral.practice.queue.QueueSettings;
+import gg.mineral.practice.queue.QueueSystem;
+import gg.mineral.practice.queue.QueuedEntity;
+import gg.mineral.practice.queue.Queuetype;
 import gg.mineral.practice.scoreboard.Scoreboard;
 import gg.mineral.practice.scoreboard.ScoreboardHandler;
 import gg.mineral.practice.scoreboard.impl.DefaultScoreboard;
@@ -46,6 +53,8 @@ import gg.mineral.practice.util.messages.Message;
 import gg.mineral.practice.util.messages.impl.ChatMessages;
 import gg.mineral.practice.util.messages.impl.ErrorMessages;
 import gg.mineral.practice.util.world.BlockData;
+import it.unimi.dsi.fastutil.ints.Int2ObjectOpenHashMap;
+import it.unimi.dsi.fastutil.shorts.Short2ObjectOpenHashMap;
 import lombok.Getter;
 import lombok.Setter;
 import net.minecraft.server.v1_8_R3.EntityTrackerEntry;
@@ -54,17 +63,18 @@ import net.minecraft.server.v1_8_R3.PacketPlayOutPlayerInfo.EnumPlayerInfoAction
 import net.minecraft.server.v1_8_R3.WorldServer;
 
 @Getter
-public class Profile extends ProfileData {
+public class Profile extends ProfileData implements QueuedEntity {
 	@NonNull
 	private final CraftPlayer player;
 	private final PlayerInventory inventory;
-	private Match<?> match;
+	private Match match;
 	@Setter
 	@Nullable
 	private Scoreboard scoreboard;
 	private ScoreboardHandler scoreboardHandler;
 	private int scoreboardTaskId, fakeBlockTaskId;
-	private MatchData matchData;
+	private QueueSettings queueSettings;
+	private DuelSettings duelSettings;
 	private SpectateHandler spectateHandler = new SpectateHandler(this);
 	private RequestHandler requestHandler = new RequestHandler(this);
 	private MatchStatisticCollector matchStatisticCollector = new MatchStatisticCollector(this);
@@ -85,6 +95,7 @@ public class Profile extends ProfileData {
 	@Setter
 	private boolean kitLoaded = false, inMatchCountdown = false;
 	private Registry<BlockData, String> fakeBlocks = new Registry<>(BlockData::toString);
+	private final Short2ObjectOpenHashMap<Int2ObjectOpenHashMap<ItemStack[]>> customKits = new Short2ObjectOpenHashMap<>();
 
 	@Getter
 	private final ConcurrentLinkedQueue<UUID> visiblePlayers = new ConcurrentLinkedQueue<UUID>() {
@@ -109,7 +120,8 @@ public class Profile extends ProfileData {
 	public Profile(org.bukkit.entity.Player player) {
 		super(player.getUniqueId(), player.getName());
 		this.player = (CraftPlayer) player;
-		this.matchData = new MatchData();
+		this.queueSettings = new QueueSettings();
+		this.duelSettings = new DuelSettings();
 		this.inventory = new PlayerInventory(this);
 		this.scoreboardHandler = new ScoreboardHandler(player);
 
@@ -122,6 +134,67 @@ public class Profile extends ProfileData {
 				() -> fakeBlocks.getRegisteredObjects().forEach(blockData -> blockData.update(this.getPlayer())), 0, 3);
 
 		pearlCooldown.start();
+	}
+
+	private ItemStack[] getCustomKit(Gametype gametype, ConfigurationSection cs) {
+
+		ItemStack[] kit = gametype.getKit().getContents().clone();
+
+		for (String key : cs.getKeys(false)) {
+			Object o = cs.get(key);
+
+			int index = Integer.valueOf(key);
+
+			if (o == null) {
+				kit[index] = null;
+				continue;
+			}
+
+			if (o instanceof ItemStack) {
+				kit[index] = (ItemStack) o;
+				continue;
+			}
+
+			kit[index] = null;
+		}
+
+		return kit;
+	}
+
+	public Int2ObjectOpenHashMap<ItemStack[]> getCustomKits(Queuetype queuetype, Gametype gametype) {
+		short hash = (short) (queuetype.getId() << 8 | gametype.getId());
+		return getCustomKits(queuetype, gametype, hash);
+	}
+
+	public Int2ObjectOpenHashMap<ItemStack[]> getCustomKits(Queuetype queuetype, Gametype gametype, short hash) {
+		Int2ObjectOpenHashMap<ItemStack[]> kitLoadouts = customKits.get(hash);
+
+		if (kitLoadouts != null)
+			return kitLoadouts;
+
+		ConfigurationSection cs = ProfileManager.getPlayerConfig()
+				.getConfigurationSection(getName() + ".KitData."
+						+ gametype.getName() + "." + queuetype.getName());
+
+		if (cs == null)
+			return null;
+
+		kitLoadouts = new Int2ObjectOpenHashMap<>();
+
+		for (String key : cs.getKeys(false)) {
+			ConfigurationSection cs1 = ProfileManager.getPlayerConfig()
+					.getConfigurationSection(getName() + ".KitData."
+							+ gametype.getName() + "." + queuetype.getName() + "." + key);
+
+			if (cs1 == null)
+				continue;
+
+			kitLoadouts.put((int) Integer.valueOf(key), getCustomKit(gametype, cs1));
+		}
+
+		getCustomKits().put(hash, kitLoadouts);
+
+		return kitLoadouts;
 	}
 
 	public void openMenu(Menu m) {
@@ -153,7 +226,7 @@ public class Profile extends ProfileData {
 		this.player.setFireTicks(0);
 	}
 
-	public void setMatch(Match<?> match) {
+	public void setMatch(Match match) {
 		this.match = match;
 		setPlayerStatus(PlayerStatus.FIGHTING);
 	}
@@ -213,7 +286,7 @@ public class Profile extends ProfileData {
 		@Nullable
 		Profile p = ProfileManager.getProfile(uuid);
 
-		Match<?> match = getMatch();
+		Match match = getMatch();
 		if (playerStatus == PlayerStatus.FIGHTING
 				&& match != null && p != null && match.getParticipants().contains(p))
 			return true;
@@ -240,7 +313,7 @@ public class Profile extends ProfileData {
 
 		boolean isBot = BotAPI.INSTANCE.isFakePlayer(uuid);
 
-		Match<?> match = getMatch();
+		Match match = getMatch();
 		if (playerStatus == PlayerStatus.FIGHTING
 				&& match != null && p != null && match.getParticipants().contains(p))
 			return true;
@@ -263,16 +336,14 @@ public class Profile extends ProfileData {
 	}
 
 	public void removeFromQueue() {
-		QueueSearchTask.removePlayer(this);
-		QueueSearchTask2v2.removePlayer(this);
+		QueueSystem.removePlayerFromQueue(this);
 		message(ChatMessages.LEFT_QUEUE);
 		setPlayerStatus(PlayerStatus.IDLE);
 	}
 
-	public void removeFromQueue(QueueEntry queueEntry) {
+	public void removeFromQueue(Queuetype queuetype, Gametype gametype) {
 
-		if ((getMatchData().isTeam2v2() && QueueSearchTask2v2.removePlayer(this, queueEntry))
-				|| QueueSearchTask.removePlayer(this, queueEntry)) {
+		if (!QueueSystem.removePlayerFromQueue(this, queuetype, gametype)) {
 			removeFromQueue();
 			player.closeInventory();
 
@@ -280,11 +351,15 @@ public class Profile extends ProfileData {
 				getInventory().setInventoryForParty();
 			else
 				getInventory().setInventoryForLobby();
-
 		}
 	}
 
-	public void addPlayerToQueue(QueueEntry queueEntry) {
+	public void addPlayerToQueue(Queuetype queuetype,
+			Gametype gametype) {
+		assert queueSettings != null;
+		assert queuetype != null;
+		assert gametype != null;
+
 		if (playerStatus == PlayerStatus.IDLE || playerStatus == PlayerStatus.QUEUEING
 				|| (playerStatus == PlayerStatus.FIGHTING && getMatch().isEnded())) {
 			if (playerStatus != PlayerStatus.QUEUEING) {
@@ -292,22 +367,23 @@ public class Profile extends ProfileData {
 				getInventory().setInventoryForQueue();
 			}
 
-			message(ChatMessages.JOINED_QUEUE.clone().replace("%queue%", queueEntry.getQueuetype().getDisplayName())
+			Message message = ChatMessages.JOINED_QUEUE.clone().replace("%queue%", queuetype.getDisplayName())
 					.replace("%catagory%",
-							queueEntry.getGametype().isInCatagory() ? " " + queueEntry.getGametype().getCatagoryName()
+							gametype.isInCatagory()
+									? " " + gametype.getCatagoryName()
 									: "")
-					.replace("%gametype%", queueEntry.getGametype().getDisplayName()));
+					.replace("%gametype%", gametype.getDisplayName());
 
-			if (getMatchData().isTeam2v2()) {
-				if (isInParty())
-					QueueSearchTask2v2.addParty(this.getParty(), queueEntry);
-				else
-					QueueSearchTask2v2.addPlayer(this, queueEntry);
+			if (isInParty())
+				for (Profile p : party.getPartyMembers())
+					p.message(message);
+			else
+				message(message);
 
-				return;
-			}
-
-			QueueSearchTask.addPlayer(this, queueEntry);
+			QueueSystem.addPlayerToQueue(isInParty() ? party : this,
+					QueueSettings.toUUID(queuetype, gametype, queueSettings.getTeamSize(),
+							queueSettings.getPlayerBots(),
+							queueSettings.getOpponentBots(), queueSettings.getEnabledArenas()));
 		}
 	}
 
@@ -337,7 +413,7 @@ public class Profile extends ProfileData {
 		this.kitCreator = null;
 	}
 
-	public void sendToKitEditor(QueueEntry queueEntry) {
+	public void sendToKitEditor(Queuetype queuetype, Gametype gametype) {
 
 		if (KitEditorManager.getLocation() == null) {
 			message(ErrorMessages.KIT_EDITOR_LOCATION_NOT_SET);
@@ -346,7 +422,7 @@ public class Profile extends ProfileData {
 
 		message(ChatMessages.LEAVE_KIT_EDITOR);
 
-		this.kitEditor = new KitEditor(queueEntry, this);
+		this.kitEditor = new KitEditor(gametype, queuetype, this);
 		kitEditor.start();
 	}
 
@@ -490,8 +566,8 @@ public class Profile extends ProfileData {
 		}
 	}
 
-	public void resetMatchData() {
-		matchData = new MatchData();
+	public void resetQueueSettings() {
+		queueSettings = new QueueSettings();
 	}
 
 	public void setPearlCooldown(int i) {
@@ -559,5 +635,10 @@ public class Profile extends ProfileData {
 			setScoreboard(new DefaultScoreboard());
 		} else
 			disableScoreboard();
+	}
+
+	@Override
+	public List<Profile> getProfiles() {
+		return Collections.singletonList(this);
 	}
 }

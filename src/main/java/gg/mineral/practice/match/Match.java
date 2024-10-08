@@ -18,22 +18,23 @@ import org.bukkit.inventory.ItemStack;
 import org.bukkit.potion.PotionEffect;
 import org.bukkit.potion.PotionEffectType;
 import org.bukkit.projectiles.ProjectileSource;
+import org.eclipse.jdt.annotation.Nullable;
 
 import gg.mineral.api.collection.GlueList;
-
 import gg.mineral.practice.PracticePlugin;
+import gg.mineral.practice.arena.Arena;
 import gg.mineral.practice.entity.PlayerStatus;
 import gg.mineral.practice.entity.Profile;
 import gg.mineral.practice.gametype.Gametype;
 import gg.mineral.practice.inventory.menus.InventoryStatsMenu;
 import gg.mineral.practice.kit.Kit;
+import gg.mineral.practice.managers.ArenaManager;
 import gg.mineral.practice.managers.MatchManager;
 import gg.mineral.practice.managers.ProfileManager;
 import gg.mineral.practice.match.data.MatchData;
 import gg.mineral.practice.match.data.MatchStatisticCollector;
-import gg.mineral.practice.match.data.QueueMatchData;
-import gg.mineral.practice.queue.QueueSearchTask;
-import gg.mineral.practice.queue.QueueSearchTask2v2;
+import gg.mineral.practice.queue.QueueSystem;
+import gg.mineral.practice.queue.Queuetype;
 import gg.mineral.practice.scoreboard.impl.BoxingScoreboard;
 import gg.mineral.practice.scoreboard.impl.DefaultScoreboard;
 import gg.mineral.practice.scoreboard.impl.InMatchScoreboard;
@@ -60,22 +61,20 @@ import net.md_5.bungee.api.chat.ComponentBuilder;
 import net.md_5.bungee.api.chat.HoverEvent;
 import net.md_5.bungee.api.chat.TextComponent;
 
-public class Match<D extends MatchData> implements Spectatable {
+public class Match implements Spectatable {
 
 	@Getter
 	ConcurrentLinkedDeque<Profile> spectators = new ConcurrentLinkedDeque<Profile>();
 	@Getter
 	ProfileList participants = new ProfileList();
 	@Getter
-	protected Profile profile1;
-	@Getter
-	protected Profile profile2;
+	protected Profile profile1, profile2;
 	@Getter
 	boolean ended = false;
 	@Getter
 	int placedTnt;
 	@Getter
-	private final D data;
+	private final MatchData data;
 	@Getter
 	GlueList<Location> buildLog = new GlueList<>();
 	@Getter
@@ -84,14 +83,14 @@ public class Match<D extends MatchData> implements Spectatable {
 	Queue<Item> itemRemovalQueue = new ConcurrentLinkedQueue<>();
 	org.bukkit.World world = null;
 
-	public Match(Profile profile1, Profile profile2, D matchData) {
+	public Match(Profile profile1, Profile profile2, MatchData matchData) {
 		this(matchData);
 		this.profile1 = profile1;
 		this.profile2 = profile2;
 		addParicipants(profile1, profile2);
 	}
 
-	public Match(D matchData) {
+	public Match(MatchData matchData) {
 		this.data = matchData;
 	}
 
@@ -101,13 +100,11 @@ public class Match<D extends MatchData> implements Spectatable {
 	}
 
 	public Kit getKit(Profile p, int loadoutSlot) {
-		ItemStack[] customKit = data instanceof QueueMatchData qData
-				? qData.getQueueEntry().getCustomKits(p).get(loadoutSlot)
-				: null;
+		ItemStack[] customKit = data.getCustomKits(p).get(loadoutSlot);
 		return getKit(customKit);
 	}
 
-	public Kit getKit(ItemStack[] customKit) {
+	public Kit getKit(@Nullable ItemStack[] customKit) {
 		Kit kit = getKit();
 
 		if (customKit != null)
@@ -140,8 +137,7 @@ public class Match<D extends MatchData> implements Spectatable {
 
 	public void prepareForMatch(Profile p) {
 
-		QueueSearchTask.removePlayer(p);
-		QueueSearchTask2v2.removePlayer(p);
+		QueueSystem.removePlayerFromQueue(p);
 
 		p.setMatch(this);
 		p.getRequestHandler().getRecievedDuelRequests().clear();
@@ -149,7 +145,7 @@ public class Match<D extends MatchData> implements Spectatable {
 		p.setKitLoaded(false);
 
 		if (CoreConnector.connected()) {
-			if (this instanceof PartyMatch || this instanceof TeamMatch) {
+			if (this instanceof TeamMatch) {
 				// CoreConnector.INSTANCE.getNameTagAPI().clearTagOnMatchStart(p.getPlayer(),
 				// p.getPlayer());
 			} else {
@@ -189,9 +185,7 @@ public class Match<D extends MatchData> implements Spectatable {
 
 	public void giveLoadoutSelection(Profile p) {
 
-		Int2ObjectOpenHashMap<ItemStack[]> map = data instanceof QueueMatchData qData
-				? qData.getQueueEntry().getCustomKits(p)
-				: null;
+		Int2ObjectOpenHashMap<ItemStack[]> map = data.getCustomKits(p);
 
 		p.getInventory().clear();
 
@@ -227,12 +221,7 @@ public class Match<D extends MatchData> implements Spectatable {
 	}
 
 	public void setScoreboard(Profile p) {
-		if (data.isBoxing()) {
-			p.setScoreboard(BoxingScoreboard.INSTANCE);
-			return;
-		}
-
-		p.setScoreboard(InMatchScoreboard.INSTANCE);
+		p.setScoreboard(data.isBoxing() ? BoxingScoreboard.INSTANCE : InMatchScoreboard.INSTANCE);
 	}
 
 	public void increasePlacedTnt() {
@@ -255,11 +244,9 @@ public class Match<D extends MatchData> implements Spectatable {
 
 	public void handleOpponentMessages(Profile profile1, Profile profile2) {
 		StringBuilder sb = new StringBuilder("Opponent: " + CC.AQUA + profile2.getName());
-
-		if (data instanceof QueueMatchData qData)
-			sb.append(qData.isRanked()
-					? CC.WHITE + "\nElo: " + CC.AQUA + qData.getQueueEntry().getGametype().getElo(profile2)
-					: "");
+		sb.append(data.isRanked()
+				? CC.WHITE + "\nElo: " + CC.AQUA + data.getElo(profile2)
+				: "");
 
 		profile1.getPlayer().sendMessage(CC.BOARD_SEPARATOR);
 		profile1.getPlayer().sendMessage(sb.toString());
@@ -275,7 +262,7 @@ public class Match<D extends MatchData> implements Spectatable {
 	}
 
 	public boolean noArenas() {
-		boolean arenaNull = data.getArena() == null;
+		boolean arenaNull = data.getArenaId() == -1;
 
 		if (arenaNull) {
 			ProfileManager.broadcast(participants, ErrorMessages.ARENA_NOT_FOUND);
@@ -288,7 +275,8 @@ public class Match<D extends MatchData> implements Spectatable {
 	public void setupLocations(Location location1, Location location2) {
 
 		if (data.isGriefing() || data.isBuild()) {
-			world = data.getArena().generate();
+			Arena arena = ArenaManager.getArenas()[data.getArenaId()];
+			this.world = arena.generate();
 			location1.setWorld(world);
 			location2.setWorld(world);
 		}
@@ -312,8 +300,9 @@ public class Match<D extends MatchData> implements Spectatable {
 			return;
 
 		MatchManager.registerMatch(this);
-		Location location1 = data.getArena().getLocation1().clone();
-		Location location2 = data.getArena().getLocation2().clone();
+		Arena arena = ArenaManager.getArenas()[data.getArenaId()];
+		Location location1 = arena.getLocation1().clone();
+		Location location2 = arena.getLocation2().clone();
 
 		setupLocations(location1, location2);
 		teleportPlayers(location1, location2);
@@ -348,7 +337,11 @@ public class Match<D extends MatchData> implements Spectatable {
 		return false;
 	}
 
-	public CompletableFuture<Void> updateElo(Gametype gametype, Profile attacker, Profile victim) {
+	public CompletableFuture<Void> updateElo(Profile attacker, Profile victim) {
+		Gametype gametype = data.getGametype();
+
+		if (gametype == null)
+			return CompletableFuture.completedFuture(null);
 		return gametype.getEloMap(attacker, victim)
 				.thenAccept(map -> {
 					int attackerElo = map.getInt(attacker.getUuid());
@@ -388,8 +381,8 @@ public class Match<D extends MatchData> implements Spectatable {
 			profile.getPlayer().sendMessage(CC.SEPARATOR);
 		}
 
-		if (data instanceof QueueMatchData qData && qData.isRanked())
-			updateElo(qData.getGametype(), attacker, victim);
+		if (data.isRanked())
+			updateElo(attacker, victim);
 
 		resetPearlCooldown(attacker, victim);
 		attacker.setScoreboard(MatchEndScoreboard.INSTANCE);
@@ -468,12 +461,13 @@ public class Match<D extends MatchData> implements Spectatable {
 	}
 
 	public void giveQueueAgainItem(Profile profile) {
-		if (data instanceof QueueMatchData qData)
-			Bukkit.getServer().getScheduler().runTaskLater(PracticePlugin.INSTANCE,
-					() -> profile.getInventory().setItem(profile.getInventory().getHeldItemSlot(),
-							ItemStacks.QUEUE_AGAIN,
-							() -> profile.addPlayerToQueue(qData.getQueueEntry())),
-					20);
+		Queuetype queuetype = data.getQueuetype();
+		Gametype gametype = data.getGametype();
+		Bukkit.getServer().getScheduler().runTaskLater(PracticePlugin.INSTANCE,
+				() -> profile.getInventory().setItem(profile.getInventory().getHeldItemSlot(),
+						ItemStacks.QUEUE_AGAIN,
+						() -> profile.addPlayerToQueue(queuetype, gametype)),
+				20);
 	}
 
 	public void sendBackToLobby(Profile profile) {
@@ -490,18 +484,20 @@ public class Match<D extends MatchData> implements Spectatable {
 	public void clearItems() {
 		boolean arenaInUse = false;
 
-		for (Match<?> match : MatchManager.getMatches()) {
-			if (!match.isEnded() && match.getData().getArena().equals(data.getArena())) {
+		for (Match match : MatchManager.getMatches()) {
+			if (!match.isEnded() && match.getData().getArenaId() == data.getArenaId()) {
 				arenaInUse = true;
 				break;
 			}
 		}
 
+		Arena arena = ArenaManager.getArenas()[data.getArenaId()];
+
 		for (Item item : arenaInUse ? itemRemovalQueue
-				: data.getArena().getLocation1().getWorld().getEntitiesByClass(Item.class))
+				: arena.getLocation1().getWorld().getEntitiesByClass(Item.class))
 			item.remove();
 
-		for (Arrow arrow : data.getArena().getLocation1().getWorld().getEntitiesByClass(Arrow.class)) {
+		for (Arrow arrow : arena.getLocation1().getWorld().getEntitiesByClass(Arrow.class)) {
 			ProjectileSource shooter = arrow.getShooter();
 
 			if (shooter instanceof Player pShooter) {
@@ -540,7 +536,7 @@ public class Match<D extends MatchData> implements Spectatable {
 		InventoryStatsMenu menu = new InventoryStatsMenu(profile, getOpponent(profile).getName(),
 				matchStatisticCollector);
 
-		if (!(this instanceof PartyMatch || this instanceof TeamMatch))
+		if (!(this instanceof TeamMatch))
 			ProfileManager.setInventoryStats(profile, menu);
 
 		return menu;

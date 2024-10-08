@@ -24,9 +24,11 @@ public class CreateCustomKnockbackMenu extends PracticeMenu {
         @Override
         public void update() {
 
-                CustomKnockback kb = viewer.getMatchData().getCustomKnockback() == null ? new CustomKnockback()
-                                : viewer.getMatchData().getCustomKnockback();
-                viewer.getMatchData().setCustomKnockback(kb);
+                CustomKnockback kb = viewer.getDuelSettings().getKnockback() != null
+                                && viewer.getDuelSettings().getKnockback() instanceof CustomKnockback customKB
+                                                ? customKB
+                                                : new CustomKnockback();
+                viewer.getDuelSettings().setKnockback(kb);
 
                 setSlot(0, ItemStacks.FRICTION.name(CC.SECONDARY + CC.B + "Friction")
                                 .lore(CC.WHITE + "The amount " + CC.SECONDARY + "movement speed and direction",
@@ -62,7 +64,7 @@ public class CreateCustomKnockbackMenu extends PracticeMenu {
 
                 setSlot(4, ItemStacks.APPLY, interaction -> {
                         Profile p = interaction.getProfile();
-                        p.getMatchData().setKnockback(kb);
+                        p.getDuelSettings().setKnockback(kb);
                         p.openMenu(menu);
                 });
 

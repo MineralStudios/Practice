@@ -1,122 +1,127 @@
 package gg.mineral.practice.match.data;
 
-import java.util.Collection;
-import java.util.function.Function;
-import java.util.function.Supplier;
+import java.util.UUID;
+
+import org.bukkit.inventory.ItemStack;
+import org.eclipse.jdt.annotation.NonNull;
+import org.eclipse.jdt.annotation.Nullable;
 
 import gg.mineral.api.knockback.Knockback;
 import gg.mineral.practice.arena.Arena;
-import gg.mineral.practice.bots.CustomDifficulty;
-import gg.mineral.practice.bots.Difficulty;
+import gg.mineral.practice.duel.DuelSettings;
+import gg.mineral.practice.entity.Profile;
 import gg.mineral.practice.gametype.Gametype;
 import gg.mineral.practice.kit.Kit;
 import gg.mineral.practice.managers.ArenaManager;
 import gg.mineral.practice.managers.GametypeManager;
-import gg.mineral.practice.match.CustomKnockback;
+import gg.mineral.practice.managers.QueuetypeManager;
+import gg.mineral.practice.queue.QueueSettings;
+import gg.mineral.practice.queue.Queuetype;
+import gg.mineral.practice.util.items.ItemStacks;
 import gg.mineral.practice.util.messages.CC;
 import gg.mineral.server.combat.KnockbackProfileList;
-import it.unimi.dsi.fastutil.objects.Object2BooleanOpenHashMap;
+import it.unimi.dsi.fastutil.bytes.Byte2BooleanOpenHashMap;
+import it.unimi.dsi.fastutil.ints.Int2ObjectOpenHashMap;
 import lombok.Getter;
-import lombok.Setter;
 
 @Getter
 public class MatchData {
-	@Setter
-	Arena arena;
-	@Setter
+	private short queueAndGameTypeHash = -1;
+	byte arenaId;
 	Kit kit;
-	@Setter
 	Knockback knockback;
-	@Setter
-	CustomKnockback customKnockback;
-	@Setter
-	CustomDifficulty customBotDifficulty;
-	Gametype gametype;
-	@Setter
 	int noDamageTicks = 20, pearlCooldown = 15;
-	@Setter
-	Difficulty botDifficulty = Difficulty.EASY;
-	@Setter
 	boolean hunger = true, boxing = false, build = false, damage = true, griefing = false, deadlyWater = false,
-			regeneration = true, team2v2 = false, botTeammate = false, botQueue = false, arenaSelection = true;
-	protected Object2BooleanOpenHashMap<Arena> enabledArenas = new Object2BooleanOpenHashMap<>();
+			regeneration = true;
+	private boolean ranked = false;
+	protected Byte2BooleanOpenHashMap enabledArenas = new Byte2BooleanOpenHashMap();
+	private ItemStack displayItem = ItemStacks.WOOD_AXE;
 
-	public MatchData() {
+	private MatchData() {
 
-		if (!GametypeManager.getGametypes().isEmpty())
-			setGametype(GametypeManager.getGametypes().get(0));
-
-		if (!ArenaManager.getArenas().isEmpty())
-			this.arena = ArenaManager.getArenas().get(0);
+		if (GametypeManager.getGametypes().length > 0 && GametypeManager.getGametypes()[0] != null)
+			setGametype(GametypeManager.getGametypes()[0]);
 
 		this.knockback = KnockbackProfileList.getDefaultKnockbackProfile();
 	}
 
-	public void setEnabledArenas(Collection<Arena> enabledArenas) {
-		for (Arena arena : enabledArenas)
-			this.enabledArenas.put(arena, true);
+	public MatchData(Queuetype queuetype, Gametype gametype, QueueSettings queueSettings) {
+		this();
+		setQueuetype(queuetype);
+		setGametype(gametype);
+		this.queueAndGameTypeHash = (short) (queuetype.getId() << 8 | gametype.getId());
+		this.enabledArenas = new Byte2BooleanOpenHashMap(queueSettings.getEnabledArenas());
 	}
 
-	public <D extends MatchData> D newClone(Supplier<D> supplier) {
-		D data = supplier.get();
-		data.kit = this.kit;
-		data.knockback = this.knockback;
-		data.customKnockback = this.customKnockback;
-		data.customBotDifficulty = this.customBotDifficulty;
-		data.gametype = this.gametype;
-		data.noDamageTicks = this.noDamageTicks;
-		data.pearlCooldown = this.pearlCooldown;
-		data.botDifficulty = this.botDifficulty;
-		data.hunger = this.hunger;
-		data.boxing = this.boxing;
-		data.build = this.build;
-		data.damage = this.damage;
-		data.griefing = this.griefing;
-		data.deadlyWater = this.deadlyWater;
-		data.regeneration = this.regeneration;
-		data.team2v2 = this.team2v2;
-		data.botTeammate = this.botTeammate;
-		data.botQueue = this.botQueue;
-		data.arenaSelection = this.arenaSelection;
-		data.enabledArenas = new Object2BooleanOpenHashMap<>(this.enabledArenas);
-		return data;
+	public MatchData(UUID queueEntryId) {
+		this();
+		Queuetype queuetype = QueuetypeManager.getQueuetypes()[QueueSettings.getQueueTypeId(queueEntryId)];
+		Gametype gametype = GametypeManager.getGametypes()[QueueSettings.getGameTypeId(queueEntryId)];
+		setQueuetype(queuetype);
+		setGametype(gametype);
+		this.queueAndGameTypeHash = (short) (queuetype.getId() << 8 | gametype.getId());
+
 	}
 
-	public <D extends MatchData> D cloneBotAndArenaData(Function<Object2BooleanOpenHashMap<Arena>, D> fucntion) {
-		D data = fucntion.apply(this.enabledArenas);
-		data.customBotDifficulty = this.customBotDifficulty;
-		data.botDifficulty = this.botDifficulty;
-		data.botTeammate = this.botTeammate;
-		data.botQueue = this.botQueue;
-		data.arenaSelection = this.arenaSelection;
-		return data;
+	@Nullable
+	public Gametype getGametype() {
+		return queueAndGameTypeHash == -1 ? null : GametypeManager.getGametypes()[queueAndGameTypeHash & 0xFF];
 	}
 
-	public void setGametype(Gametype gametype) {
-		this.gametype = gametype;
-		kit = gametype.getKit();
-		noDamageTicks = gametype.getNoDamageTicks();
-		hunger = gametype.isHunger();
-		boxing = gametype.isBoxing();
-		build = gametype.isBuild();
-		damage = gametype.isDamage();
-		griefing = gametype.isGriefing();
-		deadlyWater = gametype.isDeadlyWater();
-		regeneration = gametype.isRegeneration();
-		pearlCooldown = gametype.getPearlCooldown();
+	@Nullable
+	public Queuetype getQueuetype() {
+		return queueAndGameTypeHash == -1 ? null : QueuetypeManager.getQueuetypes()[queueAndGameTypeHash >> 8];
 	}
 
-	public void enableArena(Arena arena, boolean enabled) {
-		enabledArenas.put(arena, enabled);
+	public MatchData(DuelSettings duelSettings) {
+		this();
+		Queuetype queuetype = duelSettings.getQueuetype();
+		Gametype gametype = duelSettings.getGametype();
+		if (queuetype != null)
+			setQueuetype(queuetype);
+		if (gametype != null)
+			setGametype(gametype);
+		this.arenaId = duelSettings.getArenaId();
+		this.kit = duelSettings.getKit();
+		this.knockback = duelSettings.getKnockback();
+		this.noDamageTicks = duelSettings.getNoDamageTicks();
+		this.hunger = duelSettings.isHunger();
+		this.boxing = duelSettings.isBoxing();
+		this.build = duelSettings.isBuild();
+		this.damage = duelSettings.isDamage();
+		this.griefing = duelSettings.isGriefing();
+		this.deadlyWater = duelSettings.isDeadlyWater();
+		this.regeneration = duelSettings.isRegeneration();
+		this.pearlCooldown = duelSettings.getPearlCooldown();
+	}
+
+	public void setQueuetype(@NonNull Queuetype queuetype) {
+		this.knockback = queuetype.getKnockback();
+	}
+
+	public void setGametype(@NonNull Gametype gametype) {
+		this.displayItem = gametype.getDisplayItem().clone();
+		this.kit = gametype.getKit();
+		this.noDamageTicks = gametype.getNoDamageTicks();
+		this.hunger = gametype.isHunger();
+		this.boxing = gametype.isBoxing();
+		this.build = gametype.isBuild();
+		this.damage = gametype.isDamage();
+		this.griefing = gametype.isGriefing();
+		this.deadlyWater = gametype.isDeadlyWater();
+		this.regeneration = gametype.isRegeneration();
+		this.pearlCooldown = gametype.getPearlCooldown();
 	}
 
 	public String toString() {
 		StringBuilder sb = new StringBuilder();
 		String newLine = CC.R + "\n";
 
-		sb.append(CC.GREEN + "Arena: " + arena.getDisplayName());
-		sb.append(newLine);
+		Arena arena = ArenaManager.getArenas()[arenaId];
+
 		sb.append(CC.GREEN + "Kit: " + kit.getName());
+		sb.append(newLine);
+		sb.append(CC.GREEN + "Arena: " + arena.getDisplayName());
 		sb.append(newLine);
 		sb.append(CC.GREEN + "Knockback: " + knockback.getName());
 		sb.append(newLine);
@@ -143,5 +148,22 @@ public class MatchData {
 		sb.append(newLine);
 		sb.append(CC.GREEN + "Pearl Cooldown: " + pearlCooldown + " seconds");
 		return sb.toString();
+	}
+
+	public Int2ObjectOpenHashMap<ItemStack[]> getCustomKits(Profile p) {
+		Queuetype queuetype = getQueuetype();
+		Gametype gametype = getGametype();
+
+		if (queuetype == null || gametype == null)
+			return new Int2ObjectOpenHashMap<>();
+		return p.getCustomKits(queuetype, gametype);
+	}
+
+	public int getElo(Profile p) {
+		Gametype gametype = getGametype();
+
+		if (gametype == null)
+			return 0;
+		return gametype.getElo(p);
 	}
 }

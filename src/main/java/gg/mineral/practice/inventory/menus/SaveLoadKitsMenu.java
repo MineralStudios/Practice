@@ -4,6 +4,7 @@ import org.bukkit.inventory.ItemStack;
 
 import gg.mineral.practice.inventory.ClickCancelled;
 import gg.mineral.practice.inventory.PracticeMenu;
+import gg.mineral.practice.kit.KitEditor;
 import gg.mineral.practice.util.items.ItemStacks;
 import gg.mineral.practice.util.messages.CC;
 import it.unimi.dsi.fastutil.ints.Int2ObjectOpenHashMap;
@@ -19,7 +20,9 @@ public class SaveLoadKitsMenu extends PracticeMenu {
             return;
         }
 
-        Int2ObjectOpenHashMap<ItemStack[]> loadouts = viewer.getKitEditor().getQueueEntry().getCustomKits(viewer);
+        KitEditor kitEditor = viewer.getKitEditor();
+        Int2ObjectOpenHashMap<ItemStack[]> loadouts = viewer.getCustomKits(kitEditor.getQueuetype(),
+                kitEditor.getGametype());
 
         if (loadouts == null)
             return;

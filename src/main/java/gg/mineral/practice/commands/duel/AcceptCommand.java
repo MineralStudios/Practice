@@ -1,18 +1,18 @@
 package gg.mineral.practice.commands.duel;
 
 import java.util.Iterator;
-import it.unimi.dsi.fastutil.objects.Object2LongMap.Entry;
 
 import gg.mineral.practice.commands.PlayerCommand;
 import gg.mineral.practice.entity.PlayerStatus;
 import gg.mineral.practice.entity.Profile;
 import gg.mineral.practice.managers.ProfileManager;
 import gg.mineral.practice.match.Match;
-import gg.mineral.practice.match.PartyMatch;
+import gg.mineral.practice.match.TeamMatch;
 import gg.mineral.practice.match.data.MatchData;
 import gg.mineral.practice.request.DuelRequest;
 import gg.mineral.practice.util.messages.impl.ErrorMessages;
 import gg.mineral.practice.util.messages.impl.UsageMessages;
+import it.unimi.dsi.fastutil.objects.Object2LongMap.Entry;
 
 public class AcceptCommand extends PlayerCommand {
 
@@ -71,10 +71,10 @@ public class AcceptCommand extends PlayerCommand {
 				continue;
 
 			it.remove();
-			MatchData matchData = duelRequest.getMatchData();
-			Match<MatchData> match = duelSender.isInParty() && profile.isInParty()
-					? new PartyMatch(duelSender.getParty(), profile.getParty(), matchData)
-					: new Match<>(duelSender, profile, matchData);
+			MatchData matchData = new MatchData(duelRequest.getDuelSettings());
+			Match match = duelSender.isInParty() && profile.isInParty()
+					? new TeamMatch(duelSender.getParty(), profile.getParty(), matchData)
+					: new Match(duelSender, profile, matchData);
 			match.start();
 			return;
 		}

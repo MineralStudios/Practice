@@ -2,7 +2,6 @@ package gg.mineral.practice.scoreboard.impl;
 
 import gg.mineral.practice.entity.Profile;
 import gg.mineral.practice.match.Match;
-import gg.mineral.practice.match.PartyMatch;
 import gg.mineral.practice.match.TeamMatch;
 import gg.mineral.practice.scoreboard.Scoreboard;
 import gg.mineral.practice.scoreboard.ScoreboardHandler;
@@ -21,9 +20,7 @@ public class SpectatorScoreboard
 
                 Spectatable spectatable = profile.getSpectateHandler().getSpectatable();
 
-                if (spectatable instanceof TeamMatch) {
-                        TeamMatch match = (TeamMatch) spectatable;
-
+                if (spectatable instanceof TeamMatch match) {
                         ProfileList team = match.getTeam(match.getProfile1());
                         ProfileList opponents = new ProfileList(match.getParticipants());
                         opponents.removeAll(team);
@@ -60,47 +57,7 @@ public class SpectatorScoreboard
                                         CC.SPACER,
                                         CC.SECONDARY + "mineral.gg",
                                         CC.BOARD_SEPARATOR);
-                } else if (spectatable instanceof PartyMatch) {
-                        PartyMatch match = (PartyMatch) spectatable;
-
-                        ProfileList team = match.getTeam(match.getProfile1());
-                        ProfileList opponents = new ProfileList(match.getParticipants());
-                        opponents.removeAll(team);
-
-                        if (match.getData().isBoxing()) {
-
-                                int hitCount = match.getTeam1HitCount();
-                                int opponentHitCount = match.getTeam2HitCount();
-                                int requiredHitCount = match.getTeam1RequiredHitCount();
-                                int opponentRequiredHitCount = match.getTeam2RequiredHitCount();
-
-                                board.updateLines(CC.BOARD_SEPARATOR,
-                                                CC.SECONDARY + match.getProfile1().getName(),
-                                                CC.YELLOW + " * " + CC.ACCENT + "Hits: "
-                                                                + CC.WHITE + hitCount + "/" + requiredHitCount,
-                                                CC.SECONDARY
-                                                                + match.getProfile2().getName(),
-                                                CC.YELLOW + " * " + CC.ACCENT + "Hits: " + CC.WHITE
-                                                                + opponentHitCount + "/" + opponentRequiredHitCount,
-                                                CC.SPACER,
-                                                CC.SECONDARY + "mineral.gg",
-                                                CC.BOARD_SEPARATOR);
-                                return;
-                        }
-
-                        board.updateLines(CC.BOARD_SEPARATOR,
-                                        CC.SECONDARY + match.getProfile1().getName(),
-                                        CC.YELLOW + " * " + CC.ACCENT + "Team Remaining: "
-                                                        + CC.WHITE + team.size(),
-                                        CC.SECONDARY
-                                                        + match.getProfile2().getName(),
-                                        CC.YELLOW + " * " + CC.ACCENT + "Team Remaining: " + CC.WHITE
-                                                        + opponents.size(),
-                                        CC.SPACER,
-                                        CC.SECONDARY + "mineral.gg",
-                                        CC.BOARD_SEPARATOR);
-                } else if (spectatable instanceof Match<?> match) {
-
+                } else if (spectatable instanceof Match match) {
                         if (match.getData().isBoxing()) {
 
                                 board.updateLines(CC.BOARD_SEPARATOR,

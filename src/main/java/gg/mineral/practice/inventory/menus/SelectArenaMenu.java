@@ -1,21 +1,22 @@
 package gg.mineral.practice.inventory.menus;
 
-import java.util.Iterator;
-
 import org.bukkit.inventory.ItemStack;
 
-import gg.mineral.practice.util.items.ItemBuilder;
-import gg.mineral.practice.util.messages.CC;
-import gg.mineral.practice.util.messages.impl.ErrorMessages;
-import lombok.RequiredArgsConstructor;
 import gg.mineral.practice.arena.Arena;
 import gg.mineral.practice.inventory.ClickCancelled;
 import gg.mineral.practice.inventory.PracticeMenu;
 import gg.mineral.practice.inventory.SubmitAction;
 import gg.mineral.practice.managers.ArenaManager;
-import gg.mineral.practice.match.PartyMatch;
+import gg.mineral.practice.match.TeamMatch;
+import gg.mineral.practice.match.data.MatchData;
 import gg.mineral.practice.party.Party;
 import gg.mineral.practice.tournaments.Tournament;
+import gg.mineral.practice.util.items.ItemBuilder;
+import gg.mineral.practice.util.messages.CC;
+import gg.mineral.practice.util.messages.impl.ErrorMessages;
+import it.unimi.dsi.fastutil.bytes.ByteIterator;
+import it.unimi.dsi.fastutil.bytes.ByteIterators;
+import lombok.RequiredArgsConstructor;
 
 @ClickCancelled(true)
 @RequiredArgsConstructor
@@ -32,22 +33,26 @@ public class SelectArenaMenu extends PracticeMenu {
 
     @Override
     public void update() {
-        Iterator<Arena> arenas = simpleMode ? viewer.getMatchData().getGametype().getArenas().iterator()
-                : ArenaManager.getArenas().iterator();
+        Arena[] arenas = ArenaManager.getArenas();
+        ByteIterator arenaIds = simpleMode ? viewer.getDuelSettings().getGametype().getArenas().iterator()
+                : ByteIterators.fromTo((byte) 0, (byte) (arenas.length - 1));
 
-        while (arenas.hasNext()) {
-            Arena a = arenas.next();
+        while (arenaIds.hasNext()) {
+            byte arenaId = arenaIds.nextByte();
+
+            Arena arena = arenas[arenaId];
 
             ItemStack item;
             try {
-                item = new ItemBuilder(a.getDisplayItem().clone())
-                        .name(CC.SECONDARY + CC.B + a.getDisplayName()).lore(CC.ACCENT + "Click to select.").build();
+                item = new ItemBuilder(arena.getDisplayItem().clone())
+                        .name(CC.SECONDARY + CC.B + arena.getDisplayName()).lore(CC.ACCENT + "Click to select.")
+                        .build();
             } catch (Exception e) {
                 continue;
             }
 
             Runnable arenaRunnable = () -> {
-                viewer.getMatchData().setArena(a);
+                viewer.getDuelSettings().setArenaId(arenaId);
 
                 if (simpleMode) {
                     viewer.getPlayer().closeInventory();
@@ -62,7 +67,7 @@ public class SelectArenaMenu extends PracticeMenu {
                 arenaRunnable = () -> {
                     viewer.getPlayer().closeInventory();
 
-                    viewer.getMatchData().setArena(a);
+                    viewer.getDuelSettings().setArenaId(arenaId);
 
                     Party p = viewer.getParty();
 
@@ -76,14 +81,14 @@ public class SelectArenaMenu extends PracticeMenu {
                         return;
                     }
 
-                    PartyMatch m = new PartyMatch(p, viewer.getMatchData());
+                    TeamMatch m = new TeamMatch(p, new MatchData(viewer.getDuelSettings()));
                     m.start();
                 };
             } else if (action == SubmitAction.TOURNAMENT && simpleMode) {
                 arenaRunnable = () -> {
                     viewer.getPlayer().closeInventory();
 
-                    viewer.getMatchData().setArena(a);
+                    viewer.getDuelSettings().setArenaId(arenaId);
 
                     Tournament tournament = new Tournament(viewer);
                     tournament.start();

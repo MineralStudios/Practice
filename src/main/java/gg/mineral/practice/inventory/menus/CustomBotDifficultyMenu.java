@@ -5,11 +5,12 @@ import java.text.DecimalFormat;
 
 import org.bukkit.event.inventory.ClickType;
 
-import gg.mineral.practice.bots.CustomDifficulty;
+import gg.mineral.bot.api.configuration.BotConfiguration;
 import gg.mineral.practice.bots.Difficulty;
 import gg.mineral.practice.entity.Profile;
 import gg.mineral.practice.inventory.ClickCancelled;
 import gg.mineral.practice.inventory.PracticeMenu;
+import gg.mineral.practice.queue.QueueSettings;
 import gg.mineral.practice.util.items.ItemStacks;
 import gg.mineral.practice.util.messages.CC;
 import lombok.RequiredArgsConstructor;
@@ -27,12 +28,12 @@ public class CustomBotDifficultyMenu extends PracticeMenu {
         @Override
         public void update() {
 
-                CustomDifficulty difficulty = viewer.getMatchData().getCustomBotDifficulty() == null
-                                ? new CustomDifficulty()
-                                : viewer.getMatchData().getCustomBotDifficulty();
-                viewer.getMatchData().setCustomBotDifficulty(difficulty);
-                viewer.getMatchData()
-                                .setBotDifficulty(Difficulty.CUSTOM);
+                QueueSettings queueSettings = viewer.getQueueSettings();
+
+                BotConfiguration difficulty = queueSettings.getCustomBotConfiguration();
+                queueSettings.setCustomBotConfiguration(difficulty);
+                queueSettings
+                                .setOpponentDifficulty(0, Difficulty.CUSTOM);
 
                 setSlot(0, ItemStacks.AIM_SPEED.name(CC.SECONDARY + CC.B + "Aim Speed")
                                 .lore(CC.WHITE + "The speed the bot " + CC.SECONDARY + "rotates" + CC.WHITE
@@ -82,9 +83,9 @@ public class CustomBotDifficultyMenu extends PracticeMenu {
                                                 + " the bot has when aiming.", " ",
                                                 CC.WHITE + "Horizontal:",
                                                 CC.GOLD + DECIMAL_FORMAT
-                                                                .format(difficulty.getHorizontalAimErraticness()),
+                                                                .format(difficulty.getHorizontalErraticness()),
                                                 CC.WHITE + "Vertical:",
-                                                CC.GOLD + DECIMAL_FORMAT.format(difficulty.getVerticalAimErraticness()),
+                                                CC.GOLD + DECIMAL_FORMAT.format(difficulty.getVerticalErraticness()),
                                                 CC.BOARD_SEPARATOR, CC.GREEN + "Left click to change horizontal.",
                                                 CC.RED + "Right click to change vertical.")
                                 .build(), interaction -> {
@@ -92,13 +93,13 @@ public class CustomBotDifficultyMenu extends PracticeMenu {
                                                 interaction.getProfile().openMenu(
                                                                 ConfigureValueMenu.of(this,
                                                                                 value -> difficulty
-                                                                                                .setVerticalAimErraticness(
+                                                                                                .setVerticalErraticness(
                                                                                                                 value),
                                                                                 float.class));
                                         else
                                                 interaction.getProfile().openMenu(ConfigureValueMenu.of(this,
                                                                 value -> difficulty
-                                                                                .setHorizontalAimErraticness(value),
+                                                                                .setHorizontalErraticness(value),
                                                                 float.class));
                                 });
 
@@ -139,12 +140,12 @@ public class CustomBotDifficultyMenu extends PracticeMenu {
                                 .lore(CC.WHITE + "The " + CC.SECONDARY + "amount of clicks" + CC.WHITE
                                                 + " each second.", " ",
                                                 CC.WHITE + "Currently:",
-                                                CC.GOLD + DECIMAL_FORMAT.format(difficulty.getCps()),
+                                                CC.GOLD + DECIMAL_FORMAT.format(difficulty.getAverageCps()),
                                                 CC.BOARD_SEPARATOR, CC.ACCENT + "Click to change value.")
                                 .build(),
                                 interaction -> interaction.getProfile()
                                                 .openMenu(ConfigureValueMenu.of(this,
-                                                                value -> difficulty.setCps(value), float.class)));
+                                                                value -> difficulty.setAverageCps(value), int.class)));
 
                 setSlot(6, ItemStacks.PING.name(CC.SECONDARY + CC.B + "Ping")
                                 .lore(CC.WHITE + "Simulates the " + CC.SECONDARY + "amount of time", CC.WHITE
@@ -156,7 +157,7 @@ public class CustomBotDifficultyMenu extends PracticeMenu {
                                 .build(),
                                 interaction -> interaction.getProfile()
                                                 .openMenu(ConfigureValueMenu.of(this,
-                                                                value -> difficulty.setLatency(value), float.class)));
+                                                                value -> difficulty.setLatency(value), int.class)));
 
                 setSlot(7, ItemStacks.PING_DEVIATION.name(CC.SECONDARY + CC.B + "Ping Deviation")
                                 .lore(CC.WHITE + "Simulates the " + CC.SECONDARY + "variation in time", CC.WHITE
@@ -169,24 +170,25 @@ public class CustomBotDifficultyMenu extends PracticeMenu {
                                 interaction -> interaction.getProfile().openMenu(
                                                 ConfigureValueMenu.of(this,
                                                                 value -> difficulty.setLatencyDeviation(value),
-                                                                float.class)));
+                                                                int.class)));
 
                 setSlot(29, ItemStacks.BACK, interaction -> {
                         Profile p = interaction.getProfile();
-                        p.getMatchData().setCustomBotDifficulty(difficulty);
+                        interaction.getProfile().getQueueSettings().setCustomBotConfiguration(difficulty);
                         p.openMenu(menu);
                 });
 
                 setSlot(31, ItemStacks.CLICK_TO_APPLY_CHANGES.name(CC.SECONDARY + CC.B + "Save Difficulty").build(),
                                 interaction -> {
                                         Profile p = interaction.getProfile();
-                                        p.getMatchData().setCustomBotDifficulty(difficulty);
+                                        interaction.getProfile().getQueueSettings()
+                                                        .setCustomBotConfiguration(difficulty);
                                         p.openMenu(menu);
                                 });
 
                 setSlot(33, ItemStacks.RANDOM_DIFFICULTY, interaction -> {
-                        difficulty.randomize();
-                        interaction.getProfile().getMatchData().setCustomBotDifficulty(difficulty);
+                        QueueSettings queueSettings1 = interaction.getProfile().getQueueSettings();
+                        queueSettings1.setCustomBotConfiguration(Difficulty.RANDOM.getConfiguration(queueSettings1));
                         reload();
                 });
         }

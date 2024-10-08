@@ -34,11 +34,10 @@ public class SelectCategorizedExistingKitMenu extends SelectExistingKitMenu {
 					return;
 				}
 
-				if (simple) {
-					viewer.getMatchData().setGametype(g);
-				} else {
-					viewer.getMatchData().setKit(g.getKit());
-				}
+				if (simple)
+					viewer.getDuelSettings().setGametype(g);
+				else
+					viewer.getDuelSettings().setKit(g.getKit());
 
 				viewer.openMenu(menu);
 			});

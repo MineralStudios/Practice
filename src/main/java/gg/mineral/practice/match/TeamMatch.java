@@ -11,11 +11,14 @@ import org.bukkit.scoreboard.Team;
 import gg.mineral.api.collection.GlueList;
 import gg.mineral.bot.api.BotAPI;
 import gg.mineral.practice.PracticePlugin;
+import gg.mineral.practice.arena.Arena;
 import gg.mineral.practice.entity.Profile;
 import gg.mineral.practice.inventory.menus.InventoryStatsMenu;
+import gg.mineral.practice.managers.ArenaManager;
 import gg.mineral.practice.managers.MatchManager;
 import gg.mineral.practice.managers.ProfileManager;
-import gg.mineral.practice.match.data.QueueMatchData;
+import gg.mineral.practice.match.data.MatchData;
+import gg.mineral.practice.party.Party;
 import gg.mineral.practice.scoreboard.impl.DefaultScoreboard;
 import gg.mineral.practice.scoreboard.impl.MatchEndScoreboard;
 import gg.mineral.practice.scoreboard.impl.PartyMatchScoreboard;
@@ -33,7 +36,7 @@ import net.md_5.bungee.api.chat.ComponentBuilder;
 import net.md_5.bungee.api.chat.HoverEvent;
 import net.md_5.bungee.api.chat.TextComponent;
 
-public class TeamMatch extends Match<QueueMatchData> {
+public class TeamMatch extends Match {
     @Getter
     ProfileList team1RemainingPlayers, team2RemainingPlayers;
     List<InventoryStatsMenu> team1InventoryStatsMenus = new GlueList<>(), team2InventoryStatsMenus = new GlueList<>();
@@ -41,10 +44,28 @@ public class TeamMatch extends Match<QueueMatchData> {
     @Getter
     int team1HitCount = 0, team2HitCount = 0, team1RequiredHitCount, team2RequiredHitCount;
 
-    public TeamMatch(Collection<Profile> team1, Collection<Profile> team2, QueueMatchData matchData) {
+    public TeamMatch(Collection<Profile> team1, Collection<Profile> team2, MatchData matchData) {
         super(matchData);
         this.team1RemainingPlayers = new ProfileList(team1);
         this.team2RemainingPlayers = new ProfileList(team2);
+    }
+
+    public TeamMatch(Party party1, Party party2, MatchData matchData) {
+        super(matchData);
+        this.team1RemainingPlayers = new ProfileList(party1.getPartyMembers());
+        this.team2RemainingPlayers = new ProfileList(party2.getPartyMembers());
+    }
+
+    public TeamMatch(Party party, MatchData matchData) {
+        this(party.getPartyMembers(), matchData);
+    }
+
+    public TeamMatch(Collection<Profile> profiles, MatchData matchData) {
+        super(matchData);
+        this.participants.addAll(profiles);
+        int size = participants.size();
+        this.team1RemainingPlayers = new ProfileList(participants.subList(0, (size + 1) / 2));
+        this.team2RemainingPlayers = new ProfileList(participants.subList((size + 1) / 2, size));
     }
 
     @Override
@@ -54,8 +75,9 @@ public class TeamMatch extends Match<QueueMatchData> {
             return;
 
         MatchManager.registerMatch(this);
-        Location location1 = getData().getArena().getLocation1().clone();
-        Location location2 = getData().getArena().getLocation2().clone();
+        Arena arena = ArenaManager.getArenas()[getData().getArenaId()];
+        Location location1 = arena.getLocation1().clone();
+        Location location2 = arena.getLocation2().clone();
         setupLocations(location1, location2);
 
         this.participants.addAll(team1RemainingPlayers);
@@ -179,9 +201,9 @@ public class TeamMatch extends Match<QueueMatchData> {
         MatchManager.remove(this);
 
         TextComponent winMessage = new TextComponent(
-                CC.GREEN + "Winner: " + CC.GRAY + attackerTeamLeader.getName() + "\'s party");
+                CC.GREEN + "Winner: " + CC.GRAY + attackerTeamLeader.getName() + "\'s team");
         TextComponent loseMessage = new TextComponent(
-                CC.RED + "Loser: " + CC.GRAY + victim.getName() + "\'s party");
+                CC.RED + "Loser: " + CC.GRAY + victim.getName() + "\'s team");
         loseMessage
                 .setHoverEvent(
                         new HoverEvent(HoverEvent.Action.SHOW_TEXT,

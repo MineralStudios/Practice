@@ -24,7 +24,7 @@ public class AddItemsMenu extends PracticeMenu {
 
 		Object2IntOpenHashMap<String> maxAmountMap = new Object2IntOpenHashMap<String>();
 
-		for (ItemStack is : viewer.getKitEditor().getQueueEntry().getGametype().getKit().getContents()) {
+		for (ItemStack is : viewer.getKitEditor().getGametype().getKit().getContents()) {
 			if (is == null || !LIMITED.contains(is.getType()))
 				continue;
 
@@ -33,7 +33,7 @@ public class AddItemsMenu extends PracticeMenu {
 			maxAmountMap.put(string, maxAmount + is.getAmount());
 		}
 
-		for (ItemStack is : viewer.getKitEditor().getQueueEntry().getGametype().getKit().getContents()) {
+		for (ItemStack is : viewer.getKitEditor().getGametype().getKit().getContents()) {
 
 			if (is == null)
 				continue;

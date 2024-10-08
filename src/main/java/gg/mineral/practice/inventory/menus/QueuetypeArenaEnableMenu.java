@@ -1,7 +1,5 @@
 package gg.mineral.practice.inventory.menus;
 
-import java.util.Iterator;
-
 import org.bukkit.ChatColor;
 import org.bukkit.inventory.ItemStack;
 
@@ -23,11 +21,12 @@ public class QueuetypeArenaEnableMenu extends PracticeMenu {
     @Override
     public void update() {
         clear();
-        Iterator<Arena> arenas = ArenaManager.getArenas().iterator();
 
-        while (arenas.hasNext()) {
-            Arena a = arenas.next();
-            boolean arenaEnabled = queuetype.getArenas().contains(a);
+        Arena[] arenas = ArenaManager.getArenas();
+
+        for (int i = 0; i < arenas.length; i++) {
+            Arena a = arenas[i];
+            boolean arenaEnabled = queuetype.getArenas().contains(a.getId());
             ChatColor color = arenaEnabled ? ChatColor.GREEN : ChatColor.RED;
 
             ItemStack item;

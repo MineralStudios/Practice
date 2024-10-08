@@ -1,7 +1,6 @@
 package gg.mineral.practice.scoreboard.impl;
 
-import org.bukkit.Bukkit;
-
+import gg.mineral.bot.api.BotAPI;
 import gg.mineral.practice.entity.PlayerStatus;
 import gg.mineral.practice.entity.Profile;
 import gg.mineral.practice.managers.ProfileManager;
@@ -12,11 +11,14 @@ import gg.mineral.practice.util.messages.CC;
 public class DefaultScoreboard implements Scoreboard {
 	public static final Scoreboard INSTANCE = new DefaultScoreboard();
 
-
 	@Override
 	public void updateBoard(ScoreboardHandler board, Profile profile) {
 		board.updateTitle(CC.PRIMARY + CC.B + "Mineral");
-		board.updateLines(CC.BOARD_SEPARATOR, CC.ACCENT + "Online: " + CC.SECONDARY + Bukkit.getOnlinePlayers().size(),
+		board.updateLines(CC.BOARD_SEPARATOR,
+				CC.ACCENT + "Online: " + CC.SECONDARY
+						+ ProfileManager.count(p -> !BotAPI.INSTANCE.isFakePlayer(p.getUuid())),
+				CC.ACCENT + "Bots: " + CC.SECONDARY
+						+ ProfileManager.count(p -> BotAPI.INSTANCE.isFakePlayer(p.getUuid())),
 				CC.ACCENT + "In Game: " + CC.SECONDARY
 						+ ProfileManager.count(p -> p.getPlayerStatus() == PlayerStatus.FIGHTING),
 				CC.SPACER,

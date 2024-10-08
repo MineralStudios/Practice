@@ -23,7 +23,7 @@ repositories {
 
 dependencies {
     compileOnly 'gg.mineral.mineralspigot:mineralspigot-server:20241002-08.14.41'
-    compileOnly 'gg.mineral:bot-api:20240921-19.50.24'
+    compileOnly 'gg.mineral:bot-api:20241006-09.16.19'
     compileOnly 'gg.mineral:database-api:20240919-16.58.32'
     compileOnly 'de.jeezycore:jeezy-core:20240920-13.06.03'
     compileOnly 'gg.mineral:bot-intelligence:20240919-15.52.07'

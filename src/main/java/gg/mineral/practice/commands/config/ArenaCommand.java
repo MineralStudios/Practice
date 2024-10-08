@@ -1,7 +1,5 @@
 package gg.mineral.practice.commands.config;
 
-import java.util.Iterator;
-
 import org.bukkit.Location;
 import org.bukkit.craftbukkit.v1_8_R3.entity.CraftPlayer;
 import org.bukkit.entity.Player;
@@ -52,7 +50,7 @@ public class ArenaCommand extends PlayerCommand {
 					return;
 				}
 
-				arena = new Arena(arenaName);
+				arena = new Arena(arenaName, ArenaManager.CURRENT_ID++);
 				arena.setDefaults();
 				ArenaManager.registerArena(arena);
 				ChatMessages.ARENA_CREATED.clone().replace("%arena%", arenaName).send(player);
@@ -115,15 +113,16 @@ public class ArenaCommand extends PlayerCommand {
 			case "list":
 				sb = new StringBuilder(CC.GRAY + "[");
 
-				Iterator<Arena> arenaIter = ArenaManager.getArenas().iterator();
+				Arena[] arenas = ArenaManager.getArenas();
 
-				while (arenaIter.hasNext()) {
-					Arena a = arenaIter.next();
+				for (int i = 0; i < arenas.length; i++) {
+					Arena a = arenas[i];
 					sb.append(CC.GREEN + a.getName());
 
-					if (arenaIter.hasNext()) {
+					int iNext = i + 1;
+
+					if (iNext < arenas.length && arenas[iNext] != null)
 						sb.append(CC.GRAY + ", ");
-					}
 				}
 
 				sb.append(CC.GRAY + "]");

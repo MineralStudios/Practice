@@ -1,7 +1,5 @@
 package gg.mineral.practice.commands.config;
 
-import java.util.Iterator;
-
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 
@@ -78,7 +76,7 @@ public class GametypeCommand extends PlayerCommand {
 					return;
 				}
 
-				gametype = new Gametype(gametypeName);
+				gametype = new Gametype(gametypeName, GametypeManager.CURRENT_ID++);
 				gametype.setDefaults();
 				GametypeManager.registerGametype(gametype);
 				ChatMessages.GAMETYPE_CREATED.clone().replace("%gametype%", gametypeName).send(player);
@@ -535,15 +533,16 @@ public class GametypeCommand extends PlayerCommand {
 			case "list":
 				sb = new StringBuilder(CC.GRAY + "[");
 
-				Iterator<Gametype> gametypeIter = GametypeManager.getGametypes().iterator();
+				Gametype[] gametypes = GametypeManager.getGametypes();
 
-				while (gametypeIter.hasNext()) {
-					gametype = gametypeIter.next();
+				for (int i = 0; i < gametypes.length; i++) {
+					gametype = gametypes[i];
 					sb.append(CC.GREEN + gametype.getName());
 
-					if (gametypeIter.hasNext()) {
+					int iNext = i + 1;
+
+					if (iNext < gametypes.length && gametypes[iNext] != null)
 						sb.append(CC.GRAY + ", ");
-					}
 				}
 
 				sb.append(CC.GRAY + "]");
@@ -623,7 +622,7 @@ public class GametypeCommand extends PlayerCommand {
 					return;
 				}
 
-				gametype.setEventArena(arena);
+				gametype.setEventArena(arena.getId());
 				ChatMessages.GAMETYPE_EVENT_ARENA_SET.clone().replace("%gametype%", gametypeName)
 						.replace("%arena%", arenaName).send(player);
 				return;

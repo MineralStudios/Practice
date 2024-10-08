@@ -1,7 +1,5 @@
 package gg.mineral.practice.commands.config;
 
-import java.util.Iterator;
-
 import gg.mineral.practice.commands.PlayerCommand;
 import gg.mineral.practice.entity.Profile;
 import gg.mineral.practice.inventory.menus.QueuetypeArenaEnableMenu;
@@ -59,7 +57,7 @@ public class QueuetypeCommand extends PlayerCommand {
 					return;
 				}
 
-				queuetype = new Queuetype(queuetypeName);
+				queuetype = new Queuetype(queuetypeName, QueuetypeManager.CURRENT_ID++);
 				queuetype.setDefaults();
 				QueuetypeManager.registerQueuetype(queuetype);
 				ChatMessages.QUEUETYPE_CREATED.clone().replace("%queuetype%", queuetypeName).send(player);
@@ -272,15 +270,16 @@ public class QueuetypeCommand extends PlayerCommand {
 			case "list":
 				sb = new StringBuilder(CC.GRAY + "[");
 
-				Iterator<Queuetype> queuetypeIter = QueuetypeManager.getQueuetypes().iterator();
+				Queuetype[] queuetypes = QueuetypeManager.getQueuetypes();
 
-				while (queuetypeIter.hasNext()) {
-					Queuetype q = queuetypeIter.next();
+				for (int i = 0; i < queuetypes.length; i++) {
+					Queuetype q = queuetypes[i];
 					sb.append(CC.GREEN + q.getName());
 
-					if (queuetypeIter.hasNext()) {
+					int iNext = i + 1;
+
+					if (iNext < queuetypes.length && queuetypes[iNext] != null)
 						sb.append(CC.GRAY + ", ");
-					}
 				}
 
 				sb.append(CC.GRAY + "]");

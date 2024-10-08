@@ -58,17 +58,17 @@ public class RequestHandler {
             sender += "'s party (" + profile.getParty().getPartyMembers().size() + ") ";
         }
 
-        DuelRequest request = new DuelRequest(profile, profile.getMatchData());
+        DuelRequest request = new DuelRequest(profile, profile.getDuelSettings());
         receiver.getRequestHandler().getRecievedDuelRequests().add(request);
         profile.removeFromQueue();
         ChatMessages.DUEL_REQUEST_SENT.clone().replace("%player%", receiver.getName()).send(profile.getPlayer());
 
-        HoverEvent DATA = new HoverEvent(HoverEvent.Action.SHOW_TEXT,
-                new ComponentBuilder(profile.getMatchData().toString()).create());
+        HoverEvent hoverEvent = new HoverEvent(HoverEvent.Action.SHOW_TEXT,
+                new ComponentBuilder(profile.getQueueSettings().toString()).create());
 
         ChatMessages.DUEL_REQUEST_RECIEVED.clone().replace("%player%", sender)
                 .setTextEvent(new ClickEvent(ClickEvent.Action.RUN_COMMAND, "/accept " + profile.getName()),
-                        DATA)
+                        hoverEvent)
                 .send(receiver.getPlayer());
     }
 }

@@ -23,7 +23,7 @@ public class SelectExistingKnockbackMenu extends PracticeMenu {
             add(ItemStacks.KNOCKBACK
                     .name(CC.SECONDARY + CC.B + knockback.getName()).lore(CC.ACCENT + "Click to select.").build(),
                     () -> {
-                        viewer.getMatchData().setKnockback(knockback);
+                        viewer.getDuelSettings().setKnockback(knockback);
                         viewer.openMenu(menu);
                     });
         }

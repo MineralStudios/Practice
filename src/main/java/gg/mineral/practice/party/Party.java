@@ -1,24 +1,25 @@
 package gg.mineral.practice.party;
 
 import java.util.Iterator;
+import java.util.List;
+import java.util.UUID;
 import java.util.concurrent.ConcurrentLinkedQueue;
 
+import gg.mineral.api.collection.GlueList;
 import gg.mineral.practice.entity.Profile;
 import gg.mineral.practice.managers.PartyManager;
+import gg.mineral.practice.queue.QueuedEntity;
 import gg.mineral.practice.util.messages.ChatMessage;
 import gg.mineral.practice.util.messages.impl.ChatMessages;
 import lombok.Getter;
 import lombok.Setter;
 
-public class Party {
-
-	@Getter
-	Profile partyLeader;
+@Getter
+public class Party implements QueuedEntity {
+	private final Profile partyLeader;
 	@Setter
-	@Getter
-	boolean open = false;
-	@Getter
-	ConcurrentLinkedQueue<Profile> partyMembers = new ConcurrentLinkedQueue<Profile>();
+	private boolean open = false;
+	private final ConcurrentLinkedQueue<Profile> partyMembers = new ConcurrentLinkedQueue<Profile>();
 
 	public Party(Profile partyLeader) {
 		this.partyLeader = partyLeader;
@@ -64,5 +65,15 @@ public class Party {
 				member.message(leftMessage);
 			}
 		}
+	}
+
+	@Override
+	public List<Profile> getProfiles() {
+		return new GlueList<>(partyMembers);
+	}
+
+	@Override
+	public UUID getUuid() {
+		return partyLeader.getUuid();
 	}
 }

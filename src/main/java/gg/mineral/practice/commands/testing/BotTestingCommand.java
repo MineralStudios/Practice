@@ -3,18 +3,19 @@ package gg.mineral.practice.commands.testing;
 import java.util.List;
 
 import gg.mineral.api.collection.GlueList;
+import gg.mineral.bot.api.configuration.BotConfiguration;
 import gg.mineral.practice.bots.Difficulty;
 import gg.mineral.practice.commands.PlayerCommand;
 import gg.mineral.practice.entity.Profile;
 import gg.mineral.practice.gametype.Gametype;
 import gg.mineral.practice.managers.GametypeManager;
 import gg.mineral.practice.managers.ProfileManager;
-import gg.mineral.practice.managers.QueueEntryManager;
+
 import gg.mineral.practice.managers.QueuetypeManager;
 import gg.mineral.practice.match.BotTeamMatch;
-import gg.mineral.practice.match.TeamMatch;
-import gg.mineral.practice.match.data.QueueMatchData;
-import gg.mineral.practice.queue.QueueEntry;
+
+import gg.mineral.practice.match.data.MatchData;
+import gg.mineral.practice.queue.QueueSettings;
 import gg.mineral.practice.queue.Queuetype;
 
 public class BotTestingCommand extends PlayerCommand {
@@ -34,27 +35,24 @@ public class BotTestingCommand extends PlayerCommand {
 
         Queuetype queuetype = QueuetypeManager.getQueuetypeByName("Unranked");
         Gametype gametype = GametypeManager.getGametypeByName(args[1]);
-        QueueEntry queueEntry = QueueEntryManager.newEntry(queuetype, gametype);
 
-        Difficulty difficulty = profile.getMatchData().getBotDifficulty();
+        QueueSettings queueSettings = profile.getQueueSettings();
 
-        List<Difficulty> friendlyTeam = new GlueList<>();
-        friendlyTeam.add(difficulty);
-        friendlyTeam.add(difficulty);
+        Difficulty difficulty = queueSettings.getBotDifficulty();
 
-        List<Difficulty> opponentTeam = new GlueList<>();
-        opponentTeam.add(difficulty);
-        opponentTeam.add(difficulty);
+        List<BotConfiguration> friendlyTeam = new GlueList<>();
+        friendlyTeam.add(difficulty.getConfiguration(queueSettings));
+        friendlyTeam.add(difficulty.getConfiguration(queueSettings));
 
-        TeamMatch m;
-        for (int i = 0; i < amount; i++) {
-            m = new BotTeamMatch(new GlueList<>(), new GlueList<>(),
+        List<BotConfiguration> opponentTeam = new GlueList<>();
+        opponentTeam.add(difficulty.getConfiguration(queueSettings));
+        opponentTeam.add(difficulty.getConfiguration(queueSettings));
+
+        for (int i = 0; i < amount; i++)
+            new BotTeamMatch(new GlueList<>(), new GlueList<>(),
                     friendlyTeam,
                     opponentTeam,
-                    profile.getMatchData()
-                            .cloneBotAndArenaData(enabledArenas -> new QueueMatchData(queueEntry, enabledArenas)));
-            m.start();
-        }
+                    new MatchData(queuetype, gametype, profile.getQueueSettings())).start();
 
     }
 }

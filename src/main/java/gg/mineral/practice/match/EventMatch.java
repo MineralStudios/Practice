@@ -4,9 +4,11 @@ import org.bukkit.Bukkit;
 import org.bukkit.Location;
 
 import gg.mineral.practice.PracticePlugin;
+import gg.mineral.practice.arena.Arena;
 import gg.mineral.practice.entity.PlayerStatus;
 import gg.mineral.practice.entity.Profile;
 import gg.mineral.practice.events.Event;
+import gg.mineral.practice.managers.ArenaManager;
 import gg.mineral.practice.managers.MatchManager;
 import gg.mineral.practice.match.data.MatchData;
 import gg.mineral.practice.scoreboard.impl.DefaultScoreboard;
@@ -18,7 +20,7 @@ import gg.mineral.practice.util.messages.impl.Strings;
 import gg.mineral.practice.util.messages.impl.TextComponents;
 import net.md_5.bungee.api.chat.TextComponent;
 
-public class EventMatch extends Match<MatchData> {
+public class EventMatch extends Match {
 
     Event event;
 
@@ -66,8 +68,10 @@ public class EventMatch extends Match<MatchData> {
             event.removePlayer(victim);
             event.removeMatch(EventMatch.this);
 
+            Arena eventArena = ArenaManager.getArenas()[event.getEventArenaId()];
+
             if (!event.isEnded()) {
-                PlayerUtil.teleport(attacker.getPlayer(), event.getEventArena().getWaitingLocation());
+                PlayerUtil.teleport(attacker.getPlayer(), eventArena.getWaitingLocation());
                 attacker.setPlayerStatus(PlayerStatus.IDLE);
                 attacker.getInventory().setInventoryForEvent();
             } else {

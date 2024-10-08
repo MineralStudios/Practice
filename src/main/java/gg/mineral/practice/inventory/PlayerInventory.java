@@ -8,7 +8,6 @@ import org.bukkit.craftbukkit.v1_8_R3.inventory.CraftInventoryPlayer;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.scheduler.BukkitRunnable;
 
-import gg.mineral.api.collection.GlueList;
 import gg.mineral.practice.PracticePlugin;
 import gg.mineral.practice.entity.PlayerStatus;
 import gg.mineral.practice.entity.Profile;
@@ -229,10 +228,10 @@ public class PlayerInventory extends CraftInventoryPlayer {
             return true;
         });
 
-        GlueList<Queuetype> list = QueuetypeManager.getQueuetypes();
+        Queuetype[] list = QueuetypeManager.getQueuetypes();
 
-        for (int i = 0; i < list.size(); i++) {
-            Queuetype queuetype = list.get(i);
+        for (int i = 0; i < list.length; i++) {
+            Queuetype queuetype = list[i];
 
             if (!queuetype.isUnranked())
                 continue;
@@ -271,10 +270,10 @@ public class PlayerInventory extends CraftInventoryPlayer {
         setInventoryClickCancelled(true);
         clear();
 
-        GlueList<Queuetype> list = QueuetypeManager.getQueuetypes();
+        Queuetype[] list = QueuetypeManager.getQueuetypes();
 
-        for (int i = 0; i < list.size(); i++) {
-            Queuetype queuetype = list.get(i);
+        for (int i = 0; i < list.length; i++) {
+            Queuetype queuetype = list[i];
 
             ItemStack item = new ItemBuilder(queuetype.getDisplayItem())
                     .name(CC.SECONDARY + CC.B + queuetype.getDisplayName())

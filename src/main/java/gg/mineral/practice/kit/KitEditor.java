@@ -4,11 +4,11 @@ import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 
 import gg.mineral.api.config.FileConfiguration;
-
 import gg.mineral.practice.entity.Profile;
+import gg.mineral.practice.gametype.Gametype;
 import gg.mineral.practice.managers.KitEditorManager;
 import gg.mineral.practice.managers.ProfileManager;
-import gg.mineral.practice.queue.QueueEntry;
+import gg.mineral.practice.queue.Queuetype;
 import gg.mineral.practice.scoreboard.impl.KitEditorScoreboard;
 import gg.mineral.practice.util.PlayerUtil;
 import gg.mineral.practice.util.messages.impl.ChatMessages;
@@ -19,26 +19,29 @@ import lombok.Getter;
 @AllArgsConstructor
 public class KitEditor {
     @Getter
-    QueueEntry queueEntry;
+    Gametype gametype;
+    @Getter
+    Queuetype queuetype;
     Profile profile;
 
     public void save(int loadoutSlot) {
         ItemStack[] newKitContents = profile.getInventory().getContents();
 
-        Int2ObjectOpenHashMap<ItemStack[]> kitLoadouts = queueEntry.getCustomKits(profile);
+        short hash = (short) (queuetype.getId() << 8 | gametype.getId());
+        Int2ObjectOpenHashMap<ItemStack[]> kitLoadouts = profile.getCustomKits(queuetype, gametype, hash);
 
         if (kitLoadouts == null)
             kitLoadouts = new Int2ObjectOpenHashMap<>();
 
         kitLoadouts.put(loadoutSlot, newKitContents);
-        queueEntry.getCustomKits().put(profile.getUuid(), kitLoadouts);
+        profile.getCustomKits().put(hash, kitLoadouts);
         FileConfiguration config = ProfileManager.getPlayerConfig();
-        String path = profile.getName() + ".KitData." + queueEntry.getGametype().getName() + "."
-                + queueEntry.getQueuetype().getName() + "." + loadoutSlot + ".";
+        String path = profile.getName() + ".KitData." + gametype.getName() + "."
+                + queuetype.getName() + "." + loadoutSlot + ".";
 
         for (int f = 0; f < newKitContents.length; f++) {
             ItemStack newItem = newKitContents[f];
-            ItemStack oldItem = queueEntry.getGametype().getKit().getContents()[f];
+            ItemStack oldItem = gametype.getKit().getContents()[f];
 
             boolean newItemNull = newItem == null;
 
@@ -70,20 +73,21 @@ public class KitEditor {
         for (Player player : profile.getPlayer().getWorld().getPlayers())
             profile.removeFromView(player.getUniqueId());
 
-        profile.getInventory().setContents(queueEntry.getGametype().getKit().getContents());
+        profile.getInventory().setContents(gametype.getKit().getContents());
     }
 
     public void delete(int loadoutSlot) {
-        Int2ObjectOpenHashMap<ItemStack[]> kitLoadouts = queueEntry.getCustomKits(profile);
+        short hash = (short) (queuetype.getId() << 8 | gametype.getId());
+        Int2ObjectOpenHashMap<ItemStack[]> kitLoadouts = profile.getCustomKits(queuetype, gametype, hash);
 
         if (kitLoadouts == null)
             return;
 
         kitLoadouts.remove(loadoutSlot);
-        queueEntry.getCustomKits().put(profile.getUuid(), kitLoadouts);
+        profile.getCustomKits().put(hash, kitLoadouts);
         FileConfiguration config = ProfileManager.getPlayerConfig();
-        String path = profile.getName() + ".KitData." + queueEntry.getGametype().getName() + "."
-                + queueEntry.getQueuetype().getName() + "." + loadoutSlot;
+        String path = profile.getName() + ".KitData." + gametype.getName() + "."
+                + queuetype.getName() + "." + loadoutSlot;
 
         config.set(path, null);
 

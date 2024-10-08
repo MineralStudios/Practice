@@ -7,11 +7,10 @@ import lombok.AllArgsConstructor;
 import lombok.Getter;
 
 @AllArgsConstructor
+@Getter
 public class ProfileData {
-    @Getter
-    UUID uuid;
-    @Getter
-    String name;
+    protected UUID uuid;
+    protected String name;
 
     @Override
     public int hashCode() {

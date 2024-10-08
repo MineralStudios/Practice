@@ -34,9 +34,9 @@ public class SelectExistingKitMenu extends PracticeMenu {
 
             add(item, () -> {
                 if (simple)
-                    viewer.getMatchData().setGametype(g);
+                    viewer.getDuelSettings().setGametype(g);
                 else
-                    viewer.getMatchData().setKit(g.getKit());
+                    viewer.getDuelSettings().setKit(g.getKit());
 
                 viewer.openMenu(menu);
             });

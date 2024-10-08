@@ -220,8 +220,9 @@ public class ItemStacks {
                         HEALTH_POTIONS_LEFT = new ItemBuilder(new ItemStack(Material.POTION, 1, (short) 16421))
                                         .name(CC.SECONDARY + CC.B + "Health Potions Left"),
                         SOUP_LEFT = new ItemBuilder(Material.MUSHROOM_SOUP).name(CC.SECONDARY + CC.B + "Soup Left"),
-                        BOT_QUEUE_ENABLED_2V2 = new ItemBuilder(new ItemStack(351, 1, DyeColor.LIGHT_BLUE.getDyeData()))
-                                        .name(CC.SECONDARY + CC.B + "2v2 Bot Queue"),
+                        BOT_QUEUE_ENABLED_TEAM = new ItemBuilder(
+                                        new ItemStack(351, 1, DyeColor.LIGHT_BLUE.getDyeData()))
+                                        .name(CC.SECONDARY + CC.B + "Team Bot Queue"),
                         HEALTH = new ItemBuilder(new ItemStack(Material.POTION, (short) 8193)),
                         HITS = new ItemBuilder(Material.BLAZE_ROD), CLICKS = new ItemBuilder(Material.GHAST_TEAR),
                         POTION_EFFECTS = new ItemBuilder(Material.BLAZE_POWDER)

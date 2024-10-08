@@ -33,7 +33,7 @@ public class BuildListener implements Listener {
 			return;
 		}
 
-		Match<?> match = profile.getMatch();
+		Match match = profile.getMatch();
 
 		Location location = e.getBlock().getLocation();
 
@@ -73,7 +73,7 @@ public class BuildListener implements Listener {
 			return;
 		}
 
-		Match<?> match = profile.getMatch();
+		Match match = profile.getMatch();
 		e.setCancelled(!match.getData().isBuild());
 
 		if (e.getBlockPlaced().getType() == Material.TNT) {

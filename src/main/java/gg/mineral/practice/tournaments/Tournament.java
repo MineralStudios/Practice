@@ -24,7 +24,7 @@ import lombok.Getter;
 import net.md_5.bungee.api.chat.ClickEvent;
 
 public class Tournament {
-    GlueList<Match<MatchData>> matches = new GlueList<>();
+    GlueList<Match> matches = new GlueList<>();
     ProfileList players = new ProfileList();
     boolean started = false;
     @Getter
@@ -35,7 +35,7 @@ public class Tournament {
     String host;
 
     public Tournament(Profile p) {
-        this.matchData = p.getMatchData();
+        this.matchData = new MatchData(p.getDuelSettings());
         this.host = p.getName();
         addPlayer(p);
     }
@@ -154,7 +154,7 @@ public class Tournament {
         }
     }
 
-    public void removeMatch(Match<MatchData> m) {
+    public void removeMatch(Match m) {
         matches.remove(m);
 
         if (ended)

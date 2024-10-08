@@ -1,112 +1,142 @@
 package gg.mineral.practice.inventory.menus;
 
-import java.util.Arrays;
-import java.util.Iterator;
-import java.util.List;
-
 import org.bukkit.inventory.ItemStack;
 
 import gg.mineral.api.collection.GlueList;
+import gg.mineral.bot.api.configuration.BotConfiguration;
 import gg.mineral.practice.arena.Arena;
 import gg.mineral.practice.bots.Difficulty;
+import gg.mineral.practice.entity.Profile;
+import gg.mineral.practice.gametype.Gametype;
 import gg.mineral.practice.inventory.ClickCancelled;
+import gg.mineral.practice.inventory.Interaction;
 import gg.mineral.practice.inventory.PracticeMenu;
+import gg.mineral.practice.managers.ArenaManager;
 import gg.mineral.practice.match.BotMatch;
 import gg.mineral.practice.match.BotTeamMatch;
 import gg.mineral.practice.match.TeamMatch;
-import gg.mineral.practice.match.data.QueueMatchData;
-import gg.mineral.practice.queue.QueueEntry;
+import gg.mineral.practice.match.data.MatchData;
+import gg.mineral.practice.queue.QueueSettings;
+import gg.mineral.practice.queue.QueueSystem;
+import gg.mineral.practice.queue.Queuetype;
 import gg.mineral.practice.util.items.ItemBuilder;
 import gg.mineral.practice.util.items.ItemStacks;
 import gg.mineral.practice.util.messages.CC;
-import lombok.RequiredArgsConstructor;
+import it.unimi.dsi.fastutil.bytes.ByteIterator;
+
+import java.util.function.Consumer;
+import java.util.List;
+import java.util.UUID;
 
 @ClickCancelled(true)
-@RequiredArgsConstructor
 public class QueueArenaEnableMenu extends PracticeMenu {
-    private final QueueEntry queueEntry;
+    private final Queuetype queuetype;
+    private final Gametype gametype;
+    private final Consumer<Interaction> queueInteraction;
+
+    public QueueArenaEnableMenu(Queuetype queuetype, Gametype gametype, Consumer<Interaction> queueInteraction) {
+        this.queuetype = queuetype;
+        this.gametype = gametype;
+        this.queueInteraction = interaction -> {
+            QueueSettings queueSettings = viewer.getQueueSettings();
+            MatchData data = new MatchData(queuetype, gametype, queueSettings);
+
+            int teamSize = queueSettings.getTeamSize();
+
+            List<Profile> playerList = new GlueList<>();
+
+            Profile viewer = interaction.getProfile();
+
+            if (viewer.isInParty()) {
+                playerList.addAll(viewer.getParty().getPartyMembers());
+            } else {
+                playerList.add(viewer);
+            }
+
+            if (queueSettings.isBotQueue()) {
+                List<BotConfiguration> playerTeam = new GlueList<>();
+                for (int i = 0; i < queueSettings.getPlayerBots(); i++)
+                    playerTeam.add(
+                            Difficulty.values()[queueSettings.getTeamDifficulties()[i]]
+                                    .getConfiguration(queueSettings));
+
+                List<BotConfiguration> opponentTeam = new GlueList<>();
+                for (int i = 0; i < queueSettings.getOpponentBots(); i++)
+                    opponentTeam.add(
+                            Difficulty.values()[queueSettings.getTeamDifficulties()[i]]
+                                    .getConfiguration(queueSettings));
+                viewer.getPlayer().closeInventory();
+                if (teamSize > 1 && playerList.size() + playerTeam.size() == teamSize
+                        && opponentTeam.size() == teamSize) {
+                    TeamMatch m = new BotTeamMatch(playerList, new GlueList<>(), playerTeam,
+                            opponentTeam,
+                            data);
+                    m.start();
+                    return;
+                } else if (teamSize == 1 && queueSettings.isBotQueue()) {
+                    BotMatch m = new BotMatch(playerList.get(0), opponentTeam.get(0),
+                            data);
+                    m.start();
+                }
+            }
+
+            List<UUID> queueEntries = QueueSystem.getQueueEntries(viewer, queuetype, gametype);
+
+            if (queueEntries != null && !queueEntries.isEmpty())
+                viewer.removeFromQueue(queuetype, gametype);
+            else
+                viewer.addPlayerToQueue(queuetype, gametype);
+        };
+    }
 
     @Override
     public void update() {
         clear();
-        Iterator<Arena> arenas = queueEntry.getQueuetype().filterArenasByGametype(queueEntry.getGametype()).iterator();
+        ByteIterator arenas = queuetype.filterArenasByGametype(gametype).iterator();
+
+        QueueSettings queueSettings = viewer.getQueueSettings();
 
         while (arenas.hasNext()) {
-            Arena a = arenas.next();
-            boolean arenaEnabled = viewer.getMatchData().getEnabledArenas().getBoolean(a);
+            byte arenaId = arenas.nextByte();
+            boolean arenaEnabled = queueSettings.getEnabledArenas().get(arenaId);
 
             ItemStack item = null;
+
+            Arena arena = ArenaManager.getArenas()[arenaId];
+
+            if (arena == null)
+                continue;
 
             try {
 
                 if (arenaEnabled) {
-                    item = new ItemBuilder(a.getDisplayItem())
-                            .name(CC.SECONDARY + CC.B + a.getDisplayName()).lore(CC.GREEN + "Click to disable arena.")
+                    item = new ItemBuilder(arena.getDisplayItem())
+                            .name(CC.SECONDARY + CC.B + arena.getDisplayName())
+                            .lore(CC.GREEN + "Click to disable arena.")
                             .build();
                 } else {
-                    item = ItemStacks.ARENA_DISABLED.name(a.getDisplayName()).build();
+                    item = ItemStacks.ARENA_DISABLED.name(arena.getDisplayName()).build();
                 }
             } catch (Exception e) {
                 continue;
             }
 
             add(item, () -> {
-                viewer.getMatchData().enableArena(a, !arenaEnabled);
+                queueSettings.enableArena(arena, !arenaEnabled);
                 reload();
             });
         }
 
         setSlot(29, ItemStacks.DESELECT_ALL, interaction -> {
-            viewer.getMatchData().getEnabledArenas().clear();
+            queueSettings.getEnabledArenas().clear();
             reload();
         });
 
-        setSlot(31, ItemStacks.APPLY, interaction -> {
-            QueueMatchData data = viewer.getMatchData()
-                    .cloneBotAndArenaData(enabledArenas -> new QueueMatchData(queueEntry, enabledArenas));
-
-            if (viewer.isInParty()) {
-                List<Difficulty> opponentTeam = new GlueList<>();
-                Difficulty difficulty = data.getBotDifficulty();
-                opponentTeam.add(difficulty);
-                opponentTeam.add(difficulty);
-
-                TeamMatch m = new BotTeamMatch(viewer.getParty().getPartyMembers(), new GlueList<>(),
-                        new GlueList<>(),
-                        opponentTeam,
-                        data);
-                m.start();
-                return;
-            }
-
-            data.getEnabledArenas().putAll(viewer.getMatchData().getEnabledArenas());
-
-            if (viewer.getMatchData().isTeam2v2()) {
-
-                List<Difficulty> playerTeam = new GlueList<>();
-                playerTeam.add(viewer.getMatchData().getBotDifficulty());
-
-                List<Difficulty> opponentTeam = new GlueList<>();
-                opponentTeam.add(Difficulty.RANDOM);
-                opponentTeam.add(Difficulty.RANDOM);
-
-                TeamMatch m = new BotTeamMatch(Arrays.asList(viewer), new GlueList<>(), playerTeam,
-                        opponentTeam,
-                        data);
-                m.start();
-                return;
-            }
-
-            viewer.getPlayer().closeInventory();
-            BotMatch m = new BotMatch(viewer, viewer.getMatchData().getBotDifficulty(),
-                    data);
-            m.start();
-            return;
-        });
+        setSlot(31, ItemStacks.APPLY, queueInteraction);
 
         setSlot(33, ItemStacks.SELECT_ALL, interaction -> {
-            for (Arena a : queueEntry.getQueuetype().filterArenasByGametype(queueEntry.getGametype()))
-                viewer.getMatchData().enableArena(a, true);
+            for (byte arenaId : queuetype.filterArenasByGametype(gametype))
+                viewer.getQueueSettings().enableArena(arenaId, true);
 
             reload();
         });

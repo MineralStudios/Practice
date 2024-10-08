@@ -1,6 +1,7 @@
 package gg.mineral.practice.match;
 
 import java.util.Collection;
+import java.util.List;
 
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
@@ -9,23 +10,24 @@ import gg.mineral.api.collection.GlueList;
 import gg.mineral.bot.ai.goal.DrinkPotionGoal;
 import gg.mineral.bot.ai.goal.EatGappleGoal;
 import gg.mineral.bot.ai.goal.MeleeCombatGoal;
+import gg.mineral.bot.api.configuration.BotConfiguration;
 import gg.mineral.bot.api.entity.living.player.FakePlayer;
+import gg.mineral.practice.arena.Arena;
 import gg.mineral.practice.bots.Difficulty;
 import gg.mineral.practice.entity.Profile;
+import gg.mineral.practice.managers.ArenaManager;
 import gg.mineral.practice.managers.MatchManager;
 import gg.mineral.practice.managers.ProfileManager;
-import gg.mineral.practice.match.data.QueueMatchData;
+import gg.mineral.practice.match.data.MatchData;
 import gg.mineral.practice.util.PlayerUtil;
-
-import java.util.List;
 
 public class BotTeamMatch extends TeamMatch {
 
-    Collection<Difficulty> team1Bots, team2Bots;
+    Collection<BotConfiguration> team1Bots, team2Bots;
     List<FakePlayer> team1FakePlayers = new GlueList<>(), team2FakePlayers = new GlueList<>();
 
-    public BotTeamMatch(Collection<Profile> team1, Collection<Profile> team2, Collection<Difficulty> team1Bots,
-            Collection<Difficulty> team2Bots, QueueMatchData matchData) {
+    public BotTeamMatch(Collection<Profile> team1, Collection<Profile> team2, Collection<BotConfiguration> team1Bots,
+            Collection<BotConfiguration> team2Bots, MatchData matchData) {
         super(team1, team2, matchData);
         this.team1Bots = team1Bots;
         this.team2Bots = team2Bots;
@@ -54,8 +56,9 @@ public class BotTeamMatch extends TeamMatch {
             return;
 
         MatchManager.registerMatch(this);
-        Location location1 = getData().getArena().getLocation1().clone();
-        Location location2 = getData().getArena().getLocation2().clone();
+        Arena arena = ArenaManager.getArenas()[getData().getArenaId()];
+        Location location1 = arena.getLocation1().clone();
+        Location location2 = arena.getLocation2().clone();
         setupLocations(location1, location2);
 
         for (Profile teamMember : team1RemainingPlayers)
@@ -68,15 +71,17 @@ public class BotTeamMatch extends TeamMatch {
 
         int suffix = 0;
 
-        for (Difficulty difficulty : team1Bots) {
-            FakePlayer fakePlayer = difficulty.spawn(getData(), location1, "" + (suffix++));
+        for (BotConfiguration difficulty : team1Bots) {
+            difficulty.setUsernameSuffix("" + (suffix++));
+            FakePlayer fakePlayer = Difficulty.spawn(difficulty, location1);
             this.team1RemainingPlayers
                     .add(ProfileManager.getOrCreateProfile(Bukkit.getPlayer(fakePlayer.getUuid())));
             team1FakePlayers.add(fakePlayer);
         }
 
-        for (Difficulty difficulty : team2Bots) {
-            FakePlayer fakePlayer = difficulty.spawn(getData(), location2, "" + (suffix++));
+        for (BotConfiguration difficulty : team2Bots) {
+            difficulty.setUsernameSuffix("" + (suffix++));
+            FakePlayer fakePlayer = Difficulty.spawn(difficulty, location2);
             this.team2RemainingPlayers
                     .add(ProfileManager.getOrCreateProfile(Bukkit.getPlayer(fakePlayer.getUuid())));
             team2FakePlayers.add(fakePlayer);

@@ -1,48 +1,35 @@
 package gg.mineral.practice.managers;
 
 import org.bukkit.configuration.ConfigurationSection;
+import org.eclipse.jdt.annotation.Nullable;
 
-import gg.mineral.api.collection.GlueList;
 import gg.mineral.api.config.FileConfiguration;
-import gg.mineral.practice.catagory.Catagory;
 import gg.mineral.practice.gametype.Gametype;
-import gg.mineral.practice.queue.Queuetype;
 import lombok.Getter;
 
 public class GametypeManager {
 	@Getter
 	static FileConfiguration config = new FileConfiguration("gametype.yml", "plugins/Practice");
 	@Getter
-	static GlueList<Gametype> gametypes = new GlueList<>();
+	final static Gametype[] gametypes = new Gametype[0];
+	public static byte CURRENT_ID = 0;
 
 	public static void registerGametype(Gametype gametype) {
-		gametypes.add(gametype);
+		gametypes[gametype.getId()] = gametype;
 	}
 
 	public static void remove(Gametype gametype) {
-		gametypes.remove(gametype);
+		gametypes[gametype.getId()] = null;
 		gametype.delete();
-
-		for (Catagory catagory : CatagoryManager.getCatagories())
-			catagory.getGametypes().remove(gametype);
-
-		for (Queuetype queuetype : QueuetypeManager.getQueuetypes())
-			queuetype.getGametypes().removeInt(gametype);
-
 	}
 
-	public boolean contains(Gametype gametype) {
-		for (Gametype g : gametypes)
-			if (g.equals(gametype))
-				return true;
-
-		return false;
-	}
-
+	@Nullable
 	public static Gametype getGametypeByName(String string) {
-		for (Gametype g : gametypes)
+		for (int i = 0; i < gametypes.length; i++) {
+			Gametype g = gametypes[i];
 			if (g.getName().equalsIgnoreCase(string))
 				return g;
+		}
 
 		return null;
 	}
@@ -69,7 +56,7 @@ public class GametypeManager {
 			if (key == null)
 				continue;
 
-			Gametype gametype = new Gametype(key);
+			Gametype gametype = new Gametype(key, CURRENT_ID++);
 
 			gametype.load();
 
@@ -80,7 +67,7 @@ public class GametypeManager {
 	}
 
 	public static void setDefaults() {
-		Gametype gametype = new Gametype("Default");
+		Gametype gametype = new Gametype("Default", CURRENT_ID++);
 		gametype.setDefaults();
 		registerGametype(gametype);
 	}

@@ -5,7 +5,6 @@ import java.util.Map;
 import java.util.Map.Entry;
 import java.util.UUID;
 import java.util.concurrent.CompletableFuture;
-import java.util.concurrent.ConcurrentLinkedQueue;
 
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.inventory.ItemStack;
@@ -27,6 +26,8 @@ import gg.mineral.practice.util.SaveableData;
 import gg.mineral.practice.util.collection.LeaderboardMap;
 import gg.mineral.practice.util.items.ItemStacks;
 import gg.mineral.practice.util.messages.CC;
+import it.unimi.dsi.fastutil.bytes.ByteOpenHashSet;
+import it.unimi.dsi.fastutil.bytes.ByteSet;
 import it.unimi.dsi.fastutil.objects.Object2IntOpenHashMap;
 import it.unimi.dsi.fastutil.objects.Object2ObjectOpenHashMap;
 import lombok.Getter;
@@ -49,9 +50,9 @@ public class Gametype implements SaveableData {
 	@Getter
 	int noDamageTicks, pearlCooldown;
 	@Getter
-	ConcurrentLinkedQueue<Arena> arenas = new ConcurrentLinkedQueue<>();
+	ByteSet arenas = new ByteOpenHashSet();
 	@Getter
-	Arena eventArena;
+	byte eventArenaId;
 	@Getter
 	Kit kit;
 	String path;
@@ -59,9 +60,12 @@ public class Gametype implements SaveableData {
 	@Getter
 	LeaderboardMap leaderboardMap = new LeaderboardMap();
 	Object2IntOpenHashMap<ProfileData> eloMap = new Object2IntOpenHashMap<>();
+	@Getter
+	private final byte id;
 
-	public Gametype(String name) {
+	public Gametype(String name, byte id) {
 		this.name = name;
+		this.id = id;
 		this.path = "Gametype." + getName() + ".";
 	}
 
@@ -85,7 +89,7 @@ public class Gametype implements SaveableData {
 		return CompletableFuture.supplyAsync(() -> {
 			Object2IntOpenHashMap<UUID> map = new Object2IntOpenHashMap<UUID>();
 
-			Map<UUID, CompletableFuture<Integer>> futures = new Object2ObjectOpenHashMap<>();
+			Map<UUID, CompletableFuture<Integer>> futures = null;
 
 			for (ProfileData profile : profiles) {
 				int elo = eloMap.getInt(profile);
@@ -93,12 +97,16 @@ public class Gametype implements SaveableData {
 				if (elo != 0)
 					map.put(profile.getUuid(), elo);
 
+				if (futures == null)
+					futures = new Object2ObjectOpenHashMap<>();
+
 				futures.put(profile.getUuid(), EloManager.get(this, profile.getUuid())
 						.whenComplete((value, ex) -> eloMap.put(profile, (int) value)));
 			}
 
-			for (Entry<UUID, CompletableFuture<Integer>> entry : futures.entrySet())
-				map.put(entry.getKey(), (int) entry.getValue().join());
+			if (futures != null)
+				for (Entry<UUID, CompletableFuture<Integer>> entry : futures.entrySet())
+					map.put(entry.getKey(), (int) entry.getValue().join());
 
 			return map;
 		});
@@ -217,16 +225,16 @@ public class Gametype implements SaveableData {
 	}
 
 	public void enableArena(Arena arena, boolean enabled) {
-		if (enabled) {
-			arenas.add(arena);
-		} else {
-			arenas.remove(arena);
-		}
+		if (enabled)
+			arenas.add(arena.getId());
+		else
+			arenas.remove(arena.getId());
+
 		save();
 	}
 
-	public void setEventArena(Arena arena) {
-		this.eventArena = arena;
+	public void setEventArena(byte arenaId) {
+		this.eventArenaId = arenaId;
 		save();
 	}
 
@@ -271,9 +279,10 @@ public class Gametype implements SaveableData {
 		config.set(path + "Regen", regeneration);
 		config.set(path + "Event", event);
 		config.set(path + "Bots", botsEnabled);
-		if (eventArena != null) {
+		Arena eventArena = ArenaManager.getArenas()[eventArenaId];
+		if (eventArena != null)
 			config.set(path + "EventArena", eventArena.getName());
-		}
+
 		config.set(path + "PearlCooldown", pearlCooldown);
 		config.set(path + "Hunger", hunger);
 		config.set(path + "Boxing", boxing);
@@ -298,9 +307,12 @@ public class Gametype implements SaveableData {
 			if (containsGametype) {
 				config.set(path + q.getName() + ".Slot", q.getGametypes().getInt(this));
 
-				for (Arena arena : q.getArenas()) {
-					config.set(path + "Arenas." + arena.getName(), getArenas().stream()
-							.filter(a -> a.getName().equalsIgnoreCase(arena.getName())).findFirst().isPresent());
+				for (byte arenaId : q.getArenas()) {
+					Arena arena = ArenaManager.getArenas()[arenaId];
+					config.set(path + "Arenas." + arena.getName(), getArenas().intStream()
+							.filter(id -> ArenaManager.getArenas()[id].getName()
+									.equalsIgnoreCase(arena.getName()))
+							.findFirst().isPresent());
 				}
 			}
 		}
@@ -349,7 +361,8 @@ public class Gametype implements SaveableData {
 		this.inCatagory = config.getBoolean(path + "InCatagory", false);
 		this.event = config.getBoolean(path + "Event", false);
 		this.botsEnabled = config.getBoolean(path + "Bots", false);
-		this.eventArena = ArenaManager.getArenaByName(config.getString(path + "EventArena", ""));
+		Arena eventArena = ArenaManager.getArenaByName(config.getString(path + "EventArena", ""));
+		this.eventArenaId = eventArena == null ? -1 : eventArena.getId();
 
 		if (inCatagory) {
 			this.catagoryName = config.getString(path + "Catagory", null);
@@ -373,11 +386,9 @@ public class Gametype implements SaveableData {
 			q.addGametype(this, config.getInt(path + q.getName() + ".Slot", 0));
 		}
 
-		for (Arena a : ArenaManager.getArenas()) {
-			if (config.getBoolean(path + "Arenas." + a.getName(), false)) {
-				arenas.add(a);
-			}
-		}
+		for (Arena a : ArenaManager.getArenas())
+			if (config.getBoolean(path + "Arenas." + a.getName(), false))
+				arenas.add(a.getId());
 
 		ConfigurationSection cs = config.getConfigurationSection(path + "Kit.Armour");
 
@@ -426,7 +437,7 @@ public class Gametype implements SaveableData {
 		this.inCatagory = false;
 		this.event = false;
 		this.botsEnabled = false;
-		this.eventArena = null;
+		this.eventArenaId = 0;
 		this.pearlCooldown = 10;
 
 		this.kit = new Kit(this.getName(), new ItemStack[0], new ItemStack[0]);

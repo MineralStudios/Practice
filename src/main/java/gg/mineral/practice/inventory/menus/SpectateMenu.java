@@ -6,9 +6,7 @@ import gg.mineral.practice.inventory.ClickCancelled;
 import gg.mineral.practice.inventory.PracticeMenu;
 import gg.mineral.practice.managers.MatchManager;
 import gg.mineral.practice.match.Match;
-import gg.mineral.practice.match.data.QueueMatchData;
 import gg.mineral.practice.util.items.ItemBuilder;
-import gg.mineral.practice.util.items.ItemStacks;
 import gg.mineral.practice.util.messages.CC;
 
 @ClickCancelled(true)
@@ -17,10 +15,8 @@ public class SpectateMenu extends PracticeMenu {
     @Override
     public void update() {
         clear();
-        for (Match<?> m : MatchManager.getMatches()) {
-            ItemStack item = m.getData() instanceof QueueMatchData qData
-                    ? qData.getQueueEntry().getGametype().getDisplayItem().clone()
-                    : ItemStacks.WOOD_AXE;
+        for (Match m : MatchManager.getMatches()) {
+            ItemStack item = m.getData().getGametype().getDisplayItem().clone();
 
             if (m.getProfile1() == null || m.getProfile2() == null)
                 continue;
@@ -29,9 +25,7 @@ public class SpectateMenu extends PracticeMenu {
                     .name(CC.SECONDARY + CC.B + m.getProfile1().getName() + " vs " + m.getProfile2().getName())
                     .lore(
                             CC.WHITE + "Game type:",
-                            CC.GOLD + (m.getData() instanceof QueueMatchData qData
-                                    ? qData.getQueueEntry().getGametype().getName()
-                                    : "Custom"),
+                            CC.GOLD + m.getData().getGametype().getName(),
                             CC.BOARD_SEPARATOR, CC.ACCENT + "Click to spectate.")
                     .build();
             add(skull, interaction -> interaction.getProfile().getPlayer()

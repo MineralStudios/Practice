@@ -1,7 +1,8 @@
 package gg.mineral.practice.inventory;
 
 import gg.mineral.practice.entity.Profile;
-import gg.mineral.practice.match.PartyMatch;
+import gg.mineral.practice.match.TeamMatch;
+import gg.mineral.practice.match.data.MatchData;
 import gg.mineral.practice.party.Party;
 import gg.mineral.practice.tournaments.Tournament;
 import gg.mineral.practice.util.messages.impl.ErrorMessages;
@@ -29,7 +30,7 @@ public enum SubmitAction {
                 return;
             }
 
-            PartyMatch partyMatch = new PartyMatch(party, profile.getMatchData());
+            TeamMatch partyMatch = new TeamMatch(party, new MatchData(profile.getDuelSettings()));
             partyMatch.start();
         }
 

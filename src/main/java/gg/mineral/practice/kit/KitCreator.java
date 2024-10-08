@@ -19,7 +19,7 @@ public class KitCreator {
     SubmitAction submitAction;
 
     public void save() {
-        profile.getMatchData()
+        profile.getDuelSettings()
                 .setKit(new Kit(profile.getInventory().getContents(), profile.getInventory().getArmorContents()));
         profile.getPlayer().closeInventory();
         ChatMessages.KIT_SAVED.send(profile.getPlayer());

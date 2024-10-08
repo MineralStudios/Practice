@@ -1,14 +1,13 @@
 package gg.mineral.practice.request;
 
+import gg.mineral.practice.duel.DuelSettings;
 import gg.mineral.practice.entity.Profile;
-import gg.mineral.practice.match.data.MatchData;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 
 @AllArgsConstructor
+@Getter
 public class DuelRequest {
-	@Getter
-	final Profile sender;
-	@Getter
-	final MatchData matchData;
+	private final Profile sender;
+	private final DuelSettings duelSettings;
 }

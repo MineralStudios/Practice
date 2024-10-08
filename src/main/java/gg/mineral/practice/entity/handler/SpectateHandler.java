@@ -2,9 +2,10 @@ package gg.mineral.practice.entity.handler;
 
 import org.bukkit.GameMode;
 
+import gg.mineral.practice.arena.Arena;
 import gg.mineral.practice.entity.PlayerStatus;
 import gg.mineral.practice.entity.Profile;
-
+import gg.mineral.practice.managers.ArenaManager;
 import gg.mineral.practice.managers.ProfileManager;
 import gg.mineral.practice.scoreboard.impl.DefaultScoreboard;
 import gg.mineral.practice.scoreboard.impl.FollowingScoreboard;
@@ -113,8 +114,10 @@ public class SpectateHandler {
 
         profile.setGameMode(GameMode.SPECTATOR);
 
+        Arena arena = ArenaManager.getArenas()[toBeSpectated.getEvent().getEventArenaId()];
+
         PlayerUtil.teleport(profile.getPlayer(),
-                toBeSpectated.isInEvent() ? toBeSpectated.getEvent().getEventArena().getWaitingLocation()
+                toBeSpectated.isInEvent() ? arena.getWaitingLocation()
                         : toBeSpectated.getPlayer().getLocation());
 
         if (toBeSpectated.isInEvent())
