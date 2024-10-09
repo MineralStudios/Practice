@@ -57,17 +57,16 @@ public class SelectGametypeMenu extends PracticeMenu {
 	protected final Queuetype queuetype;
 	protected final Type type;
 
-	public void queue(Queuetype queuetype, Gametype gametype) {
+	public void queue(Queuetype queuetype, Gametype gametype, Interaction interact) {
 
 		Consumer<Interaction> queueInteraction = interaction -> {
+			Profile viewer = interaction.getProfile();
 			QueueSettings queueSettings = viewer.getQueueSettings();
 			MatchData data = new MatchData(queuetype, gametype, queueSettings);
 
 			int teamSize = queueSettings.getTeamSize();
 
 			List<Profile> playerList = new GlueList<>();
-
-			Profile viewer = interaction.getProfile();
 
 			if (viewer.isInParty()) {
 				playerList.addAll(viewer.getParty().getPartyMembers());
@@ -108,6 +107,9 @@ public class SelectGametypeMenu extends PracticeMenu {
 				viewer.removeFromQueue(queuetype, gametype);
 			else
 				viewer.addPlayerToQueue(queuetype, gametype);
+
+			if (!(viewer.getOpenMenu() instanceof SelectGametypeMenu))
+				viewer.openMenu(SelectGametypeMenu.this);
 		};
 
 		if (viewer.getQueueSettings().isArenaSelection()) {
@@ -115,6 +117,7 @@ public class SelectGametypeMenu extends PracticeMenu {
 			return;
 		}
 
+		queueInteraction.accept(interact);
 	}
 
 	@Override
@@ -200,10 +203,6 @@ public class SelectGametypeMenu extends PracticeMenu {
 			setSlot(6,
 					item,
 					interaction -> {
-						System.out.println(queueSettings.isBotQueue());
-						System.out.println(interaction.getClickType());
-						System.out.println(interaction.getProfile().getQueueSettings().getTeamSize());
-						System.out.println(interaction.getProfile().isInParty());
 						if (queueSettings.isBotQueue() && interaction.getClickType() == ClickType.RIGHT
 								&& interaction.getProfile().getQueueSettings().getTeamSize() > 1
 								&& !interaction.getProfile().isInParty())
@@ -214,11 +213,11 @@ public class SelectGametypeMenu extends PracticeMenu {
 						reload();
 					});
 
-			setSlot(48, ItemStacks.RANDOM_QUEUE, () -> {
+			setSlot(48, ItemStacks.RANDOM_QUEUE, interaction -> {
 				Gametype gametype = viewer.getQueueSettings().isBotQueue() ? queuetype.randomGametypeWithBotsEnabled()
 						: queuetype.randomGametype();
 
-				queue(queuetype, gametype);
+				queue(queuetype, gametype, interaction);
 
 				if (viewer.getOpenMenu() instanceof SelectGametypeMenu)
 					viewer.getPlayer().closeInventory();
@@ -269,7 +268,7 @@ public class SelectGametypeMenu extends PracticeMenu {
 
 			ItemStack item = itemBuild.build();
 
-			setSlot(type == Type.UNRANKED ? entry.getIntValue() + 18 : entry.getIntValue(), item, () -> {
+			setSlot(type == Type.UNRANKED ? entry.getIntValue() + 18 : entry.getIntValue(), item, interaction -> {
 
 				if (type == Type.KIT_EDITOR) {
 					viewer.getPlayer().closeInventory();
@@ -277,7 +276,7 @@ public class SelectGametypeMenu extends PracticeMenu {
 					return;
 				}
 
-				queue(queuetype, g);
+				queue(queuetype, g, interaction);
 
 				if (viewer.getPlayerStatus() == PlayerStatus.QUEUEING)
 					reload();

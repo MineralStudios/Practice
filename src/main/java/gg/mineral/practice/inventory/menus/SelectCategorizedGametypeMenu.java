@@ -126,11 +126,11 @@ public class SelectCategorizedGametypeMenu extends SelectGametypeMenu {
 						reload();
 					});
 
-			setSlot(48, ItemStacks.RANDOM_QUEUE, () -> {
+			setSlot(48, ItemStacks.RANDOM_QUEUE, interaction -> {
 				Gametype gametype = viewer.getQueueSettings().isBotQueue() ? queuetype.randomGametypeWithBotsEnabled()
 						: queuetype.randomGametype();
 
-				queue(queuetype, gametype);
+				queue(queuetype, gametype, interaction);
 
 				if (viewer.getOpenMenu() instanceof SelectGametypeMenu)
 					viewer.getPlayer().closeInventory();
@@ -179,7 +179,7 @@ public class SelectCategorizedGametypeMenu extends SelectGametypeMenu {
 			ItemStack item = itemBuild.build();
 
 			setSlot(type == Type.UNRANKED ? queuetype.getGametypes().getInt(g) + 18
-					: queuetype.getGametypes().getInt(g), item, () -> {
+					: queuetype.getGametypes().getInt(g), item, interaction -> {
 
 						if (type == Type.KIT_EDITOR) {
 							viewer.getPlayer().closeInventory();
@@ -187,7 +187,7 @@ public class SelectCategorizedGametypeMenu extends SelectGametypeMenu {
 							return;
 						}
 
-						queue(queuetype, g);
+						queue(queuetype, g, interaction);
 
 						if (viewer.getPlayerStatus() == PlayerStatus.QUEUEING)
 							reload();

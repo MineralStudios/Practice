@@ -19,6 +19,6 @@ public class BotTeamSettingsMenu extends PracticeMenu {
 
     @Override
     public boolean shouldUpdate() {
-        return false;
+        return true;
     }
 }
