@@ -5,8 +5,10 @@ import org.bukkit.GameMode;
 import gg.mineral.practice.arena.Arena;
 import gg.mineral.practice.entity.PlayerStatus;
 import gg.mineral.practice.entity.Profile;
+import gg.mineral.practice.events.Event;
 import gg.mineral.practice.managers.ArenaManager;
 import gg.mineral.practice.managers.ProfileManager;
+import gg.mineral.practice.match.Match;
 import gg.mineral.practice.scoreboard.impl.DefaultScoreboard;
 import gg.mineral.practice.scoreboard.impl.FollowingScoreboard;
 import gg.mineral.practice.scoreboard.impl.SpectatorScoreboard;
@@ -114,7 +116,8 @@ public class SpectateHandler {
 
         profile.setGameMode(GameMode.SPECTATOR);
 
-        Arena arena = ArenaManager.getArenas().get(toBeSpectated.getEvent().getEventArenaId());
+        Arena arena = ArenaManager.getArenas().get(spectatable instanceof Event event ? event.getEventArenaId()
+                : spectatable instanceof Match match ? match.getData().getArenaId() : 0);
 
         PlayerUtil.teleport(profile.getPlayer(),
                 toBeSpectated.isInEvent() ? arena.getWaitingLocation()

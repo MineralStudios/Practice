@@ -185,7 +185,7 @@ public class ItemStacks {
         @SuppressWarnings("deprecation")
         public static final ItemBuilder LOAD_KIT = new ItemBuilder(Material.ENCHANTED_BOOK),
                         TEAMFIGHT = new ItemBuilder(Material.ITEM_FRAME)
-                                        .name(CC.SECONDARY + CC.B + "2v2"),
+                                        .name(CC.SECONDARY + CC.B + "Team Fights"),
                         BOT_SETTINGS = new ItemBuilder(Material.GOLD_HELMET)
                                         .name(CC.SECONDARY + CC.B + "Bot Settings"),
                         CLICK_TO_APPLY_CHANGES = new ItemBuilder(Material.STONE_SWORD)

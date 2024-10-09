@@ -199,9 +199,10 @@ public class SelectGametypeMenu extends PracticeMenu {
 			setSlot(6,
 					item,
 					interaction -> {
-						if (interaction.getClickType() == ClickType.RIGHT && queueSettings.getTeamSize() > 1
-								&& !viewer.isInParty())
-							viewer.openMenu(new BotTeamSettingsMenu());
+						if (interaction.getClickType() == ClickType.RIGHT
+								&& interaction.getProfile().getQueueSettings().getTeamSize() > 1
+								&& !interaction.getProfile().isInParty())
+							interaction.getProfile().openMenu(new BotTeamSettingsMenu());
 						else if (interaction.getClickType() == ClickType.LEFT)
 							queueSettings.setBotQueue(!queueSettings.isBotQueue());
 
