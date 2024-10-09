@@ -22,7 +22,7 @@ public class QueuetypeManager {
 	private static void resizeQueuetypes() {
 		if (CURRENT_ID < queuetypes.length)
 			return;
-		Queuetype[] newQueuetypes = new Queuetype[queuetypes.length * 2];
+		Queuetype[] newQueuetypes = new Queuetype[Math.max(1, queuetypes.length) * 2];
 		System.arraycopy(queuetypes, 0, newQueuetypes, 0, queuetypes.length);
 		queuetypes = newQueuetypes;
 	}
