@@ -41,12 +41,14 @@ public class DuelSettings {
 
     @Nullable
     public Gametype getGametype() {
-        return queueAndGameTypeHash == -1 ? null : GametypeManager.getGametypes()[queueAndGameTypeHash & 0xFF];
+        return queueAndGameTypeHash == -1 ? null
+                : GametypeManager.getGametypes().get((byte) (queueAndGameTypeHash & 0xFF));
     }
 
     @Nullable
     public Queuetype getQueuetype() {
-        return queueAndGameTypeHash == -1 ? null : QueuetypeManager.getQueuetypes()[queueAndGameTypeHash >> 8];
+        return queueAndGameTypeHash == -1 ? null
+                : QueuetypeManager.getQueuetypes().get((byte) (queueAndGameTypeHash >> 8));
     }
 
     public void setGametype(@NonNull Gametype gametype) {

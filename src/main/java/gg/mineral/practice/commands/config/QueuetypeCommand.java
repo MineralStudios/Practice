@@ -13,6 +13,8 @@ import gg.mineral.practice.util.messages.impl.UsageMessages;
 import gg.mineral.server.combat.KnockbackProfile;
 import gg.mineral.server.combat.KnockbackProfileList;
 
+import it.unimi.dsi.fastutil.objects.ObjectIterator;
+
 public class QueuetypeCommand extends PlayerCommand {
 
 	public QueuetypeCommand() {
@@ -270,15 +272,12 @@ public class QueuetypeCommand extends PlayerCommand {
 			case "list":
 				sb = new StringBuilder(CC.GRAY + "[");
 
-				Queuetype[] queuetypes = QueuetypeManager.getQueuetypes();
+				ObjectIterator<Queuetype> queuetypes = QueuetypeManager.getQueuetypes().values().iterator();
 
-				for (int i = 0; i < queuetypes.length; i++) {
-					Queuetype q = queuetypes[i];
+				while (queuetypes.hasNext()) {
+					Queuetype q = queuetypes.next();
 					sb.append(CC.GREEN + q.getName());
-
-					int iNext = i + 1;
-
-					if (iNext < queuetypes.length && queuetypes[iNext] != null)
+					if (queuetypes.hasNext())
 						sb.append(CC.GRAY + ", ");
 				}
 

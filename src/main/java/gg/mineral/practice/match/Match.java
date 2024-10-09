@@ -275,7 +275,7 @@ public class Match implements Spectatable {
 	public void setupLocations(Location location1, Location location2) {
 
 		if (data.isGriefing() || data.isBuild()) {
-			Arena arena = ArenaManager.getArenas()[data.getArenaId()];
+			Arena arena = ArenaManager.getArenas().get(data.getArenaId());
 			this.world = arena.generate();
 			location1.setWorld(world);
 			location2.setWorld(world);
@@ -300,7 +300,7 @@ public class Match implements Spectatable {
 			return;
 
 		MatchManager.registerMatch(this);
-		Arena arena = ArenaManager.getArenas()[data.getArenaId()];
+		Arena arena = ArenaManager.getArenas().get(data.getArenaId());
 		Location location1 = arena.getLocation1().clone();
 		Location location2 = arena.getLocation2().clone();
 
@@ -491,7 +491,7 @@ public class Match implements Spectatable {
 			}
 		}
 
-		Arena arena = ArenaManager.getArenas()[data.getArenaId()];
+		Arena arena = ArenaManager.getArenas().get(data.getArenaId());
 
 		for (Item item : arenaInUse ? itemRemovalQueue
 				: arena.getLocation1().getWorld().getEntitiesByClass(Item.class))

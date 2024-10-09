@@ -6,52 +6,41 @@ import gg.mineral.api.config.FileConfiguration;
 import gg.mineral.practice.arena.Arena;
 import gg.mineral.practice.gametype.Gametype;
 import gg.mineral.practice.queue.Queuetype;
+import it.unimi.dsi.fastutil.bytes.Byte2ObjectOpenHashMap;
 import lombok.Getter;
 
 public class ArenaManager {
 	@Getter
 	final static FileConfiguration config = new FileConfiguration("arenas.yml", "plugins/Practice");
 	@Getter
-	static Arena[] arenas = new Arena[0];
+	final static Byte2ObjectOpenHashMap<Arena> arenas = new Byte2ObjectOpenHashMap<>();
 	public static byte CURRENT_ID = 0;
 
 	public static void registerArena(Arena arena) {
-		resizeArenas();
-		arenas[arena.getId()] = arena;
-	}
-
-	private static void resizeArenas() {
-		if (CURRENT_ID < arenas.length)
-			return;
-		Arena[] newArenas = new Arena[Math.max(1, arenas.length + 1)];
-		System.arraycopy(arenas, 0, newArenas, 0, arenas.length);
-		arenas = newArenas;
+		arenas.put(arena.getId(), arena);
 	}
 
 	public static void remove(Arena arena) {
-		arenas[arena.getId()] = null;
+		arenas.remove(arena.getId());
 		arena.delete();
 
-		for (Gametype gametype : GametypeManager.getGametypes())
+		for (Gametype gametype : GametypeManager.getGametypes().values())
 			gametype.getArenas().remove(arena.getId());
 
-		for (Queuetype queuetype : QueuetypeManager.getQueuetypes())
+		for (Queuetype queuetype : QueuetypeManager.getQueuetypes().values())
 			queuetype.getArenas().remove(arena.getId());
 	}
 
 	public static Arena getArenaByName(String string) {
-		for (int i = 0; i < arenas.length; i++) {
-			Arena a = arenas[i];
-			if (a.getName().equalsIgnoreCase(string))
-				return a;
-		}
+		for (Arena arena : arenas.values())
+			if (arena.getName().equalsIgnoreCase(string))
+				return arena;
 
 		return null;
 	}
 
 	public static void save() {
-
-		for (Arena arena : getArenas())
+		for (Arena arena : getArenas().values())
 			arena.save();
 
 		config.save();

@@ -67,7 +67,7 @@ public class Event implements Spectatable {
             return;
         }
 
-        Arena eventArena = ArenaManager.getArenas()[eventArenaId];
+        Arena eventArena = ArenaManager.getArenas().get(eventArenaId);
 
         PlayerUtil.teleport(p.getPlayer(), eventArena.getWaitingLocation());
         p.setEvent(this);

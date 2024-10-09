@@ -242,7 +242,7 @@ public class Queuetype implements SaveableData {
 		if (knockback != null)
 			config.set(path + "Knockback", knockback.getName());
 
-		for (Arena arena : ArenaManager.getArenas())
+		for (Arena arena : ArenaManager.getArenas().values())
 			config.set(path + "Arenas." + arena.getName(), getArenas().intStream()
 					.filter(id -> id == arena.getId()).findFirst().isPresent());
 
@@ -265,12 +265,10 @@ public class Queuetype implements SaveableData {
 			this.knockback = KnockbackProfileList.getKnockbackProfileByName(kbprofile);
 		}
 
-		for (int i = 0; i < ArenaManager.getArenas().length; i++) {
-			Arena a = ArenaManager.getArenas()[i];
-
+		for (Arena a : ArenaManager.getArenas().values())
 			if (config.getBoolean(path + "Arenas." + a.getName(), false))
 				arenas.add(a.getId());
-		}
+
 	}
 
 	@Override

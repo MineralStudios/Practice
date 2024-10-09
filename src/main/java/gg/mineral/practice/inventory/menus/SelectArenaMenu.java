@@ -14,8 +14,9 @@ import gg.mineral.practice.tournaments.Tournament;
 import gg.mineral.practice.util.items.ItemBuilder;
 import gg.mineral.practice.util.messages.CC;
 import gg.mineral.practice.util.messages.impl.ErrorMessages;
+import it.unimi.dsi.fastutil.bytes.Byte2ObjectOpenHashMap;
 import it.unimi.dsi.fastutil.bytes.ByteIterator;
-import it.unimi.dsi.fastutil.bytes.ByteIterators;
+
 import lombok.RequiredArgsConstructor;
 
 @ClickCancelled(true)
@@ -33,14 +34,14 @@ public class SelectArenaMenu extends PracticeMenu {
 
     @Override
     public void update() {
-        Arena[] arenas = ArenaManager.getArenas();
+        Byte2ObjectOpenHashMap<Arena> arenas = ArenaManager.getArenas();
         ByteIterator arenaIds = simpleMode ? viewer.getDuelSettings().getGametype().getArenas().iterator()
-                : ByteIterators.fromTo((byte) 0, (byte) (arenas.length - 1));
+                : arenas.keySet().iterator();
 
         while (arenaIds.hasNext()) {
             byte arenaId = arenaIds.nextByte();
 
-            Arena arena = arenas[arenaId];
+            Arena arena = arenas.get(arenaId);
 
             ItemStack item;
             try {

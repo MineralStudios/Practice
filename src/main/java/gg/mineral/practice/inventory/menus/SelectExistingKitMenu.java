@@ -26,7 +26,7 @@ public class SelectExistingKitMenu extends PracticeMenu {
     public void update() {
         clear();
 
-        for (Gametype g : GametypeManager.getGametypes()) {
+        for (Gametype g : GametypeManager.getGametypes().values()) {
             if (g.isInCatagory())
                 continue;
             ItemStack item = new ItemBuilder(g.getDisplayItem())

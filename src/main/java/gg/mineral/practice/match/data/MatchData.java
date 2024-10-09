@@ -39,8 +39,8 @@ public class MatchData {
 
 	private MatchData() {
 
-		if (GametypeManager.getGametypes().length > 0 && GametypeManager.getGametypes()[0] != null)
-			setGametype(GametypeManager.getGametypes()[0]);
+		if (!GametypeManager.getGametypes().isEmpty())
+			setGametype(GametypeManager.getGametypes().values().iterator().next());
 
 		this.knockback = KnockbackProfileList.getDefaultKnockbackProfile();
 	}
@@ -55,8 +55,8 @@ public class MatchData {
 
 	public MatchData(UUID queueEntryId) {
 		this();
-		Queuetype queuetype = QueuetypeManager.getQueuetypes()[QueueSettings.getQueueTypeId(queueEntryId)];
-		Gametype gametype = GametypeManager.getGametypes()[QueueSettings.getGameTypeId(queueEntryId)];
+		Queuetype queuetype = QueuetypeManager.getQueuetypes().get(QueueSettings.getQueueTypeId(queueEntryId));
+		Gametype gametype = GametypeManager.getGametypes().get(QueueSettings.getGameTypeId(queueEntryId));
 		setQueuetype(queuetype);
 		setGametype(gametype);
 		this.queueAndGameTypeHash = (short) (queuetype.getId() << 8 | gametype.getId());
@@ -65,12 +65,14 @@ public class MatchData {
 
 	@Nullable
 	public Gametype getGametype() {
-		return queueAndGameTypeHash == -1 ? null : GametypeManager.getGametypes()[queueAndGameTypeHash & 0xFF];
+		return queueAndGameTypeHash == -1 ? null
+				: GametypeManager.getGametypes().get((byte) (queueAndGameTypeHash & 0xFF));
 	}
 
 	@Nullable
 	public Queuetype getQueuetype() {
-		return queueAndGameTypeHash == -1 ? null : QueuetypeManager.getQueuetypes()[queueAndGameTypeHash >> 8];
+		return queueAndGameTypeHash == -1 ? null
+				: QueuetypeManager.getQueuetypes().get((byte) (queueAndGameTypeHash >> 8));
 	}
 
 	public MatchData(DuelSettings duelSettings) {
@@ -117,7 +119,7 @@ public class MatchData {
 		StringBuilder sb = new StringBuilder();
 		String newLine = CC.R + "\n";
 
-		Arena arena = ArenaManager.getArenas()[arenaId];
+		Arena arena = ArenaManager.getArenas().get(arenaId);
 
 		sb.append(CC.GREEN + "Kit: " + kit.getName());
 		sb.append(newLine);

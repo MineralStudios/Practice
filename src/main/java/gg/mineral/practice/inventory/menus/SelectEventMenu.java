@@ -15,7 +15,7 @@ import gg.mineral.practice.util.messages.impl.ErrorMessages;
 public class SelectEventMenu extends PracticeMenu {
     @Override
     public void update() {
-        for (Gametype g : GametypeManager.getGametypes()) {
+        for (Gametype g : GametypeManager.getGametypes().values()) {
             if (!g.isEvent())
                 continue;
 

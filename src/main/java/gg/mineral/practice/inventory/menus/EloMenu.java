@@ -26,7 +26,7 @@ public class EloMenu extends PracticeMenu {
     @Override
     public void update() {
 
-        for (Queuetype queuetype : QueuetypeManager.getQueuetypes()) {
+        for (Queuetype queuetype : QueuetypeManager.getQueuetypes().values()) {
             if (!queuetype.isRanked())
                 continue;
             setSlot(4,

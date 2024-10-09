@@ -19,6 +19,8 @@ import gg.mineral.practice.util.messages.impl.ChatMessages;
 import gg.mineral.practice.util.messages.impl.ErrorMessages;
 import gg.mineral.practice.util.messages.impl.UsageMessages;
 
+import it.unimi.dsi.fastutil.objects.ObjectIterator;
+
 public class GametypeCommand extends PlayerCommand {
 
 	public GametypeCommand() {
@@ -533,15 +535,13 @@ public class GametypeCommand extends PlayerCommand {
 			case "list":
 				sb = new StringBuilder(CC.GRAY + "[");
 
-				Gametype[] gametypes = GametypeManager.getGametypes();
+				ObjectIterator<Gametype> iterator = GametypeManager.getGametypes().values().iterator();
 
-				for (int i = 0; i < gametypes.length; i++) {
-					gametype = gametypes[i];
+				while (iterator.hasNext()) {
+					gametype = iterator.next();
 					sb.append(CC.GREEN + gametype.getName());
 
-					int iNext = i + 1;
-
-					if (iNext < gametypes.length && gametypes[iNext] != null)
+					if (iterator.hasNext())
 						sb.append(CC.GRAY + ", ");
 				}
 
@@ -645,14 +645,14 @@ public class GametypeCommand extends PlayerCommand {
 
 				switch (toggled) {
 					case "false":
-						for (Gametype g : GametypeManager.getGametypes()) {
+						for (Gametype g : GametypeManager.getGametypes().values())
 							g.enableArena(arena, false);
-						}
+
 						break;
 					case "true":
-						for (Gametype g : GametypeManager.getGametypes()) {
+						for (Gametype g : GametypeManager.getGametypes().values())
 							g.enableArena(arena, true);
-						}
+
 						break;
 					default:
 						UsageMessages.GAMETYPE_ARENA_FOR_ALL.send(player);

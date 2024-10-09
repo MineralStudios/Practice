@@ -17,7 +17,7 @@ public class SelectQueuetypeMenu extends PracticeMenu {
     @Override
     public void update() {
         clear();
-        for (Queuetype q : QueuetypeManager.getQueuetypes())
+        for (Queuetype q : QueuetypeManager.getQueuetypes().values())
             add(new ItemBuilder(q.getDisplayItem().clone())
                     .name(CC.SECONDARY + CC.B + q.getDisplayName())
                     .lore(CC.ACCENT + (type == SelectGametypeMenu.Type.KIT_EDITOR ? "Click to edit kit."

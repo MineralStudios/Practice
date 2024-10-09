@@ -22,9 +22,8 @@ public class CatagoryManager {
 		catagories.remove(catagory);
 		catagory.delete();
 
-		for (Queuetype queuetype : QueuetypeManager.getQueuetypes()) {
+		for (Queuetype queuetype : QueuetypeManager.getQueuetypes().values())
 			queuetype.getCatagories().removeInt(catagory);
-		}
 	}
 
 	public boolean contains(Catagory catagory) {

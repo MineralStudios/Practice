@@ -5,47 +5,36 @@ import org.eclipse.jdt.annotation.Nullable;
 
 import gg.mineral.api.config.FileConfiguration;
 import gg.mineral.practice.queue.Queuetype;
+import it.unimi.dsi.fastutil.bytes.Byte2ObjectOpenHashMap;
 import lombok.Getter;
 
 public class QueuetypeManager {
 	@Getter
 	final static FileConfiguration config = new FileConfiguration("queues.yml", "plugins/Practice");
 	@Getter
-	static Queuetype[] queuetypes = new Queuetype[0];
+	static Byte2ObjectOpenHashMap<Queuetype> queuetypes = new Byte2ObjectOpenHashMap<>();
 	public static byte CURRENT_ID = 0;
 
 	public static void registerQueuetype(Queuetype queuetype) {
-		resizeQueuetypes();
-		queuetypes[queuetype.getId()] = queuetype;
-	}
-
-	private static void resizeQueuetypes() {
-		if (CURRENT_ID < queuetypes.length)
-			return;
-		Queuetype[] newQueuetypes = new Queuetype[Math.max(1, queuetypes.length + 1)];
-		System.arraycopy(queuetypes, 0, newQueuetypes, 0, queuetypes.length);
-		queuetypes = newQueuetypes;
+		queuetypes.put(queuetype.getId(), queuetype);
 	}
 
 	public static void remove(Queuetype queuetype) {
-		queuetypes[queuetype.getId()] = null;
+		queuetypes.remove(queuetype.getId());
 		queuetype.delete();
 	}
 
 	@Nullable
 	public static Queuetype getQueuetypeByName(String string) {
-		for (int i = 0; i < queuetypes.length; i++) {
-			Queuetype q = queuetypes[i];
-			if (q.getName().equalsIgnoreCase(string))
-				return q;
-		}
+		for (Queuetype queuetype : queuetypes.values())
+			if (queuetype.getName().equalsIgnoreCase(string))
+				return queuetype;
 
 		return null;
 	}
 
 	public void save() {
-
-		for (Queuetype queuetype : getQueuetypes())
+		for (Queuetype queuetype : getQueuetypes().values())
 			queuetype.save();
 
 		config.save();

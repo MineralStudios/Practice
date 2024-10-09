@@ -72,7 +72,7 @@ public class Catagory implements SaveableData {
 
 	@Override
 	public void save() {
-		for (Queuetype q : QueuetypeManager.getQueuetypes()) {
+		for (Queuetype q : QueuetypeManager.getQueuetypes().values()) {
 
 			if (!q.getCatagories().containsKey(this)) {
 				config.set(path + q.getName() + ".Enabled", false);
@@ -97,11 +97,10 @@ public class Catagory implements SaveableData {
 				ItemStacks.DEFAULT_CATAGORY_DISPLAY_ITEM);
 		this.displayName = config.getString(path + "DisplayName", getName());
 
-		for (Queuetype q : QueuetypeManager.getQueuetypes()) {
-			if (config.getBoolean(path + q.getName() + ".Enabled", false)) {
+		for (Queuetype q : QueuetypeManager.getQueuetypes().values())
+			if (config.getBoolean(path + q.getName() + ".Enabled", false))
 				q.getCatagories().put(this, (int) config.getInt(path + q.getName() + ".Slot", 0));
-			}
-		}
+
 	}
 
 	@Override
@@ -109,11 +108,9 @@ public class Catagory implements SaveableData {
 		this.displayItem = ItemStacks.DEFAULT_CATAGORY_DISPLAY_ITEM;
 		this.displayName = getName();
 
-		for (Queuetype q : QueuetypeManager.getQueuetypes()) {
-			if (config.getBoolean(path + q.getName() + ".Enabled", false)) {
+		for (Queuetype q : QueuetypeManager.getQueuetypes().values())
+			if (config.getBoolean(path + q.getName() + ".Enabled", false))
 				q.getCatagories().put(this, 0);
-			}
-		}
 	}
 
 	@Override

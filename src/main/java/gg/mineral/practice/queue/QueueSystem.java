@@ -242,7 +242,7 @@ public class QueueSystem {
         byte selectedArenaId = commonArenaIds.iterator().nextByte();
 
         // Get the Arena object from the arena ID
-        Arena selectedArena = ArenaManager.getArenas()[selectedArenaId];
+        Arena selectedArena = ArenaManager.getArenas().get(selectedArenaId);
         if (selectedArena == null)
             throw new IllegalStateException("Arena not found for ID: " + selectedArenaId);
 

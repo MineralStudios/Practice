@@ -12,6 +12,7 @@ import gg.mineral.practice.util.messages.CC;
 import gg.mineral.practice.util.messages.impl.ChatMessages;
 import gg.mineral.practice.util.messages.impl.ErrorMessages;
 import gg.mineral.practice.util.messages.impl.UsageMessages;
+import it.unimi.dsi.fastutil.objects.ObjectIterator;
 
 public class ArenaCommand extends PlayerCommand {
 
@@ -113,15 +114,13 @@ public class ArenaCommand extends PlayerCommand {
 			case "list":
 				sb = new StringBuilder(CC.GRAY + "[");
 
-				Arena[] arenas = ArenaManager.getArenas();
+				ObjectIterator<Arena> iterator = ArenaManager.getArenas().values().iterator();
 
-				for (int i = 0; i < arenas.length; i++) {
-					Arena a = arenas[i];
+				while (iterator.hasNext()) {
+					Arena a = iterator.next();
 					sb.append(CC.GREEN + a.getName());
 
-					int iNext = i + 1;
-
-					if (iNext < arenas.length && arenas[iNext] != null)
+					if (iterator.hasNext())
 						sb.append(CC.GRAY + ", ");
 				}
 

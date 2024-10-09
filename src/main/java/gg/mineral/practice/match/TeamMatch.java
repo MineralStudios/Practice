@@ -75,7 +75,7 @@ public class TeamMatch extends Match {
             return;
 
         MatchManager.registerMatch(this);
-        Arena arena = ArenaManager.getArenas()[getData().getArenaId()];
+        Arena arena = ArenaManager.getArenas().get(getData().getArenaId());
         Location location1 = arena.getLocation1().clone();
         Location location2 = arena.getLocation2().clone();
         setupLocations(location1, location2);

@@ -26,6 +26,7 @@ import gg.mineral.practice.util.items.ItemBuilder;
 import gg.mineral.practice.util.items.ItemStacks;
 import gg.mineral.practice.util.messages.CC;
 import gg.mineral.practice.util.messages.impl.ErrorMessages;
+import it.unimi.dsi.fastutil.objects.ObjectIterator;
 import lombok.Getter;
 import lombok.Setter;
 import net.minecraft.server.v1_8_R3.PlayerConnection;
@@ -228,10 +229,7 @@ public class PlayerInventory extends CraftInventoryPlayer {
             return true;
         });
 
-        Queuetype[] list = QueuetypeManager.getQueuetypes();
-
-        for (int i = 0; i < list.length; i++) {
-            Queuetype queuetype = list[i];
+        for (Queuetype queuetype : QueuetypeManager.getQueuetypes().values()) {
 
             if (!queuetype.isUnranked())
                 continue;
@@ -270,10 +268,10 @@ public class PlayerInventory extends CraftInventoryPlayer {
         setInventoryClickCancelled(true);
         clear();
 
-        Queuetype[] list = QueuetypeManager.getQueuetypes();
+        ObjectIterator<Queuetype> iterator = QueuetypeManager.getQueuetypes().values().iterator();
 
-        for (int i = 0; i < list.length; i++) {
-            Queuetype queuetype = list[i];
+        while (iterator.hasNext()) {
+            Queuetype queuetype = iterator.next();
 
             ItemStack item = new ItemBuilder(queuetype.getDisplayItem())
                     .name(CC.SECONDARY + CC.B + queuetype.getDisplayName())

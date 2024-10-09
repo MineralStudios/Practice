@@ -102,7 +102,7 @@ public class QueueArenaEnableMenu extends PracticeMenu {
 
             ItemStack item = null;
 
-            Arena arena = ArenaManager.getArenas()[arenaId];
+            Arena arena = ArenaManager.getArenas().get(arenaId);
 
             if (arena == null)
                 continue;

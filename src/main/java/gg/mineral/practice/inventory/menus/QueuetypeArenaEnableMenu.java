@@ -11,6 +11,7 @@ import gg.mineral.practice.queue.Queuetype;
 import gg.mineral.practice.util.items.ItemBuilder;
 import gg.mineral.practice.util.messages.CC;
 import gg.mineral.practice.util.messages.impl.ChatMessages;
+import it.unimi.dsi.fastutil.objects.ObjectCollection;
 import lombok.RequiredArgsConstructor;
 
 @ClickCancelled(true)
@@ -22,10 +23,9 @@ public class QueuetypeArenaEnableMenu extends PracticeMenu {
     public void update() {
         clear();
 
-        Arena[] arenas = ArenaManager.getArenas();
+        ObjectCollection<Arena> arenas = ArenaManager.getArenas().values();
 
-        for (int i = 0; i < arenas.length; i++) {
-            Arena a = arenas[i];
+        for (Arena a : arenas) {
             boolean arenaEnabled = queuetype.getArenas().contains(a.getId());
             ChatColor color = arenaEnabled ? ChatColor.GREEN : ChatColor.RED;
 

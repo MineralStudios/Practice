@@ -114,7 +114,7 @@ public class SpectateHandler {
 
         profile.setGameMode(GameMode.SPECTATOR);
 
-        Arena arena = ArenaManager.getArenas()[toBeSpectated.getEvent().getEventArenaId()];
+        Arena arena = ArenaManager.getArenas().get(toBeSpectated.getEvent().getEventArenaId());
 
         PlayerUtil.teleport(profile.getPlayer(),
                 toBeSpectated.isInEvent() ? arena.getWaitingLocation()

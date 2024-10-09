@@ -279,7 +279,7 @@ public class Gametype implements SaveableData {
 		config.set(path + "Regen", regeneration);
 		config.set(path + "Event", event);
 		config.set(path + "Bots", botsEnabled);
-		Arena eventArena = ArenaManager.getArenas()[eventArenaId];
+		Arena eventArena = ArenaManager.getArenas().get(eventArenaId);
 		if (eventArena != null)
 			config.set(path + "EventArena", eventArena.getName());
 
@@ -300,7 +300,7 @@ public class Gametype implements SaveableData {
 			config.set(path + "Catagory", catagoryName);
 		}
 
-		for (Queuetype q : QueuetypeManager.getQueuetypes()) {
+		for (Queuetype q : QueuetypeManager.getQueuetypes().values()) {
 			boolean containsGametype = q.getGametypes().containsKey(this);
 			config.set(path + q.getName() + ".Enabled", containsGametype);
 
@@ -308,9 +308,9 @@ public class Gametype implements SaveableData {
 				config.set(path + q.getName() + ".Slot", q.getGametypes().getInt(this));
 
 				for (byte arenaId : q.getArenas()) {
-					Arena arena = ArenaManager.getArenas()[arenaId];
+					Arena arena = ArenaManager.getArenas().get(arenaId);
 					config.set(path + "Arenas." + arena.getName(), getArenas().intStream()
-							.filter(id -> ArenaManager.getArenas()[id].getName()
+							.filter(id -> ArenaManager.getArenas().get((byte) id).getName()
 									.equalsIgnoreCase(arena.getName()))
 							.findFirst().isPresent());
 				}
@@ -378,15 +378,14 @@ public class Gametype implements SaveableData {
 
 		this.pearlCooldown = config.getInt(path + "PearlCooldown", 10);
 
-		for (Queuetype q : QueuetypeManager.getQueuetypes()) {
-			if (!config.getBoolean(path + q.getName() + ".Enabled", false)) {
+		for (Queuetype q : QueuetypeManager.getQueuetypes().values()) {
+			if (!config.getBoolean(path + q.getName() + ".Enabled", false))
 				continue;
-			}
 
 			q.addGametype(this, config.getInt(path + q.getName() + ".Slot", 0));
 		}
 
-		for (Arena a : ArenaManager.getArenas())
+		for (Arena a : ArenaManager.getArenas().values())
 			if (config.getBoolean(path + "Arenas." + a.getName(), false))
 				arenas.add(a.getId());
 

@@ -16,13 +16,14 @@ import gg.mineral.practice.queue.Queuetype;
 import gg.mineral.practice.util.items.ItemBuilder;
 import gg.mineral.practice.util.items.ItemStacks;
 import gg.mineral.practice.util.messages.CC;
+import it.unimi.dsi.fastutil.objects.ObjectCollection;
 
 @ClickCancelled(true)
 public class LeaderboardMenu extends PracticeMenu {
 
     @Override
     public void update() {
-        Queuetype[] queuetypes = QueuetypeManager.getQueuetypes();
+        ObjectCollection<Queuetype> queuetypes = QueuetypeManager.getQueuetypes().values();
 
         for (Queuetype queuetype : queuetypes) {
             if (!queuetype.isRanked())

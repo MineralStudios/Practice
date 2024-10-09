@@ -68,7 +68,7 @@ public class EventMatch extends Match {
             event.removePlayer(victim);
             event.removeMatch(EventMatch.this);
 
-            Arena eventArena = ArenaManager.getArenas()[event.getEventArenaId()];
+            Arena eventArena = ArenaManager.getArenas().get(event.getEventArenaId());
 
             if (!event.isEnded()) {
                 PlayerUtil.teleport(attacker.getPlayer(), eventArena.getWaitingLocation());

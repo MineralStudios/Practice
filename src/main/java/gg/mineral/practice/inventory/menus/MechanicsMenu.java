@@ -98,7 +98,7 @@ public class MechanicsMenu extends PracticeMenu {
 						.openMenu(
 								ConfigureValueMenu.of(this, value -> duelSettings.setPearlCooldown(value), int.class)));
 
-		Arena arena = ArenaManager.getArenas()[duelSettings.getArenaId()];
+		Arena arena = ArenaManager.getArenas().get(duelSettings.getArenaId());
 		setSlot(20, ItemStacks.ARENA
 				.lore(CC.WHITE + "Changes the " + CC.SECONDARY + "arena" + CC.WHITE
 						+ ".", " ",

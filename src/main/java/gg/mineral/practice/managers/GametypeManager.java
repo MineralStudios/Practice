@@ -5,47 +5,38 @@ import org.eclipse.jdt.annotation.Nullable;
 
 import gg.mineral.api.config.FileConfiguration;
 import gg.mineral.practice.gametype.Gametype;
+
+import it.unimi.dsi.fastutil.bytes.Byte2ObjectOpenHashMap;
 import lombok.Getter;
 
 public class GametypeManager {
 	@Getter
 	static FileConfiguration config = new FileConfiguration("gametype.yml", "plugins/Practice");
 	@Getter
-	static Gametype[] gametypes = new Gametype[0];
+	final static Byte2ObjectOpenHashMap<Gametype> gametypes = new Byte2ObjectOpenHashMap<>();
 	public static byte CURRENT_ID = 0;
 
 	public static void registerGametype(Gametype gametype) {
-		resizeGametypes();
-		gametypes[gametype.getId()] = gametype;
-	}
-
-	private static void resizeGametypes() {
-		if (CURRENT_ID < gametypes.length)
-			return;
-		Gametype[] newGametypes = new Gametype[Math.max(1, gametypes.length + 1)];
-		System.arraycopy(gametypes, 0, newGametypes, 0, gametypes.length);
-		gametypes = newGametypes;
+		gametypes.put(gametype.getId(), gametype);
 	}
 
 	public static void remove(Gametype gametype) {
-		gametypes[gametype.getId()] = null;
+		gametypes.remove(gametype.getId());
 		gametype.delete();
 	}
 
 	@Nullable
 	public static Gametype getGametypeByName(String string) {
-		for (int i = 0; i < gametypes.length; i++) {
-			Gametype g = gametypes[i];
-			if (g.getName().equalsIgnoreCase(string))
-				return g;
-		}
+		for (Gametype gametype : gametypes.values())
+			if (gametype.getName().equalsIgnoreCase(string))
+				return gametype;
 
 		return null;
 	}
 
 	public void save() {
 
-		for (Gametype gametype : getGametypes())
+		for (Gametype gametype : gametypes.values())
 			gametype.save();
 
 		config.save();
