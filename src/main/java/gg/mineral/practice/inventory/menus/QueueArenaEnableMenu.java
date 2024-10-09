@@ -55,15 +55,15 @@ public class QueueArenaEnableMenu extends PracticeMenu {
 
             if (queueSettings.isBotQueue()) {
                 List<BotConfiguration> playerTeam = new GlueList<>();
-                for (int i = 0; i < queueSettings.getPlayerBots(); i++)
+                for (byte i = 0; i < queueSettings.getPlayerBots(); i++)
                     playerTeam.add(
-                            Difficulty.values()[queueSettings.getTeamDifficulties()[i]]
+                            Difficulty.values()[queueSettings.getTeamDifficulties().get(i)]
                                     .getConfiguration(queueSettings));
 
                 List<BotConfiguration> opponentTeam = new GlueList<>();
-                for (int i = 0; i < queueSettings.getOpponentBots(); i++)
+                for (byte i = 0; i < queueSettings.getOpponentBots(); i++)
                     opponentTeam.add(
-                            Difficulty.values()[queueSettings.getTeamDifficulties()[i]]
+                            Difficulty.values()[queueSettings.getTeamDifficulties().get(i)]
                                     .getConfiguration(queueSettings));
                 viewer.getPlayer().closeInventory();
                 if (teamSize > 1 && playerList.size() + playerTeam.size() == teamSize

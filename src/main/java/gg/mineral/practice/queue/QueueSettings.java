@@ -8,6 +8,7 @@ import gg.mineral.practice.arena.Arena;
 import gg.mineral.practice.bots.Difficulty;
 import gg.mineral.practice.gametype.Gametype;
 import it.unimi.dsi.fastutil.bytes.Byte2BooleanOpenHashMap;
+import it.unimi.dsi.fastutil.bytes.Byte2ByteOpenHashMap;
 import it.unimi.dsi.fastutil.bytes.ByteOpenHashSet;
 import it.unimi.dsi.fastutil.bytes.ByteSet;
 
@@ -22,8 +23,8 @@ public class QueueSettings {
     private byte teamSize = 1, playerBots = 0, opponentBots = 0;
     private boolean botQueue = false, arenaSelection = true;
     protected final Byte2BooleanOpenHashMap enabledArenas = new Byte2BooleanOpenHashMap();
-    private int[] teamDifficulties = new int[playerBots],
-            opponentDifficulties = new int[opponentBots];
+    private Byte2ByteOpenHashMap teamDifficulties = new Byte2ByteOpenHashMap(),
+            opponentDifficulties = new Byte2ByteOpenHashMap();
     @Setter
     private BotConfiguration customBotConfiguration = Difficulty.EASY.getConfiguration(null);
 
@@ -48,28 +49,28 @@ public class QueueSettings {
         if (teamDifficulties.length != playerBots)
             throw new IllegalArgumentException("Team difficulties must have the same length as player bots");
 
-        for (int i = 0; i < teamDifficulties.length; i++)
-            this.teamDifficulties[i] = teamDifficulties[i].ordinal();
+        for (byte i = 0; i < teamDifficulties.length; i++)
+            this.teamDifficulties.put(i, (byte) teamDifficulties[i].ordinal());
     }
 
     public void setOpponentDifficulties(Difficulty[] opponentDifficulties) {
         if (opponentDifficulties.length != opponentBots)
             throw new IllegalArgumentException("Opponent difficulties must have the same length as opponent bots");
 
-        for (int i = 0; i < opponentDifficulties.length; i++)
-            this.opponentDifficulties[i] = opponentDifficulties[i].ordinal();
+        for (byte i = 0; i < opponentDifficulties.length; i++)
+            this.opponentDifficulties.put(i, (byte) opponentDifficulties[i].ordinal());
     }
 
-    public void setTeamDifficulty(int index, Difficulty difficulty) {
+    public void setTeamDifficulty(byte index, Difficulty difficulty) {
         if (index < 0 || index >= playerBots)
             throw new IllegalArgumentException("Index must be between 0 and player bots - 1");
-        teamDifficulties[index] = difficulty.ordinal();
+        teamDifficulties.put(index, (byte) difficulty.ordinal());
     }
 
-    public void setOpponentDifficulty(int index, Difficulty difficulty) {
+    public void setOpponentDifficulty(byte index, Difficulty difficulty) {
         if (index < 0 || index >= opponentBots)
             throw new IllegalArgumentException("Index must be between 0 and opponent bots - 1");
-        opponentDifficulties[index] = difficulty.ordinal();
+        opponentDifficulties.put(index, (byte) difficulty.ordinal());
     }
 
     public void setPlayerBots(byte playerBots) {
@@ -78,7 +79,7 @@ public class QueueSettings {
         if (this.playerBots == playerBots)
             return;
         this.playerBots = playerBots;
-        this.teamDifficulties = new int[playerBots];
+        this.teamDifficulties = new Byte2ByteOpenHashMap(playerBots);
     }
 
     public void setOpponentBots(byte opponentBots) {
@@ -88,7 +89,7 @@ public class QueueSettings {
         if (this.opponentBots == opponentBots)
             return;
         this.opponentBots = opponentBots;
-        this.opponentDifficulties = new int[opponentBots];
+        this.opponentDifficulties = new Byte2ByteOpenHashMap(opponentBots);
     }
 
     public static UUID toUUID(Queuetype queuetype, Gametype gametype, int teamSize, int playerBots, int opponentBots,
@@ -202,7 +203,7 @@ public class QueueSettings {
     }
 
     public Difficulty getBotDifficulty() {
-        return Difficulty.values()[teamDifficulties[0]];
+        return Difficulty.values()[teamDifficulties.get((byte) 0)];
     }
 
     public void enableArena(Arena arena, boolean enabled) {

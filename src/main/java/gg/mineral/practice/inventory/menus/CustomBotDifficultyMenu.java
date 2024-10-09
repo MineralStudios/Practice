@@ -33,7 +33,7 @@ public class CustomBotDifficultyMenu extends PracticeMenu {
                 BotConfiguration difficulty = queueSettings.getCustomBotConfiguration();
                 queueSettings.setCustomBotConfiguration(difficulty);
                 queueSettings
-                                .setOpponentDifficulty(0, Difficulty.CUSTOM);
+                                .setOpponentDifficulty((byte) 0, Difficulty.CUSTOM);
 
                 setSlot(0, ItemStacks.AIM_SPEED.name(CC.SECONDARY + CC.B + "Aim Speed")
                                 .lore(CC.WHITE + "The speed the bot " + CC.SECONDARY + "rotates" + CC.WHITE

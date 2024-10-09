@@ -59,7 +59,7 @@ public class SelectCategorizedGametypeMenu extends SelectGametypeMenu {
 				queueSettings.setTeamSize((byte) (viewer.getParty().getPartyMembers().size()));
 
 			if (queueSettings.getTeamSize() == 1) {
-				int difficulty = queueSettings.getOpponentDifficulties()[0];
+				byte difficulty = queueSettings.getOpponentDifficulties().get((byte) 0);
 				setSlot(viewer.isInParty() ? 2 : 4,
 						ItemStacks.BOT_SETTINGS
 								.lore(CC.WHITE + "Allows you to configure the " + CC.SECONDARY + "difficulty" + CC.WHITE
@@ -80,7 +80,7 @@ public class SelectCategorizedGametypeMenu extends SelectGametypeMenu {
 									newDifficulty = Difficulty.values()[(difficulty + 2) % Difficulty.values().length];
 
 								viewer.getQueueSettings()
-										.setOpponentDifficulty(0, newDifficulty);
+										.setOpponentDifficulty((byte) 0, newDifficulty);
 							} else if (interaction.getClickType() == ClickType.RIGHT) {
 								Profile p = interaction.getProfile();
 

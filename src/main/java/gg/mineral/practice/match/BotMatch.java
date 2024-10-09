@@ -90,20 +90,18 @@ public class BotMatch extends Match {
         if (BotAPI.INSTANCE.isFakePlayer(profile.getPlayer().getUniqueId()))
             return;
 
-        int[] difficulties = profile.getQueueSettings().getOpponentDifficulties();
-        if (difficulties != null && difficulties.length >= 1)
-            Bukkit.getServer().getScheduler().runTaskLater(PracticePlugin.INSTANCE,
-                    () -> profile.getInventory().setItem(profile.getInventory().getHeldItemSlot(),
-                            ItemStacks.QUEUE_AGAIN,
-                            () -> {
-                                if (profile.getPlayerStatus() != PlayerStatus.QUEUEING) {
-                                    profile.setPlayerStatus(PlayerStatus.QUEUEING);
+        Bukkit.getServer().getScheduler().runTaskLater(PracticePlugin.INSTANCE,
+                () -> profile.getInventory().setItem(profile.getInventory().getHeldItemSlot(),
+                        ItemStacks.QUEUE_AGAIN,
+                        () -> {
+                            if (profile.getPlayerStatus() != PlayerStatus.QUEUEING) {
+                                profile.setPlayerStatus(PlayerStatus.QUEUEING);
 
-                                    new BotMatch(profile, difficulty,
-                                            BotMatch.this.getData()).start();
-                                }
-                            }),
-                    20);
+                                new BotMatch(profile, difficulty,
+                                        BotMatch.this.getData()).start();
+                            }
+                        }),
+                20);
     }
 
     @Override

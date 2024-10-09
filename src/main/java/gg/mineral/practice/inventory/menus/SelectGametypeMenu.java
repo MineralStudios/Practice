@@ -77,15 +77,15 @@ public class SelectGametypeMenu extends PracticeMenu {
 
 			if (queueSettings.isBotQueue()) {
 				List<BotConfiguration> playerTeam = new GlueList<>();
-				for (int i = 0; i < queueSettings.getPlayerBots(); i++)
+				for (byte i = 0; i < queueSettings.getPlayerBots(); i++)
 					playerTeam.add(
-							Difficulty.values()[queueSettings.getTeamDifficulties()[i]]
+							Difficulty.values()[queueSettings.getTeamDifficulties().get(i)]
 									.getConfiguration(queueSettings));
 
 				List<BotConfiguration> opponentTeam = new GlueList<>();
-				for (int i = 0; i < queueSettings.getOpponentBots(); i++)
+				for (byte i = 0; i < queueSettings.getOpponentBots(); i++)
 					opponentTeam.add(
-							Difficulty.values()[queueSettings.getTeamDifficulties()[i]]
+							Difficulty.values()[queueSettings.getTeamDifficulties().get(i)]
 									.getConfiguration(queueSettings));
 				viewer.getPlayer().closeInventory();
 				if (teamSize > 1 && playerList.size() + playerTeam.size() == teamSize
@@ -141,7 +141,7 @@ public class SelectGametypeMenu extends PracticeMenu {
 				queueSettings.setTeamSize((byte) (viewer.getParty().getPartyMembers().size()));
 
 			if (queueSettings.getTeamSize() == 1) {
-				int difficulty = queueSettings.getOpponentDifficulties()[0];
+				byte difficulty = queueSettings.getOpponentDifficulties().get((byte) 0);
 				setSlot(viewer.isInParty() ? 2 : 4,
 						ItemStacks.BOT_SETTINGS
 								.lore(CC.WHITE + "Allows you to configure the " + CC.SECONDARY + "difficulty" + CC.WHITE
@@ -162,7 +162,7 @@ public class SelectGametypeMenu extends PracticeMenu {
 									newDifficulty = Difficulty.values()[(difficulty + 2) % Difficulty.values().length];
 
 								viewer.getQueueSettings()
-										.setOpponentDifficulty(0, newDifficulty);
+										.setOpponentDifficulty((byte) 0, newDifficulty);
 							} else if (interaction.getClickType() == ClickType.RIGHT) {
 								Profile p = interaction.getProfile();
 
