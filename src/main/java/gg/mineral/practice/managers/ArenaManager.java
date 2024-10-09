@@ -23,7 +23,7 @@ public class ArenaManager {
 	private static void resizeArenas() {
 		if (CURRENT_ID < arenas.length)
 			return;
-		Arena[] newArenas = new Arena[Math.max(1, arenas.length) * 2];
+		Arena[] newArenas = new Arena[Math.max(1, arenas.length + 1)];
 		System.arraycopy(arenas, 0, newArenas, 0, arenas.length);
 		arenas = newArenas;
 	}

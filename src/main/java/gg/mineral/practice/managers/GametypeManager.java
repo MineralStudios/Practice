@@ -22,7 +22,7 @@ public class GametypeManager {
 	private static void resizeGametypes() {
 		if (CURRENT_ID < gametypes.length)
 			return;
-		Gametype[] newGametypes = new Gametype[Math.max(1, gametypes.length) * 2];
+		Gametype[] newGametypes = new Gametype[Math.max(1, gametypes.length + 1)];
 		System.arraycopy(gametypes, 0, newGametypes, 0, gametypes.length);
 		gametypes = newGametypes;
 	}
