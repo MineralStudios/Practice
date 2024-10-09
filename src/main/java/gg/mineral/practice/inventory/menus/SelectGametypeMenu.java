@@ -142,7 +142,7 @@ public class SelectGametypeMenu extends PracticeMenu {
 
 			if (queueSettings.getTeamSize() == 1) {
 				byte difficulty = queueSettings.getOpponentDifficulties().get((byte) 0);
-				setSlot(viewer.isInParty() ? 2 : 4,
+				setSlot(4,
 						ItemStacks.BOT_SETTINGS
 								.lore(CC.WHITE + "Allows you to configure the " + CC.SECONDARY + "difficulty" + CC.WHITE
 										+ ".", " ",
@@ -175,7 +175,8 @@ public class SelectGametypeMenu extends PracticeMenu {
 
 							reload();
 						});
-			}
+			} else
+				removeSlot(4);
 
 			ItemStack item = ItemStacks.BOT_QUEUE_DISABLED;
 
@@ -199,7 +200,11 @@ public class SelectGametypeMenu extends PracticeMenu {
 			setSlot(6,
 					item,
 					interaction -> {
-						if (interaction.getClickType() == ClickType.RIGHT
+						System.out.println(queueSettings.isBotQueue());
+						System.out.println(interaction.getClickType());
+						System.out.println(interaction.getProfile().getQueueSettings().getTeamSize());
+						System.out.println(interaction.getProfile().isInParty());
+						if (queueSettings.isBotQueue() && interaction.getClickType() == ClickType.RIGHT
 								&& interaction.getProfile().getQueueSettings().getTeamSize() > 1
 								&& !interaction.getProfile().isInParty())
 							interaction.getProfile().openMenu(new BotTeamSettingsMenu());

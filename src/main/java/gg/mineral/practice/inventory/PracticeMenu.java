@@ -85,6 +85,20 @@ public abstract class PracticeMenu implements Menu {
 		page.setSlot(slotOnPage, item, d);
 	}
 
+	public void removeSlot(int slot) {
+		int pageSize = pageMap.size() > 1 ? 45 : 54;
+		boolean firstPage = slot < pageSize;
+		int slotOnPage = firstPage ? slot : slot % pageSize;
+		int pageNumber = firstPage ? 0 : slot / pageSize;
+
+		Page page = pageMap.get(pageNumber);
+
+		if (page == null)
+			return;
+
+		page.removeSlot(slotOnPage);
+	}
+
 	public void setSlot(int slot, ItemStack item, Runnable d) {
 		setSlot(slot, item, p -> d.run());
 	}
@@ -345,6 +359,11 @@ public abstract class PracticeMenu implements Menu {
 					return i;
 
 			return -1;
+		}
+
+		public void removeSlot(int slot) {
+			items.remove(slot);
+			dataMap.remove(slot);
 		}
 	}
 
