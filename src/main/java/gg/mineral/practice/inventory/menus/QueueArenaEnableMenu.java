@@ -14,7 +14,6 @@ import gg.mineral.practice.inventory.PracticeMenu;
 import gg.mineral.practice.managers.ArenaManager;
 import gg.mineral.practice.match.BotMatch;
 import gg.mineral.practice.match.BotTeamMatch;
-import gg.mineral.practice.match.TeamMatch;
 import gg.mineral.practice.match.data.MatchData;
 import gg.mineral.practice.queue.QueueSettings;
 import gg.mineral.practice.queue.QueueSystem;
@@ -68,16 +67,15 @@ public class QueueArenaEnableMenu extends PracticeMenu {
                 viewer.getPlayer().closeInventory();
                 if (teamSize > 1 && playerList.size() + playerTeam.size() == teamSize
                         && opponentTeam.size() == teamSize) {
-                    TeamMatch m = new BotTeamMatch(playerList, new GlueList<>(), playerTeam,
+                    new BotTeamMatch(playerList, new GlueList<>(), playerTeam,
                             opponentTeam,
-                            data);
-                    m.start();
+                            data).start();
                     return;
-                } else if (teamSize == 1 && queueSettings.isBotQueue()) {
-                    BotMatch m = new BotMatch(playerList.get(0), opponentTeam.get(0),
-                            data);
-                    m.start();
-                }
+                } else if (teamSize == 1 && queueSettings.isBotQueue())
+                    new BotMatch(playerList.get(0),
+                            Difficulty.values()[queueSettings.getTeamDifficulties().get((byte) 0)]
+                                    .getConfiguration(queueSettings),
+                            data).start();
             }
 
             List<UUID> queueEntries = QueueSystem.getQueueEntries(viewer, queuetype, gametype);
