@@ -68,11 +68,10 @@ public class SelectGametypeMenu extends PracticeMenu {
 
 			List<Profile> playerList = new GlueList<>();
 
-			if (viewer.isInParty()) {
+			if (viewer.isInParty())
 				playerList.addAll(viewer.getParty().getPartyMembers());
-			} else {
+			else
 				playerList.add(viewer);
-			}
 
 			if (queueSettings.isBotQueue()) {
 				List<BotConfiguration> playerTeam = new GlueList<>();
@@ -94,11 +93,9 @@ public class SelectGametypeMenu extends PracticeMenu {
 							data);
 					m.start();
 					return;
-				} else if (teamSize == 1 && queueSettings.isBotQueue()) {
-					BotMatch m = new BotMatch(playerList.get(0), opponentTeam.get(0),
-							data);
-					m.start();
-				}
+				} else if (teamSize == 1 && queueSettings.isBotQueue())
+					new BotMatch(playerList.get(0), opponentTeam.get(0),
+							data).start();
 			}
 
 			List<UUID> queueEntries = QueueSystem.getQueueEntries(viewer, queuetype, gametype);
@@ -109,15 +106,13 @@ public class SelectGametypeMenu extends PracticeMenu {
 				viewer.addPlayerToQueue(queuetype, gametype);
 
 			if (!(viewer.getOpenMenu() instanceof SelectGametypeMenu))
-				viewer.openMenu(SelectGametypeMenu.this);
+				viewer.openMenu(new SelectGametypeMenu(queuetype, type));
 		};
 
-		if (viewer.getQueueSettings().isArenaSelection()) {
+		if (viewer.getQueueSettings().isArenaSelection())
 			viewer.openMenu(new QueueArenaEnableMenu(queuetype, gametype, queueInteraction));
-			return;
-		}
-
-		queueInteraction.accept(interact);
+		else
+			queueInteraction.accept(interact);
 	}
 
 	@Override

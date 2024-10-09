@@ -2,90 +2,31 @@ package gg.mineral.practice.inventory.menus;
 
 import org.bukkit.inventory.ItemStack;
 
-import gg.mineral.api.collection.GlueList;
-import gg.mineral.bot.api.configuration.BotConfiguration;
 import gg.mineral.practice.arena.Arena;
-import gg.mineral.practice.bots.Difficulty;
-import gg.mineral.practice.entity.Profile;
+
 import gg.mineral.practice.gametype.Gametype;
 import gg.mineral.practice.inventory.ClickCancelled;
 import gg.mineral.practice.inventory.Interaction;
 import gg.mineral.practice.inventory.PracticeMenu;
 import gg.mineral.practice.managers.ArenaManager;
-import gg.mineral.practice.match.BotMatch;
-import gg.mineral.practice.match.BotTeamMatch;
-import gg.mineral.practice.match.data.MatchData;
+
 import gg.mineral.practice.queue.QueueSettings;
-import gg.mineral.practice.queue.QueueSystem;
+
 import gg.mineral.practice.queue.Queuetype;
 import gg.mineral.practice.util.items.ItemBuilder;
 import gg.mineral.practice.util.items.ItemStacks;
 import gg.mineral.practice.util.messages.CC;
 import it.unimi.dsi.fastutil.bytes.ByteIterator;
+import lombok.RequiredArgsConstructor;
 
 import java.util.function.Consumer;
-import java.util.List;
-import java.util.UUID;
 
 @ClickCancelled(true)
+@RequiredArgsConstructor
 public class QueueArenaEnableMenu extends PracticeMenu {
     private final Queuetype queuetype;
     private final Gametype gametype;
     private final Consumer<Interaction> queueInteraction;
-
-    public QueueArenaEnableMenu(Queuetype queuetype, Gametype gametype, Consumer<Interaction> queueInteraction) {
-        this.queuetype = queuetype;
-        this.gametype = gametype;
-        this.queueInteraction = interaction -> {
-            QueueSettings queueSettings = viewer.getQueueSettings();
-            MatchData data = new MatchData(queuetype, gametype, queueSettings);
-
-            int teamSize = queueSettings.getTeamSize();
-
-            List<Profile> playerList = new GlueList<>();
-
-            Profile viewer = interaction.getProfile();
-
-            if (viewer.isInParty()) {
-                playerList.addAll(viewer.getParty().getPartyMembers());
-            } else {
-                playerList.add(viewer);
-            }
-
-            if (queueSettings.isBotQueue()) {
-                List<BotConfiguration> playerTeam = new GlueList<>();
-                for (byte i = 0; i < queueSettings.getPlayerBots(); i++)
-                    playerTeam.add(
-                            Difficulty.values()[queueSettings.getTeamDifficulties().get(i)]
-                                    .getConfiguration(queueSettings));
-
-                List<BotConfiguration> opponentTeam = new GlueList<>();
-                for (byte i = 0; i < queueSettings.getOpponentBots(); i++)
-                    opponentTeam.add(
-                            Difficulty.values()[queueSettings.getTeamDifficulties().get(i)]
-                                    .getConfiguration(queueSettings));
-                viewer.getPlayer().closeInventory();
-                if (teamSize > 1 && playerList.size() + playerTeam.size() == teamSize
-                        && opponentTeam.size() == teamSize) {
-                    new BotTeamMatch(playerList, new GlueList<>(), playerTeam,
-                            opponentTeam,
-                            data).start();
-                    return;
-                } else if (teamSize == 1 && queueSettings.isBotQueue())
-                    new BotMatch(playerList.get(0),
-                            Difficulty.values()[queueSettings.getTeamDifficulties().get((byte) 0)]
-                                    .getConfiguration(queueSettings),
-                            data).start();
-            }
-
-            List<UUID> queueEntries = QueueSystem.getQueueEntries(viewer, queuetype, gametype);
-
-            if (queueEntries != null && !queueEntries.isEmpty())
-                viewer.removeFromQueue(queuetype, gametype);
-            else
-                viewer.addPlayerToQueue(queuetype, gametype);
-        };
-    }
 
     @Override
     public void update() {
