@@ -11,11 +11,20 @@ public class QueuetypeManager {
 	@Getter
 	final static FileConfiguration config = new FileConfiguration("queues.yml", "plugins/Practice");
 	@Getter
-	final static Queuetype[] queuetypes = new Queuetype[0];
+	static Queuetype[] queuetypes = new Queuetype[0];
 	public static byte CURRENT_ID = 0;
 
 	public static void registerQueuetype(Queuetype queuetype) {
+		resizeQueuetypes();
 		queuetypes[queuetype.getId()] = queuetype;
+	}
+
+	private static void resizeQueuetypes() {
+		if (CURRENT_ID < queuetypes.length)
+			return;
+		Queuetype[] newQueuetypes = new Queuetype[queuetypes.length * 2];
+		System.arraycopy(queuetypes, 0, newQueuetypes, 0, queuetypes.length);
+		queuetypes = newQueuetypes;
 	}
 
 	public static void remove(Queuetype queuetype) {

@@ -12,11 +12,20 @@ public class ArenaManager {
 	@Getter
 	final static FileConfiguration config = new FileConfiguration("arenas.yml", "plugins/Practice");
 	@Getter
-	final static Arena[] arenas = new Arena[0];
+	static Arena[] arenas = new Arena[0];
 	public static byte CURRENT_ID = 0;
 
 	public static void registerArena(Arena arena) {
+		resizeArenas();
 		arenas[arena.getId()] = arena;
+	}
+
+	private static void resizeArenas() {
+		if (CURRENT_ID < arenas.length)
+			return;
+		Arena[] newArenas = new Arena[arenas.length * 2];
+		System.arraycopy(arenas, 0, newArenas, 0, arenas.length);
+		arenas = newArenas;
 	}
 
 	public static void remove(Arena arena) {

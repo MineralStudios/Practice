@@ -11,11 +11,20 @@ public class GametypeManager {
 	@Getter
 	static FileConfiguration config = new FileConfiguration("gametype.yml", "plugins/Practice");
 	@Getter
-	final static Gametype[] gametypes = new Gametype[0];
+	static Gametype[] gametypes = new Gametype[0];
 	public static byte CURRENT_ID = 0;
 
 	public static void registerGametype(Gametype gametype) {
+		resizeGametypes();
 		gametypes[gametype.getId()] = gametype;
+	}
+
+	private static void resizeGametypes() {
+		if (CURRENT_ID < gametypes.length)
+			return;
+		Gametype[] newGametypes = new Gametype[gametypes.length * 2];
+		System.arraycopy(gametypes, 0, newGametypes, 0, gametypes.length);
+		gametypes = newGametypes;
 	}
 
 	public static void remove(Gametype gametype) {
