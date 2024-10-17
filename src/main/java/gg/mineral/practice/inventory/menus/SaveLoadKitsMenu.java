@@ -16,7 +16,7 @@ public class SaveLoadKitsMenu extends PracticeMenu {
     public void update() {
         if (viewer.isInKitCreator()) {
             setSlot(4, ItemStacks.SAVE_KIT,
-                    () -> viewer.getKitCreator().save());
+                    interaction -> viewer.getKitCreator().save());
             return;
         }
 
@@ -31,13 +31,13 @@ public class SaveLoadKitsMenu extends PracticeMenu {
             final int slot = i;
             if (!loadouts.containsKey(i))
                 setSlot(slot, ItemStacks.SAVE_KIT,
-                        () -> {
+                        interaction -> {
                             viewer.getKitEditor().save(slot);
                             reload();
                         });
             else
                 setSlot(i, ItemStacks.DELETE_KIT,
-                        () -> {
+                        interaction -> {
                             viewer.getKitEditor().delete(slot);
                             reload();
                         });

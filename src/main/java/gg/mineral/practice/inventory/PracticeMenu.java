@@ -99,10 +99,6 @@ public abstract class PracticeMenu implements Menu {
 		page.removeSlot(slotOnPage);
 	}
 
-	public void setSlot(int slot, ItemStack item, Runnable d) {
-		setSlot(slot, item, p -> d.run());
-	}
-
 	public void add(ItemStack item) {
 		Page page = findUnusedPage();
 		int slot = page.findUnusedSlot();
@@ -113,10 +109,6 @@ public abstract class PracticeMenu implements Menu {
 		Page page = findUnusedPage();
 		int slot = page.findUnusedSlot();
 		page.setSlot(slot, item, d);
-	}
-
-	public void add(ItemStack item, Runnable d) {
-		add(item, p -> d.run());
 	}
 
 	public abstract void update();

@@ -7,17 +7,13 @@ import org.bukkit.entity.Player;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;
-import lombok.Getter;
 
 @AllArgsConstructor
 @Data
 public class BlockData {
-    @Getter
-    Location location;
-    @Getter
-    Material type;
-    @Getter
-    byte data;
+    private final Location location;
+    private Material type;
+    private byte data;
 
     public BlockData clone() {
         return new BlockData(location.clone(), type, data);
@@ -33,10 +29,12 @@ public class BlockData {
         return this;
     }
 
+    @SuppressWarnings("deprecation")
     public void update(Player player) {
         player.sendBlockChange(location, type, data);
     }
 
+    @SuppressWarnings("deprecation")
     public void remove(Player player) {
         Block block = location.getBlock();
         player.sendBlockChange(location, block.getType(), block.getData());

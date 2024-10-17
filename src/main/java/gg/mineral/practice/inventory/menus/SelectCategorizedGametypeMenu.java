@@ -1,26 +1,22 @@
 package gg.mineral.practice.inventory.menus;
 
-import java.util.List;
-
-import org.bukkit.event.inventory.ClickType;
 import org.bukkit.inventory.ItemStack;
+import org.eclipse.jdt.annotation.Nullable;
 
 import gg.mineral.practice.bots.Difficulty;
 import gg.mineral.practice.catagory.Catagory;
 import gg.mineral.practice.entity.PlayerStatus;
-import gg.mineral.practice.entity.Profile;
 import gg.mineral.practice.gametype.Gametype;
 import gg.mineral.practice.inventory.ClickCancelled;
 import gg.mineral.practice.managers.MatchManager;
 
 import gg.mineral.practice.queue.QueueSettings;
+import gg.mineral.practice.queue.QueueSettings.QueueEntry;
 import gg.mineral.practice.queue.QueueSystem;
 import gg.mineral.practice.queue.Queuetype;
 import gg.mineral.practice.util.items.ItemBuilder;
 import gg.mineral.practice.util.items.ItemStacks;
 import gg.mineral.practice.util.messages.CC;
-import gg.mineral.practice.util.messages.impl.ErrorMessages;
-import java.util.UUID;
 
 @ClickCancelled(true)
 public class SelectCategorizedGametypeMenu extends SelectGametypeMenu {
@@ -38,8 +34,16 @@ public class SelectCategorizedGametypeMenu extends SelectGametypeMenu {
 
 	@Override
 	public void update() {
+		QueueSettings queueSettings = viewer.getQueueSettings();
+		if (!queueSettings.isOpponentBot() && !queueSettings.isTeammateBot()) {
+			queueSettings.setOpponentBot(true);
+			queueSettings.setTeammateBot(true);
+		}
+		boolean botOpponents = queueSettings.isOpponentBot();
+		boolean botTeammate = queueSettings.isTeammateBot();
+
 		if (type == Type.UNRANKED) {
-			QueueSettings queueSettings = viewer.getQueueSettings();
+
 			if (!viewer.isInParty()) {
 				int teamSize = queueSettings.getTeamSize();
 				setSlot(2,
@@ -51,15 +55,12 @@ public class SelectCategorizedGametypeMenu extends SelectGametypeMenu {
 										teamSizeColors.get(teamSize),
 										" ", CC.BOARD_SEPARATOR, CC.ACCENT + "Click to change team size.")
 								.build(),
-						interaction -> {
-							queueSettings.setTeamSize((byte) (teamSize % 8 + 1));
-							reload();
-						});
+						TEAM_SIZE_INTERACTION);
 			} else
 				queueSettings.setTeamSize((byte) (viewer.getParty().getPartyMembers().size()));
 
 			if (queueSettings.getTeamSize() == 1) {
-				byte difficulty = queueSettings.getOpponentDifficulties().get((byte) 0);
+				byte difficulty = queueSettings.getDifficulty();
 				setSlot(viewer.isInParty() ? 2 : 4,
 						ItemStacks.BOT_SETTINGS
 								.lore(CC.WHITE + "Allows you to configure the " + CC.SECONDARY + "difficulty" + CC.WHITE
@@ -70,67 +71,63 @@ public class SelectCategorizedGametypeMenu extends SelectGametypeMenu {
 										CC.GREEN + "Left Click to change difficulty.",
 										CC.RED + "Right Click to create custom difficulty.")
 								.build(),
-						interaction -> {
-							if (interaction.getClickType() == ClickType.LEFT) {
-
-								Difficulty newDifficulty = Difficulty.values()[(difficulty + 1)
-										% Difficulty.values().length];
-
-								if (newDifficulty == Difficulty.CUSTOM)
-									newDifficulty = Difficulty.values()[(difficulty + 2) % Difficulty.values().length];
-
-								viewer.getQueueSettings()
-										.setOpponentDifficulty((byte) 0, newDifficulty);
-							} else if (interaction.getClickType() == ClickType.RIGHT) {
-								Profile p = interaction.getProfile();
-
-								if (p.getPlayer().hasPermission("practice.custombot"))
-									p.openMenu(new CustomBotDifficultyMenu(this));
-								else
-									ErrorMessages.RANK_REQUIRED.send(viewer.getPlayer());
-								return;
-							}
-
-							reload();
-						});
+						DIFFICULTY_INTERACTION);
 			}
 
 			ItemStack item = ItemStacks.BOT_QUEUE_DISABLED;
 
 			if (viewer.getQueueSettings().isBotQueue()) {
 				if (queueSettings.getTeamSize() > 1 && !viewer.isInParty()) {
-					item = ItemStacks.BOT_QUEUE_ENABLED_TEAM.lore(
-							CC.WHITE + "Allows you to queue bots in a " + CC.SECONDARY + "team" + CC.WHITE
-									+ " match ",
-							CC.WHITE + "with bot teammates and bot opponents.",
-							" ",
-							CC.WHITE + "Currently:",
-							CC.GREEN + "Enabled",
-							" ",
-							CC.BOARD_SEPARATOR,
-							CC.GREEN + "Left click to toggle bots.", CC.RED + "Right click to change team settings.")
-							.build();
+					if (botOpponents && botTeammate)
+						item = ItemStacks.BOT_QUEUE_ENABLED_TEAM.lore(
+								CC.WHITE + "Allows you to queue in a " + CC.SECONDARY + "2v2 bot" + CC.WHITE
+										+ " match ",
+								CC.WHITE + "with a bot teammate and bot opponents.",
+								" ",
+								CC.WHITE + "Currently:",
+								CC.GREEN + "Enabled",
+								" ", CC.WHITE + "Team Settings:", CC.PINK + "Bot Teammate and Opponents", " ",
+								CC.BOARD_SEPARATOR,
+								CC.GREEN + "Left click to toggle bots.",
+								CC.RED + "Right click to change team settings.")
+								.build();
+					else if (botOpponents)
+						item = ItemStacks.BOT_QUEUE_ENABLED_TEAM.lore(
+								CC.WHITE + "Allows you to queue in a " + CC.SECONDARY + "2v2 bot" + CC.WHITE
+										+ " match ",
+								CC.WHITE + "with bots as your opponents.",
+								" ",
+								CC.WHITE + "Currently:",
+								CC.GREEN + "Enabled",
+								" ", CC.WHITE + "Team Settings:", CC.GOLD + "Bot Opponents", " ", CC.BOARD_SEPARATOR,
+								CC.GREEN + "Left click to toggle bots.",
+								CC.RED + "Right click to change team settings.")
+								.build();
+					else if (botTeammate)
+						item = ItemStacks.BOT_QUEUE_ENABLED_TEAM.lore(
+								CC.WHITE + "Allows you to queue in a " + CC.SECONDARY + "2v2 bot" + CC.WHITE
+										+ " match ",
+								CC.WHITE + "with a bot as your teammate.",
+								" ",
+								CC.WHITE + "Currently:",
+								CC.GREEN + "Enabled",
+								" ", CC.WHITE + "Team Settings:", CC.AQUA + "Bot Teammate", " ", CC.BOARD_SEPARATOR,
+								CC.GREEN + "Left click to toggle bots.",
+								CC.RED + "Right click to change team settings.")
+								.build();
 				} else
 					item = ItemStacks.BOT_QUEUE_ENABLED;
 			}
 
 			setSlot(6,
 					item,
-					interaction -> {
-						if (interaction.getClickType() == ClickType.RIGHT && queueSettings.getTeamSize() > 1
-								&& !viewer.isInParty()) {
-							viewer.openMenu(new BotTeamSettingsMenu());
-						} else if (interaction.getClickType() == ClickType.LEFT)
-							queueSettings.setBotQueue(!queueSettings.isBotQueue());
-
-						reload();
-					});
+					BOT_QUEUE_INTERACTION);
 
 			setSlot(48, ItemStacks.RANDOM_QUEUE, interaction -> {
 				Gametype gametype = viewer.getQueueSettings().isBotQueue() ? queuetype.randomGametypeWithBotsEnabled()
 						: queuetype.randomGametype();
 
-				queue(queuetype, gametype, interaction);
+				queue(gametype, interaction);
 
 				if (viewer.getOpenMenu() instanceof SelectGametypeMenu)
 					viewer.getPlayer().closeInventory();
@@ -143,33 +140,34 @@ public class SelectCategorizedGametypeMenu extends SelectGametypeMenu {
 					" ",
 					CC.WHITE + "Currently:",
 					arenaSelection ? CC.GREEN + "Enabled" : CC.RED + "Disabled",
-					" ", CC.BOARD_SEPARATOR, CC.ACCENT + "Click to toggle arena selection.").build(), () -> {
-						viewer.getQueueSettings().setArenaSelection(!viewer.getQueueSettings().isArenaSelection());
-						reload();
-					});
+					" ", CC.BOARD_SEPARATOR, CC.ACCENT + "Click to toggle arena selection.").build(),
+					ARENA_INTERACTION);
 		}
 
 		for (Gametype g : catagory.getGametypes()) {
 
-			if (g.isInCatagory())
+			if (!g.isInCatagory())
 				continue;
 
 			ItemBuilder itemBuild = new ItemBuilder(g.getDisplayItem().clone())
 					.name(CC.SECONDARY + CC.B + g.getDisplayName());
 
-			QueueSettings queueSettings = viewer.getQueueSettings();
-			UUID queueEntry = QueueSettings.toUUID(queuetype, g, queueSettings.getTeamSize(),
-					queueSettings.getPlayerBots(),
-					queueSettings.getOpponentBots(), queueSettings.getEnabledArenas());
+			byte teamSize = queueSettings.getTeamSize();
+			QueueEntry queueEntry = QueueSettings.toEntry(queuetype, g, teamSize,
+					botTeammate,
+					botOpponents, queueSettings.getEnabledArenas());
 
 			if (type == Type.QUEUE || type == Type.UNRANKED) {
-				List<UUID> queueEntries = QueueSystem.getQueueEntries(viewer, queuetype, g);
+				@Nullable
+				QueueEntry queueEntries = QueueSystem.getQueueEntry(viewer, queuetype, g);
 
-				if (queueEntries != null && !queueEntries.isEmpty())
+				if (queueEntries != null)
 					itemBuild.lore(CC.RED + "Click to leave queue.");
 				else
 					itemBuild.lore(
-							CC.SECONDARY + "In Queue: " + CC.WHITE + QueueSystem.getCompatibleQueueCount(queueEntry),
+							CC.SECONDARY + "In Queue: " + CC.WHITE
+									+ QueueSystem.getCompatibleQueueCount(queueEntry.queuetype(),
+											queueEntry.gametype()),
 							CC.SECONDARY + "In Game: " + CC.WHITE + MatchManager.getInGameCount(queuetype, g),
 							CC.BOARD_SEPARATOR,
 							CC.ACCENT + "Click to queue.");
@@ -187,7 +185,7 @@ public class SelectCategorizedGametypeMenu extends SelectGametypeMenu {
 							return;
 						}
 
-						queue(queuetype, g, interaction);
+						queue(g, interaction);
 
 						if (viewer.getPlayerStatus() == PlayerStatus.QUEUEING)
 							reload();

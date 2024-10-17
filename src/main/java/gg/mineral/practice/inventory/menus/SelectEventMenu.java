@@ -25,7 +25,7 @@ public class SelectEventMenu extends PracticeMenu {
                     .lore(CC.ACCENT + "Click to start event.")
                     .build();
 
-            add(item, () -> {
+            add(item, interaction -> {
                 viewer.getPlayer().closeInventory();
 
                 viewer.getDuelSettings().setGametype(g);

@@ -202,12 +202,9 @@ public class PacketListener implements Listener {
 
                 BlockPosition position = worldEvent.getB();
 
-                int x = position.getX();
-                int y = position.getY();
-                int z = position.getZ();
+                int x = position.getX(), y = position.getY(), z = position.getZ();
 
-                boolean isVisible = false;
-                boolean isInMatch = false;
+                boolean isVisible = false, isInMatch = false;
 
                 for (ThrownPotion potion : profile.getPlayer().getWorld().getEntitiesByClass(ThrownPotion.class)) {
                     int potionX = MathHelper.floor(x);

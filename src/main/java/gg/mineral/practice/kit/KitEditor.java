@@ -53,7 +53,7 @@ public class KitEditor {
                 continue;
             }
 
-            if (newItem.isSimilar(oldItem))
+            if (newItem != null && newItem.isSimilar(oldItem))
                 continue;
 
             config.set(path + f, newItem);

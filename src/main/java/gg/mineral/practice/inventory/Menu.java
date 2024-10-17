@@ -14,13 +14,9 @@ public interface Menu {
 
     public void setSlot(int slot, ItemStack item, Consumer<Interaction> d);
 
-    public void setSlot(int slot, ItemStack item, Runnable d);
-
     public void add(ItemStack item);
 
     public void add(ItemStack item, Consumer<Interaction> d);
-
-    public void add(ItemStack item, Runnable d);
 
     public void update();
 

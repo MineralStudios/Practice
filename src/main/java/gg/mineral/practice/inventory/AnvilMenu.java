@@ -197,11 +197,6 @@ public abstract class AnvilMenu implements Menu {
     }
 
     @Override
-    public void setSlot(int slot, ItemStack item, Runnable d) {
-        setSlot(slot, item, p -> d.run());
-    }
-
-    @Override
     public void add(ItemStack item) {
         int slot = findUnusedSlot();
         setSlot(slot, item);
@@ -219,11 +214,6 @@ public abstract class AnvilMenu implements Menu {
     public void add(ItemStack item, Consumer<Interaction> d) {
         int slot = findUnusedSlot();
         setSlot(slot, item, d);
-    }
-
-    @Override
-    public void add(ItemStack item, Runnable d) {
-        add(item, p -> d.run());
     }
 
     @Override

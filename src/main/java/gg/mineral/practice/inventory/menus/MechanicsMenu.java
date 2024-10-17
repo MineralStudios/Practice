@@ -53,7 +53,7 @@ public class MechanicsMenu extends PracticeMenu {
 						+ ".", " ",
 						CC.WHITE + "Currently:", CC.GOLD + duelSettings.isHunger(),
 						CC.BOARD_SEPARATOR, CC.ACCENT + "Click to toggle hunger.")
-				.build(), () -> {
+				.build(), interaction -> {
 					duelSettings.setHunger(!duelSettings.isHunger());
 					reload();
 				});
@@ -63,7 +63,7 @@ public class MechanicsMenu extends PracticeMenu {
 						+ ".", " ",
 						CC.WHITE + "Currently:", CC.GOLD + duelSettings.isBuild(),
 						CC.BOARD_SEPARATOR, CC.ACCENT + "Click to toggle build.")
-				.build(), () -> {
+				.build(), interaction -> {
 					duelSettings.setBuild(!duelSettings.isBuild());
 					reload();
 				});
@@ -73,7 +73,7 @@ public class MechanicsMenu extends PracticeMenu {
 						+ ".", " ",
 						CC.WHITE + "Currently:", CC.GOLD + duelSettings.isDamage(),
 						CC.BOARD_SEPARATOR, CC.ACCENT + "Click to toggle damage.")
-				.build(), () -> {
+				.build(), interaction -> {
 					duelSettings.setDamage(!duelSettings.isDamage());
 					reload();
 				});
@@ -83,7 +83,7 @@ public class MechanicsMenu extends PracticeMenu {
 						+ ".", " ",
 						CC.WHITE + "Currently:", CC.GOLD + duelSettings.isGriefing(),
 						CC.BOARD_SEPARATOR, CC.ACCENT + "Click to toggle griefing.")
-				.build(), () -> {
+				.build(), interaction -> {
 					duelSettings.setGriefing(!duelSettings.isGriefing());
 					reload();
 				});
@@ -111,7 +111,7 @@ public class MechanicsMenu extends PracticeMenu {
 						+ ".", " ",
 						CC.WHITE + "Currently:", CC.GOLD + duelSettings.isDeadlyWater(),
 						CC.BOARD_SEPARATOR, CC.ACCENT + "Click to toggle deadly water.")
-				.build(), () -> {
+				.build(), interaction -> {
 					duelSettings.setDeadlyWater(!duelSettings.isDeadlyWater());
 					reload();
 				});
@@ -121,7 +121,7 @@ public class MechanicsMenu extends PracticeMenu {
 						+ " health.", " ",
 						CC.WHITE + "Currently:", CC.GOLD + duelSettings.isRegeneration(),
 						CC.BOARD_SEPARATOR, CC.ACCENT + "Click to toggle regeneration.")
-				.build(), () -> {
+				.build(), interaction -> {
 					duelSettings.setRegeneration(!duelSettings.isRegeneration());
 					reload();
 				});
@@ -131,17 +131,17 @@ public class MechanicsMenu extends PracticeMenu {
 						+ ".", " ",
 						CC.WHITE + "Currently:", CC.GOLD + duelSettings.isBoxing(),
 						CC.BOARD_SEPARATOR, CC.ACCENT + "Click to toggle boxing.")
-				.build(), () -> {
+				.build(), interaction -> {
 					duelSettings.setBoxing(!duelSettings.isBoxing());
 					reload();
 				});
 
-		setSlot(27, ItemStacks.RESET_SETTINGS, () -> {
+		setSlot(27, ItemStacks.RESET_SETTINGS, interaction -> {
 			viewer.resetQueueSettings();
 			reload();
 		});
 
-		setSlot(31, ItemStacks.SUBMIT, () -> {
+		setSlot(31, ItemStacks.SUBMIT, interaction -> {
 			viewer.getPlayer().closeInventory();
 			submitAction.execute(viewer);
 		});

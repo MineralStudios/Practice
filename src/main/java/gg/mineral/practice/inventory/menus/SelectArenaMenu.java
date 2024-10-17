@@ -1,9 +1,12 @@
 package gg.mineral.practice.inventory.menus;
 
+import java.util.function.Consumer;
+
 import org.bukkit.inventory.ItemStack;
 
 import gg.mineral.practice.arena.Arena;
 import gg.mineral.practice.inventory.ClickCancelled;
+import gg.mineral.practice.inventory.Interaction;
 import gg.mineral.practice.inventory.PracticeMenu;
 import gg.mineral.practice.inventory.SubmitAction;
 import gg.mineral.practice.managers.ArenaManager;
@@ -16,7 +19,6 @@ import gg.mineral.practice.util.messages.CC;
 import gg.mineral.practice.util.messages.impl.ErrorMessages;
 import it.unimi.dsi.fastutil.bytes.Byte2ObjectOpenHashMap;
 import it.unimi.dsi.fastutil.bytes.ByteIterator;
-
 import lombok.RequiredArgsConstructor;
 
 @ClickCancelled(true)
@@ -52,7 +54,7 @@ public class SelectArenaMenu extends PracticeMenu {
                 continue;
             }
 
-            Runnable arenaRunnable = () -> {
+            Consumer<Interaction> arenaRunnable = interaction -> {
                 viewer.getDuelSettings().setArenaId(arenaId);
 
                 if (simpleMode) {
@@ -65,7 +67,7 @@ public class SelectArenaMenu extends PracticeMenu {
             };
 
             if (action == SubmitAction.P_SPLIT && simpleMode) {
-                arenaRunnable = () -> {
+                arenaRunnable = interaction -> {
                     viewer.getPlayer().closeInventory();
 
                     viewer.getDuelSettings().setArenaId(arenaId);
@@ -86,7 +88,7 @@ public class SelectArenaMenu extends PracticeMenu {
                     m.start();
                 };
             } else if (action == SubmitAction.TOURNAMENT && simpleMode) {
-                arenaRunnable = () -> {
+                arenaRunnable = interaction -> {
                     viewer.getPlayer().closeInventory();
 
                     viewer.getDuelSettings().setArenaId(arenaId);

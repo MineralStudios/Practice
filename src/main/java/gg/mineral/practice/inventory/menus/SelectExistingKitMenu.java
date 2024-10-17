@@ -32,7 +32,7 @@ public class SelectExistingKitMenu extends PracticeMenu {
             ItemStack item = new ItemBuilder(g.getDisplayItem())
                     .name(CC.SECONDARY + CC.B + g.getDisplayName()).lore(CC.ACCENT + "Click to select.").build();
 
-            add(item, () -> {
+            add(item, interaction -> {
                 if (simple)
                     viewer.getDuelSettings().setGametype(g);
                 else

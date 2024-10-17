@@ -1,7 +1,5 @@
 package gg.mineral.practice.match.data;
 
-import java.util.UUID;
-
 import org.bukkit.inventory.ItemStack;
 import org.eclipse.jdt.annotation.NonNull;
 import org.eclipse.jdt.annotation.Nullable;
@@ -17,6 +15,7 @@ import gg.mineral.practice.managers.GametypeManager;
 import gg.mineral.practice.managers.QueuetypeManager;
 import gg.mineral.practice.queue.QueueSettings;
 import gg.mineral.practice.queue.Queuetype;
+import gg.mineral.practice.queue.QueueSettings.QueueEntry;
 import gg.mineral.practice.util.items.ItemStacks;
 import gg.mineral.practice.util.messages.CC;
 import gg.mineral.server.combat.KnockbackProfileList;
@@ -53,10 +52,10 @@ public class MatchData {
 		this.enabledArenas = new Byte2BooleanOpenHashMap(queueSettings.getEnabledArenas());
 	}
 
-	public MatchData(UUID queueEntryId) {
+	public MatchData(QueueEntry queueEntry) {
 		this();
-		Queuetype queuetype = QueuetypeManager.getQueuetypes().get(QueueSettings.getQueueTypeId(queueEntryId));
-		Gametype gametype = GametypeManager.getGametypes().get(QueueSettings.getGameTypeId(queueEntryId));
+		Queuetype queuetype = queueEntry.queuetype();
+		Gametype gametype = queueEntry.gametype();
 		setQueuetype(queuetype);
 		setGametype(gametype);
 		this.queueAndGameTypeHash = (short) (queuetype.getId() << 8 | gametype.getId());

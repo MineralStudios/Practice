@@ -17,14 +17,14 @@ public class AutoExpireList<K> implements Iterable<K> {
         }, 20, 20);
     }
 
-    Object2LongOpenHashMap<K> map = new Object2LongOpenHashMap<>();
+    private Object2LongOpenHashMap<K> map = new Object2LongOpenHashMap<>();
 
     public void add(K e) {
         map.put(e, System.currentTimeMillis());
     }
 
     public void removeExpired() {
-        map.object2LongEntrySet().removeIf(entry -> System.currentTimeMillis() - entry.getValue() >= 30000);
+        map.object2LongEntrySet().removeIf(entry -> System.currentTimeMillis() - entry.getLongValue() >= 30000);
     }
 
     public void clear() {

@@ -37,7 +37,7 @@ public class QueuetypeArenaEnableMenu extends PracticeMenu {
                 continue;
             }
 
-            add(item, () -> {
+            add(item, interaction -> {
                 queuetype.enableArena(a, !arenaEnabled);
                 ChatMessages.QUEUETYPE_ARENA_SET.clone().replace("%queuetype%", queuetype.getName())
                         .replace("%toggled%", "" + !arenaEnabled).replace("%arena%", a.getName())

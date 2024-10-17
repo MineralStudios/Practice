@@ -40,7 +40,7 @@ public class GametypeArenaEnableMenu extends PracticeMenu {
                 continue;
             }
 
-            add(item, () -> {
+            add(item, interaction -> {
                 gametype.enableArena(a, !arenaEnabled);
                 ChatMessages.GAMETYPE_ARENA_SET.clone().replace("%gametype%", gametype.getName())
                         .replace("%toggled%", "" + !arenaEnabled).replace("%arena%", a.getName())

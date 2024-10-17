@@ -32,8 +32,7 @@ public class CustomBotDifficultyMenu extends PracticeMenu {
 
                 BotConfiguration difficulty = queueSettings.getCustomBotConfiguration();
                 queueSettings.setCustomBotConfiguration(difficulty);
-                queueSettings
-                                .setOpponentDifficulty((byte) 0, Difficulty.CUSTOM);
+                queueSettings.setDifficulty((byte) Difficulty.CUSTOM.ordinal());
 
                 setSlot(0, ItemStacks.AIM_SPEED.name(CC.SECONDARY + CC.B + "Aim Speed")
                                 .lore(CC.WHITE + "The speed the bot " + CC.SECONDARY + "rotates" + CC.WHITE
@@ -47,9 +46,9 @@ public class CustomBotDifficultyMenu extends PracticeMenu {
                                 .build(), interaction -> {
                                         if (interaction.getClickType() == ClickType.RIGHT)
                                                 interaction.getProfile().openMenu(
-                                                                new ConfigureValueMenu<Float>(this, value -> difficulty
+                                                                ConfigureValueMenu.of(this, value -> difficulty
                                                                                 .setVerticalAimSpeed(value),
-                                                                                Float.class));
+                                                                                float.class));
                                         else
                                                 interaction.getProfile().openMenu(
                                                                 ConfigureValueMenu.of(this, value -> difficulty
@@ -174,14 +173,14 @@ public class CustomBotDifficultyMenu extends PracticeMenu {
 
                 setSlot(29, ItemStacks.BACK, interaction -> {
                         Profile p = interaction.getProfile();
-                        interaction.getProfile().getQueueSettings().setCustomBotConfiguration(difficulty);
+                        p.getQueueSettings().setCustomBotConfiguration(difficulty);
                         p.openMenu(menu);
                 });
 
                 setSlot(31, ItemStacks.CLICK_TO_APPLY_CHANGES.name(CC.SECONDARY + CC.B + "Save Difficulty").build(),
                                 interaction -> {
                                         Profile p = interaction.getProfile();
-                                        interaction.getProfile().getQueueSettings()
+                                        p.getQueueSettings()
                                                         .setCustomBotConfiguration(difficulty);
                                         p.openMenu(menu);
                                 });

@@ -46,14 +46,14 @@ public class AddItemsMenu extends PracticeMenu {
 			if (INCLUDED.contains(i)) {
 				for (Material material : INCLUDED) {
 					ItemStack item = new ItemStack(material, 64);
-					add(item, () -> viewer.getPlayer().setItemOnCursor(item));
+					add(item, interaction -> interaction.getProfile().getPlayer().setItemOnCursor(item));
 				}
 
 				continue;
 			}
 
 			if (LIMITED.contains(i)) {
-				add(is, () -> {
+				add(is, interaction -> {
 					String string = is.getType() + ":" + is.getDurability();
 					int maxAmount = maxAmountMap.getOrDefault(string, 0);
 
@@ -67,7 +67,7 @@ public class AddItemsMenu extends PracticeMenu {
 				continue;
 			}
 
-			add(is, () -> viewer.getPlayer().setItemOnCursor(is));
+			add(is, interaction -> viewer.getPlayer().setItemOnCursor(is));
 		}
 	}
 

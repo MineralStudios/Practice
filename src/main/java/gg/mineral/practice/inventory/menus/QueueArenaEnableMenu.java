@@ -60,7 +60,7 @@ public class QueueArenaEnableMenu extends PracticeMenu {
                 continue;
             }
 
-            add(item, () -> {
+            add(item, interaction -> {
                 queueSettings.enableArena(arena, !arenaEnabled);
                 reload();
             });

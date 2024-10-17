@@ -10,7 +10,7 @@ import gg.mineral.practice.util.messages.impl.ErrorMessages;
 import lombok.RequiredArgsConstructor;
 
 @ClickCancelled(true)
-@RequiredArgsConstructor
+@RequiredArgsConstructor(access = lombok.AccessLevel.PRIVATE)
 public class ConfigureValueMenu<T> extends AnvilMenu {
     private final Menu menu;
     private final Consumer<T> value;

@@ -380,10 +380,13 @@ public class Profile extends ProfileData implements QueuedEntity {
 			else
 				message(message);
 
+			byte teamSize = queueSettings.getTeamSize();
+			boolean botTeammate = queueSettings.isTeammateBot();
+			boolean botOpponents = queueSettings.isOpponentBot();
 			QueueSystem.addPlayerToQueue(isInParty() ? party : this,
-					QueueSettings.toUUID(queuetype, gametype, queueSettings.getTeamSize(),
-							queueSettings.getPlayerBots(),
-							queueSettings.getOpponentBots(), queueSettings.getEnabledArenas()));
+					QueueSettings.toEntry(queuetype, gametype, teamSize,
+							botTeammate,
+							botOpponents, queueSettings.getEnabledArenas()));
 		}
 	}
 
