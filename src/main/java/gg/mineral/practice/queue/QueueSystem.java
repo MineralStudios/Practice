@@ -21,7 +21,6 @@ import it.unimi.dsi.fastutil.bytes.Byte2BooleanMap;
 import it.unimi.dsi.fastutil.bytes.ByteOpenHashSet;
 import it.unimi.dsi.fastutil.bytes.ByteSet;
 import it.unimi.dsi.fastutil.objects.ObjectOpenHashSet;
-import it.unimi.dsi.fastutil.shorts.Short2ObjectMap;
 import it.unimi.dsi.fastutil.shorts.Short2ObjectOpenHashMap;
 
 public class QueueSystem {
@@ -40,7 +39,7 @@ public class QueueSystem {
         }
     }
 
-    private record QueueRecord(QueuedEntity entity, QueueEntry queueEntry) {
+    private static record QueueRecord(QueuedEntity entity, QueueEntry queueEntry) {
         @Override
         public int hashCode() {
             return entity.hashCode();
@@ -155,8 +154,8 @@ public class QueueSystem {
     public static List<QueueEntry> getQueueEntries(QueuedEntity entity) {
         List<QueueEntry> queueEntries = new GlueList<>();
 
-        for (Short2ObjectMap.Entry<RecordSet> entry : queueMap.short2ObjectEntrySet())
-            for (QueueRecord record : entry.getValue())
+        for (RecordSet recordSet : queueMap.values())
+            for (QueueRecord record : recordSet)
                 if (record.entity().equals(entity))
                     queueEntries.add(record.queueEntry());
 
@@ -182,8 +181,7 @@ public class QueueSystem {
             Set<QueueRecord> team2, int teamSize, boolean teammateBot,
             boolean opponentBot) {
         // First, find common arenas
-        ByteSet allEnabledArenas = new ByteOpenHashSet();
-        ByteSet allDisabledArenas = new ByteOpenHashSet();
+        ByteSet allEnabledArenas = new ByteOpenHashSet(), allDisabledArenas = new ByteOpenHashSet();
         for (QueueRecord record : team1)
             for (Byte2BooleanMap.Entry e : record.queueEntry().enabledArenas().byte2BooleanEntrySet())
                 if (e.getBooleanValue())
