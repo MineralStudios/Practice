@@ -13,7 +13,7 @@ import gg.mineral.practice.tournaments.Tournament;
 import gg.mineral.practice.util.messages.CC;
 import gg.mineral.practice.util.messages.impl.Strings;
 import gg.mineral.practice.util.messages.impl.TextComponents;
-import net.md_5.bungee.api.chat.TextComponent;
+import lombok.val;
 
 public class TournamentMatch extends Match {
 
@@ -34,9 +34,10 @@ public class TournamentMatch extends Match {
         setInventoryStats(attacker, attacker.getMatchStatisticCollector());
         setInventoryStats(victim, victim.getMatchStatisticCollector());
 
-        TextComponent winMessage = getWinMessage(attacker), loseMessage = getLoseMessage(victim);
+        val winMessage = getWinMessage(attacker);
+        val loseMessage = getLoseMessage(victim);
 
-        for (Profile profile : getParticipants()) {
+        for (val profile : getParticipants()) {
             profile.getPlayer().sendMessage(CC.SEPARATOR);
             profile.getPlayer().sendMessage(Strings.MATCH_RESULTS);
             profile.getPlayer().spigot().sendMessage(winMessage, TextComponents.SPLITTER, loseMessage);
@@ -63,9 +64,8 @@ public class TournamentMatch extends Match {
             if (!tournament.isEnded()) {
                 attacker.setPlayerStatus(PlayerStatus.IDLE);
                 attacker.getInventory().setInventoryForTournament();
-            } else {
+            } else
                 attacker.getInventory().setInventoryForLobby();
-            }
 
             attacker.removeFromMatch();
 
@@ -75,7 +75,7 @@ public class TournamentMatch extends Match {
 
         }, getPostMatchTime());
 
-        for (Profile spectator : getSpectators()) {
+        for (val spectator : getSpectators()) {
             spectator.getPlayer().sendMessage(CC.SEPARATOR);
             spectator.getPlayer().sendMessage(Strings.MATCH_RESULTS);
             spectator.getPlayer().spigot().sendMessage(winMessage, TextComponents.SPLITTER, loseMessage);

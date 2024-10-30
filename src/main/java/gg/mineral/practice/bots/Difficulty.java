@@ -7,8 +7,9 @@ import org.bukkit.World;
 
 import gg.mineral.bot.api.BotAPI;
 import gg.mineral.bot.api.configuration.BotConfiguration;
-import gg.mineral.bot.api.entity.living.player.FakePlayer;
+
 import gg.mineral.bot.api.entity.living.player.skin.Skins;
+import gg.mineral.bot.api.instance.ClientInstance;
 import gg.mineral.bot.api.math.ServerLocation;
 import gg.mineral.bot.api.world.ServerWorld;
 import gg.mineral.practice.queue.QueueSettings;
@@ -120,7 +121,7 @@ public enum Difficulty {
     @Getter
     private final String display;
 
-    public static FakePlayer spawn(BotConfiguration config, Location location) {
+    public static ClientInstance spawn(BotConfiguration config, Location location) {
         return BotAPI.INSTANCE.spawn(config, new ServerLocation() {
             @Override
             public ServerWorld<?> getWorld() {

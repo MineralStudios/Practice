@@ -2,16 +2,14 @@ package gg.mineral.practice.match;
 
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
-import org.bukkit.entity.Player;
 
 import gg.mineral.bot.ai.goal.DrinkPotionGoal;
 import gg.mineral.bot.ai.goal.EatGappleGoal;
 import gg.mineral.bot.ai.goal.MeleeCombatGoal;
 import gg.mineral.bot.api.BotAPI;
 import gg.mineral.bot.api.configuration.BotConfiguration;
-import gg.mineral.bot.api.entity.living.player.FakePlayer;
+import gg.mineral.bot.api.instance.ClientInstance;
 import gg.mineral.practice.PracticePlugin;
-import gg.mineral.practice.arena.Arena;
 import gg.mineral.practice.bots.Difficulty;
 import gg.mineral.practice.entity.PlayerStatus;
 import gg.mineral.practice.entity.Profile;
@@ -21,16 +19,17 @@ import gg.mineral.practice.managers.ProfileManager;
 import gg.mineral.practice.match.data.MatchData;
 import gg.mineral.practice.util.PlayerUtil;
 import gg.mineral.practice.util.items.ItemStacks;
+import lombok.val;
 
 public class BotMatch extends Match {
 
-    private FakePlayer fakePlayer;
-    private final BotConfiguration difficulty;
+    private ClientInstance clientInstance;
+    private final BotConfiguration config;
 
-    public BotMatch(Profile profile1, BotConfiguration difficulty, MatchData matchData) {
+    public BotMatch(Profile profile1, BotConfiguration config, MatchData matchData) {
         super(matchData);
         this.profile1 = profile1;
-        this.difficulty = difficulty;
+        this.config = config;
         addParicipants(profile1);
     }
 
@@ -40,7 +39,7 @@ public class BotMatch extends Match {
             return;
 
         MatchManager.registerMatch(this);
-        Arena arena = ArenaManager.getArenas().get(getData().getArenaId());
+        val arena = ArenaManager.getArenas().get(getData().getArenaId());
         Location location1 = arena.getLocation1().clone();
         Location location2 = arena.getLocation2().clone();
 
@@ -48,8 +47,8 @@ public class BotMatch extends Match {
 
         teleportPlayers(location1, location2);
 
-        this.fakePlayer = Difficulty.spawn(difficulty, location2);
-        Player bukkitPl = Bukkit.getPlayer(fakePlayer.getUuid());
+        this.clientInstance = Difficulty.spawn(config, location2);
+        val bukkitPl = Bukkit.getPlayer(config.getUuid());
 
         if (bukkitPl == null)
             throw new NullPointerException("Fake player is null");
@@ -73,9 +72,9 @@ public class BotMatch extends Match {
     public void onMatchStart() {
         super.onMatchStart();
 
-        fakePlayer.getConfiguration().setPearlCooldown(getData().getPearlCooldown());
-        fakePlayer.startGoals(new DrinkPotionGoal(fakePlayer), new EatGappleGoal(fakePlayer),
-                new MeleeCombatGoal(fakePlayer));
+        clientInstance.getConfiguration().setPearlCooldown(getData().getPearlCooldown());
+        clientInstance.startGoals(new DrinkPotionGoal(clientInstance), new EatGappleGoal(clientInstance),
+                new MeleeCombatGoal(clientInstance));
     }
 
     @Override
@@ -97,7 +96,7 @@ public class BotMatch extends Match {
                             if (profile.getPlayerStatus() != PlayerStatus.QUEUEING) {
                                 profile.setPlayerStatus(PlayerStatus.QUEUEING);
 
-                                new BotMatch(profile, difficulty,
+                                new BotMatch(profile, config,
                                         BotMatch.this.getData()).start();
                             }
                         }),

@@ -22,10 +22,8 @@ import org.eclipse.jdt.annotation.Nullable;
 
 import gg.mineral.api.collection.GlueList;
 import gg.mineral.practice.PracticePlugin;
-import gg.mineral.practice.arena.Arena;
 import gg.mineral.practice.entity.PlayerStatus;
 import gg.mineral.practice.entity.Profile;
-import gg.mineral.practice.gametype.Gametype;
 import gg.mineral.practice.inventory.menus.InventoryStatsMenu;
 import gg.mineral.practice.kit.Kit;
 import gg.mineral.practice.managers.ArenaManager;
@@ -34,7 +32,6 @@ import gg.mineral.practice.managers.ProfileManager;
 import gg.mineral.practice.match.data.MatchData;
 import gg.mineral.practice.match.data.MatchStatisticCollector;
 import gg.mineral.practice.queue.QueueSystem;
-import gg.mineral.practice.queue.Queuetype;
 import gg.mineral.practice.scoreboard.impl.BoxingScoreboard;
 import gg.mineral.practice.scoreboard.impl.DefaultScoreboard;
 import gg.mineral.practice.scoreboard.impl.InMatchScoreboard;
@@ -53,9 +50,8 @@ import gg.mineral.practice.util.messages.impl.TextComponents;
 import gg.mineral.practice.util.world.BlockData;
 import gg.mineral.practice.util.world.BlockUtil;
 import gg.mineral.practice.util.world.WorldUtil;
-import it.unimi.dsi.fastutil.ints.Int2ObjectMap.Entry;
-import it.unimi.dsi.fastutil.ints.Int2ObjectOpenHashMap;
 import lombok.Getter;
+import lombok.val;
 import net.md_5.bungee.api.chat.ClickEvent;
 import net.md_5.bungee.api.chat.ComponentBuilder;
 import net.md_5.bungee.api.chat.HoverEvent;
@@ -95,17 +91,17 @@ public class Match implements Spectatable {
 	}
 
 	public void prepareForMatch(ProfileList profiles) {
-		for (Profile profile : profiles)
+		for (val profile : profiles)
 			prepareForMatch(profile);
 	}
 
 	public Kit getKit(Profile p, int loadoutSlot) {
-		ItemStack[] customKit = data.getCustomKits(p).get(loadoutSlot);
+		val customKit = data.getCustomKits(p).get(loadoutSlot);
 		return getKit(customKit);
 	}
 
 	public Kit getKit(@Nullable ItemStack[] customKit) {
-		Kit kit = getKit();
+		val kit = getKit();
 
 		if (customKit != null)
 			kit.setContents(customKit);
@@ -165,7 +161,7 @@ public class Match implements Spectatable {
 
 	public void encapsulate(Profile profile) {
 
-		BlockData blockData = new BlockData(profile.getPlayer().getLocation(), Material.BEDROCK,
+		val blockData = new BlockData(profile.getPlayer().getLocation(), Material.BEDROCK,
 				(byte) 0);
 
 		int radius = 1;
@@ -185,7 +181,7 @@ public class Match implements Spectatable {
 
 	public void giveLoadoutSelection(Profile p) {
 
-		Int2ObjectOpenHashMap<ItemStack[]> map = data.getCustomKits(p);
+		val map = data.getCustomKits(p);
 
 		p.getInventory().clear();
 
@@ -197,7 +193,7 @@ public class Match implements Spectatable {
 			return;
 		}
 
-		for (Entry<ItemStack[]> entry : map.int2ObjectEntrySet())
+		for (val entry : map.int2ObjectEntrySet())
 			p.getInventory().setItem(entry.getIntKey(),
 					ItemStacks.LOAD_KIT.name(CC.B + CC.GOLD + "Load Kit #" + entry.getIntKey()).build(), profile -> {
 						p.giveKit(getKit(entry.getValue()));
@@ -233,7 +229,7 @@ public class Match implements Spectatable {
 	}
 
 	public void handleFollowers(Profile profile) {
-		for (Profile p : profile.getSpectateHandler().getFollowers())
+		for (val p : profile.getSpectateHandler().getFollowers())
 			p.getSpectateHandler().spectate(profile);
 	}
 
@@ -243,7 +239,7 @@ public class Match implements Spectatable {
 	}
 
 	public void handleOpponentMessages(Profile profile1, Profile profile2) {
-		StringBuilder sb = new StringBuilder("Opponent: " + CC.AQUA + profile2.getName());
+		val sb = new StringBuilder("Opponent: " + CC.AQUA + profile2.getName());
 		sb.append(data.isRanked()
 				? CC.WHITE + "\nElo: " + CC.AQUA + data.getElo(profile2)
 				: "");
@@ -254,7 +250,7 @@ public class Match implements Spectatable {
 	}
 
 	public void setWorldParameters(World world) {
-		net.minecraft.server.v1_8_R3.World nmsWorld = ((CraftWorld) world).getHandle();
+		val nmsWorld = ((CraftWorld) world).getHandle();
 		nmsWorld.getWorldData().f(false);
 		nmsWorld.getWorldData().setThundering(false);
 		nmsWorld.getWorldData().setStorm(false);
@@ -275,7 +271,7 @@ public class Match implements Spectatable {
 	public void setupLocations(Location location1, Location location2) {
 
 		if (data.isGriefing() || data.isBuild()) {
-			Arena arena = ArenaManager.getArenas().get(data.getArenaId());
+			val arena = ArenaManager.getArenas().get(data.getArenaId());
 			this.world = arena.generate();
 			location1.setWorld(world);
 			location2.setWorld(world);
@@ -291,7 +287,7 @@ public class Match implements Spectatable {
 	}
 
 	public void startCountdown() {
-		Countdown countdown = new Countdown(5, this);
+		val countdown = new Countdown(5, this);
 		countdown.start();
 	}
 
@@ -300,9 +296,9 @@ public class Match implements Spectatable {
 			return;
 
 		MatchManager.registerMatch(this);
-		Arena arena = ArenaManager.getArenas().get(data.getArenaId());
-		Location location1 = arena.getLocation1().clone();
-		Location location2 = arena.getLocation2().clone();
+		val arena = ArenaManager.getArenas().get(data.getArenaId());
+		val location1 = arena.getLocation1().clone();
+		val location2 = arena.getLocation2().clone();
 
 		setupLocations(location1, location2);
 		teleportPlayers(location1, location2);
@@ -321,7 +317,7 @@ public class Match implements Spectatable {
 	}
 
 	public Profile getOpponent(Profile p) {
-		Profile p1 = getProfile1();
+		val p1 = getProfile1();
 		return p1.equals(p) ? getProfile2() : p1;
 	}
 
@@ -338,7 +334,7 @@ public class Match implements Spectatable {
 	}
 
 	public CompletableFuture<Void> updateElo(Profile attacker, Profile victim) {
-		Gametype gametype = data.getGametype();
+		val gametype = data.getGametype();
 
 		if (gametype == null)
 			return CompletableFuture.completedFuture(null);
@@ -354,7 +350,7 @@ public class Match implements Spectatable {
 					gametype.updatePlayerLeaderboard(victim, newVictimElo, victimElo);
 					gametype.updatePlayerLeaderboard(attacker, newAttackerElo, attackerElo);
 
-					String rankedMessage = CC.GREEN + attacker.getName() + " (+" + (newAttackerElo - attackerElo) + ") "
+					val rankedMessage = CC.GREEN + attacker.getName() + " (+" + (newAttackerElo - attackerElo) + ") "
 							+ CC.RED
 							+ victim.getName() + " (" + (newVictimElo - victimElo) + ")";
 					attacker.getPlayer().sendMessage(rankedMessage);
@@ -372,9 +368,10 @@ public class Match implements Spectatable {
 		setInventoryStats(attacker, attacker.getMatchStatisticCollector());
 		setInventoryStats(victim, victim.getMatchStatisticCollector());
 
-		TextComponent winMessage = getWinMessage(attacker), loseMessage = getLoseMessage(victim);
+		val winMessage = getWinMessage(attacker);
+		val loseMessage = getLoseMessage(victim);
 
-		for (Profile profile : getParticipants()) {
+		for (val profile : getParticipants()) {
 			profile.getPlayer().sendMessage(CC.SEPARATOR);
 			profile.getPlayer().sendMessage(Strings.MATCH_RESULTS);
 			profile.getPlayer().spigot().sendMessage(winMessage, TextComponents.SPLITTER, loseMessage);
@@ -418,7 +415,7 @@ public class Match implements Spectatable {
 
 		}, getPostMatchTime());
 
-		for (Profile spectator : getSpectators()) {
+		for (val spectator : getSpectators()) {
 			spectator.getPlayer().sendMessage(CC.SEPARATOR);
 			spectator.getPlayer().sendMessage(Strings.MATCH_RESULTS);
 			spectator.getPlayer().spigot().sendMessage(winMessage, TextComponents.SPLITTER, loseMessage);
@@ -430,7 +427,7 @@ public class Match implements Spectatable {
 	}
 
 	public TextComponent getWinMessage(Profile profile) {
-		TextComponent winMessage = new TextComponent(CC.GREEN + " Winner: " + CC.GRAY + profile.getName());
+		val winMessage = new TextComponent(CC.GREEN + " Winner: " + CC.GRAY + profile.getName());
 		winMessage.setHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT,
 				new ComponentBuilder(CC.GREEN + "Health Potions Remaining: "
 						+ profile.getMatchStatisticCollector().getPotionsRemaining() + "\n" + CC.GREEN
@@ -441,7 +438,7 @@ public class Match implements Spectatable {
 	}
 
 	public TextComponent getLoseMessage(Profile profile) {
-		TextComponent loseMessage = new TextComponent(CC.RED + "Loser: " + CC.GRAY + profile.getName());
+		val loseMessage = new TextComponent(CC.RED + "Loser: " + CC.GRAY + profile.getName());
 		loseMessage.setHoverEvent(
 				new HoverEvent(HoverEvent.Action.SHOW_TEXT,
 						new ComponentBuilder(CC.RED + "Health Potions Remaining: "
@@ -461,8 +458,8 @@ public class Match implements Spectatable {
 	}
 
 	public void giveQueueAgainItem(Profile profile) {
-		Queuetype queuetype = data.getQueuetype();
-		Gametype gametype = data.getGametype();
+		val queuetype = data.getQueuetype();
+		val gametype = data.getGametype();
 		Bukkit.getServer().getScheduler().runTaskLater(PracticePlugin.INSTANCE,
 				() -> profile.getInventory().setItem(profile.getInventory().getHeldItemSlot(),
 						ItemStacks.QUEUE_AGAIN,
@@ -477,31 +474,31 @@ public class Match implements Spectatable {
 	}
 
 	public void resetPearlCooldown(Profile... profiles) {
-		for (Profile profile : profiles)
+		for (val profile : profiles)
 			profile.setPearlCooldown(0);
 	}
 
 	public void clearItems() {
 		boolean arenaInUse = false;
 
-		for (Match match : MatchManager.getMatches()) {
+		for (val match : MatchManager.getMatches()) {
 			if (!match.isEnded() && match.getData().getArenaId() == data.getArenaId()) {
 				arenaInUse = true;
 				break;
 			}
 		}
 
-		Arena arena = ArenaManager.getArenas().get(data.getArenaId());
+		val arena = ArenaManager.getArenas().get(data.getArenaId());
 
-		for (Item item : arenaInUse ? itemRemovalQueue
+		for (val item : arenaInUse ? itemRemovalQueue
 				: arena.getLocation1().getWorld().getEntitiesByClass(Item.class))
 			item.remove();
 
-		for (Arrow arrow : arena.getLocation1().getWorld().getEntitiesByClass(Arrow.class)) {
+		for (val arrow : arena.getLocation1().getWorld().getEntitiesByClass(Arrow.class)) {
 			ProjectileSource shooter = arrow.getShooter();
 
 			if (shooter instanceof Player pShooter) {
-				Profile profile = ProfileManager.getProfile(pShooter.getUniqueId());
+				val profile = ProfileManager.getProfile(pShooter.getUniqueId());
 
 				if (profile == null) {
 					arrow.remove();
@@ -525,7 +522,7 @@ public class Match implements Spectatable {
 				return;
 			}
 
-			for (Location location : buildLog)
+			for (val location : buildLog)
 				location.getBlock().setType(Material.AIR);
 
 		}, getPostMatchTime() + 1);
@@ -533,7 +530,7 @@ public class Match implements Spectatable {
 
 	public InventoryStatsMenu setInventoryStats(Profile profile, MatchStatisticCollector matchStatisticCollector) {
 
-		InventoryStatsMenu menu = new InventoryStatsMenu(profile, getOpponent(profile).getName(),
+		val menu = new InventoryStatsMenu(profile, getOpponent(profile).getName(),
 				matchStatisticCollector);
 
 		if (!(this instanceof TeamMatch))

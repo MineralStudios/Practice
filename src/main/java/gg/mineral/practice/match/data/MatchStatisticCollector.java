@@ -5,7 +5,6 @@ import java.util.List;
 import org.bukkit.ChatColor;
 import org.bukkit.Material;
 import org.bukkit.inventory.ItemStack;
-import org.bukkit.potion.PotionEffect;
 
 import gg.mineral.api.collection.GlueList;
 import gg.mineral.practice.entity.Profile;
@@ -13,6 +12,7 @@ import gg.mineral.practice.util.math.MathUtil;
 import gg.mineral.practice.util.messages.StringUtil;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
+import lombok.val;
 
 @RequiredArgsConstructor
 public class MatchStatisticCollector {
@@ -62,10 +62,10 @@ public class MatchStatisticCollector {
         this.leggings = profile.getInventory().getLeggings();
         this.boots = profile.getInventory().getBoots();
 
-        for (final PotionEffect potionEffect : profile.getPlayer().getActivePotionEffects()) {
-            final String romanNumeral = MathUtil.convertToRomanNumeral(potionEffect.getAmplifier() + 1);
-            final String effectName = StringUtil.toNiceString(potionEffect.getType().getName().toLowerCase());
-            final String duration = MathUtil.convertTicksToMinutes(potionEffect.getDuration());
+        for (val potionEffect : profile.getPlayer().getActivePotionEffects()) {
+            val romanNumeral = MathUtil.convertToRomanNumeral(potionEffect.getAmplifier() + 1);
+            val effectName = StringUtil.toNiceString(potionEffect.getType().getName().toLowerCase());
+            val duration = MathUtil.convertTicksToMinutes(potionEffect.getDuration());
             potionEffectStrings.add(ChatColor.YELLOW.toString() + ChatColor.BOLD + "* " + ChatColor.WHITE + effectName
                     + " " + romanNumeral + ChatColor.GRAY + " (" + duration + ")");
         }

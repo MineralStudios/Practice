@@ -4,15 +4,14 @@ import java.util.Collection;
 import java.util.List;
 
 import org.bukkit.Bukkit;
-import org.bukkit.Location;
 
 import gg.mineral.api.collection.GlueList;
 import gg.mineral.bot.ai.goal.DrinkPotionGoal;
 import gg.mineral.bot.ai.goal.EatGappleGoal;
 import gg.mineral.bot.ai.goal.MeleeCombatGoal;
 import gg.mineral.bot.api.configuration.BotConfiguration;
-import gg.mineral.bot.api.entity.living.player.FakePlayer;
-import gg.mineral.practice.arena.Arena;
+
+import gg.mineral.bot.api.instance.ClientInstance;
 import gg.mineral.practice.bots.Difficulty;
 import gg.mineral.practice.entity.Profile;
 import gg.mineral.practice.managers.ArenaManager;
@@ -20,11 +19,12 @@ import gg.mineral.practice.managers.MatchManager;
 import gg.mineral.practice.managers.ProfileManager;
 import gg.mineral.practice.match.data.MatchData;
 import gg.mineral.practice.util.PlayerUtil;
+import lombok.val;
 
 public class BotTeamMatch extends TeamMatch {
 
     Collection<BotConfiguration> team1Bots, team2Bots;
-    List<FakePlayer> team1FakePlayers = new GlueList<>(), team2FakePlayers = new GlueList<>();
+    List<ClientInstance> team1BotInstances = new GlueList<>(), team2BotInstances = new GlueList<>();
 
     public BotTeamMatch(Collection<Profile> team1, Collection<Profile> team2, Collection<BotConfiguration> team1Bots,
             Collection<BotConfiguration> team2Bots, MatchData matchData) {
@@ -37,16 +37,16 @@ public class BotTeamMatch extends TeamMatch {
     public void onMatchStart() {
         super.onMatchStart();
 
-        for (FakePlayer fakePlayer : team1FakePlayers) {
-            fakePlayer.getConfiguration().setPearlCooldown(getData().getPearlCooldown());
-            fakePlayer.startGoals(new DrinkPotionGoal(fakePlayer), new EatGappleGoal(fakePlayer),
-                    new MeleeCombatGoal(fakePlayer));
+        for (val instance : team1BotInstances) {
+            instance.getConfiguration().setPearlCooldown(getData().getPearlCooldown());
+            instance.startGoals(new DrinkPotionGoal(instance), new EatGappleGoal(instance),
+                    new MeleeCombatGoal(instance));
         }
 
-        for (FakePlayer fakePlayer : team2FakePlayers) {
-            fakePlayer.getConfiguration().setPearlCooldown(getData().getPearlCooldown());
-            fakePlayer.startGoals(new DrinkPotionGoal(fakePlayer), new EatGappleGoal(fakePlayer),
-                    new MeleeCombatGoal(fakePlayer));
+        for (val instance : team2BotInstances) {
+            instance.getConfiguration().setPearlCooldown(getData().getPearlCooldown());
+            instance.startGoals(new DrinkPotionGoal(instance), new EatGappleGoal(instance),
+                    new MeleeCombatGoal(instance));
         }
     }
 
@@ -56,35 +56,35 @@ public class BotTeamMatch extends TeamMatch {
             return;
 
         MatchManager.registerMatch(this);
-        Arena arena = ArenaManager.getArenas().get(getData().getArenaId());
-        Location location1 = arena.getLocation1().clone();
-        Location location2 = arena.getLocation2().clone();
+        val arena = ArenaManager.getArenas().get(getData().getArenaId());
+        val location1 = arena.getLocation1().clone();
+        val location2 = arena.getLocation2().clone();
         setupLocations(location1, location2);
 
-        for (Profile teamMember : team1RemainingPlayers)
+        for (val teamMember : team1RemainingPlayers)
             PlayerUtil.teleport(teamMember.getPlayer(), location1);
 
-        for (Profile teamMember : team2RemainingPlayers)
+        for (val teamMember : team2RemainingPlayers)
             PlayerUtil.teleport(teamMember.getPlayer(), location2);
 
         startCountdown();
 
         int suffix = 0;
 
-        for (BotConfiguration difficulty : team1Bots) {
-            difficulty.setUsernameSuffix("" + (suffix++));
-            FakePlayer fakePlayer = Difficulty.spawn(difficulty, location1);
+        for (val config : team1Bots) {
+            config.setUsernameSuffix("" + (suffix++));
+            val instance = Difficulty.spawn(config, location1);
             this.team1RemainingPlayers
-                    .add(ProfileManager.getOrCreateProfile(Bukkit.getPlayer(fakePlayer.getUuid())));
-            team1FakePlayers.add(fakePlayer);
+                    .add(ProfileManager.getOrCreateProfile(Bukkit.getPlayer(config.getUuid())));
+            team1BotInstances.add(instance);
         }
 
-        for (BotConfiguration difficulty : team2Bots) {
-            difficulty.setUsernameSuffix("" + (suffix++));
-            FakePlayer fakePlayer = Difficulty.spawn(difficulty, location2);
+        for (val config : team2Bots) {
+            config.setUsernameSuffix("" + (suffix++));
+            val clientInstance = Difficulty.spawn(config, location2);
             this.team2RemainingPlayers
-                    .add(ProfileManager.getOrCreateProfile(Bukkit.getPlayer(fakePlayer.getUuid())));
-            team2FakePlayers.add(fakePlayer);
+                    .add(ProfileManager.getOrCreateProfile(Bukkit.getPlayer(config.getUuid())));
+            team2BotInstances.add(clientInstance);
         }
 
         this.participants.addAll(team1RemainingPlayers);
@@ -95,21 +95,21 @@ public class BotTeamMatch extends TeamMatch {
         this.team1RequiredHitCount = team1RemainingPlayers.size() * 100;
         this.team2RequiredHitCount = team2RemainingPlayers.size() * 100;
 
-        org.bukkit.scoreboard.Scoreboard team1sb = getDisplayNameBoard(team1RemainingPlayers,
+        val team1sb = getDisplayNameBoard(team1RemainingPlayers,
                 team2RemainingPlayers);
-        org.bukkit.scoreboard.Scoreboard team2sb = getDisplayNameBoard(team2RemainingPlayers,
+        val team2sb = getDisplayNameBoard(team2RemainingPlayers,
                 team1RemainingPlayers);
 
-        for (Profile teamMember : team1RemainingPlayers) {
+        for (val teamMember : team1RemainingPlayers) {
             prepareForMatch(teamMember, team1sb);
-            for (FakePlayer fakePlayer : team1FakePlayers)
-                fakePlayer.getFriendlyEntityUUIDs().add(teamMember.getUuid());
+            for (val instance : team1BotInstances)
+                instance.getFakePlayer().getFriendlyEntityUUIDs().add(teamMember.getUuid());
         }
 
-        for (Profile teamMember : team2RemainingPlayers) {
+        for (val teamMember : team2RemainingPlayers) {
             prepareForMatch(teamMember, team2sb);
-            for (FakePlayer fakePlayer : team2FakePlayers)
-                fakePlayer.getFriendlyEntityUUIDs().add(teamMember.getUuid());
+            for (val instance : team2BotInstances)
+                instance.getFakePlayer().getFriendlyEntityUUIDs().add(teamMember.getUuid());
         }
     }
 

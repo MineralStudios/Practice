@@ -4,7 +4,6 @@ import gg.mineral.server.combat.KnockbackProfile;
 import lombok.Getter;
 import lombok.Setter;
 
-import java.util.Map;
 import net.minecraft.server.v1_8_R3.EntityLiving;
 
 @Getter
@@ -19,7 +18,7 @@ public class CustomKnockback extends KnockbackProfile {
     }
 
     @Override
-    public Map<String, Object> callFirstStage(EntityLiving attacker, EntityLiving victim) {
+    public void callFirstStage(EntityLiving attacker, EntityLiving victim) {
         if (friction > 0) {
             victim.motX /= friction;
             victim.motY /= friction;
@@ -41,12 +40,10 @@ public class CustomKnockback extends KnockbackProfile {
 
         if (victim.motY > verticalLimit)
             victim.motY = verticalLimit;
-
-        return null;
     }
 
     @Override
-    public Map<String, Object> callSecondStage(EntityLiving attacker, EntityLiving victim, int knockbackEnchantLevel) {
+    public void callSecondStage(EntityLiving attacker, EntityLiving victim, int knockbackEnchantLevel) {
         int extraKBMult = knockbackEnchantLevel;
         if (attacker.isSprinting())
             extraKBMult += 1;
@@ -62,6 +59,5 @@ public class CustomKnockback extends KnockbackProfile {
             attacker.motZ *= 0.6D;
             attacker.setSprinting(false);
         }
-        return null;
     }
 }

@@ -4,7 +4,6 @@ import org.bukkit.Bukkit;
 import org.bukkit.Location;
 
 import gg.mineral.practice.PracticePlugin;
-import gg.mineral.practice.arena.Arena;
 import gg.mineral.practice.entity.PlayerStatus;
 import gg.mineral.practice.entity.Profile;
 import gg.mineral.practice.events.Event;
@@ -18,7 +17,7 @@ import gg.mineral.practice.util.PlayerUtil;
 import gg.mineral.practice.util.messages.CC;
 import gg.mineral.practice.util.messages.impl.Strings;
 import gg.mineral.practice.util.messages.impl.TextComponents;
-import net.md_5.bungee.api.chat.TextComponent;
+import lombok.val;
 
 public class EventMatch extends Match {
 
@@ -44,10 +43,10 @@ public class EventMatch extends Match {
         setInventoryStats(attacker, attacker.getMatchStatisticCollector());
         setInventoryStats(victim, victim.getMatchStatisticCollector());
 
-        TextComponent winMessage = getWinMessage(attacker);
-        TextComponent loseMessage = getLoseMessage(victim);
+        val winMessage = getWinMessage(attacker);
+        val loseMessage = getLoseMessage(victim);
 
-        for (Profile profile : getParticipants()) {
+        for (val profile : getParticipants()) {
             profile.getPlayer().sendMessage(CC.SEPARATOR);
             profile.getPlayer().sendMessage(Strings.MATCH_RESULTS);
             profile.getPlayer().spigot().sendMessage(winMessage, TextComponents.SPLITTER, loseMessage);
@@ -68,7 +67,7 @@ public class EventMatch extends Match {
             event.removePlayer(victim);
             event.removeMatch(EventMatch.this);
 
-            Arena eventArena = ArenaManager.getArenas().get(event.getEventArenaId());
+            val eventArena = ArenaManager.getArenas().get(event.getEventArenaId());
 
             if (!event.isEnded()) {
                 PlayerUtil.teleport(attacker.getPlayer(), eventArena.getWaitingLocation());
@@ -88,7 +87,7 @@ public class EventMatch extends Match {
 
         }, getPostMatchTime());
 
-        for (Profile spectator : getSpectators()) {
+        for (val spectator : getSpectators()) {
             spectator.getPlayer().sendMessage(CC.SEPARATOR);
             spectator.getPlayer().sendMessage(Strings.MATCH_RESULTS);
             spectator.getPlayer().spigot().sendMessage(winMessage, TextComponents.SPLITTER, loseMessage);

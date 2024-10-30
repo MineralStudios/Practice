@@ -1,17 +1,14 @@
 package gg.mineral.practice.match;
 
 import java.util.Collection;
-import java.util.Iterator;
+
 import java.util.List;
 
 import org.bukkit.Bukkit;
-import org.bukkit.Location;
-import org.bukkit.scoreboard.Team;
 
 import gg.mineral.api.collection.GlueList;
 import gg.mineral.bot.api.BotAPI;
 import gg.mineral.practice.PracticePlugin;
-import gg.mineral.practice.arena.Arena;
 import gg.mineral.practice.entity.Profile;
 import gg.mineral.practice.inventory.menus.InventoryStatsMenu;
 import gg.mineral.practice.managers.ArenaManager;
@@ -31,6 +28,7 @@ import gg.mineral.practice.util.messages.ChatMessage;
 import gg.mineral.practice.util.messages.impl.ChatMessages;
 import gg.mineral.practice.util.messages.impl.Strings;
 import lombok.Getter;
+import lombok.val;
 import net.md_5.bungee.api.chat.ClickEvent;
 import net.md_5.bungee.api.chat.ComponentBuilder;
 import net.md_5.bungee.api.chat.HoverEvent;
@@ -75,9 +73,9 @@ public class TeamMatch extends Match {
             return;
 
         MatchManager.registerMatch(this);
-        Arena arena = ArenaManager.getArenas().get(getData().getArenaId());
-        Location location1 = arena.getLocation1().clone();
-        Location location2 = arena.getLocation2().clone();
+        val arena = ArenaManager.getArenas().get(getData().getArenaId());
+        val location1 = arena.getLocation1().clone();
+        val location2 = arena.getLocation2().clone();
         setupLocations(location1, location2);
 
         this.participants.addAll(team1RemainingPlayers);
@@ -88,15 +86,15 @@ public class TeamMatch extends Match {
         this.team1RequiredHitCount = team1RemainingPlayers.size() * 100;
         this.team2RequiredHitCount = team2RemainingPlayers.size() * 100;
 
-        org.bukkit.scoreboard.Scoreboard team1sb = getDisplayNameBoard(team1RemainingPlayers, team2RemainingPlayers);
-        org.bukkit.scoreboard.Scoreboard team2sb = getDisplayNameBoard(team2RemainingPlayers, team1RemainingPlayers);
+        val team1sb = getDisplayNameBoard(team1RemainingPlayers, team2RemainingPlayers);
+        val team2sb = getDisplayNameBoard(team2RemainingPlayers, team1RemainingPlayers);
 
-        for (Profile teamMember : team1RemainingPlayers) {
+        for (val teamMember : team1RemainingPlayers) {
             prepareForMatch(teamMember, team1sb);
             PlayerUtil.teleport(teamMember.getPlayer(), location1);
         }
 
-        for (Profile teamMember : team2RemainingPlayers) {
+        for (val teamMember : team2RemainingPlayers) {
             prepareForMatch(teamMember, team2sb);
             PlayerUtil.teleport(teamMember.getPlayer(), location2);
         }
@@ -160,7 +158,7 @@ public class TeamMatch extends Match {
 
         victimTeam.remove(victim);
 
-        for (Profile profile : participants) {
+        for (val profile : participants) {
             boolean hasKiller = victim.getKiller() != null;
             ChatMessage message = hasKiller ? ChatMessages.KILLED_BY_PLAYER : ChatMessages.DIED;
             message = message.clone().replace("%victim%", victim.getName());
@@ -187,9 +185,9 @@ public class TeamMatch extends Match {
 
         ended = true;
 
-        Iterator<Profile> attackerTeamIterator = attackerTeam.iterator();
+        val attackerTeamIterator = attackerTeam.iterator();
 
-        Profile attackerTeamLeader = attackerTeamIterator.next();
+        val attackerTeamLeader = attackerTeamIterator.next();
 
         attackerEndMatch(attackerTeamLeader, attackerInventoryStatsMenus);
 
@@ -200,9 +198,9 @@ public class TeamMatch extends Match {
         ProfileManager.setTeamInventoryStats(victim, victimInventoryStatsMenus);
         MatchManager.remove(this);
 
-        TextComponent winMessage = new TextComponent(
+        val winMessage = new TextComponent(
                 CC.GREEN + "Winner: " + CC.GRAY + attackerTeamLeader.getName() + "\'s team");
-        TextComponent loseMessage = new TextComponent(
+        val loseMessage = new TextComponent(
                 CC.RED + "Loser: " + CC.GRAY + victim.getName() + "\'s team");
         loseMessage
                 .setHoverEvent(
@@ -218,7 +216,7 @@ public class TeamMatch extends Match {
                 new ClickEvent(ClickEvent.Action.RUN_COMMAND,
                         "/viewteaminventory " + attackerTeamLeader.getName()));
 
-        for (Profile profile : participants) {
+        for (val profile : participants) {
             profile.getPlayer().sendMessage(CC.SEPARATOR);
             profile.getPlayer().sendMessage(Strings.MATCH_RESULTS);
             profile.getPlayer().spigot().sendMessage(winMessage);
@@ -246,7 +244,7 @@ public class TeamMatch extends Match {
 
         BotAPI.INSTANCE.despawn(victim.getPlayer().getUniqueId());
 
-        for (Profile spectator : getSpectators()) {
+        for (val spectator : getSpectators()) {
             spectator.getPlayer().sendMessage(CC.SEPARATOR);
             spectator.getPlayer().sendMessage(Strings.MATCH_RESULTS);
             spectator.getPlayer().spigot().sendMessage(winMessage);
@@ -299,11 +297,11 @@ public class TeamMatch extends Match {
         boolean isTeam1 = team1RemainingPlayers.contains(attacker);
         int hitCount = isTeam1 ? ++team1HitCount : ++team2HitCount;
         int requiredHitCount = isTeam1 ? team1RequiredHitCount : team2RequiredHitCount;
-        ProfileList opponentTeam = isTeam1 ? team2RemainingPlayers : team1RemainingPlayers;
+        val opponentTeam = isTeam1 ? team2RemainingPlayers : team1RemainingPlayers;
 
         if (hitCount >= requiredHitCount
                 && getData().isBoxing()) {
-            for (Profile opponent : opponentTeam)
+            for (val opponent : opponentTeam)
                 end(opponent);
 
             return true;
@@ -314,18 +312,18 @@ public class TeamMatch extends Match {
 
     public org.bukkit.scoreboard.Scoreboard getDisplayNameBoard(ProfileList playerTeam, ProfileList opponentTeam) {
 
-        org.bukkit.scoreboard.Scoreboard scoreboard = Bukkit.getScoreboardManager().getNewScoreboard();
+        val scoreboard = Bukkit.getScoreboardManager().getNewScoreboard();
 
-        Team teammates = scoreboard.registerNewTeam("teammates");
-        Team opponents = scoreboard.registerNewTeam("opponents");
+        val teammates = scoreboard.registerNewTeam("teammates");
+        val opponents = scoreboard.registerNewTeam("opponents");
 
         teammates.setPrefix(CC.GREEN);
         opponents.setPrefix(CC.RED);
 
-        for (Profile profile : playerTeam)
+        for (val profile : playerTeam)
             teammates.addEntry(profile.getName());
 
-        for (Profile profile : opponentTeam)
+        for (val profile : opponentTeam)
             opponents.addEntry(profile.getName());
 
         return scoreboard;
