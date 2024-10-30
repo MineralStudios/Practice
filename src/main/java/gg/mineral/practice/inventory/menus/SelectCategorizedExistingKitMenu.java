@@ -1,13 +1,12 @@
 package gg.mineral.practice.inventory.menus;
 
-import org.bukkit.inventory.ItemStack;
-
 import gg.mineral.practice.catagory.Catagory;
-import gg.mineral.practice.gametype.Gametype;
+
 import gg.mineral.practice.inventory.ClickCancelled;
 import gg.mineral.practice.inventory.PracticeMenu;
 import gg.mineral.practice.util.items.ItemBuilder;
 import gg.mineral.practice.util.messages.CC;
+import lombok.val;
 
 @ClickCancelled(true)
 public class SelectCategorizedExistingKitMenu extends SelectExistingKitMenu {
@@ -25,8 +24,8 @@ public class SelectCategorizedExistingKitMenu extends SelectExistingKitMenu {
 
 	@Override
 	public void update() {
-		for (Gametype g : catagory.getGametypes()) {
-			ItemStack item = new ItemBuilder(g.getDisplayItem().clone())
+		for (val g : catagory.getGametypes()) {
+			val item = new ItemBuilder(g.getDisplayItem().clone())
 					.name(CC.SECONDARY + CC.B + g.getDisplayName()).lore(CC.ACCENT + "Click to select.").build();
 			add(item, interaction -> {
 				if (viewer.isInKitCreator()) {

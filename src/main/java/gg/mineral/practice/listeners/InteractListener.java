@@ -1,7 +1,5 @@
 package gg.mineral.practice.listeners;
 
-import java.util.function.Predicate;
-
 import org.bukkit.Material;
 import org.bukkit.block.BlockFace;
 import org.bukkit.event.EventHandler;
@@ -14,20 +12,21 @@ import org.bukkit.scheduler.BukkitRunnable;
 
 import gg.mineral.practice.PracticePlugin;
 import gg.mineral.practice.entity.PlayerStatus;
-import gg.mineral.practice.entity.Profile;
+
 import gg.mineral.practice.inventory.menus.AddItemsMenu;
 import gg.mineral.practice.inventory.menus.SaveLoadKitsMenu;
 import gg.mineral.practice.managers.ProfileManager;
 import gg.mineral.practice.util.items.ItemStacks;
+import lombok.val;
 
 public class InteractListener implements Listener {
 
 	@EventHandler(priority = EventPriority.HIGHEST)
 	public void onPlayerInteract(PlayerInteractEvent e) {
 
-		Profile profile = ProfileManager.getOrCreateProfile(e.getPlayer());
+		val profile = ProfileManager.getOrCreateProfile(e.getPlayer());
 
-		Action action = e.getAction();
+		val action = e.getAction();
 
 		if (action == Action.PHYSICAL
 				&& e.getPlayer().getLocation().getBlock().getRelative(BlockFace.DOWN).getType() == Material.SOIL) {
@@ -36,19 +35,16 @@ public class InteractListener implements Listener {
 		}
 
 		if (profile.getPlayerStatus() == PlayerStatus.FIGHTING && !profile.isInMatchCountdown()
-				&& (action == Action.LEFT_CLICK_AIR || action == Action.LEFT_CLICK_BLOCK)) {
+				&& (action == Action.LEFT_CLICK_AIR || action == Action.LEFT_CLICK_BLOCK))
 			profile.getMatchStatisticCollector().click();
-		}
 
-		if (action != Action.RIGHT_CLICK_AIR && action != Action.RIGHT_CLICK_BLOCK) {
+		if (action != Action.RIGHT_CLICK_AIR && action != Action.RIGHT_CLICK_BLOCK)
 			return;
-		}
 
-		Predicate<Profile> predicate = profile.getInventory().getTask(profile.getInventory().getHeldItemSlot());
+		val predicate = profile.getInventory().getTask(profile.getInventory().getHeldItemSlot());
 
-		if (predicate != null && predicate.test(profile)) {
+		if (predicate != null && predicate.test(profile))
 			return;
-		}
 
 		if (profile.isInMatchCountdown()) {
 			e.setCancelled(true);
@@ -59,9 +55,8 @@ public class InteractListener implements Listener {
 				|| profile.isInKitEditor()) {
 			e.setCancelled(true);
 
-			if (e.getClickedBlock() == null) {
+			if (e.getClickedBlock() == null)
 				return;
-			}
 
 			if (e.getClickedBlock().getType() == Material.ANVIL) {
 				profile.openMenu(new SaveLoadKitsMenu());
@@ -92,9 +87,8 @@ public class InteractListener implements Listener {
 				new BukkitRunnable() {
 					@Override
 					public void run() {
-						if (profile.getPlayer().getHealth() >= 20) {
+						if (profile.getPlayer().getHealth() >= 20)
 							return;
-						}
 
 						profile.getInventory().setItemInHand(ItemStacks.EMPTY_BOWL);
 
@@ -111,10 +105,9 @@ public class InteractListener implements Listener {
 		}
 
 		if (e.getClickedBlock() != null && e.getClickedBlock().getType() == Material.TNT) {
-			Material type = profile.getInventory().getItemInHand().getType();
-			if (type != Material.FLINT_AND_STEEL || type != Material.FIREBALL) {
+			val type = profile.getInventory().getItemInHand().getType();
+			if (type != Material.FLINT_AND_STEEL || type != Material.FIREBALL)
 				return;
-			}
 
 			if (profile.getPlayerStatus() != PlayerStatus.FIGHTING) {
 				e.setCancelled(true);

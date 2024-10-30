@@ -3,9 +3,10 @@ package gg.mineral.practice.inventory;
 import gg.mineral.practice.entity.Profile;
 import gg.mineral.practice.match.TeamMatch;
 import gg.mineral.practice.match.data.MatchData;
-import gg.mineral.practice.party.Party;
+
 import gg.mineral.practice.tournaments.Tournament;
 import gg.mineral.practice.util.messages.impl.ErrorMessages;
+import lombok.val;
 
 public enum SubmitAction {
     DUEL {
@@ -18,7 +19,7 @@ public enum SubmitAction {
 
         @Override
         public void execute(Profile profile) {
-            Party party = profile.getParty();
+            val party = profile.getParty();
 
             if (!profile.getParty().getPartyLeader().equals(profile)) {
                 profile.message(ErrorMessages.YOU_ARE_NOT_PARTY_LEADER);
@@ -30,7 +31,7 @@ public enum SubmitAction {
                 return;
             }
 
-            TeamMatch partyMatch = new TeamMatch(party, new MatchData(profile.getDuelSettings()));
+            val partyMatch = new TeamMatch(party, new MatchData(profile.getDuelSettings()));
             partyMatch.start();
         }
 
@@ -39,7 +40,7 @@ public enum SubmitAction {
 
         @Override
         public void execute(Profile profile) {
-            Tournament tournament = new Tournament(profile);
+            val tournament = new Tournament(profile);
             tournament.start();
         }
     };

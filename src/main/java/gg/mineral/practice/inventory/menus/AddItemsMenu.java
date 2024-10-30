@@ -11,6 +11,7 @@ import gg.mineral.practice.inventory.PracticeMenu;
 import gg.mineral.practice.util.messages.CC;
 import gg.mineral.practice.util.messages.impl.ErrorMessages;
 import it.unimi.dsi.fastutil.objects.Object2IntOpenHashMap;
+import lombok.val;
 
 @ClickCancelled(true)
 public class AddItemsMenu extends PracticeMenu {
@@ -22,39 +23,39 @@ public class AddItemsMenu extends PracticeMenu {
 	@Override
 	public void update() {
 
-		Object2IntOpenHashMap<String> maxAmountMap = new Object2IntOpenHashMap<String>();
+		val maxAmountMap = new Object2IntOpenHashMap<String>();
 
-		for (ItemStack is : viewer.getKitEditor().getGametype().getKit().getContents()) {
+		for (val is : viewer.getKitEditor().getGametype().getKit().getContents()) {
 			if (is == null || !LIMITED.contains(is.getType()))
 				continue;
 
-			String string = is.getType() + ":" + is.getDurability();
+			val string = is.getType() + ":" + is.getDurability();
 			int maxAmount = maxAmountMap.getOrDefault(string, 0);
 			maxAmountMap.put(string, maxAmount + is.getAmount());
 		}
 
-		for (ItemStack is : viewer.getKitEditor().getGametype().getKit().getContents()) {
+		for (val is : viewer.getKitEditor().getGametype().getKit().getContents()) {
 
 			if (is == null)
 				continue;
 
-			Material i = is.getType();
+			val type = is.getType();
 
 			if (contains(is))
 				continue;
 
-			if (INCLUDED.contains(i)) {
-				for (Material material : INCLUDED) {
-					ItemStack item = new ItemStack(material, 64);
+			if (INCLUDED.contains(type)) {
+				for (val material : INCLUDED) {
+					val item = new ItemStack(material, 64);
 					add(item, interaction -> interaction.getProfile().getPlayer().setItemOnCursor(item));
 				}
 
 				continue;
 			}
 
-			if (LIMITED.contains(i)) {
+			if (LIMITED.contains(type)) {
 				add(is, interaction -> {
-					String string = is.getType() + ":" + is.getDurability();
+					val string = is.getType() + ":" + is.getDurability();
 					int maxAmount = maxAmountMap.getOrDefault(string, 0);
 
 					if (viewer.getInventory().getNumberAndAmount(is.getType(), is.getDurability()) >= maxAmount) {

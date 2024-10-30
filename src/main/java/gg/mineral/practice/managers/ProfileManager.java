@@ -13,12 +13,15 @@ import org.bukkit.util.Vector;
 import org.eclipse.jdt.annotation.Nullable;
 
 import gg.mineral.api.config.FileConfiguration;
+import gg.mineral.bot.api.BotAPI;
 import gg.mineral.practice.entity.Profile;
 import gg.mineral.practice.entity.ProfileData;
 import gg.mineral.practice.inventory.menus.InventoryStatsMenu;
 import gg.mineral.practice.util.messages.Message;
+import it.unimi.dsi.fastutil.objects.Object2ObjectFunction;
 import it.unimi.dsi.fastutil.objects.Object2ObjectOpenHashMap;
 import lombok.Getter;
+import lombok.val;
 
 public class ProfileManager {
 	final static FileConfiguration lobbyConfig = new FileConfiguration("lobby.yml", "plugins/Practice");
@@ -28,7 +31,23 @@ public class ProfileManager {
 	@Getter
 	static Location spawnLocation;
 	@Getter
-	static Object2ObjectOpenHashMap<UUID, Profile> profiles = new Object2ObjectOpenHashMap<>();
+	static Object2ObjectOpenHashMap<UUID, Profile> profiles = new Object2ObjectOpenHashMap<>() {
+
+		@Override
+		public Profile computeIfAbsent(UUID key,
+				Object2ObjectFunction<? super UUID, ? extends Profile> mappingFunction) {
+			if (BotAPI.INSTANCE.isFakePlayer(key))
+				return mappingFunction.apply(key);
+			return super.computeIfAbsent(key, mappingFunction);
+		}
+
+		@Override
+		public Profile put(UUID key, Profile value) {
+			if (BotAPI.INSTANCE.isFakePlayer(key))
+				return value;
+			return super.put(key, value);
+		}
+	};
 	static Object2ObjectOpenHashMap<String, InventoryStatsMenu> inventoryStats = new Object2ObjectOpenHashMap<>();
 	static Object2ObjectOpenHashMap<String, List<InventoryStatsMenu>> teamInventoryStats = new Object2ObjectOpenHashMap<>();
 
@@ -50,8 +69,7 @@ public class ProfileManager {
 
 	public static int count(Predicate<Profile> predicate) {
 		int count = 0;
-		for (Profile profile : profiles.values()) {
-
+		for (val profile : profiles.values()) {
 			if (!predicate.test(profile))
 				continue;
 
@@ -59,6 +77,23 @@ public class ProfileManager {
 		}
 
 		return count;
+	}
+
+	private static int lastOnline = 0, lastCount = 0;
+
+	public static int countBots() {
+		if (lastOnline == Bukkit.getOnlinePlayers().size())
+			return lastCount;
+		int count = 0;
+		lastOnline = Bukkit.getOnlinePlayers().size();
+		for (val player : Bukkit.getOnlinePlayers()) {
+			if (!BotAPI.INSTANCE.isFakePlayer(player.getUniqueId()))
+				continue;
+
+			count++;
+		}
+
+		return lastCount = count;
 	}
 
 	public static ProfileData getProfileData(String name, UUID uuid) {
@@ -97,7 +132,7 @@ public class ProfileManager {
 
 	@Nullable
 	public static Profile getProfile(String name) {
-		for (Profile p : profiles.values()) {
+		for (val p : profiles.values()) {
 			if (!p.getName().equalsIgnoreCase(name))
 				continue;
 
@@ -108,7 +143,7 @@ public class ProfileManager {
 
 	@Nullable
 	public static Profile getProfile(String name, Predicate<Profile> predicate) {
-		Profile profile = getProfile(name);
+		val profile = getProfile(name);
 
 		if (profile == null || !predicate.test(profile))
 			return null;

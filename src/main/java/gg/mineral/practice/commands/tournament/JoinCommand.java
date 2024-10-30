@@ -2,14 +2,14 @@ package gg.mineral.practice.commands.tournament;
 
 import gg.mineral.practice.commands.PlayerCommand;
 import gg.mineral.practice.entity.PlayerStatus;
-import gg.mineral.practice.entity.Profile;
-import gg.mineral.practice.events.Event;
+
 import gg.mineral.practice.managers.EventManager;
 import gg.mineral.practice.managers.ProfileManager;
 import gg.mineral.practice.managers.TournamentManager;
-import gg.mineral.practice.tournaments.Tournament;
+
 import gg.mineral.practice.util.messages.impl.ErrorMessages;
 import gg.mineral.practice.util.messages.impl.UsageMessages;
+import lombok.val;
 
 public class JoinCommand extends PlayerCommand {
 
@@ -19,7 +19,7 @@ public class JoinCommand extends PlayerCommand {
 
     @Override
     public void execute(org.bukkit.entity.Player player, String[] args) {
-        Profile profile = ProfileManager.getOrCreateProfile(player);
+        val profile = ProfileManager.getOrCreateProfile(player);
 
         if (args.length < 1) {
             profile.message(UsageMessages.JOIN);
@@ -41,12 +41,12 @@ public class JoinCommand extends PlayerCommand {
             return;
         }
 
-        Event event = EventManager.getEventByName(args[0]);
+        val event = EventManager.getEventByName(args[0]);
 
         if (event != null)
             event.addPlayer(profile);
 
-        Tournament tournament = TournamentManager.getTournamentByName(args[0]);
+        val tournament = TournamentManager.getTournamentByName(args[0]);
 
         if (tournament != null)
             tournament.addPlayer(profile);

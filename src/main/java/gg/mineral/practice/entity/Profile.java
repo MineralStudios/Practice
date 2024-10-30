@@ -1,7 +1,7 @@
 package gg.mineral.practice.entity;
 
 import java.util.Collections;
-import java.util.Iterator;
+
 import java.util.List;
 import java.util.UUID;
 import java.util.concurrent.ConcurrentLinkedQueue;
@@ -10,9 +10,9 @@ import org.bukkit.Bukkit;
 import org.bukkit.GameMode;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.craftbukkit.v1_8_R3.entity.CraftPlayer;
-import org.bukkit.entity.Player;
+
 import org.bukkit.inventory.ItemStack;
-import org.bukkit.potion.PotionEffect;
+
 import org.eclipse.jdt.annotation.NonNull;
 import org.eclipse.jdt.annotation.Nullable;
 
@@ -45,7 +45,7 @@ import gg.mineral.practice.scoreboard.Scoreboard;
 import gg.mineral.practice.scoreboard.ScoreboardHandler;
 import gg.mineral.practice.scoreboard.impl.DefaultScoreboard;
 import gg.mineral.practice.tournaments.Tournament;
-import gg.mineral.practice.traits.Spectatable;
+
 import gg.mineral.practice.util.PlayerUtil;
 import gg.mineral.practice.util.collection.Registry;
 import gg.mineral.practice.util.math.PearlCooldown;
@@ -57,7 +57,8 @@ import it.unimi.dsi.fastutil.ints.Int2ObjectOpenHashMap;
 import it.unimi.dsi.fastutil.shorts.Short2ObjectOpenHashMap;
 import lombok.Getter;
 import lombok.Setter;
-import net.minecraft.server.v1_8_R3.EntityTrackerEntry;
+import lombok.val;
+
 import net.minecraft.server.v1_8_R3.PacketPlayOutPlayerInfo;
 import net.minecraft.server.v1_8_R3.PacketPlayOutPlayerInfo.EnumPlayerInfoAction;
 import net.minecraft.server.v1_8_R3.WorldServer;
@@ -138,12 +139,12 @@ public class Profile extends ProfileData implements QueuedEntity {
 
 	private ItemStack[] getCustomKit(Gametype gametype, ConfigurationSection cs) {
 
-		ItemStack[] kit = gametype.getKit().getContents().clone();
+		val kit = gametype.getKit().getContents().clone();
 
-		for (String key : cs.getKeys(false)) {
-			Object o = cs.get(key);
+		for (val key : cs.getKeys(false)) {
+			val o = cs.get(key);
 
-			int index = Integer.valueOf(key);
+			val index = Integer.valueOf(key);
 
 			if (o == null) {
 				kit[index] = null;
@@ -162,17 +163,17 @@ public class Profile extends ProfileData implements QueuedEntity {
 	}
 
 	public Int2ObjectOpenHashMap<ItemStack[]> getCustomKits(Queuetype queuetype, Gametype gametype) {
-		short hash = (short) (queuetype.getId() << 8 | gametype.getId());
+		val hash = (short) (queuetype.getId() << 8 | gametype.getId());
 		return getCustomKits(queuetype, gametype, hash);
 	}
 
 	public Int2ObjectOpenHashMap<ItemStack[]> getCustomKits(Queuetype queuetype, Gametype gametype, short hash) {
-		Int2ObjectOpenHashMap<ItemStack[]> kitLoadouts = customKits.get(hash);
+		var kitLoadouts = customKits.get(hash);
 
 		if (kitLoadouts != null)
 			return kitLoadouts;
 
-		ConfigurationSection cs = ProfileManager.getPlayerConfig()
+		val cs = ProfileManager.getPlayerConfig()
 				.getConfigurationSection(getName() + ".KitData."
 						+ gametype.getName() + "." + queuetype.getName());
 
@@ -181,8 +182,8 @@ public class Profile extends ProfileData implements QueuedEntity {
 
 		kitLoadouts = new Int2ObjectOpenHashMap<>();
 
-		for (String key : cs.getKeys(false)) {
-			ConfigurationSection cs1 = ProfileManager.getPlayerConfig()
+		for (val key : cs.getKeys(false)) {
+			val cs1 = ProfileManager.getPlayerConfig()
 					.getConfigurationSection(getName() + ".KitData."
 							+ gametype.getName() + "." + queuetype.getName() + "." + key);
 
@@ -266,11 +267,11 @@ public class Profile extends ProfileData implements QueuedEntity {
 	}
 
 	public void removePotionEffects() {
-		Iterator<PotionEffect> it = player.getActivePotionEffects().iterator();
+		val it = player.getActivePotionEffects().iterator();
 
 		while (it.hasNext()) {
 			try {
-				PotionEffect e = it.next();
+				val e = it.next();
 
 				if (e == null)
 					continue;
@@ -283,15 +284,14 @@ public class Profile extends ProfileData implements QueuedEntity {
 	}
 
 	public boolean testVisibility(UUID uuid) {
-		@Nullable
-		Profile p = ProfileManager.getProfile(uuid);
+		val p = ProfileManager.getProfile(uuid);
 
-		Match match = getMatch();
+		val match = getMatch();
 		if (playerStatus == PlayerStatus.FIGHTING
 				&& match != null && p != null && match.getParticipants().contains(p))
 			return true;
 
-		Spectatable spectatable = spectateHandler.getSpectatable();
+		val spectatable = spectateHandler.getSpectatable();
 
 		if (spectatable != null)
 			if ((playerStatus == PlayerStatus.FOLLOWING || playerStatus == PlayerStatus.SPECTATING)
@@ -308,17 +308,16 @@ public class Profile extends ProfileData implements QueuedEntity {
 	}
 
 	public boolean testTabVisibility(UUID uuid) {
-		@Nullable
-		Profile p = ProfileManager.getProfile(uuid);
+		val p = ProfileManager.getProfile(uuid);
 
-		boolean isBot = BotAPI.INSTANCE.isFakePlayer(uuid);
+		val isBot = BotAPI.INSTANCE.isFakePlayer(uuid);
 
-		Match match = getMatch();
+		val match = getMatch();
 		if (playerStatus == PlayerStatus.FIGHTING
 				&& match != null && p != null && match.getParticipants().contains(p))
 			return true;
 
-		Spectatable spectatable = spectateHandler.getSpectatable();
+		val spectatable = spectateHandler.getSpectatable();
 
 		if (spectatable != null)
 			if ((playerStatus == PlayerStatus.FOLLOWING || playerStatus == PlayerStatus.SPECTATING)
@@ -354,7 +353,7 @@ public class Profile extends ProfileData implements QueuedEntity {
 		}
 	}
 
-	public void addPlayerToQueue(Queuetype queuetype,
+	public boolean addPlayerToQueue(Queuetype queuetype,
 			Gametype gametype) {
 		assert queueSettings != null;
 		assert queuetype != null;
@@ -367,7 +366,7 @@ public class Profile extends ProfileData implements QueuedEntity {
 				getInventory().setInventoryForQueue();
 			}
 
-			Message message = ChatMessages.JOINED_QUEUE.clone().replace("%queue%", queuetype.getDisplayName())
+			val message = ChatMessages.JOINED_QUEUE.clone().replace("%queue%", queuetype.getDisplayName())
 					.replace("%catagory%",
 							gametype.isInCatagory()
 									? " " + gametype.getCatagoryName()
@@ -380,14 +379,15 @@ public class Profile extends ProfileData implements QueuedEntity {
 			else
 				message(message);
 
-			byte teamSize = queueSettings.getTeamSize();
-			boolean botTeammate = queueSettings.isTeammateBot();
-			boolean botOpponents = queueSettings.isOpponentBot();
-			QueueSystem.addPlayerToQueue(isInParty() ? party : this,
-					QueueSettings.toEntry(queuetype, gametype, teamSize,
-							botTeammate,
-							botOpponents, queueSettings.getEnabledArenas()));
+			val teamSize = queueSettings.getTeamSize();
+
+			return QueueSystem.addPlayerToQueue(isInParty() ? party : this,
+					QueueSettings.toEntry(queuetype, gametype, teamSize, queueSettings.isBotQueue(),
+							queueSettings.getOpponentDifficulty(),
+							queueSettings.getBotTeamSetting(), queueSettings.getEnabledArenas()));
 		}
+
+		return false;
 	}
 
 	public void teleportToLobby() {
@@ -455,7 +455,7 @@ public class Profile extends ProfileData implements QueuedEntity {
 	}
 
 	public void setPlayerStatus(PlayerStatus newPlayerStatus) {
-		boolean canFly = newPlayerStatus.getCanFly().apply(this);
+		val canFly = newPlayerStatus.getCanFly().apply(this);
 
 		this.getPlayer().setAllowFlight(canFly);
 		this.getPlayer().setFlying(canFly);
@@ -468,7 +468,7 @@ public class Profile extends ProfileData implements QueuedEntity {
 	public void setGameMode(GameMode gameMode) {
 		this.player.setGameMode(gameMode);
 
-		boolean canFly = this.playerStatus.getCanFly().apply(this);
+		val canFly = this.playerStatus.getCanFly().apply(this);
 
 		this.getPlayer().setAllowFlight(canFly);
 		this.getPlayer().setFlying(canFly);
@@ -477,7 +477,7 @@ public class Profile extends ProfileData implements QueuedEntity {
 	public void removeFromTab(UUID uuid) {
 		if (!visiblePlayersOnTab.contains(uuid))
 			return;
-		Profile profile = ProfileManager.getProfile(uuid);
+		val profile = ProfileManager.getProfile(uuid);
 		if (profile == null)
 			return;
 
@@ -489,7 +489,7 @@ public class Profile extends ProfileData implements QueuedEntity {
 	public void showOnTab(UUID uuid) {
 		if (visiblePlayersOnTab.contains(uuid))
 			return;
-		Profile profile = ProfileManager.getProfile(uuid);
+		val profile = ProfileManager.getProfile(uuid);
 		if (profile == null)
 			return;
 
@@ -500,10 +500,10 @@ public class Profile extends ProfileData implements QueuedEntity {
 	public void removeFromView(UUID uuid) {
 		if (!visiblePlayers.contains(uuid))
 			return;
-		Profile profile = ProfileManager.getProfile(uuid);
+		val profile = ProfileManager.getProfile(uuid);
 		if (profile == null)
 			return;
-		EntityTrackerEntry entry = ((WorldServer) getPlayer().getHandle().getWorld()).tracker.trackedEntities
+		val entry = ((WorldServer) getPlayer().getHandle().getWorld()).tracker.trackedEntities
 				.get(profile.getPlayer().getHandle().getId());
 		if (entry != null && !entry.trackedPlayers.contains(this.getPlayer().getHandle()))
 			entry.clear(this.getPlayer().getHandle());
@@ -512,10 +512,10 @@ public class Profile extends ProfileData implements QueuedEntity {
 	public void showPlayer(UUID uuid) {
 		if (visiblePlayers.contains(uuid))
 			return;
-		Profile profile = ProfileManager.getProfile(uuid);
+		val profile = ProfileManager.getProfile(uuid);
 		if (profile == null)
 			return;
-		EntityTrackerEntry entry = ((WorldServer) getPlayer().getHandle().getWorld()).tracker.trackedEntities
+		val entry = ((WorldServer) getPlayer().getHandle().getWorld()).tracker.trackedEntities
 				.get(profile.getPlayer().getHandle().getId());
 		if (entry != null && !entry.trackedPlayers.contains(this.getPlayer().getHandle()))
 			entry.updatePlayer(this.getPlayer().getHandle());
@@ -523,18 +523,18 @@ public class Profile extends ProfileData implements QueuedEntity {
 
 	public void updateVisiblity() {
 
-		List<Player> players = getPlayer().getWorld().getPlayers();
+		val players = getPlayer().getWorld().getPlayers();
 
-		for (UUID uuid : getVisiblePlayers())
+		for (val uuid : getVisiblePlayers())
 			if (!testVisibility(uuid))
 				removeFromView(uuid);
 
-		for (UUID uuid : getVisiblePlayersOnTab())
+		for (val uuid : getVisiblePlayersOnTab())
 			if (!testTabVisibility(uuid))
 				removeFromTab(uuid);
 
-		for (Player player : players) {
-			boolean removedFromTab = false;
+		for (val player : players) {
+			var removedFromTab = false;
 
 			if (testTabVisibility(player.getUniqueId()))
 				showOnTab(player.getUniqueId());
@@ -548,7 +548,7 @@ public class Profile extends ProfileData implements QueuedEntity {
 			else
 				removeFromView(player.getUniqueId());
 
-			Profile profile = ProfileManager.getProfile(player.getUniqueId());
+			val profile = ProfileManager.getProfile(player.getUniqueId());
 
 			if (profile == null)
 				continue;
@@ -630,10 +630,10 @@ public class Profile extends ProfileData implements QueuedEntity {
 		event = null;
 	}
 
-	public void setScoreboardEnabled(boolean b) {
-		this.scoreboardEnabled = b;
+	public void setScoreboardEnabled(boolean enabled) {
+		this.scoreboardEnabled = enabled;
 
-		if (b) {
+		if (enabled) {
 			this.scoreboardHandler = new ScoreboardHandler(player);
 			setScoreboard(new DefaultScoreboard());
 		} else

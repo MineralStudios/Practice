@@ -5,15 +5,15 @@ import java.text.DecimalFormat;
 
 import org.bukkit.event.inventory.ClickType;
 
-import gg.mineral.bot.api.configuration.BotConfiguration;
 import gg.mineral.practice.bots.Difficulty;
-import gg.mineral.practice.entity.Profile;
+
 import gg.mineral.practice.inventory.ClickCancelled;
 import gg.mineral.practice.inventory.PracticeMenu;
-import gg.mineral.practice.queue.QueueSettings;
+
 import gg.mineral.practice.util.items.ItemStacks;
 import gg.mineral.practice.util.messages.CC;
 import lombok.RequiredArgsConstructor;
+import lombok.val;
 
 @ClickCancelled(true)
 @RequiredArgsConstructor
@@ -28,11 +28,11 @@ public class CustomBotDifficultyMenu extends PracticeMenu {
         @Override
         public void update() {
 
-                QueueSettings queueSettings = viewer.getQueueSettings();
+                val queueSettings = viewer.getQueueSettings();
 
-                BotConfiguration difficulty = queueSettings.getCustomBotConfiguration();
+                val difficulty = queueSettings.getCustomBotConfiguration();
                 queueSettings.setCustomBotConfiguration(difficulty);
-                queueSettings.setDifficulty((byte) Difficulty.CUSTOM.ordinal());
+                queueSettings.setOpponentDifficulty((byte) Difficulty.CUSTOM.ordinal());
 
                 setSlot(0, ItemStacks.AIM_SPEED.name(CC.SECONDARY + CC.B + "Aim Speed")
                                 .lore(CC.WHITE + "The speed the bot " + CC.SECONDARY + "rotates" + CC.WHITE
@@ -172,21 +172,21 @@ public class CustomBotDifficultyMenu extends PracticeMenu {
                                                                 int.class)));
 
                 setSlot(29, ItemStacks.BACK, interaction -> {
-                        Profile p = interaction.getProfile();
+                        val p = interaction.getProfile();
                         p.getQueueSettings().setCustomBotConfiguration(difficulty);
                         p.openMenu(menu);
                 });
 
                 setSlot(31, ItemStacks.CLICK_TO_APPLY_CHANGES.name(CC.SECONDARY + CC.B + "Save Difficulty").build(),
                                 interaction -> {
-                                        Profile p = interaction.getProfile();
+                                        val p = interaction.getProfile();
                                         p.getQueueSettings()
                                                         .setCustomBotConfiguration(difficulty);
                                         p.openMenu(menu);
                                 });
 
                 setSlot(33, ItemStacks.RANDOM_DIFFICULTY, interaction -> {
-                        QueueSettings queueSettings1 = interaction.getProfile().getQueueSettings();
+                        val queueSettings1 = interaction.getProfile().getQueueSettings();
                         queueSettings1.setCustomBotConfiguration(Difficulty.RANDOM.getConfiguration(queueSettings1));
                         reload();
                 });

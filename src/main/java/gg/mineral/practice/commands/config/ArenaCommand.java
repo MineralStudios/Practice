@@ -1,6 +1,5 @@
 package gg.mineral.practice.commands.config;
 
-import org.bukkit.Location;
 import org.bukkit.craftbukkit.v1_8_R3.entity.CraftPlayer;
 import org.bukkit.entity.Player;
 
@@ -12,7 +11,8 @@ import gg.mineral.practice.util.messages.CC;
 import gg.mineral.practice.util.messages.impl.ChatMessages;
 import gg.mineral.practice.util.messages.impl.ErrorMessages;
 import gg.mineral.practice.util.messages.impl.UsageMessages;
-import it.unimi.dsi.fastutil.objects.ObjectIterator;
+
+import lombok.val;
 
 public class ArenaCommand extends PlayerCommand {
 
@@ -23,7 +23,7 @@ public class ArenaCommand extends PlayerCommand {
 	@Override
 	public void execute(Player player, String[] args) {
 
-		String arg = args.length > 0 ? args[0] : "";
+		val arg = args.length > 0 ? args[0] : "";
 		Arena arena;
 		String arenaName;
 		StringBuilder sb;
@@ -70,7 +70,7 @@ public class ArenaCommand extends PlayerCommand {
 					return;
 				}
 
-				Location loc = player.getLocation();
+				val loc = player.getLocation();
 
 				switch (args[2].toLowerCase()) {
 					case "1":
@@ -105,19 +105,18 @@ public class ArenaCommand extends PlayerCommand {
 
 				arena.setDisplayItem(player.getItemInHand());
 
-				if (args.length > 2) {
+				if (args.length > 2)
 					arena.setDisplayName(args[2].replace("&", "§"));
-				}
 
 				ChatMessages.ARENA_DISPLAY_SET.clone().replace("%arena%", arenaName).send(player);
 				return;
 			case "list":
 				sb = new StringBuilder(CC.GRAY + "[");
 
-				ObjectIterator<Arena> iterator = ArenaManager.getArenas().values().iterator();
+				val iterator = ArenaManager.getArenas().values().iterator();
 
 				while (iterator.hasNext()) {
-					Arena a = iterator.next();
+					val a = iterator.next();
 					sb.append(CC.GREEN + a.getName());
 
 					if (iterator.hasNext())

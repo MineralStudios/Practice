@@ -5,6 +5,7 @@ import gg.mineral.practice.managers.PlayerSettingsManager;
 import gg.mineral.practice.util.messages.impl.ChatMessages;
 import gg.mineral.practice.util.messages.impl.ErrorMessages;
 import gg.mineral.practice.util.messages.impl.UsageMessages;
+import lombok.val;
 
 public class SettingsConfigCommand extends PlayerCommand {
 
@@ -15,7 +16,7 @@ public class SettingsConfigCommand extends PlayerCommand {
 	@Override
 	public void execute(org.bukkit.entity.Player pl, String[] args) {
 
-		String arg = args.length > 0 ? args[0] : "";
+		val arg = args.length > 0 ? args[0] : "";
 		String toggled;
 
 		switch (arg.toLowerCase()) {
@@ -56,9 +57,8 @@ public class SettingsConfigCommand extends PlayerCommand {
 
 				PlayerSettingsManager.setDisplayItem(pl.getItemInHand());
 
-				if (args.length > 2) {
+				if (args.length > 2)
 					PlayerSettingsManager.setDisplayName(args[1].replace("&", "§"));
-				}
 
 				ChatMessages.SETTINGS_DISPLAY_SET.send(pl);
 				return;
@@ -69,7 +69,7 @@ public class SettingsConfigCommand extends PlayerCommand {
 				}
 
 				int slot;
-				String strSlot = args[1];
+				val strSlot = args[1];
 				try {
 					slot = Integer.parseInt(strSlot);
 				} catch (Exception e) {

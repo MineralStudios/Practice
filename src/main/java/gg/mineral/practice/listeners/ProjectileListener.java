@@ -5,14 +5,13 @@ import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.entity.PotionSplashEvent;
-import org.bukkit.potion.PotionEffect;
 import org.bukkit.potion.PotionEffectType;
 
 import gg.mineral.api.event.PlayerThrowPearlEvent;
 import gg.mineral.practice.entity.PlayerStatus;
-import gg.mineral.practice.entity.Profile;
 import gg.mineral.practice.managers.ProfileManager;
 import gg.mineral.practice.util.messages.impl.ChatMessages;
+import lombok.val;
 
 public class ProjectileListener implements Listener {
     @EventHandler
@@ -20,21 +19,21 @@ public class ProjectileListener implements Listener {
         if (!(e.getEntity().getShooter() instanceof Player))
             return;
 
-        final Player shooter = (Player) e.getEntity().getShooter();
-        final Profile shooterProfile = ProfileManager.getProfile(shooter.getUniqueId());
+        val shooter = (Player) e.getEntity().getShooter();
+        val shooterProfile = ProfileManager.getProfile(shooter.getUniqueId());
 
         if (shooterProfile == null)
             return;
 
-        for (final PotionEffect effect : e.getEntity().getEffects()) {
+        for (val effect : e.getEntity().getEffects()) {
             if (!effect.getType().equals(PotionEffectType.HEAL))
                 continue;
 
-            for (LivingEntity entity : e.getAffectedEntities()) {
+            for (val entity : e.getAffectedEntities()) {
                 if (entity.getUniqueId().equals(shooter.getUniqueId()) || !(entity instanceof Player))
                     continue;
 
-                Profile entityProfile = ProfileManager.getProfile(entity.getUniqueId());
+                val entityProfile = ProfileManager.getProfile(entity.getUniqueId());
 
                 if (entityProfile == null)
                     continue;
@@ -49,7 +48,7 @@ public class ProjectileListener implements Listener {
 
     @EventHandler
     public void onThrowPearl(final PlayerThrowPearlEvent e) {
-        Profile profile = ProfileManager.getOrCreateProfile(e.getPlayer());
+        val profile = ProfileManager.getOrCreateProfile(e.getPlayer());
 
         if (profile.isInMatchCountdown() || profile.getPlayerStatus() != PlayerStatus.FIGHTING) {
             e.setCancelled(true);

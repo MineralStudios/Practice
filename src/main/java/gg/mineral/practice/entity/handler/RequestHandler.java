@@ -10,6 +10,7 @@ import gg.mineral.practice.util.messages.impl.ErrorMessages;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import lombok.Setter;
+import lombok.val;
 import net.md_5.bungee.api.chat.ClickEvent;
 import net.md_5.bungee.api.chat.ComponentBuilder;
 import net.md_5.bungee.api.chat.HoverEvent;
@@ -40,14 +41,14 @@ public class RequestHandler {
             return;
         }
 
-        for (DuelRequest d : receiver.getRequestHandler().getRecievedDuelRequests()) {
-            if (d.getSender().equals(profile)) {
+        for (val request : receiver.getRequestHandler().getRecievedDuelRequests()) {
+            if (request.getSender().equals(profile)) {
                 profile.message(ErrorMessages.DUEL_REQUEST_ALREADY_SENT);
                 return;
             }
         }
 
-        String sender = profile.getName();
+        var sender = profile.getName();
 
         if (profile.isInParty()) {
             if (!profile.getParty().getPartyLeader().equals(profile)) {
@@ -58,12 +59,12 @@ public class RequestHandler {
             sender += "'s party (" + profile.getParty().getPartyMembers().size() + ") ";
         }
 
-        DuelRequest request = new DuelRequest(profile, profile.getDuelSettings());
+        val request = new DuelRequest(profile, profile.getDuelSettings());
         receiver.getRequestHandler().getRecievedDuelRequests().add(request);
         profile.removeFromQueue();
         ChatMessages.DUEL_REQUEST_SENT.clone().replace("%player%", receiver.getName()).send(profile.getPlayer());
 
-        HoverEvent hoverEvent = new HoverEvent(HoverEvent.Action.SHOW_TEXT,
+        val hoverEvent = new HoverEvent(HoverEvent.Action.SHOW_TEXT,
                 new ComponentBuilder(profile.getQueueSettings().toString()).create());
 
         ChatMessages.DUEL_REQUEST_RECIEVED.clone().replace("%player%", sender)

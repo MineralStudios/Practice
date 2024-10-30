@@ -1,12 +1,12 @@
 package gg.mineral.practice.inventory.menus;
 
-import gg.mineral.practice.entity.Profile;
 import gg.mineral.practice.inventory.ClickCancelled;
 import gg.mineral.practice.inventory.PracticeMenu;
 import gg.mineral.practice.inventory.SubmitAction;
 import gg.mineral.practice.util.items.ItemStacks;
 import gg.mineral.practice.util.messages.CC;
 import lombok.RequiredArgsConstructor;
+import lombok.val;
 
 @ClickCancelled(true)
 @RequiredArgsConstructor
@@ -17,7 +17,7 @@ public class SelectModeMenu extends PracticeMenu {
 	public void update() {
 
 		setSlot(2, ItemStacks.SIMPLE_MODE, interaction -> {
-			Profile p = interaction.getProfile();
+			val p = interaction.getProfile();
 			p.resetQueueSettings();
 			p.openMenu(new SelectExistingKitMenu(new SelectArenaMenu(action), true));
 		});

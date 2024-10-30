@@ -4,7 +4,6 @@ import java.util.function.Consumer;
 
 import org.bukkit.inventory.ItemStack;
 
-import gg.mineral.practice.arena.Arena;
 import gg.mineral.practice.inventory.ClickCancelled;
 import gg.mineral.practice.inventory.Interaction;
 import gg.mineral.practice.inventory.PracticeMenu;
@@ -12,14 +11,14 @@ import gg.mineral.practice.inventory.SubmitAction;
 import gg.mineral.practice.managers.ArenaManager;
 import gg.mineral.practice.match.TeamMatch;
 import gg.mineral.practice.match.data.MatchData;
-import gg.mineral.practice.party.Party;
+
 import gg.mineral.practice.tournaments.Tournament;
 import gg.mineral.practice.util.items.ItemBuilder;
 import gg.mineral.practice.util.messages.CC;
 import gg.mineral.practice.util.messages.impl.ErrorMessages;
-import it.unimi.dsi.fastutil.bytes.Byte2ObjectOpenHashMap;
-import it.unimi.dsi.fastutil.bytes.ByteIterator;
+
 import lombok.RequiredArgsConstructor;
+import lombok.val;
 
 @ClickCancelled(true)
 @RequiredArgsConstructor
@@ -36,14 +35,14 @@ public class SelectArenaMenu extends PracticeMenu {
 
     @Override
     public void update() {
-        Byte2ObjectOpenHashMap<Arena> arenas = ArenaManager.getArenas();
-        ByteIterator arenaIds = simpleMode ? viewer.getDuelSettings().getGametype().getArenas().iterator()
+        val arenas = ArenaManager.getArenas();
+        val arenaIds = simpleMode ? viewer.getDuelSettings().getGametype().getArenas().iterator()
                 : arenas.keySet().iterator();
 
         while (arenaIds.hasNext()) {
             byte arenaId = arenaIds.nextByte();
 
-            Arena arena = arenas.get(arenaId);
+            val arena = arenas.get(arenaId);
 
             ItemStack item;
             try {
@@ -72,7 +71,7 @@ public class SelectArenaMenu extends PracticeMenu {
 
                     viewer.getDuelSettings().setArenaId(arenaId);
 
-                    Party p = viewer.getParty();
+                    val p = viewer.getParty();
 
                     if (!viewer.getParty().getPartyLeader().equals(viewer)) {
                         viewer.message(ErrorMessages.YOU_ARE_NOT_PARTY_LEADER);
@@ -84,7 +83,7 @@ public class SelectArenaMenu extends PracticeMenu {
                         return;
                     }
 
-                    TeamMatch m = new TeamMatch(p, new MatchData(viewer.getDuelSettings()));
+                    val m = new TeamMatch(p, new MatchData(viewer.getDuelSettings()));
                     m.start();
                 };
             } else if (action == SubmitAction.TOURNAMENT && simpleMode) {
@@ -93,7 +92,7 @@ public class SelectArenaMenu extends PracticeMenu {
 
                     viewer.getDuelSettings().setArenaId(arenaId);
 
-                    Tournament tournament = new Tournament(viewer);
+                    val tournament = new Tournament(viewer);
                     tournament.start();
                 };
             }

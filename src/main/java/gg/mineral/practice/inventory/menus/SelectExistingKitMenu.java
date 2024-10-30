@@ -1,12 +1,9 @@
 package gg.mineral.practice.inventory.menus;
 
-import java.util.List;
-
 import org.bukkit.inventory.ItemStack;
 
 import gg.mineral.api.collection.GlueList;
-import gg.mineral.practice.catagory.Catagory;
-import gg.mineral.practice.gametype.Gametype;
+
 import gg.mineral.practice.inventory.ClickCancelled;
 import gg.mineral.practice.inventory.PracticeMenu;
 import gg.mineral.practice.managers.CatagoryManager;
@@ -14,6 +11,7 @@ import gg.mineral.practice.managers.GametypeManager;
 import gg.mineral.practice.util.items.ItemBuilder;
 import gg.mineral.practice.util.messages.CC;
 import lombok.RequiredArgsConstructor;
+import lombok.val;
 
 @ClickCancelled(true)
 @RequiredArgsConstructor
@@ -26,10 +24,10 @@ public class SelectExistingKitMenu extends PracticeMenu {
     public void update() {
         clear();
 
-        for (Gametype g : GametypeManager.getGametypes().values()) {
+        for (val g : GametypeManager.getGametypes().values()) {
             if (g.isInCatagory())
                 continue;
-            ItemStack item = new ItemBuilder(g.getDisplayItem())
+            val item = new ItemBuilder(g.getDisplayItem())
                     .name(CC.SECONDARY + CC.B + g.getDisplayName()).lore(CC.ACCENT + "Click to select.").build();
 
             add(item, interaction -> {
@@ -42,14 +40,14 @@ public class SelectExistingKitMenu extends PracticeMenu {
             });
         }
 
-        for (Catagory c : CatagoryManager.getCatagories()) {
-            ItemBuilder itemBuild = new ItemBuilder(c.getDisplayItem())
+        for (val c : CatagoryManager.getCatagories()) {
+            val itemBuild = new ItemBuilder(c.getDisplayItem())
                     .name(CC.SECONDARY + CC.B + c.getDisplayName());
 
-            List<String> sb = new GlueList<String>();
+            val sb = new GlueList<String>();
             sb.add(CC.SECONDARY + "Includes:");
 
-            for (Gametype g : c.getGametypes())
+            for (val g : c.getGametypes())
                 sb.add(CC.WHITE + g.getDisplayName());
 
             sb.add(" ");

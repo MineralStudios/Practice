@@ -11,6 +11,7 @@ import gg.mineral.practice.queue.Queuetype;
 import gg.mineral.practice.util.SaveableData;
 import gg.mineral.practice.util.items.ItemStacks;
 import lombok.Getter;
+import lombok.val;
 
 public class Catagory implements SaveableData {
 
@@ -72,7 +73,7 @@ public class Catagory implements SaveableData {
 
 	@Override
 	public void save() {
-		for (Queuetype q : QueuetypeManager.getQueuetypes().values()) {
+		for (val q : QueuetypeManager.getQueuetypes().values()) {
 
 			if (!q.getCatagories().containsKey(this)) {
 				config.set(path + q.getName() + ".Enabled", false);
@@ -97,7 +98,7 @@ public class Catagory implements SaveableData {
 				ItemStacks.DEFAULT_CATAGORY_DISPLAY_ITEM);
 		this.displayName = config.getString(path + "DisplayName", getName());
 
-		for (Queuetype q : QueuetypeManager.getQueuetypes().values())
+		for (val q : QueuetypeManager.getQueuetypes().values())
 			if (config.getBoolean(path + q.getName() + ".Enabled", false))
 				q.getCatagories().put(this, (int) config.getInt(path + q.getName() + ".Slot", 0));
 
@@ -108,7 +109,7 @@ public class Catagory implements SaveableData {
 		this.displayItem = ItemStacks.DEFAULT_CATAGORY_DISPLAY_ITEM;
 		this.displayName = getName();
 
-		for (Queuetype q : QueuetypeManager.getQueuetypes().values())
+		for (val q : QueuetypeManager.getQueuetypes().values())
 			if (config.getBoolean(path + q.getName() + ".Enabled", false))
 				q.getCatagories().put(this, 0);
 	}

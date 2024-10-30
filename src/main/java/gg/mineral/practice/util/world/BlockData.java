@@ -2,11 +2,11 @@ package gg.mineral.practice.util.world;
 
 import org.bukkit.Location;
 import org.bukkit.Material;
-import org.bukkit.block.Block;
 import org.bukkit.entity.Player;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;
+import lombok.val;
 
 @AllArgsConstructor
 @Data
@@ -36,7 +36,7 @@ public class BlockData {
 
     @SuppressWarnings("deprecation")
     public void remove(Player player) {
-        Block block = location.getBlock();
+        val block = location.getBlock();
         player.sendBlockChange(location, block.getType(), block.getData());
     }
 }

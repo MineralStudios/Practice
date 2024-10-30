@@ -1,11 +1,10 @@
 package gg.mineral.practice.commands.config;
 
 import org.bukkit.entity.Player;
-import org.bukkit.inventory.ItemStack;
 
 import gg.mineral.practice.arena.Arena;
 import gg.mineral.practice.commands.PlayerCommand;
-import gg.mineral.practice.entity.Profile;
+
 import gg.mineral.practice.gametype.Gametype;
 import gg.mineral.practice.inventory.menus.GametypeArenaEnableMenu;
 import gg.mineral.practice.kit.Kit;
@@ -13,13 +12,13 @@ import gg.mineral.practice.managers.ArenaManager;
 import gg.mineral.practice.managers.GametypeManager;
 import gg.mineral.practice.managers.ProfileManager;
 import gg.mineral.practice.managers.QueuetypeManager;
-import gg.mineral.practice.queue.Queuetype;
+
 import gg.mineral.practice.util.messages.CC;
 import gg.mineral.practice.util.messages.impl.ChatMessages;
 import gg.mineral.practice.util.messages.impl.ErrorMessages;
 import gg.mineral.practice.util.messages.impl.UsageMessages;
 
-import it.unimi.dsi.fastutil.objects.ObjectIterator;
+import lombok.val;
 
 public class GametypeCommand extends PlayerCommand {
 
@@ -30,13 +29,11 @@ public class GametypeCommand extends PlayerCommand {
 	@Override
 	public void execute(Player player, String[] args) {
 
-		String arg = args.length > 0 ? args[0] : "";
+		val arg = args.length > 0 ? args[0] : "";
 
 		Gametype gametype;
 		Arena arena;
-		String gametypeName;
-		String toggled;
-		String arenaName;
+		String gametypeName, toggled, arenaName;
 		StringBuilder sb;
 
 		switch (arg.toLowerCase()) {
@@ -116,8 +113,8 @@ public class GametypeCommand extends PlayerCommand {
 					return;
 				}
 
-				ItemStack[] contents = player.getInventory().getContents();
-				ItemStack[] armourContents = player.getInventory().getArmorContents();
+				val contents = player.getInventory().getContents();
+				val armourContents = player.getInventory().getArmorContents();
 
 				gametype.setKit(new Kit(gametype.getName(), contents, armourContents));
 				ChatMessages.GAMETYPE_KIT_SET.clone().replace("%gametype%", gametypeName).send(player);
@@ -139,9 +136,8 @@ public class GametypeCommand extends PlayerCommand {
 
 				gametype.setDisplayItem(player.getItemInHand());
 
-				if (args.length > 2) {
+				if (args.length > 2)
 					gametype.setDisplayName(args[2].replace("&", "§"));
-				}
 
 				ChatMessages.GAMETYPE_DISPLAY_SET.clone().replace("%gametype%", gametypeName).send(player);
 				return;
@@ -160,7 +156,7 @@ public class GametypeCommand extends PlayerCommand {
 					return;
 				}
 
-				String noDamageTicksStr = args[2];
+				val noDamageTicksStr = args[2];
 
 				int ndt;
 
@@ -283,15 +279,15 @@ public class GametypeCommand extends PlayerCommand {
 					return;
 				}
 
-				String queuetypeName = args[2];
-				Queuetype queuetype = QueuetypeManager.getQueuetypeByName(queuetypeName);
+				val queuetypeName = args[2];
+				val queuetype = QueuetypeManager.getQueuetypeByName(queuetypeName);
 
 				if (queuetype == null) {
 					ErrorMessages.QUEUETYPE_DOES_NOT_EXIST.send(player);
 					return;
 				}
 
-				String slotName = args[3];
+				val slotName = args[3];
 
 				if (slotName.equalsIgnoreCase("false")) {
 					gametype.removeFromQueuetype(queuetype);
@@ -517,7 +513,7 @@ public class GametypeCommand extends PlayerCommand {
 					return;
 				}
 
-				String cooldownStr = args[2];
+				val cooldownStr = args[2];
 
 				int number;
 
@@ -535,7 +531,7 @@ public class GametypeCommand extends PlayerCommand {
 			case "list":
 				sb = new StringBuilder(CC.GRAY + "[");
 
-				ObjectIterator<Gametype> iterator = GametypeManager.getGametypes().values().iterator();
+				val iterator = GametypeManager.getGametypes().values().iterator();
 
 				while (iterator.hasNext()) {
 					gametype = iterator.next();
@@ -563,7 +559,7 @@ public class GametypeCommand extends PlayerCommand {
 					return;
 				}
 
-				Profile profile = ProfileManager.getOrCreateProfile(player);
+				val profile = ProfileManager.getOrCreateProfile(player);
 
 				profile.openMenu(new GametypeArenaEnableMenu(gametype));
 

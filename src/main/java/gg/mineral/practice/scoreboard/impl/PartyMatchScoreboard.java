@@ -1,11 +1,11 @@
 package gg.mineral.practice.scoreboard.impl;
 
 import gg.mineral.practice.entity.Profile;
-import gg.mineral.practice.match.Match;
 import gg.mineral.practice.scoreboard.Scoreboard;
 import gg.mineral.practice.scoreboard.ScoreboardHandler;
 import gg.mineral.practice.util.collection.ProfileList;
 import gg.mineral.practice.util.messages.CC;
+import lombok.val;
 
 public class PartyMatchScoreboard
         implements Scoreboard {
@@ -15,14 +15,13 @@ public class PartyMatchScoreboard
     @Override
     public void updateBoard(ScoreboardHandler board, Profile profile) {
         board.updateTitle(CC.PRIMARY + CC.B + "Mineral");
-        Match match = profile.getMatch();
+        val match = profile.getMatch();
 
-        if (match == null) {
+        if (match == null)
             return;
-        }
 
-        ProfileList team = match.getTeam(profile);
-        ProfileList opponents = new ProfileList(match.getParticipants());
+        val team = match.getTeam(profile);
+        val opponents = new ProfileList(match.getParticipants());
         opponents.removeAll(team);
 
         board.updateLines(CC.BOARD_SEPARATOR, CC.ACCENT + "Your Team Remaining: " + CC.SECONDARY + team.size(),

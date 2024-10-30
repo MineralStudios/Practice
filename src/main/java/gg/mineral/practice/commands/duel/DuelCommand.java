@@ -2,13 +2,14 @@ package gg.mineral.practice.commands.duel;
 
 import gg.mineral.practice.commands.PlayerCommand;
 import gg.mineral.practice.entity.PlayerStatus;
-import gg.mineral.practice.entity.Profile;
+
 import gg.mineral.practice.inventory.SubmitAction;
 import gg.mineral.practice.inventory.menus.OtherPartiesMenu;
 import gg.mineral.practice.inventory.menus.SelectModeMenu;
 import gg.mineral.practice.managers.ProfileManager;
 import gg.mineral.practice.util.messages.impl.ErrorMessages;
 import gg.mineral.practice.util.messages.impl.UsageMessages;
+import lombok.val;
 
 public class DuelCommand extends PlayerCommand {
 
@@ -18,7 +19,7 @@ public class DuelCommand extends PlayerCommand {
 
 	@Override
 	public void execute(org.bukkit.entity.Player pl, String[] args) {
-		Profile profile = ProfileManager.getOrCreateProfile(pl);
+		val profile = ProfileManager.getOrCreateProfile(pl);
 
 		if (args.length == 0) {
 			if (!profile.isInParty()) {
@@ -30,7 +31,7 @@ public class DuelCommand extends PlayerCommand {
 			return;
 		}
 
-		Profile duelReceiver = ProfileManager.getProfile(args[0]);
+		val duelReceiver = ProfileManager.getProfile(args[0]);
 
 		if (duelReceiver == null) {
 			profile.message(ErrorMessages.PLAYER_NOT_ONLINE);

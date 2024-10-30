@@ -1,7 +1,7 @@
 package gg.mineral.practice.commands.config;
 
 import gg.mineral.practice.commands.PlayerCommand;
-import gg.mineral.practice.entity.Profile;
+
 import gg.mineral.practice.inventory.menus.QueuetypeArenaEnableMenu;
 import gg.mineral.practice.managers.ProfileManager;
 import gg.mineral.practice.managers.QueuetypeManager;
@@ -10,10 +10,10 @@ import gg.mineral.practice.util.messages.CC;
 import gg.mineral.practice.util.messages.impl.ChatMessages;
 import gg.mineral.practice.util.messages.impl.ErrorMessages;
 import gg.mineral.practice.util.messages.impl.UsageMessages;
-import gg.mineral.server.combat.KnockbackProfile;
+
 import gg.mineral.server.combat.KnockbackProfileList;
 
-import it.unimi.dsi.fastutil.objects.ObjectIterator;
+import lombok.val;
 
 public class QueuetypeCommand extends PlayerCommand {
 
@@ -24,11 +24,10 @@ public class QueuetypeCommand extends PlayerCommand {
 	@Override
 	public void execute(org.bukkit.entity.Player player, String[] args) {
 
-		String arg = args.length > 0 ? args[0] : "";
+		val arg = args.length > 0 ? args[0] : "";
 
 		Queuetype queuetype;
-		String queuetypeName;
-		String toggled;
+		String queuetypeName, toggled;
 		StringBuilder sb;
 
 		switch (arg.toLowerCase()) {
@@ -81,9 +80,8 @@ public class QueuetypeCommand extends PlayerCommand {
 
 				queuetype.setDisplayItem(player.getItemInHand());
 
-				if (args.length > 2) {
+				if (args.length > 2)
 					queuetype.setDisplayName(args[2].replace("&", "§"));
-				}
 
 				ChatMessages.QUEUETYPE_DISPLAY_SET.clone().replace("%queuetype%", queuetypeName).send(player);
 
@@ -228,7 +226,7 @@ public class QueuetypeCommand extends PlayerCommand {
 				}
 
 				int slot;
-				String slotName = args[2];
+				val slotName = args[2];
 
 				try {
 					slot = Integer.parseInt(slotName);
@@ -256,8 +254,8 @@ public class QueuetypeCommand extends PlayerCommand {
 					return;
 				}
 
-				String knockbackName = args[2];
-				KnockbackProfile kb = KnockbackProfileList.getKnockbackProfileByName(knockbackName);
+				val knockbackName = args[2];
+				val kb = KnockbackProfileList.getKnockbackProfileByName(knockbackName);
 
 				if (kb == null) {
 					ErrorMessages.KNOCKBACK_DOES_NOT_EXIST.send(player);
@@ -272,10 +270,10 @@ public class QueuetypeCommand extends PlayerCommand {
 			case "list":
 				sb = new StringBuilder(CC.GRAY + "[");
 
-				ObjectIterator<Queuetype> queuetypes = QueuetypeManager.getQueuetypes().values().iterator();
+				val queuetypes = QueuetypeManager.getQueuetypes().values().iterator();
 
 				while (queuetypes.hasNext()) {
-					Queuetype q = queuetypes.next();
+					val q = queuetypes.next();
 					sb.append(CC.GREEN + q.getName());
 					if (queuetypes.hasNext())
 						sb.append(CC.GRAY + ", ");
@@ -300,7 +298,7 @@ public class QueuetypeCommand extends PlayerCommand {
 					return;
 				}
 
-				Profile profile = ProfileManager.getOrCreateProfile(player);
+				val profile = ProfileManager.getOrCreateProfile(player);
 
 				profile.openMenu(new QueuetypeArenaEnableMenu(queuetype));
 

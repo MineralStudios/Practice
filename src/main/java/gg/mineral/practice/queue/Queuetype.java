@@ -18,17 +18,15 @@ import gg.mineral.practice.managers.EloManager;
 import gg.mineral.practice.managers.QueuetypeManager;
 import gg.mineral.practice.match.data.MatchData;
 import gg.mineral.practice.util.SaveableData;
-import gg.mineral.practice.util.collection.LeaderboardMap;
 import gg.mineral.practice.util.items.ItemStacks;
 import gg.mineral.practice.util.messages.CC;
 import gg.mineral.server.combat.KnockbackProfile;
 import gg.mineral.server.combat.KnockbackProfileList;
-import it.unimi.dsi.fastutil.bytes.ByteIterator;
 import it.unimi.dsi.fastutil.bytes.ByteOpenHashSet;
 import it.unimi.dsi.fastutil.bytes.ByteSet;
 import it.unimi.dsi.fastutil.objects.Object2IntOpenHashMap;
-import it.unimi.dsi.fastutil.objects.ObjectSet;
 import lombok.Getter;
+import lombok.val;
 
 public class Queuetype implements SaveableData {
 	final FileConfiguration config = QueuetypeManager.getConfig();
@@ -65,21 +63,21 @@ public class Queuetype implements SaveableData {
 	ByteSet arenaQueue = new ByteOpenHashSet();
 
 	public Gametype randomGametype() {
-		List<Gametype> list = new GlueList<>(gametypes.keySet());
-		Random rand = new Random();
+		val list = new GlueList<>(gametypes.keySet());
+		val rand = new Random();
 		return list.get(rand.nextInt(list.size()));
 	}
 
 	public Gametype randomGametypeWithBotsEnabled() {
-		List<Gametype> list = new GlueList<>(gametypes.keySet()).stream().filter(g -> g.isBotsEnabled())
+		val list = new GlueList<>(gametypes.keySet()).stream().filter(g -> g.isBotsEnabled())
 				.collect(Collectors.toList());
-		Random rand = new Random();
+		val rand = new Random();
 		return list.get(rand.nextInt(list.size()));
 	}
 
 	// Helper method to filter available arenas based on a Gametype
 	public ByteSet filterArenasByGametype(Gametype g) {
-		ByteSet filteredArenas = new ByteOpenHashSet(this.arenas);
+		val filteredArenas = new ByteOpenHashSet(this.arenas);
 		filteredArenas
 				.retainAll(g.getArenas());
 		return filteredArenas;
@@ -87,7 +85,7 @@ public class Queuetype implements SaveableData {
 
 	public int getGlobalElo(ProfileData profile) {
 
-		ObjectSet<Gametype> set = getGametypes().keySet();
+		val set = getGametypes().keySet();
 
 		int sum = 0;
 
@@ -98,14 +96,14 @@ public class Queuetype implements SaveableData {
 	}
 
 	public List<String> getGlobalLeaderboardLore() {
-		List<String> lore = new GlueList<>();
+		val lore = new GlueList<String>();
 
-		LeaderboardMap leaderboardMap = EloManager.getGlobalEloLeaderboard(this);
+		val leaderboardMap = EloManager.getGlobalEloLeaderboard(this);
 
 		lore.add(CC.WHITE + "The " + CC.SECONDARY + "global" + CC.WHITE + " elo leaderboard.");
 		lore.add(" ");
 
-		for (gg.mineral.practice.util.collection.LeaderboardMap.Entry entry : leaderboardMap.getEntries())
+		for (val entry : leaderboardMap.getEntries())
 			lore.add(CC.SECONDARY + entry.getKey() + ": " + CC.WHITE + entry.getValue());
 
 		if (lore.size() <= 2)
@@ -128,7 +126,7 @@ public class Queuetype implements SaveableData {
 		if (arenaQueue.isEmpty())
 			return -1;
 
-		ByteIterator iterator = arenaQueue.iterator();
+		val iterator = arenaQueue.iterator();
 
 		byte nextArenaId = iterator.nextByte();
 		iterator.remove();
@@ -136,16 +134,16 @@ public class Queuetype implements SaveableData {
 		return nextArenaId;
 	}
 
-	public byte nextArenaId(MatchData matchData, Gametype g) {
+	public byte nextArenaId(MatchData matchData, Gametype gametype) {
 
 		// If there are no enabled arenas in the MatchData, revert to the other method
 		if (matchData.getEnabledArenas().isEmpty())
-			return nextArenaId(g);
+			return nextArenaId(gametype);
 
 		// Filter arenas based on Gametype and MatchData
-		ByteSet filteredArenas = filterArenasByGametype(g);
+		val filteredArenas = filterArenasByGametype(gametype);
 
-		ByteIterator iterator = filteredArenas.iterator();
+		val iterator = filteredArenas.iterator();
 		while (iterator.hasNext()) {
 			byte arenaId = iterator.nextByte();
 			if (!matchData.getEnabledArenas().get(arenaId))
@@ -153,7 +151,7 @@ public class Queuetype implements SaveableData {
 		}
 
 		if (filteredArenas.isEmpty())
-			return nextArenaId(g);
+			return nextArenaId(gametype);
 
 		// Select a random arena from the filtered list
 		int randomIndex = (int) (arenaIndex++ % filteredArenas.size());
@@ -242,7 +240,7 @@ public class Queuetype implements SaveableData {
 		if (knockback != null)
 			config.set(path + "Knockback", knockback.getName());
 
-		for (Arena arena : ArenaManager.getArenas().values())
+		for (val arena : ArenaManager.getArenas().values())
 			config.set(path + "Arenas." + arena.getName(), getArenas().intStream()
 					.filter(id -> id == arena.getId()).findFirst().isPresent());
 
@@ -261,11 +259,10 @@ public class Queuetype implements SaveableData {
 		this.botsEnabled = config.getBoolean(path + "Bots", false);
 		String kbprofile = config.getString(path + "Knockback", "");
 
-		if (!kbprofile.isEmpty()) {
+		if (!kbprofile.isEmpty())
 			this.knockback = KnockbackProfileList.getKnockbackProfileByName(kbprofile);
-		}
 
-		for (Arena a : ArenaManager.getArenas().values())
+		for (val a : ArenaManager.getArenas().values())
 			if (config.getBoolean(path + "Arenas." + a.getName(), false))
 				arenas.add(a.getId());
 

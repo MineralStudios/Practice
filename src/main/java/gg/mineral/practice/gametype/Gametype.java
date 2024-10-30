@@ -2,11 +2,10 @@ package gg.mineral.practice.gametype;
 
 import java.util.List;
 import java.util.Map;
-import java.util.Map.Entry;
+
 import java.util.UUID;
 import java.util.concurrent.CompletableFuture;
 
-import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.inventory.ItemStack;
 
 import gg.mineral.api.collection.GlueList;
@@ -32,6 +31,7 @@ import it.unimi.dsi.fastutil.objects.Object2IntOpenHashMap;
 import it.unimi.dsi.fastutil.objects.Object2ObjectOpenHashMap;
 import lombok.Getter;
 import lombok.Setter;
+import lombok.val;
 
 public class Gametype implements SaveableData {
 	final FileConfiguration config = GametypeManager.getConfig();
@@ -70,7 +70,7 @@ public class Gametype implements SaveableData {
 	}
 
 	public int getElo(ProfileData profile) {
-		int elo = eloMap.getInt(profile);
+		val elo = eloMap.getInt(profile);
 
 		if (profile.getUuid() == null)
 			return elo == 0
@@ -87,12 +87,12 @@ public class Gametype implements SaveableData {
 
 	public CompletableFuture<Object2IntOpenHashMap<UUID>> getEloMap(ProfileData... profiles) {
 		return CompletableFuture.supplyAsync(() -> {
-			Object2IntOpenHashMap<UUID> map = new Object2IntOpenHashMap<UUID>();
+			val map = new Object2IntOpenHashMap<UUID>();
 
 			Map<UUID, CompletableFuture<Integer>> futures = null;
 
-			for (ProfileData profile : profiles) {
-				int elo = eloMap.getInt(profile);
+			for (val profile : profiles) {
+				val elo = eloMap.getInt(profile);
 
 				if (elo != 0)
 					map.put(profile.getUuid(), elo);
@@ -105,7 +105,7 @@ public class Gametype implements SaveableData {
 			}
 
 			if (futures != null)
-				for (Entry<UUID, CompletableFuture<Integer>> entry : futures.entrySet())
+				for (val entry : futures.entrySet())
 					map.put(entry.getKey(), (int) entry.getValue().join());
 
 			return map;
@@ -262,11 +262,10 @@ public class Gametype implements SaveableData {
 	}
 
 	public List<String> getLeaderboardLore() {
-		List<String> lore = new GlueList<>();
+		val lore = new GlueList<String>();
 
-		for (gg.mineral.practice.util.collection.LeaderboardMap.Entry entry : leaderboardMap.getEntries()) {
+		for (val entry : leaderboardMap.getEntries())
 			lore.add(CC.SECONDARY + entry.getKey() + ": " + CC.WHITE + entry.getValue());
-		}
 
 		if (lore.isEmpty())
 			lore.add(CC.ACCENT + "No Data");
@@ -279,7 +278,7 @@ public class Gametype implements SaveableData {
 		config.set(path + "Regen", regeneration);
 		config.set(path + "Event", event);
 		config.set(path + "Bots", botsEnabled);
-		Arena eventArena = ArenaManager.getArenas().get(eventArenaId);
+		val eventArena = ArenaManager.getArenas().get(eventArenaId);
 		if (eventArena != null)
 			config.set(path + "EventArena", eventArena.getName());
 
@@ -296,12 +295,11 @@ public class Gametype implements SaveableData {
 		config.set(path + "DisplayItem", displayItem);
 		config.set(path + "InCatagory", inCatagory);
 
-		if (inCatagory) {
+		if (inCatagory)
 			config.set(path + "Catagory", catagoryName);
-		}
 
-		for (Queuetype q : QueuetypeManager.getQueuetypes().values()) {
-			boolean containsGametype = q.getGametypes().containsKey(this);
+		for (val q : QueuetypeManager.getQueuetypes().values()) {
+			val containsGametype = q.getGametypes().containsKey(this);
 			config.set(path + q.getName() + ".Enabled", containsGametype);
 
 			if (containsGametype) {
@@ -317,11 +315,11 @@ public class Gametype implements SaveableData {
 			}
 		}
 
-		ItemStack[] contents = kit.getContents();
-		ItemStack[] armourContents = kit.getArmourContents();
+		val contents = kit.getContents();
+		val armourContents = kit.getArmourContents();
 
 		for (int i = 0; i < contents.length; i++) {
-			ItemStack item = contents[i];
+			val item = contents[i];
 
 			if (item == null) {
 				config.set(path + "Kit.Contents." + i, "empty");
@@ -333,7 +331,7 @@ public class Gametype implements SaveableData {
 		}
 
 		for (int x = 0; x < armourContents.length; x++) {
-			ItemStack armour = armourContents[x];
+			val armour = armourContents[x];
 
 			if (armour == null) {
 				config.set(path + "Kit.Armour." + x, "empty");
@@ -368,34 +366,33 @@ public class Gametype implements SaveableData {
 			this.catagoryName = config.getString(path + "Catagory", null);
 
 			if (catagoryName != null) {
-				Catagory catagory = CatagoryManager.getCatagoryByName(catagoryName);
+				val catagory = CatagoryManager.getCatagoryByName(catagoryName);
 
-				if (catagory != null) {
+				if (catagory != null)
 					catagory.addGametype(this);
-				}
 			}
 		}
 
 		this.pearlCooldown = config.getInt(path + "PearlCooldown", 10);
 
-		for (Queuetype q : QueuetypeManager.getQueuetypes().values()) {
+		for (val q : QueuetypeManager.getQueuetypes().values()) {
 			if (!config.getBoolean(path + q.getName() + ".Enabled", false))
 				continue;
 
 			q.addGametype(this, config.getInt(path + q.getName() + ".Slot", 0));
 		}
 
-		for (Arena a : ArenaManager.getArenas().values())
+		for (val a : ArenaManager.getArenas().values())
 			if (config.getBoolean(path + "Arenas." + a.getName(), false))
 				arenas.add(a.getId());
 
-		ConfigurationSection cs = config.getConfigurationSection(path + "Kit.Armour");
+		var cs = config.getConfigurationSection(path + "Kit.Armour");
 
-		List<ItemStack> armour = new GlueList<>();
+		val armour = new GlueList<ItemStack>();
 
 		if (cs != null) {
-			for (String key : cs.getKeys(false)) {
-				Object o = cs.get(key);
+			for (val key : cs.getKeys(false)) {
+				val o = cs.get(key);
 				if (o instanceof ItemStack)
 					armour.add((ItemStack) o);
 				else
@@ -405,11 +402,11 @@ public class Gametype implements SaveableData {
 
 		cs = config.getConfigurationSection(path + "Kit.Contents");
 
-		List<ItemStack> items = new GlueList<>();
+		val items = new GlueList<ItemStack>();
 
 		if (cs != null) {
-			for (String key : cs.getKeys(false)) {
-				Object o = cs.get(key);
+			for (val key : cs.getKeys(false)) {
+				val o = cs.get(key);
 				if (o instanceof ItemStack)
 					items.add((ItemStack) o);
 				else

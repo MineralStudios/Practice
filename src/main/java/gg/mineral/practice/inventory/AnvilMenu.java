@@ -14,6 +14,7 @@ import gg.mineral.practice.entity.Profile;
 import it.unimi.dsi.fastutil.ints.Int2ObjectOpenHashMap;
 import lombok.Getter;
 import lombok.Setter;
+import lombok.val;
 import net.minecraft.server.v1_8_R3.BlockPosition;
 import net.minecraft.server.v1_8_R3.Blocks;
 import net.minecraft.server.v1_8_R3.ChatMessage;
@@ -233,7 +234,7 @@ public abstract class AnvilMenu implements Menu {
     @Override
     @Nullable
     public ItemStack getItemByType(Material m) {
-        for (ItemStack i : items.values())
+        for (val i : items.values())
             if (i.getType() == m)
                 return i;
 
@@ -255,11 +256,11 @@ public abstract class AnvilMenu implements Menu {
         handleInventoryCloseEvent(viewer.getPlayer());
         setActiveContainerDefault(viewer.getPlayer());
 
-        final Object container = newContainerAnvil(viewer.getPlayer());
+        val container = newContainerAnvil(viewer.getPlayer());
 
         inventory = toBukkitInventory(container);
 
-        for (it.unimi.dsi.fastutil.ints.Int2ObjectMap.Entry<ItemStack> e : items.int2ObjectEntrySet())
+        for (val e : items.int2ObjectEntrySet())
             inventory.setItem(e.getIntKey(), e.getValue());
 
         containerId = getNextContainerId(viewer.getPlayer(), container);
@@ -294,7 +295,7 @@ public abstract class AnvilMenu implements Menu {
 
     @Override
     public boolean isClickCancelled() {
-        ClickCancelled annotation = getClass().getAnnotation(ClickCancelled.class);
+        val annotation = getClass().getAnnotation(ClickCancelled.class);
 
         if (annotation == null)
             throw new IllegalArgumentException(

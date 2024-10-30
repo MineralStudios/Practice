@@ -7,12 +7,11 @@ import lombok.Getter;
 import lombok.Setter;
 
 @AllArgsConstructor
+@Getter
 public class Kit {
-	@Getter
-	String name;
-	@Getter
+	private final String name;
 	@Setter
-	ItemStack[] contents = new ItemStack[36], armourContents = new ItemStack[4];
+	private ItemStack[] contents = new ItemStack[36], armourContents = new ItemStack[4];
 
 	public Kit(ItemStack[] contents, ItemStack[] armourContents) {
 		this("Custom", contents, armourContents);

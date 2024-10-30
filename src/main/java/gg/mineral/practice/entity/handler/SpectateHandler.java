@@ -2,7 +2,6 @@ package gg.mineral.practice.entity.handler;
 
 import org.bukkit.GameMode;
 
-import gg.mineral.practice.arena.Arena;
 import gg.mineral.practice.entity.PlayerStatus;
 import gg.mineral.practice.entity.Profile;
 import gg.mineral.practice.events.Event;
@@ -15,11 +14,12 @@ import gg.mineral.practice.scoreboard.impl.SpectatorScoreboard;
 import gg.mineral.practice.traits.Spectatable;
 import gg.mineral.practice.util.PlayerUtil;
 import gg.mineral.practice.util.collection.ProfileList;
-import gg.mineral.practice.util.messages.ChatMessage;
+
 import gg.mineral.practice.util.messages.impl.ChatMessages;
 import gg.mineral.practice.util.messages.impl.ErrorMessages;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
+import lombok.val;
 
 @RequiredArgsConstructor
 public class SpectateHandler {
@@ -107,7 +107,7 @@ public class SpectateHandler {
                 return;
             }
 
-            ChatMessage broadcastedMessage = ChatMessages.SPECTATING_YOUR_MATCH.clone().replace("%player%",
+            val broadcastedMessage = ChatMessages.SPECTATING_YOUR_MATCH.clone().replace("%player%",
                     profile.getName());
             ProfileManager.broadcast(getSpectatable().getParticipants(), broadcastedMessage);
         }
@@ -116,7 +116,7 @@ public class SpectateHandler {
 
         profile.setGameMode(GameMode.SPECTATOR);
 
-        Arena arena = ArenaManager.getArenas().get(spectatable instanceof Event event ? event.getEventArenaId()
+        val arena = ArenaManager.getArenas().get(spectatable instanceof Event event ? event.getEventArenaId()
                 : spectatable instanceof Match match ? match.getData().getArenaId() : 0);
 
         PlayerUtil.teleport(profile.getPlayer(),

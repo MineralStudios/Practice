@@ -7,14 +7,15 @@ import org.bukkit.event.entity.EntityRegainHealthEvent.RegainReason;
 import org.bukkit.event.entity.FoodLevelChangeEvent;
 
 import gg.mineral.practice.entity.PlayerStatus;
-import gg.mineral.practice.entity.Profile;
+
 import gg.mineral.practice.managers.ProfileManager;
+import lombok.val;
 
 public class HealthListener implements Listener {
 
 	@EventHandler
 	public void onEntityRegainHealth(EntityRegainHealthEvent e) {
-		Profile profile = ProfileManager
+		val profile = ProfileManager
 				.getProfile(e.getEntity().getUniqueId(),
 						p -> p.getPlayerStatus() == PlayerStatus.FIGHTING);
 
@@ -28,7 +29,7 @@ public class HealthListener implements Listener {
 
 	@EventHandler
 	public void onFoodLevelChange(FoodLevelChangeEvent e) {
-		Profile profile = ProfileManager
+		val profile = ProfileManager
 				.getProfile(e.getEntity().getUniqueId(),
 						p -> p.getPlayerStatus() == PlayerStatus.FIGHTING);
 

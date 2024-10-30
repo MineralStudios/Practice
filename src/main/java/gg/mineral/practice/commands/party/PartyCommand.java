@@ -1,8 +1,6 @@
 package gg.mineral.practice.commands.party;
 
-import java.util.Iterator;
-import it.unimi.dsi.fastutil.objects.Object2LongMap.Entry;
-
+import lombok.val;
 import gg.mineral.practice.commands.PlayerCommand;
 import gg.mineral.practice.entity.PlayerStatus;
 import gg.mineral.practice.entity.Profile;
@@ -25,8 +23,9 @@ public class PartyCommand extends PlayerCommand {
 	@Override
 	public void execute(org.bukkit.entity.Player pl, String[] args) {
 
-		String arg = args.length > 0 ? args[0] : "";
-		Profile profile = ProfileManager.getOrCreateProfile(pl), profile2;
+		val arg = args.length > 0 ? args[0] : "";
+		val profile = ProfileManager.getOrCreateProfile(pl);
+		Profile profile2;
 		Party party;
 		StringBuilder sb;
 		ChatMessage joinedMessage;
@@ -135,7 +134,7 @@ public class PartyCommand extends PlayerCommand {
 
 						profile.startPartyOpenCooldown();
 
-						ChatMessage messageToBroadcast = ChatMessages.BROADCAST_PARTY_OPEN.clone()
+						val messageToBroadcast = ChatMessages.BROADCAST_PARTY_OPEN.clone()
 								.replace("%player%", profile.getName()).setTextEvent(
 										new ClickEvent(ClickEvent.Action.RUN_COMMAND,
 												"/party join " + profile.getName()),
@@ -210,15 +209,14 @@ public class PartyCommand extends PlayerCommand {
 					return;
 				}
 
-				Iterator<Entry<Party>> it = profile.getRequestHandler().getRecievedPartyRequests()
+				val it = profile.getRequestHandler().getRecievedPartyRequests()
 						.entryIterator();
 
 				while (it.hasNext()) {
 					party = it.next().getKey();
 
-					if (!party.getPartyLeader().equals(profile2)) {
+					if (!party.getPartyLeader().equals(profile2))
 						continue;
-					}
 
 					it.remove();
 					profile.addToParty(party);
@@ -238,15 +236,14 @@ public class PartyCommand extends PlayerCommand {
 
 				sb = new StringBuilder(CC.GRAY + "[");
 
-				Iterator<Profile> profileIter = profile.getParty().getPartyMembers().iterator();
+				val profileIter = profile.getParty().getPartyMembers().iterator();
 
 				while (profileIter.hasNext()) {
 					Profile p = profileIter.next();
 					sb.append(CC.GREEN + p.getName());
 
-					if (profileIter.hasNext()) {
+					if (profileIter.hasNext())
 						sb.append(CC.GRAY + ", ");
-					}
 				}
 
 				sb.append(CC.GRAY + "]");

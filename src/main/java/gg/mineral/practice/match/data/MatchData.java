@@ -22,10 +22,13 @@ import gg.mineral.server.combat.KnockbackProfileList;
 import it.unimi.dsi.fastutil.bytes.Byte2BooleanOpenHashMap;
 import it.unimi.dsi.fastutil.ints.Int2ObjectOpenHashMap;
 import lombok.Getter;
+import lombok.Setter;
+import lombok.val;
 
 @Getter
 public class MatchData {
 	private short queueAndGameTypeHash = -1;
+	@Setter
 	byte arenaId;
 	Kit kit;
 	Knockback knockback;
@@ -52,14 +55,17 @@ public class MatchData {
 		this.enabledArenas = new Byte2BooleanOpenHashMap(queueSettings.getEnabledArenas());
 	}
 
+	public MatchData(QueueEntry queueEntry, QueueSettings queueSettings) {
+		this(queueEntry.queuetype(), queueEntry.gametype(), queueSettings);
+	}
+
 	public MatchData(QueueEntry queueEntry) {
 		this();
-		Queuetype queuetype = queueEntry.queuetype();
-		Gametype gametype = queueEntry.gametype();
+		val queuetype = queueEntry.queuetype();
+		val gametype = queueEntry.gametype();
 		setQueuetype(queuetype);
 		setGametype(gametype);
 		this.queueAndGameTypeHash = (short) (queuetype.getId() << 8 | gametype.getId());
-
 	}
 
 	@Nullable
@@ -76,8 +82,8 @@ public class MatchData {
 
 	public MatchData(DuelSettings duelSettings) {
 		this();
-		Queuetype queuetype = duelSettings.getQueuetype();
-		Gametype gametype = duelSettings.getGametype();
+		val queuetype = duelSettings.getQueuetype();
+		val gametype = duelSettings.getGametype();
 		if (queuetype != null)
 			setQueuetype(queuetype);
 		if (gametype != null)
@@ -152,8 +158,8 @@ public class MatchData {
 	}
 
 	public Int2ObjectOpenHashMap<ItemStack[]> getCustomKits(Profile p) {
-		Queuetype queuetype = getQueuetype();
-		Gametype gametype = getGametype();
+		val queuetype = getQueuetype();
+		val gametype = getGametype();
 
 		if (queuetype == null || gametype == null)
 			return new Int2ObjectOpenHashMap<>();
@@ -161,7 +167,7 @@ public class MatchData {
 	}
 
 	public int getElo(Profile p) {
-		Gametype gametype = getGametype();
+		val gametype = getGametype();
 
 		if (gametype == null)
 			return 0;

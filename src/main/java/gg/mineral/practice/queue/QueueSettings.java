@@ -14,44 +14,57 @@ import it.unimi.dsi.fastutil.bytes.ByteSet;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import lombok.Setter;
+import lombok.val;
 
 @Getter
 @Setter
 @RequiredArgsConstructor
 public class QueueSettings {
-    private byte teamSize = 1, difficulty = 0;
+    private byte teamSize = 1, opponentDifficulty = 0, teammateDifficulty = 0;
     private boolean botQueue = false, arenaSelection = true;
     protected final Byte2BooleanOpenHashMap enabledArenas = new Byte2BooleanOpenHashMap();
-    private boolean teammateBot, opponentBot;
+    private BotTeamSetting botTeamSetting = BotTeamSetting.BOTH;
     @Setter
     private BotConfiguration customBotConfiguration = Difficulty.EASY.getConfiguration(null);
 
-    public record QueueEntry(Queuetype queuetype, Gametype gametype, int teamSize, boolean teammateBot,
-            boolean opponentBot,
+    public static enum BotTeamSetting {
+        BOTH, OPPONENT,
+    }
+
+    public record QueueEntry(Queuetype queuetype, Gametype gametype, int teamSize, boolean botsEnabled,
+            byte opponentDifficulty,
+            BotTeamSetting botTeamSetting,
             Byte2BooleanOpenHashMap enabledArenas) {
 
         public boolean isCompatible(QueueEntry entry) {
             return queuetype == entry.queuetype && gametype == entry.gametype && teamSize == entry.teamSize
-                    && (teammateBot == entry.teammateBot && opponentBot == entry.opponentBot
-                            || teammateBot == entry.opponentBot && opponentBot == entry.teammateBot)
+                    && (teamSize > 1 && botsEnabled && entry.botsEnabled ? botTeamSetting == entry.botTeamSetting
+                            : true)
+                    && (botsEnabled ? opponentDifficulty == entry.opponentDifficulty : true)
                     && enabledArenas.byte2BooleanEntrySet().stream()
                             .anyMatch(arena -> entry.enabledArenas.get(arena.getByteKey()) == arena.getBooleanValue());
         }
     }
 
     public void setEnabledArenas(Collection<Arena> enabledArenas) {
-        for (Arena arena : enabledArenas)
+        for (val arena : enabledArenas)
             this.enabledArenas.put(arena.getId(), true);
     }
 
-    public static QueueEntry toEntry(Queuetype queuetype, Gametype gametype, int teamSize, boolean teammateBot,
-            boolean opponentBot,
+    public static QueueEntry toEntry(Queuetype queuetype, Gametype gametype, int teamSize, boolean botsEnabled,
+            byte opponentDifficulty,
+            BotTeamSetting bot2v2Setting,
             Byte2BooleanOpenHashMap enabledArenas) {
-        return new QueueEntry(queuetype, gametype, teamSize, teammateBot, opponentBot, enabledArenas);
+        return new QueueEntry(queuetype, gametype, teamSize, botsEnabled, opponentDifficulty, bot2v2Setting,
+                enabledArenas);
     }
 
-    public Difficulty getBotDifficulty() {
-        return Difficulty.values()[difficulty];
+    public Difficulty getOpponentBotDifficulty() {
+        return Difficulty.values()[opponentDifficulty];
+    }
+
+    public Difficulty getTeammateBotDifficulty() {
+        return Difficulty.values()[teammateDifficulty];
     }
 
     public void enableArena(Arena arena, boolean enabled) {
@@ -63,8 +76,8 @@ public class QueueSettings {
     }
 
     public static ByteSet getEnabledArenaIds(UUID uuid) {
-        long leastSigBits = uuid.getLeastSignificantBits();
-        ByteSet enabledArenaIds = new ByteOpenHashSet();
+        val leastSigBits = uuid.getLeastSignificantBits();
+        val enabledArenaIds = new ByteOpenHashSet();
 
         for (int index = 0; index < 64; index++)
             if ((leastSigBits & (1L << index)) != 0)

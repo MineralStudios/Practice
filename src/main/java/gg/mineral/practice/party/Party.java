@@ -8,6 +8,7 @@ import java.util.concurrent.ConcurrentLinkedQueue;
 import gg.mineral.api.collection.GlueList;
 import gg.mineral.practice.entity.Profile;
 import gg.mineral.practice.managers.PartyManager;
+import gg.mineral.practice.queue.QueueSettings;
 import gg.mineral.practice.queue.QueuedEntity;
 import gg.mineral.practice.util.messages.ChatMessage;
 import gg.mineral.practice.util.messages.impl.ChatMessages;
@@ -75,5 +76,10 @@ public class Party implements QueuedEntity {
 	@Override
 	public UUID getUuid() {
 		return partyLeader.getUuid();
+	}
+
+	@Override
+	public QueueSettings getQueueSettings() {
+		return partyLeader.getQueueSettings();
 	}
 }

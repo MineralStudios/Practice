@@ -1,13 +1,10 @@
 package gg.mineral.practice.managers;
 
-import org.bukkit.configuration.ConfigurationSection;
-
 import gg.mineral.api.config.FileConfiguration;
 import gg.mineral.practice.arena.Arena;
-import gg.mineral.practice.gametype.Gametype;
-import gg.mineral.practice.queue.Queuetype;
 import it.unimi.dsi.fastutil.bytes.Byte2ObjectOpenHashMap;
 import lombok.Getter;
+import lombok.val;
 
 public class ArenaManager {
 	@Getter
@@ -24,15 +21,15 @@ public class ArenaManager {
 		arenas.remove(arena.getId());
 		arena.delete();
 
-		for (Gametype gametype : GametypeManager.getGametypes().values())
+		for (val gametype : GametypeManager.getGametypes().values())
 			gametype.getArenas().remove(arena.getId());
 
-		for (Queuetype queuetype : QueuetypeManager.getQueuetypes().values())
+		for (val queuetype : QueuetypeManager.getQueuetypes().values())
 			queuetype.getArenas().remove(arena.getId());
 	}
 
 	public static Arena getArenaByName(String string) {
-		for (Arena arena : arenas.values())
+		for (val arena : arenas.values())
 			if (arena.getName().equalsIgnoreCase(string))
 				return arena;
 
@@ -40,26 +37,26 @@ public class ArenaManager {
 	}
 
 	public static void save() {
-		for (Arena arena : getArenas().values())
+		for (val arena : getArenas().values())
 			arena.save();
 
 		config.save();
 	}
 
 	public static void load() {
-		ConfigurationSection configSection = getConfig().getConfigurationSection("Arena.");
+		val configSection = getConfig().getConfigurationSection("Arena.");
 
 		if (configSection == null) {
 			setDefaults();
 			return;
 		}
 
-		for (String key : configSection.getKeys(false)) {
+		for (val key : configSection.getKeys(false)) {
 
 			if (key == null)
 				continue;
 
-			Arena arena = new Arena(key, CURRENT_ID++);
+			val arena = new Arena(key, CURRENT_ID++);
 
 			arena.load();
 
@@ -68,7 +65,7 @@ public class ArenaManager {
 	}
 
 	public static void setDefaults() {
-		Arena arena = new Arena("Default", CURRENT_ID++);
+		val arena = new Arena("Default", CURRENT_ID++);
 		arena.setDefaults();
 		registerArena(arena);
 	}

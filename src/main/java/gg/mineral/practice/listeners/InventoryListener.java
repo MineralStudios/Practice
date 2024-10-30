@@ -1,13 +1,10 @@
 package gg.mineral.practice.listeners;
 
-import java.util.function.Consumer;
-
 import org.bukkit.Bukkit;
 import org.bukkit.GameMode;
 import org.bukkit.Material;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
-import org.bukkit.event.inventory.ClickType;
 import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.event.inventory.InventoryCloseEvent;
 import org.bukkit.event.player.PlayerDropItemEvent;
@@ -15,21 +12,20 @@ import org.bukkit.event.player.PlayerPickupItemEvent;
 
 import gg.mineral.practice.PracticePlugin;
 import gg.mineral.practice.entity.PlayerStatus;
-import gg.mineral.practice.entity.Profile;
 import gg.mineral.practice.inventory.Interaction;
-import gg.mineral.practice.inventory.Menu;
 import gg.mineral.practice.managers.ProfileManager;
+import lombok.val;
 
 public class InventoryListener implements Listener {
 
 	@EventHandler
 	public void onInventoryClick(InventoryClickEvent e) {
-		Profile profile = ProfileManager.getOrCreateProfile((org.bukkit.entity.Player) e.getWhoClicked());
-		Menu menu = profile.getOpenMenu();
+		val profile = ProfileManager.getOrCreateProfile((org.bukkit.entity.Player) e.getWhoClicked());
+		val menu = profile.getOpenMenu();
 
 		boolean canClick = profile.getPlayer().isOp() && profile.getPlayer().getGameMode().equals(GameMode.CREATIVE);
 
-		ClickType clickType = e.getClick();
+		val clickType = e.getClick();
 
 		e.setCancelled(e.getCurrentItem() == null ? false : e.getCurrentItem().getType() == Material.TNT);
 
@@ -49,31 +45,29 @@ public class InventoryListener implements Listener {
 			e.setCancelled(
 					menu.isClickCancelled());
 
-		Consumer<Interaction> predicate = menu.getTask(e.getSlot());
+		val predicate = menu.getTask(e.getSlot());
 
-		if (predicate == null) {
+		if (predicate == null)
 			return;
-		}
 
 		predicate.accept(new Interaction(profile, clickType));
 	}
 
 	@EventHandler
 	public void onInventoryClose(InventoryCloseEvent e) {
-		Profile profile = ProfileManager.getOrCreateProfile((org.bukkit.entity.Player) e.getPlayer());
-		final Menu oldMenu = profile.getOpenMenu();
+		val profile = ProfileManager.getOrCreateProfile((org.bukkit.entity.Player) e.getPlayer());
+		val oldMenu = profile.getOpenMenu();
 		profile.setOpenMenu(null);
 
 		if (oldMenu != null && !oldMenu.isClosed() && e.getInventory().equals(oldMenu.getInventory())) {
 			oldMenu.setClosed(true);
-
 			Bukkit.getScheduler().scheduleSyncDelayedTask(PracticePlugin.INSTANCE, () -> oldMenu.onClose(), 1);
 		}
 	}
 
 	@EventHandler
 	public void onPlayerDropItem(PlayerDropItemEvent e) {
-		Profile profile = ProfileManager.getOrCreateProfile(e.getPlayer());
+		val profile = ProfileManager.getOrCreateProfile(e.getPlayer());
 		boolean canDrop = profile.getPlayer().isOp() && profile.getPlayer().getGameMode().equals(GameMode.CREATIVE);
 
 		if (profile.isInKitCreator() || profile.isInKitEditor()) {
@@ -82,9 +76,7 @@ public class InventoryListener implements Listener {
 			return;
 		}
 
-		if (profile.getPlayerStatus() == PlayerStatus.FIGHTING)
-
-		{
+		if (profile.getPlayerStatus() == PlayerStatus.FIGHTING) {
 			profile.getMatch().getItemRemovalQueue().add(e.getItemDrop());
 			return;
 		}

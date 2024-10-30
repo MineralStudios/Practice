@@ -15,6 +15,7 @@ import gg.mineral.practice.queue.QueueSettings;
 import gg.mineral.practice.util.messages.CC;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
+import lombok.val;
 
 @RequiredArgsConstructor
 public enum Difficulty {
@@ -78,7 +79,7 @@ public enum Difficulty {
     CUSTOM(CC.GRAY + "Custom") {
         @Override
         public BotConfiguration getConfiguration(QueueSettings settings) {
-            BotConfiguration customBotConfiguration = settings.getCustomBotConfiguration();
+            val customBotConfiguration = settings.getCustomBotConfiguration();
             return BotConfiguration.builder().username("CustomBot")
                     .horizontalAimSpeed(customBotConfiguration.getHorizontalAimSpeed())
                     .verticalAimSpeed(customBotConfiguration.getVerticalAimSpeed())
@@ -98,9 +99,9 @@ public enum Difficulty {
         @Override
         public BotConfiguration getConfiguration(QueueSettings settings) {
 
-            Random r = new Random();
+            val r = new Random();
 
-            int latency = r.nextInt((150 - 5) + 1) + 5;
+            val latency = r.nextInt((150 - 5) + 1) + 5;
 
             return BotConfiguration.builder().username("RandomBot")
                     .horizontalAimSpeed(0.3f + r.nextFloat() * (1.1f - 0.3f))

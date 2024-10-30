@@ -2,6 +2,8 @@ package gg.mineral.practice.util.messages;
 
 import org.bukkit.entity.Player;
 
+import lombok.val;
+
 public class ChatMessage extends Message {
 	String addition;
 
@@ -26,9 +28,8 @@ public class ChatMessage extends Message {
 
 	public ChatMessage highlightText(String c, String... highlighted) {
 
-		for (String s : highlighted) {
+		for (val s : highlighted)
 			message = message.replace(s, c + s + this.addition);
-		}
 
 		return this;
 	}

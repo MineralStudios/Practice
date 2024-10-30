@@ -2,12 +2,12 @@ package gg.mineral.practice.inventory.menus;
 
 import java.util.List;
 
-import gg.mineral.practice.entity.Profile;
 import gg.mineral.practice.inventory.ClickCancelled;
 import gg.mineral.practice.inventory.PracticeMenu;
 import gg.mineral.practice.util.items.ItemStacks;
 import gg.mineral.practice.util.messages.CC;
 import lombok.RequiredArgsConstructor;
+import lombok.val;
 
 @ClickCancelled(true)
 @RequiredArgsConstructor
@@ -16,11 +16,10 @@ public class InventoryStatsListMenu extends PracticeMenu {
 
     @Override
     public void update() {
-
-        for (InventoryStatsMenu inventoryStatsMenu : list)
+        for (val inventoryStatsMenu : list)
             add(ItemStacks.INVENTORY_STATS.name(CC.SECONDARY + CC.B + inventoryStatsMenu.getTitle())
                     .lore(CC.ACCENT + "Click to view.").build(), interaction -> {
-                        Profile p = interaction.getProfile();
+                        val p = interaction.getProfile();
                         p.openMenu(inventoryStatsMenu);
                     });
     }

@@ -63,6 +63,7 @@ import gg.mineral.practice.managers.ProfileManager;
 import gg.mineral.practice.managers.QueuetypeManager;
 import gg.mineral.practice.managers.SpectateManager;
 import gg.mineral.practice.util.world.VoidWorldGenerator;
+import lombok.val;
 import net.minecraft.server.v1_8_R3.MinecraftServer;
 
 public class PracticePlugin extends JavaPlugin {
@@ -115,12 +116,12 @@ public class PracticePlugin extends JavaPlugin {
 	}
 
 	public void registerCommands(Command... cmds) {
-		for (Command c : cmds)
-			MinecraftServer.getServer().server.getCommandMap().registerOverride(c.getName(), "Practice", c);
+		for (val cmd : cmds)
+			MinecraftServer.getServer().server.getCommandMap().registerOverride(cmd.getName(), "Practice", cmd);
 	}
 
 	public void registerListeners(Listener... listeners) {
-		for (Listener l : listeners)
-			Bukkit.getPluginManager().registerEvents(l, this);
+		for (val listener : listeners)
+			Bukkit.getPluginManager().registerEvents(listener, this);
 	}
 }

@@ -19,6 +19,7 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.RequiredArgsConstructor;
 import lombok.Setter;
+import lombok.val;
 
 @NoArgsConstructor
 public abstract class PracticeMenu implements Menu {
@@ -39,7 +40,7 @@ public abstract class PracticeMenu implements Menu {
 
 	@Override
 	public boolean isClickCancelled() {
-		ClickCancelled annotation = getClass().getAnnotation(ClickCancelled.class);
+		val annotation = getClass().getAnnotation(ClickCancelled.class);
 
 		if (annotation == null)
 			throw new IllegalArgumentException(
@@ -54,7 +55,7 @@ public abstract class PracticeMenu implements Menu {
 		int slotOnPage = firstPage ? slot : slot % pageSize;
 		int pageNumber = firstPage ? 0 : slot / pageSize;
 
-		Page page = pageMap.get(pageNumber);
+		var page = pageMap.get(pageNumber);
 
 		if (page == null) {
 			pageMap.put(pageNumber, page = new Page(pageNumber));
@@ -72,8 +73,7 @@ public abstract class PracticeMenu implements Menu {
 		int slotOnPage = firstPage ? slot : slot % pageSize;
 		int pageNumber = firstPage ? 0 : slot / pageSize;
 
-		@Nullable
-		Page page = pageMap.get(pageNumber);
+		var page = pageMap.get(pageNumber);
 
 		if (page == null) {
 			pageMap.put(pageNumber, page = new Page(pageNumber));
@@ -91,7 +91,7 @@ public abstract class PracticeMenu implements Menu {
 		int slotOnPage = firstPage ? slot : slot % pageSize;
 		int pageNumber = firstPage ? 0 : slot / pageSize;
 
-		Page page = pageMap.get(pageNumber);
+		val page = pageMap.get(pageNumber);
 
 		if (page == null)
 			return;
@@ -100,13 +100,13 @@ public abstract class PracticeMenu implements Menu {
 	}
 
 	public void add(ItemStack item) {
-		Page page = findUnusedPage();
+		val page = findUnusedPage();
 		int slot = page.findUnusedSlot();
 		page.setSlot(slot, item);
 	}
 
 	public void add(ItemStack item, Consumer<Interaction> d) {
-		Page page = findUnusedPage();
+		val page = findUnusedPage();
 		int slot = page.findUnusedSlot();
 		page.setSlot(slot, item, d);
 	}
@@ -125,7 +125,7 @@ public abstract class PracticeMenu implements Menu {
 		int slotOnPage = firstPage ? slot : slot % pageSize;
 		int pageNumber = firstPage ? 0 : slot / pageSize;
 
-		Page page = pageMap.get(pageNumber);
+		val page = pageMap.get(pageNumber);
 
 		if (page == null)
 			return null;
@@ -135,8 +135,8 @@ public abstract class PracticeMenu implements Menu {
 
 	@Nullable
 	public ItemStack getItemByType(Material m) {
-		for (Page page : pageMap.values()) {
-			ItemStack i = page.getItemByType(m);
+		for (val page : pageMap.values()) {
+			val i = page.getItemByType(m);
 
 			if (i == null)
 				continue;
@@ -148,7 +148,7 @@ public abstract class PracticeMenu implements Menu {
 	}
 
 	public boolean contains(ItemStack item) {
-		for (Page page : pageMap.values())
+		for (val page : pageMap.values())
 			if (page.contains(item))
 				return true;
 
@@ -156,12 +156,12 @@ public abstract class PracticeMenu implements Menu {
 	}
 
 	private Page findUnusedPage() {
-		for (Page page : pageMap.values())
+		for (val page : pageMap.values())
 			if (!page.full())
 				return page;
 
 		int pageNumber = pageMap.size();
-		Page page = new Page(pageNumber);
+		val page = new Page(pageNumber);
 		pageMap.put(pageNumber, page);
 		return page;
 	}
@@ -180,7 +180,7 @@ public abstract class PracticeMenu implements Menu {
 			hadUpdate = true;
 		}
 
-		Page page = pageMap.get(pageNumber);
+		var page = pageMap.get(pageNumber);
 
 		if (page == null)
 			pageMap.put(pageNumber, page = new Page(pageNumber));
@@ -303,7 +303,6 @@ public abstract class PracticeMenu implements Menu {
 
 			if (updated || inv == null)
 				inv = toInventory(profile.getPlayer());
-
 			profile.getPlayer().openInventory(inv);
 		}
 

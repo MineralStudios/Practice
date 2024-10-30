@@ -21,14 +21,15 @@ import gg.mineral.practice.managers.PartyManager;
 import gg.mineral.practice.managers.PlayerSettingsManager;
 import gg.mineral.practice.managers.QueuetypeManager;
 import gg.mineral.practice.managers.SpectateManager;
-import gg.mineral.practice.queue.Queuetype;
+
 import gg.mineral.practice.util.items.ItemBuilder;
 import gg.mineral.practice.util.items.ItemStacks;
 import gg.mineral.practice.util.messages.CC;
 import gg.mineral.practice.util.messages.impl.ErrorMessages;
-import it.unimi.dsi.fastutil.objects.ObjectIterator;
+
 import lombok.Getter;
 import lombok.Setter;
+import lombok.val;
 import net.minecraft.server.v1_8_R3.PlayerConnection;
 
 public class PlayerInventory extends CraftInventoryPlayer {
@@ -89,7 +90,7 @@ public class PlayerInventory extends CraftInventoryPlayer {
     public int getNumber(Material m, short durability) {
         int i = 0;
 
-        for (ItemStack itemStack : getContents()) {
+        for (val itemStack : getContents()) {
 
             if (itemStack == null)
                 continue;
@@ -109,7 +110,7 @@ public class PlayerInventory extends CraftInventoryPlayer {
     public int getNumberAndAmount(Material m, short durability) {
         int i = 0;
 
-        for (ItemStack itemStack : getContents()) {
+        for (val itemStack : getContents()) {
 
             if (itemStack == null)
                 continue;
@@ -129,7 +130,7 @@ public class PlayerInventory extends CraftInventoryPlayer {
     public int getNumber(Material m) {
         int i = 0;
 
-        for (ItemStack itemStack : getContents()) {
+        for (val itemStack : getContents()) {
 
             if (itemStack == null)
                 continue;
@@ -161,7 +162,7 @@ public class PlayerInventory extends CraftInventoryPlayer {
     }
 
     public void setContents(ItemStack[] items) {
-        net.minecraft.server.v1_8_R3.ItemStack[] mcItems = this.getInventory().getContents();
+        val mcItems = this.getInventory().getContents();
         for (int i = 0; i < mcItems.length; ++i) {
             if (i >= items.length) {
                 setItem(i, null);
@@ -229,12 +230,12 @@ public class PlayerInventory extends CraftInventoryPlayer {
             return true;
         });
 
-        for (Queuetype queuetype : QueuetypeManager.getQueuetypes().values()) {
+        for (val queuetype : QueuetypeManager.getQueuetypes().values()) {
 
             if (!queuetype.isUnranked())
                 continue;
 
-            ItemStack item = new ItemBuilder(queuetype.getDisplayItem())
+            val item = new ItemBuilder(queuetype.getDisplayItem())
                     .name(CC.SECONDARY + CC.B + queuetype.getDisplayName())
                     .lore(CC.ACCENT + "Right click to queue.")
                     .build();
@@ -257,23 +258,21 @@ public class PlayerInventory extends CraftInventoryPlayer {
     }
 
     public void setInventoryForLobby() {
-        if (holder.getPlayerStatus() == PlayerStatus.QUEUEING) {
+        if (holder.getPlayerStatus() == PlayerStatus.QUEUEING)
             return;
-        }
 
-        if (holder.getPlayerStatus() == PlayerStatus.FIGHTING && !holder.getMatch().isEnded()) {
+        if (holder.getPlayerStatus() == PlayerStatus.FIGHTING && !holder.getMatch().isEnded())
             return;
-        }
 
         setInventoryClickCancelled(true);
         clear();
 
-        ObjectIterator<Queuetype> iterator = QueuetypeManager.getQueuetypes().values().iterator();
+        val iterator = QueuetypeManager.getQueuetypes().values().iterator();
 
         while (iterator.hasNext()) {
-            Queuetype queuetype = iterator.next();
+            val queuetype = iterator.next();
 
-            ItemStack item = new ItemBuilder(queuetype.getDisplayItem())
+            val item = new ItemBuilder(queuetype.getDisplayItem())
                     .name(CC.SECONDARY + CC.B + queuetype.getDisplayName())
                     .lore(CC.ACCENT + "Right click to queue.").build();
             setItem(queuetype.getSlotNumber(), item,
@@ -292,7 +291,7 @@ public class PlayerInventory extends CraftInventoryPlayer {
         }
 
         if (KitEditorManager.isEnabled()) {
-            ItemStack editor = new ItemBuilder(KitEditorManager.getDisplayItem())
+            val editor = new ItemBuilder(KitEditorManager.getDisplayItem())
                     .name(CC.SECONDARY + CC.B + KitEditorManager.getDisplayName())
                     .lore(CC.ACCENT + "Right click to edit a kit.")
                     .build();
@@ -304,7 +303,7 @@ public class PlayerInventory extends CraftInventoryPlayer {
         }
 
         if (PartyManager.isEnabled()) {
-            ItemStack parties = new ItemBuilder(PartyManager.getDisplayItem())
+            val parties = new ItemBuilder(PartyManager.getDisplayItem())
                     .name(CC.SECONDARY + CC.B + PartyManager.getDisplayName())
                     .lore(CC.ACCENT + "Right click to create a party.")
                     .build();
@@ -313,7 +312,7 @@ public class PlayerInventory extends CraftInventoryPlayer {
         }
 
         if (PlayerSettingsManager.isEnabled()) {
-            ItemStack settings = new ItemBuilder(PlayerSettingsManager.getDisplayItem())
+            val settings = new ItemBuilder(PlayerSettingsManager.getDisplayItem())
                     .name(CC.SECONDARY + CC.B + PlayerSettingsManager.getDisplayName())
                     .lore(CC.ACCENT + "Right click to open settings.")
                     .build();
@@ -322,7 +321,7 @@ public class PlayerInventory extends CraftInventoryPlayer {
         }
 
         if (SpectateManager.isEnabled()) {
-            ItemStack spectate = new ItemBuilder(SpectateManager.getDisplayItem())
+            val spectate = new ItemBuilder(SpectateManager.getDisplayItem())
                     .name(CC.SECONDARY + CC.B + SpectateManager.getDisplayName())
                     .lore(CC.ACCENT + "Right click to spectate.")
                     .build();
@@ -331,7 +330,7 @@ public class PlayerInventory extends CraftInventoryPlayer {
         }
 
         if (LeaderboardManager.isEnabled()) {
-            ItemStack leaderboard = new ItemBuilder(LeaderboardManager.getDisplayItem())
+            val leaderboard = new ItemBuilder(LeaderboardManager.getDisplayItem())
                     .name(CC.SECONDARY + CC.B + LeaderboardManager.getDisplayName())
                     .lore(CC.ACCENT + "Right click to view.")
                     .build();

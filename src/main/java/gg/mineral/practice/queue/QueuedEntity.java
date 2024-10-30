@@ -6,7 +6,9 @@ import gg.mineral.practice.entity.Profile;
 import java.util.UUID;
 
 public interface QueuedEntity {
-    public List<Profile> getProfiles();
+    List<Profile> getProfiles();
 
-    public UUID getUuid();
+    UUID getUuid();
+
+    QueueSettings getQueueSettings();
 }

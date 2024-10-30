@@ -1,22 +1,17 @@
 package gg.mineral.practice.commands.testing;
 
-import java.util.List;
-
 import gg.mineral.api.collection.GlueList;
 import gg.mineral.bot.api.configuration.BotConfiguration;
-import gg.mineral.practice.bots.Difficulty;
+
 import gg.mineral.practice.commands.PlayerCommand;
-import gg.mineral.practice.entity.Profile;
-import gg.mineral.practice.gametype.Gametype;
+
 import gg.mineral.practice.managers.GametypeManager;
 import gg.mineral.practice.managers.ProfileManager;
-
 import gg.mineral.practice.managers.QueuetypeManager;
 import gg.mineral.practice.match.BotTeamMatch;
-
 import gg.mineral.practice.match.data.MatchData;
-import gg.mineral.practice.queue.QueueSettings;
-import gg.mineral.practice.queue.Queuetype;
+
+import lombok.val;
 
 public class BotTestingCommand extends PlayerCommand {
 
@@ -26,25 +21,25 @@ public class BotTestingCommand extends PlayerCommand {
 
     @Override
     public void execute(org.bukkit.entity.Player pl, String[] args) {
-        Profile profile = ProfileManager.getOrCreateProfile(pl);
+        val profile = ProfileManager.getOrCreateProfile(pl);
 
         if (args.length < 2)
             return;
 
-        int amount = Integer.valueOf(args[0]);
+        val amount = Integer.valueOf(args[0]);
 
-        Queuetype queuetype = QueuetypeManager.getQueuetypeByName("Unranked");
-        Gametype gametype = GametypeManager.getGametypeByName(args[1]);
+        val queuetype = QueuetypeManager.getQueuetypeByName("Unranked");
+        val gametype = GametypeManager.getGametypeByName(args[1]);
 
-        QueueSettings queueSettings = profile.getQueueSettings();
+        val queueSettings = profile.getQueueSettings();
 
-        Difficulty difficulty = queueSettings.getBotDifficulty();
+        val difficulty = queueSettings.getOpponentBotDifficulty();
 
-        List<BotConfiguration> friendlyTeam = new GlueList<>();
+        val friendlyTeam = new GlueList<BotConfiguration>();
         friendlyTeam.add(difficulty.getConfiguration(queueSettings));
         friendlyTeam.add(difficulty.getConfiguration(queueSettings));
 
-        List<BotConfiguration> opponentTeam = new GlueList<>();
+        val opponentTeam = new GlueList<BotConfiguration>();
         opponentTeam.add(difficulty.getConfiguration(queueSettings));
         opponentTeam.add(difficulty.getConfiguration(queueSettings));
 

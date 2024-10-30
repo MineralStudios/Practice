@@ -16,8 +16,8 @@ public class BoxingScoreboard implements Scoreboard {
                 board.updateTitle(CC.PRIMARY + CC.B + "Mineral");
                 int hitDifference = profile.getMatchStatisticCollector().getHitCount()
                                 - profile.getMatch().getOpponent(profile).getMatchStatisticCollector().getHitCount();
-                String symbol = "+";
-                String color = CC.D_GREEN;
+                var symbol = "+";
+                var color = CC.D_GREEN;
 
                 if (hitDifference < 0) {
                         symbol = "";

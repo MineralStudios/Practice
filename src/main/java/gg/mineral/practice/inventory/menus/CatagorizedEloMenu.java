@@ -2,13 +2,14 @@ package gg.mineral.practice.inventory.menus;
 
 import gg.mineral.practice.catagory.Catagory;
 import gg.mineral.practice.entity.ProfileData;
-import gg.mineral.practice.gametype.Gametype;
+
 import gg.mineral.practice.inventory.ClickCancelled;
 import gg.mineral.practice.inventory.PracticeMenu;
 import gg.mineral.practice.queue.Queuetype;
 import gg.mineral.practice.util.items.ItemBuilder;
 import gg.mineral.practice.util.messages.CC;
 import lombok.RequiredArgsConstructor;
+import lombok.val;
 
 @ClickCancelled(true)
 @RequiredArgsConstructor
@@ -19,7 +20,7 @@ public class CatagorizedEloMenu extends PracticeMenu {
 
     @Override
     public void update() {
-        for (Gametype gametype : catagory.getGametypes())
+        for (val gametype : catagory.getGametypes())
             setSlot(queuetype.getGametypes().getInt(gametype), new ItemBuilder(gametype.getDisplayItem())
                     .name(CC.SECONDARY + CC.B + gametype.getDisplayName())
                     .lore(" ",

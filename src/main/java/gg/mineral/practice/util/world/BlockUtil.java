@@ -1,9 +1,7 @@
 package gg.mineral.practice.util.world;
 
-import java.util.Iterator;
-import java.util.Map.Entry;
-
 import gg.mineral.practice.entity.Profile;
+import lombok.val;
 
 public class BlockUtil {
 
@@ -16,19 +14,19 @@ public class BlockUtil {
         sendFakeBlock(profile, blockData);
         for (int i = -radius; i <= radius; i++) {
             for (int j = -radius; j <= radius; j++) {
-                if (i == 0 && j == 0) {
+                if (i == 0 && j == 0)
                     continue;
-                }
+
                 sendFakeBlock(profile, blockData.clone().translate(i, 0, j));
             }
         }
     }
 
     public static void clearFakeBlocks(Profile profile) {
-        Iterator<Entry<String, BlockData>> iter = profile.getFakeBlocks().iterator();
+        val iter = profile.getFakeBlocks().iterator();
 
         while (iter.hasNext()) {
-            BlockData blockData = iter.next().getValue();
+            val blockData = iter.next().getValue();
             blockData.remove(profile.getPlayer());
             iter.remove();
         }

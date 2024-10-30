@@ -5,6 +5,7 @@ import gg.mineral.practice.match.TeamMatch;
 import gg.mineral.practice.scoreboard.Scoreboard;
 import gg.mineral.practice.scoreboard.ScoreboardHandler;
 import gg.mineral.practice.util.messages.CC;
+import lombok.val;
 
 public class TeamBoxingScoreboard
         implements Scoreboard {
@@ -13,11 +14,10 @@ public class TeamBoxingScoreboard
     @Override
     public void updateBoard(ScoreboardHandler board, Profile profile) {
         board.updateTitle(CC.PRIMARY + CC.B + "Mineral");
-        if (profile.getMatch() == null) {
+        if (profile.getMatch() == null)
             return;
-        }
 
-        TeamMatch match = (TeamMatch) profile.getMatch();
+        val match = (TeamMatch) profile.getMatch();
 
         boolean isTeam1 = match.getTeam1RemainingPlayers().contains(profile);
         int hitCount = isTeam1 ? match.getTeam1HitCount() : match.getTeam2HitCount();

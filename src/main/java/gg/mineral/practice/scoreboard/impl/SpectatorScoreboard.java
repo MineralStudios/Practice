@@ -5,9 +5,10 @@ import gg.mineral.practice.match.Match;
 import gg.mineral.practice.match.TeamMatch;
 import gg.mineral.practice.scoreboard.Scoreboard;
 import gg.mineral.practice.scoreboard.ScoreboardHandler;
-import gg.mineral.practice.traits.Spectatable;
+
 import gg.mineral.practice.util.collection.ProfileList;
 import gg.mineral.practice.util.messages.CC;
+import lombok.val;
 
 public class SpectatorScoreboard
                 implements Scoreboard {
@@ -18,7 +19,7 @@ public class SpectatorScoreboard
         public void updateBoard(ScoreboardHandler board, Profile profile) {
                 board.updateTitle(CC.PRIMARY + CC.B + "Mineral");
 
-                Spectatable spectatable = profile.getSpectateHandler().getSpectatable();
+                val spectatable = profile.getSpectateHandler().getSpectatable();
 
                 if (spectatable instanceof TeamMatch match) {
                         ProfileList team = match.getTeam(match.getProfile1());

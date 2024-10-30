@@ -3,13 +3,13 @@ package gg.mineral.practice.inventory.menus;
 import java.math.RoundingMode;
 import java.text.DecimalFormat;
 
-import gg.mineral.practice.entity.Profile;
 import gg.mineral.practice.inventory.ClickCancelled;
 import gg.mineral.practice.inventory.PracticeMenu;
 import gg.mineral.practice.match.CustomKnockback;
 import gg.mineral.practice.util.items.ItemStacks;
 import gg.mineral.practice.util.messages.CC;
 import lombok.RequiredArgsConstructor;
+import lombok.val;
 
 @ClickCancelled(true)
 @RequiredArgsConstructor
@@ -24,7 +24,7 @@ public class CreateCustomKnockbackMenu extends PracticeMenu {
         @Override
         public void update() {
 
-                CustomKnockback kb = viewer.getDuelSettings().getKnockback() != null
+                val kb = viewer.getDuelSettings().getKnockback() != null
                                 && viewer.getDuelSettings().getKnockback() instanceof CustomKnockback customKB
                                                 ? customKB
                                                 : new CustomKnockback();
@@ -63,7 +63,7 @@ public class CreateCustomKnockbackMenu extends PracticeMenu {
                                                                 value -> kb.setVertical(value), double.class)));
 
                 setSlot(4, ItemStacks.APPLY, interaction -> {
-                        Profile p = interaction.getProfile();
+                        val p = interaction.getProfile();
                         p.getDuelSettings().setKnockback(kb);
                         p.openMenu(menu);
                 });

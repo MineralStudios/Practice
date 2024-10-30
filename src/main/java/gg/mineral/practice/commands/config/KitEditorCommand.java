@@ -5,6 +5,7 @@ import gg.mineral.practice.managers.KitEditorManager;
 import gg.mineral.practice.util.messages.impl.ChatMessages;
 import gg.mineral.practice.util.messages.impl.ErrorMessages;
 import gg.mineral.practice.util.messages.impl.UsageMessages;
+import lombok.val;
 
 public class KitEditorCommand extends PlayerCommand {
 
@@ -15,7 +16,7 @@ public class KitEditorCommand extends PlayerCommand {
 	@Override
 	public void execute(org.bukkit.entity.Player player, String[] args) {
 
-		String arg = args.length > 0 ? args[0] : "";
+		val arg = args.length > 0 ? args[0] : "";
 
 		switch (arg.toLowerCase()) {
 			default:
@@ -32,7 +33,7 @@ public class KitEditorCommand extends PlayerCommand {
 					return;
 				}
 
-				String toggled = args[1].toLowerCase();
+				val toggled = args[1].toLowerCase();
 
 				switch (toggled) {
 					case "false":
@@ -73,7 +74,7 @@ public class KitEditorCommand extends PlayerCommand {
 				}
 
 				int slot;
-				String strSlot = args[1];
+				val strSlot = args[1];
 				try {
 					slot = Integer.parseInt(strSlot);
 				} catch (Exception e) {
@@ -84,7 +85,6 @@ public class KitEditorCommand extends PlayerCommand {
 				KitEditorManager.setSlot(slot);
 
 				ChatMessages.KIT_EDITOR_SLOT_SET.clone().replace("%slot%", strSlot).send(player);
-				;
 
 				return;
 			case "setlocation":

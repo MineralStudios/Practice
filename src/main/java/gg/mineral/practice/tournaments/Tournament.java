@@ -1,9 +1,6 @@
 package gg.mineral.practice.tournaments;
 
-import java.util.Iterator;
-
 import org.bukkit.Bukkit;
-import org.bukkit.entity.Player;
 import org.bukkit.scheduler.BukkitRunnable;
 
 import gg.mineral.api.collection.GlueList;
@@ -17,10 +14,10 @@ import gg.mineral.practice.match.Match;
 import gg.mineral.practice.match.TournamentMatch;
 import gg.mineral.practice.match.data.MatchData;
 import gg.mineral.practice.util.collection.ProfileList;
-import gg.mineral.practice.util.messages.ChatMessage;
 import gg.mineral.practice.util.messages.impl.ChatMessages;
 import gg.mineral.practice.util.messages.impl.ErrorMessages;
 import lombok.Getter;
+import lombok.val;
 import net.md_5.bungee.api.chat.ClickEvent;
 
 public class Tournament {
@@ -50,7 +47,7 @@ public class Tournament {
         p.setTournament(this);
         players.add(p);
 
-        ChatMessage joinedMessage = ChatMessages.JOINED_TOURNAMENT.clone().replace("%player%", p.getName());
+        val joinedMessage = ChatMessages.JOINED_TOURNAMENT.clone().replace("%player%", p.getName());
         ProfileManager.broadcast(players, joinedMessage);
     }
 
@@ -58,7 +55,7 @@ public class Tournament {
         players.remove(p);
         p.setTournament(null);
 
-        ChatMessage leftMessage = ChatMessages.LEFT_TOURNAMENT.clone().replace("%player%", p.getName());
+        val leftMessage = ChatMessages.LEFT_TOURNAMENT.clone().replace("%player%", p.getName());
         ProfileManager.broadcast(players, leftMessage);
 
         if (players.size() == 0) {
@@ -68,13 +65,13 @@ public class Tournament {
         }
 
         if (started && players.size() == 1) {
-            Profile winner = players.getFirst();
+            val winner = players.getFirst();
             winner.removeFromTournament();
 
             TournamentManager.remove(this);
             ended = true;
 
-            ChatMessage wonMessage = ChatMessages.WON_TOURNAMENT.clone().replace("%player%", winner.getName());
+            val wonMessage = ChatMessages.WON_TOURNAMENT.clone().replace("%player%", winner.getName());
 
             ProfileManager.broadcast(wonMessage);
 
@@ -87,9 +84,9 @@ public class Tournament {
         if (started)
             return;
 
-        final Player bukkitHost = players.getFirst().getPlayer();
+        val bukkitHost = players.getFirst().getPlayer();
 
-        PlayerTournamentInitializeEvent event = new PlayerTournamentInitializeEvent(30, bukkitHost);
+        val event = new PlayerTournamentInitializeEvent(30, bukkitHost);
         Bukkit.getPluginManager().callEvent(event);
 
         if (event.isCancelled())
@@ -97,7 +94,7 @@ public class Tournament {
 
         TournamentManager.registerTournament(this);
 
-        ChatMessage messageToBroadcast = ChatMessages.BROADCAST_TOURNAMENT.clone()
+        val messageToBroadcast = ChatMessages.BROADCAST_TOURNAMENT.clone()
                 .replace("%player%", host).setTextEvent(new ClickEvent(ClickEvent.Action.RUN_COMMAND, "/join " + host),
                         ChatMessages.CLICK_TO_JOIN);
 
@@ -108,7 +105,7 @@ public class Tournament {
             public void run() {
                 started = true;
 
-                PlayerTournamentStartEvent event = new PlayerTournamentStartEvent(bukkitHost);
+                val event = new PlayerTournamentStartEvent(bukkitHost);
                 Bukkit.getPluginManager().callEvent(event);
 
                 if (players.size() == 1 || event.isCancelled()) {
@@ -136,19 +133,19 @@ public class Tournament {
             return;
         }
 
-        Iterator<Profile> iter = players.iterator();
+        val iter = players.iterator();
 
         while (iter.hasNext()) {
-            Profile p1 = iter.next();
+            val p1 = iter.next();
 
             if (!iter.hasNext()) {
                 ChatMessages.NO_OPPONENT.send(p1.getPlayer());
                 return;
             }
 
-            Profile p2 = iter.next();
+            val p2 = iter.next();
 
-            TournamentMatch match = new TournamentMatch(p1, p2, matchData, this);
+            val match = new TournamentMatch(p1, p2, matchData, this);
             match.start();
             matches.add(match);
         }
@@ -161,7 +158,7 @@ public class Tournament {
             return;
 
         if (matches.isEmpty()) {
-            ChatMessage broadcastedMessage = ChatMessages.ROUND_OVER.clone().replace("%round%", "" + round);
+            val broadcastedMessage = ChatMessages.ROUND_OVER.clone().replace("%round%", "" + round);
 
             ProfileManager.broadcast(players, broadcastedMessage);
 

@@ -1,9 +1,7 @@
 package gg.mineral.practice.listeners;
 
-import java.util.Iterator;
 import java.util.UUID;
 
-import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.craftbukkit.v1_8_R3.entity.CraftEntity;
 import org.bukkit.craftbukkit.v1_8_R3.entity.CraftPlayer;
@@ -21,11 +19,10 @@ import org.bukkit.event.entity.PotionSplashEvent;
 import org.bukkit.event.player.PlayerJoinEvent;
 import org.bukkit.event.player.PlayerPickupItemEvent;
 import org.bukkit.event.player.PlayerQuitEvent;
-import org.bukkit.inventory.ItemStack;
 
 import gg.mineral.practice.entity.Profile;
 import gg.mineral.practice.managers.ProfileManager;
-import net.minecraft.server.v1_8_R3.BlockPosition;
+import lombok.val;
 import net.minecraft.server.v1_8_R3.EntityItem;
 import net.minecraft.server.v1_8_R3.MathHelper;
 import net.minecraft.server.v1_8_R3.PacketPlayOutAnimation;
@@ -52,8 +49,6 @@ import net.minecraft.server.v1_8_R3.PacketPlayOutSpawnEntityLiving;
 import net.minecraft.server.v1_8_R3.PacketPlayOutSpawnEntityPainting;
 import net.minecraft.server.v1_8_R3.PacketPlayOutWorldEvent;
 
-import net.minecraft.server.v1_8_R3.PacketPlayOutPlayerInfo.PlayerInfoData;
-
 public class PacketListener implements Listener {
 
     @EventHandler
@@ -71,7 +66,7 @@ public class PacketListener implements Listener {
 
         profile.getPlayer().getHandle().playerConnection.getOutgoingPacketListeners().add(packet -> {
             if (packet instanceof PacketPlayOutNamedEntitySpawn namedEntitySpawn) {
-                UUID uuid = namedEntitySpawn.getB();
+                val uuid = namedEntitySpawn.getB();
                 if (!profile.testVisibility(uuid)) {
                     profile.getVisiblePlayers().remove(uuid);
                     return true;
@@ -81,7 +76,7 @@ public class PacketListener implements Listener {
 
             if (packet instanceof PacketPlayOutEntityDestroy destroy)
                 for (int id : destroy.getA())
-                    for (UUID uuid : profile.getVisiblePlayers())
+                    for (val uuid : profile.getVisiblePlayers())
                         if (profile.getPlayer().getHandle().getId() == id)
                             if (!profile.testVisibility(uuid))
                                 profile.getVisiblePlayers().remove(uuid);
@@ -89,15 +84,15 @@ public class PacketListener implements Listener {
                                 return true;
 
             if (packet instanceof PacketPlayOutPlayerInfo playerInfo) {
-                PacketPlayOutPlayerInfo.EnumPlayerInfoAction action = playerInfo.getA();
-                Iterator<PlayerInfoData> data = playerInfo.getB().iterator();
+                val action = playerInfo.getA();
+                val data = playerInfo.getB().iterator();
 
                 while (data.hasNext()) {
-                    PlayerInfoData playerInfoData = data.next();
+                    val playerInfoData = data.next();
 
                     if (playerInfoData == null)
                         continue;
-                    UUID uuid = playerInfoData.a().getId();
+                    val uuid = playerInfoData.a().getId();
 
                     if (!profile.testTabVisibility(uuid)
                             && action != PacketPlayOutPlayerInfo.EnumPlayerInfoAction.REMOVE_PLAYER) {
@@ -119,7 +114,7 @@ public class PacketListener implements Listener {
             }
 
             if (packet instanceof PacketPlayOutNamedSoundEffect soundEffect) {
-                String sound = soundEffect.getA();
+                val sound = soundEffect.getA();
 
                 if (sound == null)
                     return false;
@@ -131,13 +126,13 @@ public class PacketListener implements Listener {
 
                     boolean isVisible = false, isInMatch = false;
 
-                    for (Entity entity : profile.getPlayer().getWorld().getEntitiesByClasses(Player.class,
+                    for (val entity : profile.getPlayer().getWorld().getEntitiesByClasses(Player.class,
                             Projectile.class)) {
                         if (!(entity instanceof Player) && !(entity instanceof Projectile))
                             continue;
 
                         Player player = null;
-                        Location location = entity.getLocation();
+                        val location = entity.getLocation();
 
                         if (entity instanceof Player)
                             player = (Player) entity;
@@ -160,7 +155,7 @@ public class PacketListener implements Listener {
 
                         switch (sound) {
                             case "RANDOM.bow": {
-                                ItemStack hand = player.getItemInHand();
+                                val hand = player.getItemInHand();
                                 if (hand == null)
                                     break;
                                 if (hand.getType() == Material.POTION || hand.getType() == Material.BOW
@@ -200,13 +195,13 @@ public class PacketListener implements Listener {
                 if (effect != 2002)
                     return false;
 
-                BlockPosition position = worldEvent.getB();
+                val position = worldEvent.getB();
 
                 int x = position.getX(), y = position.getY(), z = position.getZ();
 
                 boolean isVisible = false, isInMatch = false;
 
-                for (ThrownPotion potion : profile.getPlayer().getWorld().getEntitiesByClass(ThrownPotion.class)) {
+                for (val potion : profile.getPlayer().getWorld().getEntitiesByClass(ThrownPotion.class)) {
                     int potionX = MathHelper.floor(x);
                     int potionY = MathHelper.floor(y);
                     int potionZ = MathHelper.floor(z);
@@ -217,7 +212,7 @@ public class PacketListener implements Listener {
                         continue;
 
                     isInMatch = true;
-                    Player shooter = (Player) potion.getShooter();
+                    val shooter = (Player) potion.getShooter();
                     if (profile.getVisiblePlayers().contains(shooter.getUniqueId()))
                         isVisible = true;
                 }

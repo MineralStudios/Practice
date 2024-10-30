@@ -1,9 +1,9 @@
 package gg.mineral.practice.commands.settings;
 
 import gg.mineral.practice.commands.PlayerCommand;
-import gg.mineral.practice.entity.Profile;
 import gg.mineral.practice.managers.ProfileManager;
 import gg.mineral.practice.util.messages.impl.ChatMessages;
+import lombok.val;
 
 public class TogglePartyRequestsCommand extends PlayerCommand {
 
@@ -13,7 +13,7 @@ public class TogglePartyRequestsCommand extends PlayerCommand {
 
     @Override
     public void execute(org.bukkit.entity.Player pl, String[] args) {
-        Profile profile = ProfileManager.getOrCreateProfile(pl);
+        val profile = ProfileManager.getOrCreateProfile(pl);
         profile.getRequestHandler().setPartyRequests(!profile.getRequestHandler().isPartyRequests());
         ChatMessages.PARTY_REQUESTS_TOGGLED.clone()
                 .replace("%toggled%", profile.getRequestHandler().isPartyRequests() ? "enabled" : "disabled")

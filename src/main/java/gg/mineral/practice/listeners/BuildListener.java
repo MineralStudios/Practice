@@ -1,7 +1,6 @@
 package gg.mineral.practice.listeners;
 
 import org.bukkit.GameMode;
-import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
@@ -14,17 +13,16 @@ import org.bukkit.event.hanging.HangingPlaceEvent;
 import org.bukkit.event.player.PlayerBucketEmptyEvent;
 
 import gg.mineral.practice.entity.PlayerStatus;
-import gg.mineral.practice.entity.Profile;
 import gg.mineral.practice.managers.ProfileManager;
-import gg.mineral.practice.match.Match;
 import gg.mineral.practice.util.messages.impl.ErrorMessages;
+import lombok.val;
 
 public class BuildListener implements Listener {
 
 	@EventHandler
 	public void onBlockBreak(BlockBreakEvent e) {
 
-		Profile profile = ProfileManager
+		val profile = ProfileManager
 				.getProfile(e.getPlayer().getUniqueId(),
 						p -> p.getPlayerStatus() == PlayerStatus.FIGHTING);
 
@@ -33,9 +31,9 @@ public class BuildListener implements Listener {
 			return;
 		}
 
-		Match match = profile.getMatch();
+		val match = profile.getMatch();
 
-		Location location = e.getBlock().getLocation();
+		val location = e.getBlock().getLocation();
 
 		if (match.getBuildLog().contains(location)) {
 			e.setCancelled(!match.getData().isBuild());
@@ -46,9 +44,8 @@ public class BuildListener implements Listener {
 
 		e.setCancelled(canBreak);
 
-		if (e.getBlock().getType() == Material.TNT && !canBreak) {
+		if (e.getBlock().getType() == Material.TNT && !canBreak)
 			match.decreasePlacedTnt();
-		}
 	}
 
 	@EventHandler
@@ -63,7 +60,7 @@ public class BuildListener implements Listener {
 
 	@EventHandler
 	public void onBlockPlace(BlockPlaceEvent e) {
-		Profile profile = ProfileManager
+		val profile = ProfileManager
 				.getProfile(e.getPlayer().getUniqueId(),
 						p -> p.getPlayerStatus() == PlayerStatus.FIGHTING);
 		boolean canPlace = e.getPlayer().isOp() && e.getPlayer().getGameMode().equals(GameMode.CREATIVE);
@@ -73,7 +70,7 @@ public class BuildListener implements Listener {
 			return;
 		}
 
-		Match match = profile.getMatch();
+		val match = profile.getMatch();
 		e.setCancelled(!match.getData().isBuild());
 
 		if (e.getBlockPlaced().getType() == Material.TNT) {
@@ -92,7 +89,7 @@ public class BuildListener implements Listener {
 
 	@EventHandler
 	public void onPlayerBucketEmpty(PlayerBucketEmptyEvent e) {
-		Profile profile = ProfileManager
+		val profile = ProfileManager
 				.getProfile(e.getPlayer().getUniqueId(),
 						p -> p.getPlayerStatus() == PlayerStatus.FIGHTING);
 		boolean canPlace = e.getPlayer().isOp() && e.getPlayer().getGameMode().equals(GameMode.CREATIVE);

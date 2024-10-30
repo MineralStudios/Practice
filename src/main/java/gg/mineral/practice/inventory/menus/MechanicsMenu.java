@@ -1,7 +1,5 @@
 package gg.mineral.practice.inventory.menus;
 
-import gg.mineral.practice.arena.Arena;
-import gg.mineral.practice.duel.DuelSettings;
 import gg.mineral.practice.inventory.ClickCancelled;
 import gg.mineral.practice.inventory.PracticeMenu;
 import gg.mineral.practice.inventory.SubmitAction;
@@ -10,6 +8,7 @@ import gg.mineral.practice.util.items.ItemStacks;
 import gg.mineral.practice.util.messages.CC;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
+import lombok.val;
 
 @ClickCancelled(true)
 @RequiredArgsConstructor
@@ -19,7 +18,7 @@ public class MechanicsMenu extends PracticeMenu {
 
 	@Override
 	public void update() {
-		DuelSettings duelSettings = viewer.getDuelSettings();
+		val duelSettings = viewer.getDuelSettings();
 
 		setSlot(10,
 				ItemStacks.SELECT_KIT
@@ -98,7 +97,7 @@ public class MechanicsMenu extends PracticeMenu {
 						.openMenu(
 								ConfigureValueMenu.of(this, value -> duelSettings.setPearlCooldown(value), int.class)));
 
-		Arena arena = ArenaManager.getArenas().get(duelSettings.getArenaId());
+		val arena = ArenaManager.getArenas().get(duelSettings.getArenaId());
 		setSlot(20, ItemStacks.ARENA
 				.lore(CC.WHITE + "Changes the " + CC.SECONDARY + "arena" + CC.WHITE
 						+ ".", " ",

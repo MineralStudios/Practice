@@ -1,13 +1,13 @@
 package gg.mineral.practice.util.math;
 
 import org.bukkit.Bukkit;
-import org.bukkit.scheduler.BukkitScheduler;
 
 import gg.mineral.practice.PracticePlugin;
 import gg.mineral.practice.entity.Profile;
 import gg.mineral.practice.managers.ProfileManager;
 import gg.mineral.practice.match.Match;
 import gg.mineral.practice.util.messages.impl.ChatMessages;
+import lombok.val;
 
 public class Countdown {
 	int time, taskID;
@@ -19,7 +19,7 @@ public class Countdown {
 	}
 
 	public void start() {
-		BukkitScheduler scheduler = Bukkit.getServer().getScheduler();
+		val scheduler = Bukkit.getServer().getScheduler();
 
 		scheduler.scheduleSyncDelayedTask(PracticePlugin.INSTANCE, () -> {
 			for (Profile profile : match.getParticipants()) {
@@ -44,7 +44,7 @@ public class Countdown {
 
 		match.onMatchStart();
 
-		for (Profile profile : match.getParticipants()) {
+		for (val profile : match.getParticipants()) {
 			match.onMatchStart(profile);
 			profile.setInMatchCountdown(false);
 			profile.message(ChatMessages.MATCH_STARTED);

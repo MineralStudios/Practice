@@ -2,9 +2,10 @@ package gg.mineral.practice.util.collection;
 
 import gg.mineral.api.collection.GlueList;
 import lombok.AllArgsConstructor;
+import lombok.Data;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
-import lombok.Setter;
+import lombok.val;
 
 @RequiredArgsConstructor
 public class LeaderboardMap {
@@ -15,12 +16,9 @@ public class LeaderboardMap {
     }
 
     @AllArgsConstructor
+    @Data
     public static class Entry {
-        @Setter
-        @Getter
         String key;
-        @Setter
-        @Getter
         int value;
     }
 
@@ -70,13 +68,12 @@ public class LeaderboardMap {
     public void put(String key, int value) {
         entries.add(findPosition(value), new Entry(key, value));
 
-        if (entries.size() > size) {
+        if (entries.size() > size)
             entries.remove(entries.size() - 1);
-        }
     }
 
     public void putNoDuplicate(String key, int value) {
-        for (Entry entry : entries)
+        for (val entry : entries)
             if (entry.getKey().equals(key))
                 return;
 
@@ -85,28 +82,25 @@ public class LeaderboardMap {
 
     public void putOrReplace(String key, int value, int oldValue) {
         int oldPosition = findPositionOfEntry(oldValue);
-        Entry oldEntry = entries.size() - 1 < oldPosition ? null : entries.get(oldPosition);
+        val oldEntry = entries.size() - 1 < oldPosition ? null : entries.get(oldPosition);
 
-        if (oldEntry != null && oldEntry.getKey().equalsIgnoreCase(key)) {
+        if (oldEntry != null && oldEntry.getKey().equalsIgnoreCase(key))
             entries.remove(oldPosition);
-        }
 
         entries.add(findPosition(value), new Entry(key, value));
 
-        if (entries.size() > size) {
+        if (entries.size() > size)
             entries.remove(entries.size() - 1);
-        }
     }
 
     public void replace(String key, int value, int oldValue) {
 
-        Entry oldEntry = entries.remove(findPositionOfEntry(oldValue));
+        val oldEntry = entries.remove(findPositionOfEntry(oldValue));
         oldEntry.setValue(value);
 
         entries.add(findPosition(value), oldEntry);
 
-        if (entries.size() > size) {
+        if (entries.size() > size)
             entries.remove(entries.size() - 1);
-        }
     }
 }

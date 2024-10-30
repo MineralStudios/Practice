@@ -8,10 +8,10 @@ import org.bukkit.event.player.PlayerJoinEvent;
 import org.bukkit.event.player.PlayerQuitEvent;
 
 import gg.mineral.bot.api.BotAPI;
-import gg.mineral.practice.entity.Profile;
 import gg.mineral.practice.managers.EloManager;
 import gg.mineral.practice.managers.ProfileManager;
 import gg.mineral.practice.scoreboard.impl.DefaultScoreboard;
+import lombok.val;
 
 public class EntryListener implements Listener {
 
@@ -19,7 +19,7 @@ public class EntryListener implements Listener {
 	public void onPlayerJoin(PlayerJoinEvent event) {
 		event.setJoinMessage(null);
 		ProfileManager.removeIfExists(event.getPlayer());
-		Profile profile = ProfileManager.getOrCreateProfile(event.getPlayer());
+		val profile = ProfileManager.getOrCreateProfile(event.getPlayer());
 		profile.setGameMode(GameMode.SURVIVAL);
 		profile.heal();
 
@@ -43,26 +43,25 @@ public class EntryListener implements Listener {
 	public void onPlayerQuit(PlayerQuitEvent e) {
 		e.setQuitMessage(null);
 
-		Profile victim = ProfileManager.getOrCreateProfile(e.getPlayer());
+		val victim = ProfileManager.getOrCreateProfile(e.getPlayer());
 
 		victim.removeScoreboard();
 
-		if (victim.isInParty()) {
+		if (victim.isInParty())
 			victim.getParty().leave(victim);
-		} else if (victim.isInTournament()) {
+		else if (victim.isInTournament())
 			victim.getTournament().removePlayer(victim);
-		} else if (victim.isInEvent()) {
+		else if (victim.isInEvent())
 			victim.getEvent().removePlayer(victim);
-		}
 
 		switch (victim.getPlayerStatus()) {
-			case FIGHTING:
+			case FIGHTING ->
 				victim.getMatch().end(victim);
-				break;
-			case QUEUEING:
+			case QUEUEING ->
 				victim.removeFromQueue();
-				break;
-			default:
+			default ->
+				{
+				}
 		}
 
 		ProfileManager.remove(victim);

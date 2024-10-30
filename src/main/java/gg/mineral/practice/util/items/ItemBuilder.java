@@ -5,7 +5,8 @@ import java.util.List;
 
 import org.bukkit.Material;
 import org.bukkit.inventory.ItemStack;
-import org.bukkit.inventory.meta.ItemMeta;
+
+import lombok.val;
 
 public class ItemBuilder {
     private Material material;
@@ -48,8 +49,8 @@ public class ItemBuilder {
     }
 
     public ItemStack build() {
-        ItemStack newItemStack = new ItemStack(material, amount, (short) durability);
-        ItemMeta meta = newItemStack.getItemMeta();
+        val newItemStack = new ItemStack(material, amount, (short) durability);
+        val meta = newItemStack.getItemMeta();
         meta.setDisplayName(name);
         meta.setLore(lore);
         newItemStack.setItemMeta(meta);

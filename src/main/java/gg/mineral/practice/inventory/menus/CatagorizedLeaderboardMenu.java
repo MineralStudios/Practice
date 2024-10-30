@@ -1,16 +1,14 @@
 package gg.mineral.practice.inventory.menus;
 
-import org.bukkit.inventory.ItemStack;
-import org.bukkit.inventory.meta.ItemMeta;
-
 import gg.mineral.practice.catagory.Catagory;
-import gg.mineral.practice.gametype.Gametype;
+
 import gg.mineral.practice.inventory.ClickCancelled;
 import gg.mineral.practice.inventory.PracticeMenu;
 import gg.mineral.practice.queue.Queuetype;
 import gg.mineral.practice.util.items.ItemBuilder;
 import gg.mineral.practice.util.messages.CC;
 import lombok.RequiredArgsConstructor;
+import lombok.val;
 
 @ClickCancelled(true)
 @RequiredArgsConstructor
@@ -23,11 +21,11 @@ public class CatagorizedLeaderboardMenu extends PracticeMenu {
     @Override
     public void update() {
         numberOfGametypes = catagory.getGametypes().size();
-        for (Gametype gametype : catagory.getGametypes()) {
+        for (val gametype : catagory.getGametypes()) {
 
-            ItemStack item = new ItemBuilder(gametype.getDisplayItem().clone())
+            val item = new ItemBuilder(gametype.getDisplayItem().clone())
                     .name(CC.SECONDARY + CC.B + gametype.getDisplayName()).build();
-            ItemMeta meta = item.getItemMeta();
+            val meta = item.getItemMeta();
 
             try {
                 meta.setLore(gametype.getLeaderboardLore());

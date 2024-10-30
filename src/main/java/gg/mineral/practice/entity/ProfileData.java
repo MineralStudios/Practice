@@ -5,6 +5,7 @@ import java.util.UUID;
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;
+import lombok.val;
 
 @AllArgsConstructor
 @Getter
@@ -26,7 +27,7 @@ public class ProfileData {
             return true;
         if (o == null || getClass() != o.getClass())
             return false;
-        ProfileData that = (ProfileData) o;
+        val that = (ProfileData) o;
         return Objects.equals(uuid, that.uuid) &&
                 Objects.equals(name, that.name);
     }

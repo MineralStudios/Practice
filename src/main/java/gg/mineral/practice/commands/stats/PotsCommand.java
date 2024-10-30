@@ -4,10 +4,11 @@ import org.bukkit.Material;
 
 import gg.mineral.practice.commands.PlayerCommand;
 import gg.mineral.practice.entity.PlayerStatus;
-import gg.mineral.practice.entity.Profile;
+
 import gg.mineral.practice.managers.ProfileManager;
 import gg.mineral.practice.util.messages.impl.ChatMessages;
 import gg.mineral.practice.util.messages.impl.ErrorMessages;
+import lombok.val;
 
 public class PotsCommand extends PlayerCommand {
 
@@ -18,7 +19,7 @@ public class PotsCommand extends PlayerCommand {
 
 	@Override
 	public void execute(org.bukkit.entity.Player pl, String[] args) {
-		Profile profile = ProfileManager
+		val profile = ProfileManager
 				.getProfile(pl.getUniqueId(), p -> p.getPlayerStatus() == PlayerStatus.FIGHTING);
 
 		if (profile == null) {
@@ -26,7 +27,7 @@ public class PotsCommand extends PlayerCommand {
 			return;
 		}
 
-		int pots = profile.getInventory().getNumber(Material.POTION, (short) 16421);
+		val pots = profile.getInventory().getNumber(Material.POTION, (short) 16421);
 		ChatMessages.POTS.clone().replace("%pots%", "" + pots).send(pl);
 	}
 }

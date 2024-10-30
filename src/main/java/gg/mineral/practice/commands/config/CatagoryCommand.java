@@ -1,7 +1,5 @@
 package gg.mineral.practice.commands.config;
 
-import java.util.Iterator;
-
 import gg.mineral.practice.catagory.Catagory;
 import gg.mineral.practice.commands.PlayerCommand;
 import gg.mineral.practice.gametype.Gametype;
@@ -13,6 +11,7 @@ import gg.mineral.practice.util.messages.CC;
 import gg.mineral.practice.util.messages.impl.ChatMessages;
 import gg.mineral.practice.util.messages.impl.ErrorMessages;
 import gg.mineral.practice.util.messages.impl.UsageMessages;
+import lombok.val;
 
 public class CatagoryCommand extends PlayerCommand {
 
@@ -23,12 +22,11 @@ public class CatagoryCommand extends PlayerCommand {
 	@Override
 	public void execute(org.bukkit.entity.Player player, String[] args) {
 
-		String arg = args.length > 0 ? args[0] : "";
+		val arg = args.length > 0 ? args[0] : "";
 
 		Catagory catagory;
 		Gametype gametype;
-		String catagoryName;
-		String gametypeName;
+		String catagoryName, gametypeName;
 		StringBuilder sb;
 
 		switch (arg.toLowerCase()) {
@@ -76,9 +74,8 @@ public class CatagoryCommand extends PlayerCommand {
 
 				catagory.setDisplayItem(player.getItemInHand());
 
-				if (args.length > 2) {
+				if (args.length > 2)
 					catagory.setDisplayName(args[2].replace("&", "§"));
-				}
 
 				ChatMessages.CATAGORY_DISPLAY_SET.clone().replace("%catagory%", catagoryName).send(player);
 
@@ -104,7 +101,7 @@ public class CatagoryCommand extends PlayerCommand {
 					return;
 				}
 
-				String slotName = args[3];
+				val slotName = args[3];
 
 				if (slotName.equalsIgnoreCase("false")) {
 					catagory.removeFromQueuetype(queuetype);
@@ -182,15 +179,14 @@ public class CatagoryCommand extends PlayerCommand {
 			case "list":
 				sb = new StringBuilder(CC.GRAY + "[");
 
-				Iterator<Catagory> catagoryIter = CatagoryManager.getCatagories().iterator();
+				val catagoryIter = CatagoryManager.getCatagories().iterator();
 
 				while (catagoryIter.hasNext()) {
-					Catagory c = catagoryIter.next();
+					val c = catagoryIter.next();
 					sb.append(CC.GREEN + c.getName());
 
-					if (catagoryIter.hasNext()) {
+					if (catagoryIter.hasNext())
 						sb.append(CC.GRAY + ", ");
-					}
 				}
 
 				sb.append(CC.GRAY + "]");

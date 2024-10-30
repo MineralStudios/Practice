@@ -1,11 +1,11 @@
 package gg.mineral.practice.inventory.menus;
 
-import gg.mineral.practice.entity.Profile;
 import gg.mineral.practice.inventory.ClickCancelled;
 import gg.mineral.practice.inventory.PracticeMenu;
 import gg.mineral.practice.util.items.ItemStacks;
 import gg.mineral.practice.util.messages.CC;
 import lombok.RequiredArgsConstructor;
+import lombok.val;
 
 @ClickCancelled(true)
 @RequiredArgsConstructor
@@ -18,7 +18,7 @@ public class SelectKitMenu extends PracticeMenu {
                 interaction -> interaction.getProfile().openMenu(new SelectExistingKitMenu(menu, false)));
 
         setSlot(6, ItemStacks.CHOOSE_CUSTOM_KIT, interaction -> {
-            Profile viewer = interaction.getProfile();
+            val viewer = interaction.getProfile();
             viewer.getPlayer().closeInventory();
             viewer.sendToKitCreator(menu.getSubmitAction());
         });

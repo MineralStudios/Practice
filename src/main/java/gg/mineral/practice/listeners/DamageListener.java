@@ -16,10 +16,10 @@ import gg.mineral.practice.bukkit.events.PlayerDamageByArrowEvent;
 import gg.mineral.practice.bukkit.events.PlayerDamageByPlayerEvent;
 import gg.mineral.practice.bukkit.events.PlayerDamageEvent;
 import gg.mineral.practice.entity.PlayerStatus;
-import gg.mineral.practice.entity.Profile;
 import gg.mineral.practice.managers.ProfileManager;
 import gg.mineral.practice.match.TeamMatch;
 import gg.mineral.practice.util.messages.impl.ChatMessages;
+import lombok.val;
 
 public class DamageListener implements Listener {
 
@@ -32,21 +32,18 @@ public class DamageListener implements Listener {
 
 		PlayerDamageEvent event;
 
-		if (e instanceof EntityDamageByEntityEvent) {
-			EntityDamageByEntityEvent entityDamageByEntityEvent = (EntityDamageByEntityEvent) e;
-
-			if (entityDamageByEntityEvent.getDamager() instanceof Arrow) {
+		if (e instanceof EntityDamageByEntityEvent entityDamageByEntityEvent) {
+			if (entityDamageByEntityEvent.getDamager() instanceof Arrow arrow)
 				event = new PlayerDamageByArrowEvent(
-						(Arrow) entityDamageByEntityEvent.getDamager(), e);
-			} else if (entityDamageByEntityEvent.getDamager() instanceof Player) {
+						arrow, e);
+			else if (entityDamageByEntityEvent.getDamager() instanceof Player damager)
 				event = new PlayerDamageByPlayerEvent(
-						(Player) entityDamageByEntityEvent.getDamager(), e);
-			} else {
+						damager, e);
+			else
 				event = new PlayerDamageEvent(e);
-			}
-		} else {
+
+		} else
 			event = new PlayerDamageEvent(e);
-		}
 
 		Bukkit.getPluginManager().callEvent(event);
 
@@ -55,13 +52,12 @@ public class DamageListener implements Listener {
 
 	@EventHandler
 	public void onPlayerDamage(PlayerDamageEvent e) {
-		Player player = e.getPlayer();
+		val player = e.getPlayer();
 
-		Profile victim = ProfileManager
+		val victim = ProfileManager
 				.getProfile(player.getUniqueId(), p -> p.getPlayerStatus() == PlayerStatus.FIGHTING);
 
 		if (victim == null) {
-
 			if (e.getCause() == DamageCause.VOID)
 				player.teleport(ProfileManager.getSpawnLocation());
 
@@ -80,16 +76,15 @@ public class DamageListener implements Listener {
 			return;
 		}
 
-		if (e instanceof PlayerDamageByPlayerEvent || e instanceof PlayerDamageByArrowEvent) {
+		if (e instanceof PlayerDamageByPlayerEvent || e instanceof PlayerDamageByArrowEvent)
 			return;
-		}
 
 		victim.setKiller(null);
 	}
 
 	@EventHandler
 	public void onPlayerDamageByPlayer(PlayerDamageByPlayerEvent e) {
-		Profile attacker = ProfileManager
+		val attacker = ProfileManager
 				.getProfile(e.getDamager().getUniqueId(),
 						p -> p.getPlayerStatus() == PlayerStatus.FIGHTING);
 
@@ -103,7 +98,7 @@ public class DamageListener implements Listener {
 			return;
 		}
 
-		Profile victim = ProfileManager
+		val victim = ProfileManager
 				.getProfile(e.getPlayer().getUniqueId(),
 						p -> p.getPlayerStatus() == PlayerStatus.FIGHTING);
 
@@ -134,13 +129,13 @@ public class DamageListener implements Listener {
 
 	@EventHandler
 	public void onPlayerDamageByArrow(PlayerDamageByArrowEvent e) {
-		Arrow arrow = e.getDamager();
+		val arrow = e.getDamager();
 
 		if (!(arrow.getShooter() instanceof Player))
 			return;
 
-		Player shooter = (Player) arrow.getShooter();
-		Profile attacker = ProfileManager
+		val shooter = (Player) arrow.getShooter();
+		val attacker = ProfileManager
 				.getProfile(shooter.getUniqueId(), p -> p.getPlayerStatus() == PlayerStatus.FIGHTING);
 
 		if (attacker == null) {
@@ -153,7 +148,7 @@ public class DamageListener implements Listener {
 			return;
 		}
 
-		Profile victim = ProfileManager
+		val victim = ProfileManager
 				.getProfile(e.getPlayer().getUniqueId(),
 						p -> p.getPlayerStatus() == PlayerStatus.FIGHTING);
 
@@ -178,7 +173,7 @@ public class DamageListener implements Listener {
 
 	@EventHandler
 	public void onEntityCombustByEntity(EntityCombustByEntityEvent e) {
-		Profile attacker = ProfileManager
+		val attacker = ProfileManager
 				.getProfile(e.getCombuster().getUniqueId(),
 						p -> p.getPlayerStatus() == PlayerStatus.FIGHTING);
 
@@ -187,7 +182,7 @@ public class DamageListener implements Listener {
 			return;
 		}
 
-		Profile victim = ProfileManager
+		val victim = ProfileManager
 				.getProfile(e.getEntity().getUniqueId(),
 						p -> p.getPlayerStatus() == PlayerStatus.FIGHTING);
 

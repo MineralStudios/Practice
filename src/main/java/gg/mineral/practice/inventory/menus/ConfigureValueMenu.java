@@ -1,13 +1,14 @@
 package gg.mineral.practice.inventory.menus;
 
 import java.util.function.Consumer;
-import gg.mineral.practice.entity.Profile;
+
 import gg.mineral.practice.inventory.AnvilMenu;
 import gg.mineral.practice.inventory.ClickCancelled;
 import gg.mineral.practice.inventory.Menu;
 import gg.mineral.practice.util.items.ItemStacks;
 import gg.mineral.practice.util.messages.impl.ErrorMessages;
 import lombok.RequiredArgsConstructor;
+import lombok.val;
 
 @ClickCancelled(true)
 @RequiredArgsConstructor(access = lombok.AccessLevel.PRIVATE)
@@ -21,9 +22,9 @@ public class ConfigureValueMenu<T> extends AnvilMenu {
     public void update() {
 
         setSlot(1, ItemStacks.APPLY, interaction -> {
-            Profile p = interaction.getProfile();
+            val p = interaction.getProfile();
 
-            String text = getText();
+            val text = getText();
 
             if (text == null) {
                 p.message(ErrorMessages.INVALID_NUMBER);

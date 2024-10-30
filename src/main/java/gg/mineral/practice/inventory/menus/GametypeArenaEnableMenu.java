@@ -11,8 +11,9 @@ import gg.mineral.practice.managers.ArenaManager;
 import gg.mineral.practice.util.items.ItemBuilder;
 import gg.mineral.practice.util.messages.CC;
 import gg.mineral.practice.util.messages.impl.ChatMessages;
-import it.unimi.dsi.fastutil.objects.ObjectCollection;
+
 import lombok.RequiredArgsConstructor;
+import lombok.val;
 
 @ClickCancelled(true)
 @RequiredArgsConstructor
@@ -25,12 +26,12 @@ public class GametypeArenaEnableMenu extends PracticeMenu {
     public void update() {
         clear();
 
-        ObjectCollection<Arena> arenas = ArenaManager.getArenas().values();
+        val arenas = ArenaManager.getArenas().values();
         numberOfArenas = ArenaManager.getArenas().size();
 
         for (Arena a : arenas) {
             boolean arenaEnabled = gametype.getArenas().contains(a.getId());
-            ChatColor color = arenaEnabled ? ChatColor.GREEN : ChatColor.RED;
+            val color = arenaEnabled ? ChatColor.GREEN : ChatColor.RED;
 
             ItemStack item;
             try {

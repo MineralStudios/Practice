@@ -1,13 +1,12 @@
 package gg.mineral.practice.inventory.menus;
 
-import org.bukkit.inventory.ItemStack;
-
 import gg.mineral.practice.inventory.ClickCancelled;
 import gg.mineral.practice.inventory.PracticeMenu;
 import gg.mineral.practice.managers.MatchManager;
-import gg.mineral.practice.match.Match;
+
 import gg.mineral.practice.util.items.ItemBuilder;
 import gg.mineral.practice.util.messages.CC;
+import lombok.val;
 
 @ClickCancelled(true)
 public class SpectateMenu extends PracticeMenu {
@@ -15,13 +14,13 @@ public class SpectateMenu extends PracticeMenu {
     @Override
     public void update() {
         clear();
-        for (Match m : MatchManager.getMatches()) {
-            ItemStack item = m.getData().getGametype().getDisplayItem().clone();
+        for (val m : MatchManager.getMatches()) {
+            val item = m.getData().getGametype().getDisplayItem().clone();
 
             if (m.getProfile1() == null || m.getProfile2() == null)
                 continue;
 
-            ItemStack skull = new ItemBuilder(item.clone())
+            val skull = new ItemBuilder(item.clone())
                     .name(CC.SECONDARY + CC.B + m.getProfile1().getName() + " vs " + m.getProfile2().getName())
                     .lore(
                             CC.WHITE + "Game type:",

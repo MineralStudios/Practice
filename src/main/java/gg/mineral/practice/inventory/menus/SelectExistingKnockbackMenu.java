@@ -4,9 +4,10 @@ import gg.mineral.practice.util.items.ItemStacks;
 import gg.mineral.practice.util.messages.CC;
 import gg.mineral.practice.inventory.ClickCancelled;
 import gg.mineral.practice.inventory.PracticeMenu;
-import gg.mineral.server.combat.KnockbackProfile;
+
 import gg.mineral.server.combat.KnockbackProfileList;
 import lombok.RequiredArgsConstructor;
+import lombok.val;
 
 @ClickCancelled(true)
 @RequiredArgsConstructor
@@ -15,7 +16,7 @@ public class SelectExistingKnockbackMenu extends PracticeMenu {
 
     @Override
     public void update() {
-        for (KnockbackProfile knockback : KnockbackProfileList.getProfiles().values()) {
+        for (val knockback : KnockbackProfileList.getProfiles().values()) {
 
             if (knockback == null)
                 continue;
