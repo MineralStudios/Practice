@@ -22,11 +22,11 @@ repositories {
 }
 
 dependencies {
-    compileOnly 'gg.mineral.mineralspigot:mineralspigot-server:20241102-14.01.05'
+    compileOnly 'gg.mineral.mineralspigot:mineralspigot-server:20241105-18.09.27'
     compileOnly 'gg.mineral:bot-api:20241105-15.21.58'
     compileOnly 'gg.mineral:database-api:20241102-13.53.08'
     compileOnly 'de.jeezycore:jeezy-core:20241102-13.55.44'
-    compileOnly 'gg.mineral:bot-intelligence:20241104-16.55.00'
+    compileOnly 'gg.mineral:bot-intelligence:20241105-15.21.58'
     compileOnly 'org.projectlombok:lombok:1.18.34'
     annotationProcessor 'org.projectlombok:lombok:1.18.34'
     compileOnly 'org.eclipse.jdt:org.eclipse.jdt.annotation:2.3.0'
