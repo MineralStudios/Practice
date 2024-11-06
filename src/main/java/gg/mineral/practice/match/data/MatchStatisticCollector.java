@@ -73,7 +73,7 @@ public class MatchStatisticCollector {
 
     public void increaseHitCount() {
         if (!active)
-            return;
+            throw new IllegalStateException("Not been started yet.");
 
         hitCount++;
         currentCombo++;
@@ -91,21 +91,21 @@ public class MatchStatisticCollector {
 
     public void resetCombo() {
         if (!active)
-            return;
+            throw new IllegalStateException("Not been started yet.");
 
         currentCombo = 0;
     }
 
     public void clearHitCount() {
         if (!active)
-            return;
+            throw new IllegalStateException("Not been started yet.");
 
         hitCount = 0;
     }
 
     public void thrownPotion(boolean missed) {
         if (!active)
-            return;
+            throw new IllegalStateException("Not been started yet.");
 
         potionsThrown++;
 
@@ -115,14 +115,14 @@ public class MatchStatisticCollector {
 
     public void stolenPotion() {
         if (!active)
-            return;
+            throw new IllegalStateException("Not been started yet.");
 
         potionsStolen++;
     }
 
     public void click() {
         if (!active)
-            return;
+            throw new IllegalStateException("Not been started yet.");
 
         if (System.currentTimeMillis() - clickCounterStart > 1000) {
             clickCounterStart = System.currentTimeMillis();
