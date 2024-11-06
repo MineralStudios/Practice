@@ -180,7 +180,8 @@ public class PacketListener implements Listener {
 
                         if (pass) {
                             isInMatch = true;
-                            if (profile.getVisiblePlayers().contains(player.getUniqueId()))
+                            if (player.getUniqueId().equals(profile.getUuid())
+                                    || profile.getVisiblePlayers().contains(player.getUniqueId()))
                                 isVisible = true;
                         }
                     }
@@ -213,7 +214,8 @@ public class PacketListener implements Listener {
 
                     isInMatch = true;
                     val shooter = (Player) projectile.getShooter();
-                    if (profile.getVisiblePlayers().contains(shooter.getUniqueId()))
+                    if (shooter.getUniqueId().equals(profile.getUuid())
+                            || profile.getVisiblePlayers().contains(shooter.getUniqueId()))
                         isVisible = true;
                 }
 
@@ -224,6 +226,8 @@ public class PacketListener implements Listener {
 
             if (packet instanceof PacketPlayOutEntityEquipment equipment) {
                 int entityId = equipment.getA();
+                if (entityId == profile.getPlayer().getHandle().getId())
+                    return false;
                 val entity = profile.getPlayer().getHandle().getWorld().a(entityId);
 
                 if (entity == null)
@@ -235,6 +239,8 @@ public class PacketListener implements Listener {
 
             if (packet instanceof PacketPlayOutBed bed) {
                 int entityId = bed.getA();
+                if (entityId == profile.getPlayer().getHandle().getId())
+                    return false;
                 val entity = profile.getPlayer().getHandle().getWorld().a(entityId);
 
                 if (entity == null)
@@ -246,6 +252,8 @@ public class PacketListener implements Listener {
 
             if (packet instanceof PacketPlayOutAnimation animation) {
                 int entityId = animation.getA();
+                if (entityId == profile.getPlayer().getHandle().getId())
+                    return false;
                 val entity = profile.getPlayer().getHandle().getWorld().a(entityId);
 
                 if (entity == null)
@@ -257,6 +265,9 @@ public class PacketListener implements Listener {
 
             if (packet instanceof PacketPlayOutCollect collect) {
                 int entityId = collect.getB();
+
+                if (entityId == profile.getPlayer().getHandle().getId())
+                    return false;
                 val entity = profile.getPlayer().getHandle().getWorld().a(entityId);
 
                 if (entity == null)
@@ -283,7 +294,8 @@ public class PacketListener implements Listener {
 
                     isInMatch = true;
                     val shooter = (Player) projectile.getShooter();
-                    if (profile.getVisiblePlayers().contains(shooter.getUniqueId()))
+                    if (shooter.getUniqueId().equals(profile.getUuid())
+                            || profile.getVisiblePlayers().contains(shooter.getUniqueId()))
                         isVisible = true;
                 }
 
@@ -293,6 +305,9 @@ public class PacketListener implements Listener {
 
             if (packet instanceof PacketPlayOutSpawnEntityLiving spawnEntityLiving) {
                 int entityId = spawnEntityLiving.getA();
+
+                if (entityId == profile.getPlayer().getHandle().getId())
+                    return false;
                 val entity = profile.getPlayer().getHandle().getWorld().a(entityId);
 
                 if (entity == null)
@@ -325,7 +340,8 @@ public class PacketListener implements Listener {
                         continue;
 
                     isInMatch = true;
-                    if (profile.getVisiblePlayers().contains(player.getUniqueId()))
+                    if (player.getUniqueId().equals(profile.getUuid())
+                            || profile.getVisiblePlayers().contains(player.getUniqueId()))
                         isVisible = true;
                 }
 
@@ -347,7 +363,8 @@ public class PacketListener implements Listener {
                         continue;
 
                     isInMatch = true;
-                    if (profile.getVisiblePlayers().contains(player.getUniqueId()))
+                    if (player.getUniqueId().equals(profile.getUuid())
+                            || profile.getVisiblePlayers().contains(player.getUniqueId()))
                         isVisible = true;
                 }
 
@@ -357,6 +374,8 @@ public class PacketListener implements Listener {
 
             if (packet instanceof PacketPlayOutEntityVelocity entityVelocity) {
                 int entityId = entityVelocity.getA();
+                if (entityId == profile.getPlayer().getHandle().getId())
+                    return false;
                 val entity = profile.getPlayer().getHandle().getWorld().a(entityId);
 
                 if (entity == null)
@@ -368,6 +387,8 @@ public class PacketListener implements Listener {
 
             if (packet instanceof PacketPlayOutEntity entityPacket) {
                 int entityId = entityPacket.getA();
+                if (entityId == profile.getPlayer().getHandle().getId())
+                    return false;
                 val entity = profile.getPlayer().getHandle().getWorld().a(entityId);
 
                 if (entity == null)
@@ -379,6 +400,8 @@ public class PacketListener implements Listener {
 
             if (packet instanceof PacketPlayOutEntityTeleport entityTeleport) {
                 int entityId = entityTeleport.getA();
+                if (entityId == profile.getPlayer().getHandle().getId())
+                    return false;
                 val entity = profile.getPlayer().getHandle().getWorld().a(entityId);
 
                 if (entity == null)
@@ -390,6 +413,8 @@ public class PacketListener implements Listener {
 
             if (packet instanceof PacketPlayOutEntityHeadRotation entityHeadRotation) {
                 int entityId = entityHeadRotation.getA();
+                if (entityId == profile.getPlayer().getHandle().getId())
+                    return false;
                 val entity = profile.getPlayer().getHandle().getWorld().a(entityId);
 
                 if (entity == null)
@@ -401,6 +426,8 @@ public class PacketListener implements Listener {
 
             if (packet instanceof PacketPlayOutEntityStatus entityStatus) {
                 int entityId = entityStatus.getA();
+                if (entityId == profile.getPlayer().getHandle().getId())
+                    return false;
                 val entity = profile.getPlayer().getHandle().getWorld().a(entityId);
 
                 if (entity == null)
@@ -412,6 +439,8 @@ public class PacketListener implements Listener {
 
             if (packet instanceof PacketPlayOutAttachEntity attachEntity) {
                 int entityId = attachEntity.getB();
+                if (entityId == profile.getPlayer().getHandle().getId())
+                    return false;
                 val entity = profile.getPlayer().getHandle().getWorld().a(entityId);
 
                 if (entity == null)
@@ -423,6 +452,8 @@ public class PacketListener implements Listener {
 
             if (packet instanceof PacketPlayOutEntityMetadata entityMetadata) {
                 int entityId = entityMetadata.getA();
+                if (entityId == profile.getPlayer().getHandle().getId())
+                    return false;
                 val entity = profile.getPlayer().getHandle().getWorld().a(entityId);
 
                 if (entity == null)
@@ -434,6 +465,8 @@ public class PacketListener implements Listener {
 
             if (packet instanceof PacketPlayOutEntityEffect entityEffect) {
                 int entityId = entityEffect.getA();
+                if (entityId == profile.getPlayer().getHandle().getId())
+                    return false;
                 val entity = profile.getPlayer().getHandle().getWorld().a(entityId);
 
                 if (entity == null)
@@ -445,6 +478,8 @@ public class PacketListener implements Listener {
 
             if (packet instanceof PacketPlayOutRemoveEntityEffect removeEntityEffect) {
                 int entityId = removeEntityEffect.getA();
+                if (entityId == profile.getPlayer().getHandle().getId())
+                    return false;
                 val entity = profile.getPlayer().getHandle().getWorld().a(entityId);
 
                 if (entity == null)
@@ -456,6 +491,10 @@ public class PacketListener implements Listener {
 
             if (packet instanceof PacketPlayOutBlockBreakAnimation blockBreakAnimation) {
                 int entityId = blockBreakAnimation.getA();
+
+                if (entityId == profile.getPlayer().getHandle().getId())
+                    return false;
+
                 val entity = profile.getPlayer().getHandle().getWorld().a(entityId);
 
                 if (entity == null)
