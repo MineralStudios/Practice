@@ -9,6 +9,7 @@ import gg.mineral.api.collection.GlueList;
 import gg.mineral.bot.ai.goal.DrinkPotionGoal;
 import gg.mineral.bot.ai.goal.EatGappleGoal;
 import gg.mineral.bot.ai.goal.MeleeCombatGoal;
+import gg.mineral.bot.ai.goal.ReplaceArmorGoal;
 import gg.mineral.bot.api.configuration.BotConfiguration;
 
 import gg.mineral.bot.api.instance.ClientInstance;
@@ -39,13 +40,15 @@ public class BotTeamMatch extends TeamMatch {
 
         for (val instance : team1BotInstances) {
             instance.getConfiguration().setPearlCooldown(getData().getPearlCooldown());
-            instance.startGoals(new DrinkPotionGoal(instance), new EatGappleGoal(instance),
+            instance.startGoals(new ReplaceArmorGoal(instance), new DrinkPotionGoal(instance),
+                    new EatGappleGoal(instance),
                     new MeleeCombatGoal(instance));
         }
 
         for (val instance : team2BotInstances) {
             instance.getConfiguration().setPearlCooldown(getData().getPearlCooldown());
-            instance.startGoals(new DrinkPotionGoal(instance), new EatGappleGoal(instance),
+            instance.startGoals(new ReplaceArmorGoal(instance), new DrinkPotionGoal(instance),
+                    new EatGappleGoal(instance),
                     new MeleeCombatGoal(instance));
         }
     }

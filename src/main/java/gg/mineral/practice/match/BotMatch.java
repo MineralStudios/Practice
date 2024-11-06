@@ -6,6 +6,7 @@ import org.bukkit.Location;
 import gg.mineral.bot.ai.goal.DrinkPotionGoal;
 import gg.mineral.bot.ai.goal.EatGappleGoal;
 import gg.mineral.bot.ai.goal.MeleeCombatGoal;
+import gg.mineral.bot.ai.goal.ReplaceArmorGoal;
 import gg.mineral.bot.api.BotAPI;
 import gg.mineral.bot.api.configuration.BotConfiguration;
 import gg.mineral.bot.api.instance.ClientInstance;
@@ -73,7 +74,8 @@ public class BotMatch extends Match {
         super.onMatchStart();
 
         clientInstance.getConfiguration().setPearlCooldown(getData().getPearlCooldown());
-        clientInstance.startGoals(new DrinkPotionGoal(clientInstance), new EatGappleGoal(clientInstance),
+        clientInstance.startGoals(new ReplaceArmorGoal(clientInstance), new DrinkPotionGoal(clientInstance),
+                new EatGappleGoal(clientInstance),
                 new MeleeCombatGoal(clientInstance));
     }
 
