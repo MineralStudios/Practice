@@ -2,16 +2,15 @@ package gg.mineral.practice.listeners;
 
 import java.util.UUID;
 
+import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.craftbukkit.v1_8_R3.entity.CraftEntity;
 import org.bukkit.craftbukkit.v1_8_R3.entity.CraftPlayer;
 import org.bukkit.entity.Arrow;
-import org.bukkit.entity.Entity;
 import org.bukkit.entity.Item;
 import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
 import org.bukkit.entity.Projectile;
-import org.bukkit.entity.ThrownPotion;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
@@ -19,6 +18,7 @@ import org.bukkit.event.entity.PotionSplashEvent;
 import org.bukkit.event.player.PlayerJoinEvent;
 import org.bukkit.event.player.PlayerPickupItemEvent;
 import org.bukkit.event.player.PlayerQuitEvent;
+import org.bukkit.util.Vector;
 
 import gg.mineral.practice.entity.Profile;
 import gg.mineral.practice.managers.ProfileManager;
@@ -53,7 +53,7 @@ public class PacketListener implements Listener {
 
     @EventHandler
     public void onJoin(PlayerJoinEvent event) {
-        Profile profile = ProfileManager.getOrCreateProfile(event.getPlayer());
+        val profile = ProfileManager.getOrCreateProfile(event.getPlayer());
         injectPlayer(profile);
     }
 
@@ -201,18 +201,18 @@ public class PacketListener implements Listener {
 
                 boolean isVisible = false, isInMatch = false;
 
-                for (val potion : profile.getPlayer().getWorld().getEntitiesByClass(ThrownPotion.class)) {
-                    int potionX = MathHelper.floor(x);
-                    int potionY = MathHelper.floor(y);
-                    int potionZ = MathHelper.floor(z);
+                for (val projectile : profile.getPlayer().getWorld().getEntitiesByClass(Projectile.class)) {
+                    int projectileX = MathHelper.floor(x);
+                    int projectileY = MathHelper.floor(y);
+                    int projectileZ = MathHelper.floor(z);
 
-                    if (!(potion.getShooter() instanceof Player))
+                    if (!(projectile.getShooter() instanceof Player))
                         continue;
-                    if (x != potionX || y != potionY || z != potionZ)
+                    if (x != projectileX || y != projectileY || z != projectileZ)
                         continue;
 
                     isInMatch = true;
-                    val shooter = (Player) potion.getShooter();
+                    val shooter = (Player) projectile.getShooter();
                     if (profile.getVisiblePlayers().contains(shooter.getUniqueId()))
                         isVisible = true;
                 }
@@ -223,79 +223,246 @@ public class PacketListener implements Listener {
             }
 
             if (packet instanceof PacketPlayOutEntityEquipment equipment) {
+                int entityId = equipment.getA();
+                val entity = profile.getPlayer().getHandle().getWorld().a(entityId);
 
+                if (entity == null)
+                    return false;
+
+                if (!profile.getVisiblePlayers().contains(entity.getUniqueID()))
+                    return true;
             }
 
             if (packet instanceof PacketPlayOutBed bed) {
+                int entityId = bed.getA();
+                val entity = profile.getPlayer().getHandle().getWorld().a(entityId);
 
+                if (entity == null)
+                    return false;
+
+                if (!profile.getVisiblePlayers().contains(entity.getUniqueID()))
+                    return true;
             }
 
             if (packet instanceof PacketPlayOutAnimation animation) {
+                int entityId = animation.getA();
+                val entity = profile.getPlayer().getHandle().getWorld().a(entityId);
 
+                if (entity == null)
+                    return false;
+
+                if (!profile.getVisiblePlayers().contains(entity.getUniqueID()))
+                    return true;
             }
 
             if (packet instanceof PacketPlayOutCollect collect) {
+                int entityId = collect.getB();
+                val entity = profile.getPlayer().getHandle().getWorld().a(entityId);
 
+                if (entity == null)
+                    return false;
+
+                if (!profile.getVisiblePlayers().contains(entity.getUniqueID()))
+                    return true;
             }
 
             if (packet instanceof PacketPlayOutSpawnEntity spawnEntity) {
+                int x = spawnEntity.getB() / 32, y = spawnEntity.getC() / 32, z = spawnEntity.getD() / 32;
 
+                boolean isVisible = false, isInMatch = false;
+
+                for (val projectile : profile.getPlayer().getWorld().getEntitiesByClass(Projectile.class)) {
+                    int projectileX = MathHelper.floor(x);
+                    int projectileY = MathHelper.floor(y);
+                    int projectileZ = MathHelper.floor(z);
+
+                    if (!(projectile.getShooter() instanceof Player))
+                        continue;
+                    if (x != projectileX || y != projectileY || z != projectileZ)
+                        continue;
+
+                    isInMatch = true;
+                    val shooter = (Player) projectile.getShooter();
+                    if (profile.getVisiblePlayers().contains(shooter.getUniqueId()))
+                        isVisible = true;
+                }
+
+                if (isInMatch && !isVisible)
+                    return true;
             }
 
             if (packet instanceof PacketPlayOutSpawnEntityLiving spawnEntityLiving) {
+                int entityId = spawnEntityLiving.getA();
+                val entity = profile.getPlayer().getHandle().getWorld().a(entityId);
 
+                if (entity == null)
+                    return false;
+
+                if (!profile.getVisiblePlayers().contains(entity.getUniqueID()))
+                    return true;
             }
 
             if (packet instanceof PacketPlayOutSpawnEntityPainting spawnEntityPainting) {
+                val position = spawnEntityPainting.getB();
+                int x = position.getX(), y = position.getY(), z = position.getZ();
 
+                boolean isVisible = false, isInMatch = false;
+
+                for (val player : profile.getPlayer().getWorld().getEntitiesByClass(Player.class)) {
+                    val playerLocation = player.getLocation();
+
+                    int range = 5;
+                    if (playerLocation.distance(new Location(player.getWorld(), x, y, z)) > range)
+                        continue;
+
+                    val directionToPainting = new Vector(x - playerLocation.getX(), y - playerLocation.getY(),
+                            z - playerLocation.getZ()).normalize();
+                    float playerYaw = playerLocation.getYaw();
+                    val playerFacingDirection = new Vector(-Math.sin(Math.toRadians(playerYaw)), 0,
+                            Math.cos(Math.toRadians(playerYaw))).normalize();
+
+                    if (directionToPainting.dot(playerFacingDirection) < 0.5)
+                        continue;
+
+                    isInMatch = true;
+                    if (profile.getVisiblePlayers().contains(player.getUniqueId()))
+                        isVisible = true;
+                }
+
+                if (isInMatch && !isVisible)
+                    return true;
             }
 
             if (packet instanceof PacketPlayOutSpawnEntityExperienceOrb spawnEntityExperienceOrb) {
+                int x = spawnEntityExperienceOrb.getB() / 32, y = spawnEntityExperienceOrb.getC() / 32,
+                        z = spawnEntityExperienceOrb.getD() / 32;
 
+                boolean isVisible = false, isInMatch = false;
+
+                for (val player : profile.getPlayer().getWorld().getEntitiesByClass(Player.class)) {
+                    val playerLocation = player.getLocation();
+
+                    int range = 5;
+                    if (playerLocation.distance(new Location(player.getWorld(), x, y, z)) > range)
+                        continue;
+
+                    isInMatch = true;
+                    if (profile.getVisiblePlayers().contains(player.getUniqueId()))
+                        isVisible = true;
+                }
+
+                if (isInMatch && !isVisible)
+                    return true;
             }
 
             if (packet instanceof PacketPlayOutEntityVelocity entityVelocity) {
+                int entityId = entityVelocity.getA();
+                val entity = profile.getPlayer().getHandle().getWorld().a(entityId);
 
+                if (entity == null)
+                    return false;
+
+                if (!profile.getVisiblePlayers().contains(entity.getUniqueID()))
+                    return true;
             }
 
-            if (packet instanceof PacketPlayOutEntity entity) {
+            if (packet instanceof PacketPlayOutEntity entityPacket) {
+                int entityId = entityPacket.getA();
+                val entity = profile.getPlayer().getHandle().getWorld().a(entityId);
 
+                if (entity == null)
+                    return false;
+
+                if (!profile.getVisiblePlayers().contains(entity.getUniqueID()))
+                    return true;
             }
 
             if (packet instanceof PacketPlayOutEntityTeleport entityTeleport) {
+                int entityId = entityTeleport.getA();
+                val entity = profile.getPlayer().getHandle().getWorld().a(entityId);
 
+                if (entity == null)
+                    return false;
+
+                if (!profile.getVisiblePlayers().contains(entity.getUniqueID()))
+                    return true;
             }
 
             if (packet instanceof PacketPlayOutEntityHeadRotation entityHeadRotation) {
+                int entityId = entityHeadRotation.getA();
+                val entity = profile.getPlayer().getHandle().getWorld().a(entityId);
 
-            }
+                if (entity == null)
+                    return false;
 
-            if (packet instanceof PacketPlayOutEntityHeadRotation entityHeadRotation) {
-
+                if (!profile.getVisiblePlayers().contains(entity.getUniqueID()))
+                    return true;
             }
 
             if (packet instanceof PacketPlayOutEntityStatus entityStatus) {
+                int entityId = entityStatus.getA();
+                val entity = profile.getPlayer().getHandle().getWorld().a(entityId);
 
+                if (entity == null)
+                    return false;
+
+                if (!profile.getVisiblePlayers().contains(entity.getUniqueID()))
+                    return true;
             }
 
             if (packet instanceof PacketPlayOutAttachEntity attachEntity) {
+                int entityId = attachEntity.getB();
+                val entity = profile.getPlayer().getHandle().getWorld().a(entityId);
 
+                if (entity == null)
+                    return false;
+
+                if (!profile.getVisiblePlayers().contains(entity.getUniqueID()))
+                    return true;
             }
 
             if (packet instanceof PacketPlayOutEntityMetadata entityMetadata) {
+                int entityId = entityMetadata.getA();
+                val entity = profile.getPlayer().getHandle().getWorld().a(entityId);
 
+                if (entity == null)
+                    return false;
+
+                if (!profile.getVisiblePlayers().contains(entity.getUniqueID()))
+                    return true;
             }
 
             if (packet instanceof PacketPlayOutEntityEffect entityEffect) {
+                int entityId = entityEffect.getA();
+                val entity = profile.getPlayer().getHandle().getWorld().a(entityId);
 
+                if (entity == null)
+                    return false;
+
+                if (!profile.getVisiblePlayers().contains(entity.getUniqueID()))
+                    return true;
             }
 
             if (packet instanceof PacketPlayOutRemoveEntityEffect removeEntityEffect) {
+                int entityId = removeEntityEffect.getA();
+                val entity = profile.getPlayer().getHandle().getWorld().a(entityId);
 
+                if (entity == null)
+                    return false;
+
+                if (!profile.getVisiblePlayers().contains(entity.getUniqueID()))
+                    return true;
             }
 
             if (packet instanceof PacketPlayOutBlockBreakAnimation blockBreakAnimation) {
+                int entityId = blockBreakAnimation.getA();
+                val entity = profile.getPlayer().getHandle().getWorld().a(entityId);
 
+                if (entity == null)
+                    return false;
+
+                if (!profile.getVisiblePlayers().contains(entity.getUniqueID()))
+                    return true;
             }
 
             return false;
@@ -308,14 +475,14 @@ public class PacketListener implements Listener {
 
     @EventHandler(priority = EventPriority.MONITOR)
     public void onPlayerPickupItem(PlayerPickupItemEvent event) {
-        Player receiver = event.getPlayer();
-        Item item = event.getItem();
+        val receiver = event.getPlayer();
+        val item = event.getItem();
 
-        UUID dropper = getPlayerWhoDropped(item);
+        val dropper = getPlayerWhoDropped(item);
         if (dropper == null)
             return;
 
-        Profile receiverProfile = ProfileManager.getOrCreateProfile(receiver);
+        val receiverProfile = ProfileManager.getOrCreateProfile(receiver);
 
         if (!receiverProfile.getVisiblePlayers().contains(dropper))
             event.setCancelled(true);
@@ -330,40 +497,40 @@ public class PacketListener implements Listener {
 
     @EventHandler(priority = EventPriority.MONITOR)
     public void onPickup(PlayerPickupItemEvent event) {
-        Player receiver = event.getPlayer();
+        val receiver = event.getPlayer();
 
-        Item item = event.getItem();
+        val item = event.getItem();
         if (item.getItemStack().getType() != Material.ARROW)
             return;
 
-        Entity entity = ((CraftEntity) item).getHandle().getBukkitEntity();
+        val entity = ((CraftEntity) item).getHandle().getBukkitEntity();
         if (!(entity instanceof Arrow))
             return;
 
-        Arrow arrow = (Arrow) entity;
+        val arrow = (Arrow) entity;
         if (!(arrow.getShooter() instanceof Player))
             return;
 
-        Player shooter = (Player) arrow.getShooter();
-        Profile receiverProfile = ProfileManager.getOrCreateProfile(receiver);
+        val shooter = (Player) arrow.getShooter();
+        val receiverProfile = ProfileManager.getOrCreateProfile(receiver);
         if (!receiverProfile.getVisiblePlayers().contains(shooter.getUniqueId()))
             event.setCancelled(true);
     }
 
     @EventHandler(priority = EventPriority.MONITOR)
     public void onPotionSplash(PotionSplashEvent event) {
-        ThrownPotion potion = event.getEntity();
+        val potion = event.getEntity();
         if (!(potion.getShooter() instanceof Player))
             return;
 
-        Player shooter = (Player) potion.getShooter();
+        val shooter = (Player) potion.getShooter();
 
         for (LivingEntity livingEntity : event.getAffectedEntities()) {
             if (!(livingEntity instanceof Player))
                 return;
 
-            Player receiver = (Player) livingEntity;
-            Profile receiverProfile = ProfileManager.getOrCreateProfile(receiver);
+            val receiver = (Player) livingEntity;
+            val receiverProfile = ProfileManager.getOrCreateProfile(receiver);
             if (!receiverProfile.getVisiblePlayers().contains(shooter.getUniqueId())) {
                 event.setCancelled(true);
                 event.setIntensity(receiver, 0.0D);
