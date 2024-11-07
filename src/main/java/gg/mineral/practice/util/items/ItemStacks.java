@@ -144,9 +144,6 @@ public class ItemStacks {
                                                         " ", CC.BOARD_SEPARATOR,
                                                         CC.ACCENT + "Click to be added to a random queue.")
                                         .build(),
-                        RANDOM_DIFFICULTY = new ItemBuilder(Material.PAPER)
-                                        .name(CC.SECONDARY + CC.B + "Random Difficulty")
-                                        .lore(CC.ACCENT + "Click to randomize bot parameters.").build(),
                         EASY = new ItemBuilder(new ItemStack(Material.WOOL, 1, DyeColor.GREEN.getData())).name("Easy")
                                         .build(),
                         MEDIUM = new ItemBuilder(new ItemStack(Material.WOOL, 1, DyeColor.YELLOW.getData()))
@@ -186,6 +183,8 @@ public class ItemStacks {
                                         .name(CC.SECONDARY + CC.B + "Team Fights"),
                         BOT_SETTINGS = new ItemBuilder(Material.GOLD_HELMET)
                                         .name(CC.SECONDARY + CC.B + "Bot Settings"),
+                        PREMADE_DIFFICULTY = new ItemBuilder(Material.PAPER)
+                                        .name(CC.SECONDARY + CC.B + "Premade Difficulty"),
                         CLICK_TO_APPLY_CHANGES = new ItemBuilder(Material.STONE_SWORD)
                                         .lore(CC.ACCENT + "Click To Apply Changes"),
                         INVENTORY_STATS = new ItemBuilder(Material.ENDER_CHEST),

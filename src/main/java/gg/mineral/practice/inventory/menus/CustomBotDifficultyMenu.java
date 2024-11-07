@@ -20,6 +20,7 @@ import lombok.val;
 public class CustomBotDifficultyMenu extends PracticeMenu {
         private final SelectGametypeMenu menu;
         final static DecimalFormat DECIMAL_FORMAT = new DecimalFormat("#.###");
+        private Difficulty premadeDifficulty = Difficulty.EASY;
 
         static {
                 DECIMAL_FORMAT.setRoundingMode(RoundingMode.HALF_DOWN);
@@ -185,11 +186,25 @@ public class CustomBotDifficultyMenu extends PracticeMenu {
                                         p.openMenu(menu);
                                 });
 
-                setSlot(33, ItemStacks.RANDOM_DIFFICULTY, interaction -> {
-                        val queueSettings1 = interaction.getProfile().getQueueSettings();
-                        queueSettings1.setCustomBotConfiguration(Difficulty.RANDOM.getConfiguration(queueSettings1));
-                        reload();
-                });
+                setSlot(33, ItemStacks.PREMADE_DIFFICULTY.lore(
+                                CC.WHITE + "Allows you to select a " + CC.SECONDARY + "premade difficulty"
+                                                + CC.WHITE
+                                                + ".",
+                                " ", CC.WHITE + "Selected Difficulty: ",
+                                premadeDifficulty.getDisplay(), " ",
+                                CC.BOARD_SEPARATOR, " ", CC.GREEN + "Left Click to change difficulty.").build(),
+                                interaction -> {
+                                        val queueSettings1 = interaction.getProfile().getQueueSettings();
+                                        premadeDifficulty = Difficulty.values()[(premadeDifficulty.ordinal() + 1)
+                                                        % Difficulty.values().length];
+                                        if (premadeDifficulty == Difficulty.CUSTOM)
+                                                premadeDifficulty = Difficulty
+                                                                .values()[(premadeDifficulty.ordinal() + 1)
+                                                                                % Difficulty.values().length];
+                                        queueSettings1.setCustomBotConfiguration(
+                                                        premadeDifficulty.getConfiguration(queueSettings1));
+                                        reload();
+                                });
         }
 
         @Override
