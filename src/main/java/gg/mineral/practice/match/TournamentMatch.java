@@ -69,10 +69,6 @@ public class TournamentMatch extends Match {
 
             attacker.removeFromMatch();
 
-            // if (CoreConnector.connected())
-            // CoreConnector.INSTANCE.getNameTagAPI().giveTagAfterMatch(profile1.getPlayer(),
-            // profile2.getPlayer());
-
         }, getPostMatchTime());
 
         for (val spectator : getSpectators()) {

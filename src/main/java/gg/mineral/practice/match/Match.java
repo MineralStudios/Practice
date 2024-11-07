@@ -140,16 +140,6 @@ public class Match implements Spectatable {
 		p.getMatchStatisticCollector().start();
 		p.setKitLoaded(false);
 
-		if (CoreConnector.connected()) {
-			if (this instanceof TeamMatch) {
-				// CoreConnector.INSTANCE.getNameTagAPI().clearTagOnMatchStart(p.getPlayer(),
-				// p.getPlayer());
-			} else {
-				// CoreConnector.INSTANCE.getNameTagAPI().giveTagAfterMatch(p.getPlayer(),
-				// p.getPlayer());
-			}
-		}
-
 		giveLoadoutSelection(p);
 		setAttributes(p);
 		setPotionEffects(p);
@@ -400,9 +390,6 @@ public class Match implements Spectatable {
 			sendBackToLobby(attacker);
 
 			if (CoreConnector.connected()) {
-
-				// CoreConnector.INSTANCE.getNameTagAPI().giveTagAfterMatch(profile1.getPlayer(),
-				// profile2.getPlayer());
 				/*
 				 * CoreConnector.INSTANCE.getUuidChecker().check(attacker.getPlayer().
 				 * getDisplayName());

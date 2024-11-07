@@ -43,8 +43,6 @@ public class ItemStacks {
                                         .build(),
                         DUEL = new ItemBuilder(Material.WOOD_AXE).name(CC.SECONDARY + CC.B + "Duel")
                                         .lore(CC.ACCENT + "Right click to duel.").build(),
-                        SETTINGS = new ItemBuilder(Material.MAP).name(CC.SECONDARY + CC.B + "Settings")
-                                        .build(),
                         PARTY_SPLIT = new ItemBuilder(Material.GOLD_AXE).name(CC.SECONDARY + CC.B + "Party Split")
                                         .lore(CC.ACCENT + "Right click to start party split.")
                                         .build(),

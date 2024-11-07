@@ -1,11 +1,11 @@
 package gg.mineral.practice.util;
 
+import de.jeezycore.db.SettingsSQL;
 import lombok.Getter;
 
 @Getter
 public class CoreLoader {
-    // private final NameTag nameTagAPI = new NameTag();
-    // private final SettingsSQL settingsSQL = new SettingsSQL();
+    private final SettingsSQL settingsSQL = new SettingsSQL();
     /*
      * final MineralsSQL mineralsSQL = new MineralsSQL();
      * 
