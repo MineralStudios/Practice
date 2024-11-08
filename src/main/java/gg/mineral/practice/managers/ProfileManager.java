@@ -47,6 +47,22 @@ public class ProfileManager {
 				return botProfiles.put(key, value);
 			return super.put(key, value);
 		}
+
+		@Override
+		public Profile remove(Object key) {
+			val profile = super.remove(key);
+			if (profile != null)
+				return profile;
+			return botProfiles.remove(key);
+		}
+
+		@Override
+		public Profile get(Object key) {
+			val profile = super.get(key);
+			if (profile != null)
+				return profile;
+			return botProfiles.get(key);
+		}
 	};
 	private static Object2ObjectOpenHashMap<UUID, Profile> botProfiles = new Object2ObjectOpenHashMap<>();
 	private static Object2ObjectOpenHashMap<String, InventoryStatsMenu> inventoryStats = new Object2ObjectOpenHashMap<>();
