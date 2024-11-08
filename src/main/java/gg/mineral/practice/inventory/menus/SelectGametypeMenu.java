@@ -69,6 +69,12 @@ public class SelectGametypeMenu extends PracticeMenu {
 				viewer.openMenu(new SelectGametypeMenu(queuetype, type));
 		};
 
+		val queueSettings = viewer.getQueueSettings();
+		if (queueSettings.isBotQueue() && (!queuetype.isBotsEnabled() || !gametype.isBotsEnabled())) {
+			viewer.message(ErrorMessages.COMING_SOON);
+			return;
+		}
+
 		if (viewer.getQueueSettings().isArenaSelection())
 			viewer.openMenu(new QueueArenaEnableMenu(queuetype, gametype, queueInteraction));
 		else
