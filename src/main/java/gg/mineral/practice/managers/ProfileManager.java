@@ -7,8 +7,8 @@ import java.util.function.Predicate;
 
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
-import org.bukkit.World;
 import org.bukkit.WorldCreator;
+import org.bukkit.entity.Player;
 import org.bukkit.util.Vector;
 import org.eclipse.jdt.annotation.Nullable;
 
@@ -31,25 +31,26 @@ public class ProfileManager {
 	@Getter
 	static Location spawnLocation;
 	@Getter
-	static Object2ObjectOpenHashMap<UUID, Profile> profiles = new Object2ObjectOpenHashMap<>() {
+	private static Object2ObjectOpenHashMap<UUID, Profile> profiles = new Object2ObjectOpenHashMap<>() {
 
 		@Override
 		public Profile computeIfAbsent(UUID key,
 				Object2ObjectFunction<? super UUID, ? extends Profile> mappingFunction) {
 			if (BotAPI.INSTANCE.isFakePlayer(key))
-				return mappingFunction.apply(key);
+				return botProfiles.computeIfAbsent(key, mappingFunction);
 			return super.computeIfAbsent(key, mappingFunction);
 		}
 
 		@Override
 		public Profile put(UUID key, Profile value) {
 			if (BotAPI.INSTANCE.isFakePlayer(key))
-				return value;
+				return botProfiles.put(key, value);
 			return super.put(key, value);
 		}
 	};
-	static Object2ObjectOpenHashMap<String, InventoryStatsMenu> inventoryStats = new Object2ObjectOpenHashMap<>();
-	static Object2ObjectOpenHashMap<String, List<InventoryStatsMenu>> teamInventoryStats = new Object2ObjectOpenHashMap<>();
+	private static Object2ObjectOpenHashMap<UUID, Profile> botProfiles = new Object2ObjectOpenHashMap<>();
+	private static Object2ObjectOpenHashMap<String, InventoryStatsMenu> inventoryStats = new Object2ObjectOpenHashMap<>();
+	private static Object2ObjectOpenHashMap<String, List<InventoryStatsMenu>> teamInventoryStats = new Object2ObjectOpenHashMap<>();
 
 	public static void add(Profile profile) {
 		profiles.put(profile.getUuid(), profile);
@@ -79,33 +80,20 @@ public class ProfileManager {
 		return count;
 	}
 
-	private static int lastOnline = 0, lastCount = 0;
-
 	public static int countBots() {
-		if (lastOnline == Bukkit.getOnlinePlayers().size())
-			return lastCount;
-		int count = 0;
-		lastOnline = Bukkit.getOnlinePlayers().size();
-		for (val player : Bukkit.getOnlinePlayers()) {
-			if (!BotAPI.INSTANCE.isFakePlayer(player.getUniqueId()))
-				continue;
-
-			count++;
-		}
-
-		return lastCount = count;
+		return botProfiles.size();
 	}
 
 	public static ProfileData getProfileData(String name, UUID uuid) {
 
 		if (uuid != null) {
-			Profile profile = profiles.get(uuid);
+			val profile = profiles.get(uuid);
 
 			if (profile != null)
 				return profile;
 		}
 
-		for (Profile p : profiles.values()) {
+		for (val p : profiles.values()) {
 			if (!p.getName().equalsIgnoreCase(name))
 				continue;
 
@@ -122,7 +110,7 @@ public class ProfileManager {
 
 	@Nullable
 	public static Profile getProfile(UUID uuid, Predicate<Profile> predicate) {
-		Profile profile = profiles.get(uuid);
+		val profile = profiles.get(uuid);
 
 		if (profile == null || !predicate.test(profile))
 			return null;
@@ -192,9 +180,9 @@ public class ProfileManager {
 	}
 
 	public static void load() {
-		World world = Bukkit.createWorld(
+		val world = Bukkit.createWorld(
 				new WorldCreator(lobbyConfig.getString("Lobby.World", Bukkit.getWorlds().get(0).getName())));
-		Vector spawnDirection = lobbyConfig.getVector("Lobby.Direction", new Vector());
+		val spawnDirection = lobbyConfig.getVector("Lobby.Direction", new Vector());
 		spawnLocation = new Location(
 				world,
 				lobbyConfig.getInt("Lobby.x", 0), lobbyConfig.getInt("Lobby.y", 70), lobbyConfig.getInt("Lobby.z", 0));
@@ -209,5 +197,9 @@ public class ProfileManager {
 	public static void setSpawnLocation(Location loc) {
 		spawnLocation = loc;
 		save();
+	}
+
+	public static Profile getProfile(Player player) {
+		return profiles.get(player.getUniqueId());
 	}
 }

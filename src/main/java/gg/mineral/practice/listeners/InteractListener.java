@@ -24,8 +24,6 @@ public class InteractListener implements Listener {
 	@EventHandler(priority = EventPriority.HIGHEST)
 	public void onPlayerInteract(PlayerInteractEvent e) {
 
-		val profile = ProfileManager.getOrCreateProfile(e.getPlayer());
-
 		val action = e.getAction();
 
 		if (action == Action.PHYSICAL
@@ -33,6 +31,8 @@ public class InteractListener implements Listener {
 			e.setCancelled(true);
 			return;
 		}
+
+		val profile = ProfileManager.getOrCreateProfile(e.getPlayer());
 
 		if (profile.getPlayerStatus() == PlayerStatus.FIGHTING && !profile.isInMatchCountdown()
 				&& (action == Action.LEFT_CLICK_AIR || action == Action.LEFT_CLICK_BLOCK))

@@ -41,8 +41,8 @@ public class BotMatch extends Match {
 
         MatchManager.registerMatch(this);
         val arena = ArenaManager.getArenas().get(getData().getArenaId());
-        Location location1 = arena.getLocation1().clone();
-        Location location2 = arena.getLocation2().clone();
+        val location1 = arena.getLocation1().clone();
+        val location2 = arena.getLocation2().clone();
 
         setupLocations(location1, location2);
 
@@ -109,8 +109,7 @@ public class BotMatch extends Match {
     public void end(Profile attacker, Profile victim) {
         super.end(attacker, victim);
 
-        BotAPI.INSTANCE.despawn(attacker.getPlayer().getUniqueId());
-        BotAPI.INSTANCE.despawn(victim.getPlayer().getUniqueId());
+        BotAPI.INSTANCE.despawn(attacker.getPlayer().getUniqueId(), victim.getPlayer().getUniqueId());
     }
 
 }
