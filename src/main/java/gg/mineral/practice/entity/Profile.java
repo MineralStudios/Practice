@@ -357,7 +357,7 @@ public class Profile extends ProfileData implements QueuedEntity {
 		assert queuetype != null;
 		assert gametype != null;
 
-		if (queueSettings.isBotQueue() && (!queuetype.isBotsEnabled() || !gametype.isBotsEnabled()) {
+		if (queueSettings.isBotQueue() && (!queuetype.isBotsEnabled() || !gametype.isBotsEnabled())) {
 			message(ErrorMessages.COMING_SOON);
 			return false;
 		}
