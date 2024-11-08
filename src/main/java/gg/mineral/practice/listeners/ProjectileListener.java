@@ -1,6 +1,5 @@
 package gg.mineral.practice.listeners;
 
-import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
@@ -45,9 +44,8 @@ public class ProjectileListener implements Listener {
             if (match == null || match.isEnded())
                 continue;
 
-            if (shooter instanceof LivingEntity livingEntity)
-                match.stat(uuid,
-                        collector -> collector.thrownPotion(e.getIntensity(livingEntity) <= 0.5));
+            match.stat(uuid,
+                    collector -> collector.thrownPotion(e.getIntensity(shooter) <= 0.5));
             break;
         }
     }
