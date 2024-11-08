@@ -41,51 +41,64 @@ public class ProfileManager {
 		@Override
 		public Profile computeIfAbsent(UUID key,
 				Object2ObjectFunction<? super UUID, ? extends Profile> mappingFunction) {
-			val oldVal = super.get(key);
-			Profile value = null;
+			int oldSize = size();
+			val profile = super.computeIfAbsent(key, mappingFunction);
+			int newSize = size();
 
-			if (oldVal == null) {
+			if (oldSize < newSize) {
 				if (BotAPI.INSTANCE.isFakePlayer(key))
 					botCount++;
 				else
 					playerCount++;
-			} else if ((value = mappingFunction.apply(key)) == null) {
+			} else if (oldSize > newSize) {
 				if (BotAPI.INSTANCE.isFakePlayer(key))
 					botCount--;
 				else
 					playerCount--;
 			}
 
-			return value != null ? value : mappingFunction.apply(key);
+			return profile;
 		}
 
 		@Override
 		public Profile put(UUID key, Profile value) {
-			val oldVal = super.put(key, value);
+			int oldSize = size();
+			val profile = super.put(key, value);
+			int newSize = size();
 
-			if (oldVal == null) {
+			if (oldSize < newSize) {
 				if (BotAPI.INSTANCE.isFakePlayer(key))
 					botCount++;
 				else
 					playerCount++;
-			} else if (value == null) {
+			} else if (oldSize > newSize) {
 				if (BotAPI.INSTANCE.isFakePlayer(key))
 					botCount--;
 				else
 					playerCount--;
 			}
 
-			return oldVal;
+			return profile;
 		}
 
 		@Override
 		public Profile remove(Object key) {
+			int oldSize = size();
 			val profile = super.remove(key);
-			if (profile != null && key instanceof UUID uuid) {
-				if (BotAPI.INSTANCE.isFakePlayer(uuid))
-					botCount--;
-				else
-					playerCount--;
+			int newSize = size();
+
+			if (key instanceof UUID uuid) {
+				if (oldSize < newSize) {
+					if (BotAPI.INSTANCE.isFakePlayer(uuid))
+						botCount++;
+					else
+						playerCount++;
+				} else if (oldSize > newSize) {
+					if (BotAPI.INSTANCE.isFakePlayer(uuid))
+						botCount--;
+					else
+						playerCount--;
+				}
 			}
 
 			return profile;
