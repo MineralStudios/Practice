@@ -106,13 +106,13 @@ public class BotTeamMatch extends TeamMatch {
         for (val teamMember : team1RemainingPlayers) {
             prepareForMatch(teamMember, team1sb);
             for (val instance : team1BotInstances)
-                instance.getFakePlayer().getFriendlyEntityUUIDs().add(teamMember.getUuid());
+                instance.getConfiguration().getFriendlyUUIDs().add(teamMember.getUuid());
         }
 
         for (val teamMember : team2RemainingPlayers) {
             prepareForMatch(teamMember, team2sb);
             for (val instance : team2BotInstances)
-                instance.getFakePlayer().getFriendlyEntityUUIDs().add(teamMember.getUuid());
+                instance.getConfiguration().getFriendlyUUIDs().add(teamMember.getUuid());
         }
     }
 
