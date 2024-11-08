@@ -26,13 +26,13 @@ public class TournamentMatch extends Match {
 
     @Override
     public void end(Profile attacker, Profile victim) {
-        attacker.getMatchStatisticCollector().end(true);
-        victim.getMatchStatisticCollector().end(false);
+        stat(attacker, collector -> collector.end(true));
+        stat(victim, collector -> collector.end(false));
 
         deathAnimation(attacker, victim);
 
-        setInventoryStats(attacker, attacker.getMatchStatisticCollector());
-        setInventoryStats(victim, victim.getMatchStatisticCollector());
+        stat(attacker, collector -> setInventoryStats(collector));
+        stat(victim, collector -> setInventoryStats(collector));
 
         val winMessage = getWinMessage(attacker);
         val loseMessage = getLoseMessage(victim);

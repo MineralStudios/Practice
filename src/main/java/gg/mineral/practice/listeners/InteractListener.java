@@ -15,7 +15,9 @@ import gg.mineral.practice.entity.PlayerStatus;
 
 import gg.mineral.practice.inventory.menus.AddItemsMenu;
 import gg.mineral.practice.inventory.menus.SaveLoadKitsMenu;
+import gg.mineral.practice.managers.MatchManager;
 import gg.mineral.practice.managers.ProfileManager;
+import gg.mineral.practice.match.data.MatchStatisticCollector;
 import gg.mineral.practice.util.items.ItemStacks;
 import lombok.val;
 
@@ -32,14 +34,16 @@ public class InteractListener implements Listener {
 			return;
 		}
 
-		val profile = ProfileManager.getOrCreateProfile(e.getPlayer());
+		val uuid = e.getPlayer().getUniqueId();
+		val match = MatchManager.getMatchByParticipant(uuid);
 
-		if (profile.getPlayerStatus() == PlayerStatus.FIGHTING && !profile.isInMatchCountdown()
+		if (match != null
 				&& (action == Action.LEFT_CLICK_AIR || action == Action.LEFT_CLICK_BLOCK))
-			profile.getMatchStatisticCollector().click();
+			match.stat(uuid, MatchStatisticCollector::click);
 
 		if (action != Action.RIGHT_CLICK_AIR && action != Action.RIGHT_CLICK_BLOCK)
 			return;
+		val profile = ProfileManager.getOrCreateProfile(e.getPlayer());
 
 		val predicate = profile.getInventory().getTask(profile.getInventory().getHeldItemSlot());
 

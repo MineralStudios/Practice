@@ -16,7 +16,8 @@ import lombok.val;
 
 @RequiredArgsConstructor
 public class MatchStatisticCollector {
-    final Profile profile;
+    @Getter
+    private final Profile profile;
     @Getter
     int hitCount, currentCombo, longestCombo, averageCombo, highestCps, wTapCount, wTapAccuracy,
             potionsThrown, potionsMissed, potionsStolen, potionsRemaining, potionAccuracy, soupsRemaining,

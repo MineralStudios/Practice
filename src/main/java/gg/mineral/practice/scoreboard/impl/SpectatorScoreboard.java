@@ -3,6 +3,7 @@ package gg.mineral.practice.scoreboard.impl;
 import gg.mineral.practice.entity.Profile;
 import gg.mineral.practice.match.Match;
 import gg.mineral.practice.match.TeamMatch;
+import gg.mineral.practice.match.data.MatchStatisticCollector;
 import gg.mineral.practice.scoreboard.Scoreboard;
 import gg.mineral.practice.scoreboard.ScoreboardHandler;
 
@@ -61,23 +62,29 @@ public class SpectatorScoreboard
                 } else if (spectatable instanceof Match match) {
                         if (match.getData().isBoxing()) {
 
+                                val profile1 = match.getProfile1();
+                                val profile2 = match.getProfile2();
+
+                                val profile1HitCount = match.computeStat(profile1.getUuid(),
+                                                MatchStatisticCollector::getHitCount);
+                                val profile2HitCount = match.computeStat(profile2.getUuid(),
+                                                MatchStatisticCollector::getHitCount);
+
                                 board.updateLines(CC.BOARD_SEPARATOR,
-                                                CC.SECONDARY + match.getProfile1().getName(),
+                                                CC.SECONDARY + profile1.getName(),
                                                 CC.YELLOW + " * " + CC.ACCENT + "Ping: "
                                                                 + CC.WHITE
-                                                                + match.getProfile1().getPlayer().getHandle().ping,
+                                                                + profile1.getPlayer().getHandle().ping,
                                                 CC.YELLOW + " * " + CC.ACCENT + "Hits: "
                                                                 + CC.WHITE
-                                                                + match.getProfile1().getMatchStatisticCollector()
-                                                                                .getHitCount(),
+                                                                + profile1HitCount,
                                                 CC.SECONDARY
-                                                                + match.getProfile2().getName(),
+                                                                + profile2.getName(),
                                                 CC.YELLOW + " * " + CC.ACCENT + "Ping: " + CC.WHITE
-                                                                + match.getProfile2().getPlayer().getHandle().ping,
+                                                                + profile2.getPlayer().getHandle().ping,
                                                 CC.YELLOW + " * " + CC.ACCENT + "Hits: "
                                                                 + CC.WHITE
-                                                                + match.getProfile2().getMatchStatisticCollector()
-                                                                                .getHitCount(),
+                                                                + profile2HitCount,
                                                 CC.SPACER,
                                                 CC.SECONDARY + "mineral.gg",
                                                 CC.BOARD_SEPARATOR);

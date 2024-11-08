@@ -123,30 +123,19 @@ public class TeamMatch extends Match {
 
         victim.setDead(true);
 
-        victim.getMatchStatisticCollector().end(false);
+        stat(victim, collector -> collector.end(false));
 
-        ProfileList attackerTeam, victimTeam;
-        List<InventoryStatsMenu> attackerInventoryStatsMenus = new GlueList<>(),
-                victimInventoryStatsMenus = new GlueList<>();
-        int attackerTeamHits, victimTeamHits;
+        boolean isTeam1 = team1RemainingPlayers.contains(victim);
+        val attackerTeam = isTeam1 ? team2RemainingPlayers : team1RemainingPlayers;
+        val victimTeam = isTeam1 ? team1RemainingPlayers : team2RemainingPlayers;
+        val attackerInventoryStatsMenus = isTeam1 ? team2InventoryStatsMenus
+                : team1InventoryStatsMenus;
+        val victimInventoryStatsMenus = isTeam1 ? team1InventoryStatsMenus
+                : team2InventoryStatsMenus;
+        int attackerTeamHits = isTeam1 ? team2HitCount : team1HitCount;
+        int victimTeamHits = isTeam1 ? team1HitCount : team2HitCount;
 
-        if (team1RemainingPlayers.contains(victim)) {
-            victimTeam = team1RemainingPlayers;
-            attackerTeam = team2RemainingPlayers;
-            victimInventoryStatsMenus = team1InventoryStatsMenus;
-            attackerInventoryStatsMenus = team2InventoryStatsMenus;
-            attackerTeamHits = team2HitCount;
-            victimTeamHits = team1HitCount;
-        } else {
-            victimTeam = team2RemainingPlayers;
-            attackerTeam = team1RemainingPlayers;
-            victimInventoryStatsMenus = team2InventoryStatsMenus;
-            attackerInventoryStatsMenus = team1InventoryStatsMenus;
-            attackerTeamHits = team1HitCount;
-            victimTeamHits = team2HitCount;
-        }
-
-        victimInventoryStatsMenus.add(setInventoryStats(victim, victim.getMatchStatisticCollector()));
+        stat(victim, collector -> victimInventoryStatsMenus.add(setInventoryStats(collector)));
 
         victim.setPearlCooldown(0);
         victim.heal();
@@ -252,10 +241,10 @@ public class TeamMatch extends Match {
 
     private void attackerEndMatch(Profile attacker, List<InventoryStatsMenu> attackerInventoryStatsMenus) {
 
-        attacker.getMatchStatisticCollector().end(true);
+        stat(attacker, collector -> collector.end(true));
 
-        attackerInventoryStatsMenus
-                .add(setInventoryStats(attacker, attacker.getMatchStatisticCollector()));
+        stat(attacker, collector -> attackerInventoryStatsMenus
+                .add(setInventoryStats(collector)));
 
         attacker.setPearlCooldown(0);
         attacker.heal();
@@ -279,8 +268,8 @@ public class TeamMatch extends Match {
 
     @Override
     public boolean incrementTeamHitCount(Profile attacker, Profile victim) {
-        attacker.getMatchStatisticCollector().increaseHitCount();
-        victim.getMatchStatisticCollector().resetCombo();
+        stat(attacker, collector -> collector.increaseHitCount());
+        stat(victim, collector -> collector.resetCombo());
 
         boolean isTeam1 = team1RemainingPlayers.contains(attacker);
         int hitCount = isTeam1 ? ++team1HitCount : ++team2HitCount;

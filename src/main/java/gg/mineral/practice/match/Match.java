@@ -1,10 +1,14 @@
 package gg.mineral.practice.match;
 
 import java.util.Arrays;
+import java.util.Map;
 import java.util.Queue;
+import java.util.UUID;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ConcurrentLinkedDeque;
 import java.util.concurrent.ConcurrentLinkedQueue;
+import java.util.function.Consumer;
+import java.util.function.Function;
 
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
@@ -50,6 +54,7 @@ import gg.mineral.practice.util.messages.impl.TextComponents;
 import gg.mineral.practice.util.world.BlockData;
 import gg.mineral.practice.util.world.BlockUtil;
 import gg.mineral.practice.util.world.WorldUtil;
+import it.unimi.dsi.fastutil.objects.Object2ObjectOpenHashMap;
 import lombok.Getter;
 import lombok.val;
 import net.md_5.bungee.api.chat.ClickEvent;
@@ -78,6 +83,7 @@ public class Match implements Spectatable {
 	@Getter
 	Queue<Item> itemRemovalQueue = new ConcurrentLinkedQueue<>();
 	org.bukkit.World world = null;
+	private Map<UUID, MatchStatisticCollector> matchStatisticMap = new Object2ObjectOpenHashMap<>();
 
 	public Match(Profile profile1, Profile profile2, MatchData matchData) {
 		this(matchData);
@@ -113,8 +119,36 @@ public class Match implements Spectatable {
 		return new Kit(data.getKit());
 	}
 
+	public void stat(UUID uuid, Consumer<MatchStatisticCollector> consumer) {
+		if (isEnded())
+			return;
+		val profile = this.getParticipants().get(uuid);
+
+		if (profile == null)
+			return;
+
+		val collector = matchStatisticMap.computeIfAbsent(profile.getUuid(),
+				u -> new MatchStatisticCollector(profile));
+		consumer.accept(collector);
+	}
+
+	protected void stat(Profile profile, Consumer<MatchStatisticCollector> consumer) {
+		if (isEnded())
+			return;
+		val collector = matchStatisticMap.computeIfAbsent(profile.getUuid(),
+				u -> new MatchStatisticCollector(profile));
+		consumer.accept(collector);
+	}
+
+	public <T> T computeStat(UUID uuid, Function<MatchStatisticCollector, T> function) {
+		val profile = this.getParticipants().get(uuid);
+		val collector = matchStatisticMap.computeIfAbsent(profile.getUuid(),
+				u -> new MatchStatisticCollector(profile));
+		return function.apply(collector);
+	}
+
 	public void setAttributes(Profile p) {
-		p.getMatchStatisticCollector().clearHitCount();
+		stat(p, MatchStatisticCollector::clearHitCount);
 		p.setDead(false);
 		p.getPlayer().setMaximumNoDamageTicks(data.getNoDamageTicks());
 		p.getPlayer().setKnockback(data.getKnockback());
@@ -137,7 +171,7 @@ public class Match implements Spectatable {
 
 		p.setMatch(this);
 		p.getRequestHandler().getRecievedDuelRequests().clear();
-		p.getMatchStatisticCollector().start();
+		stat(p, MatchStatisticCollector::start);
 		p.setKitLoaded(false);
 
 		giveLoadoutSelection(p);
@@ -312,13 +346,16 @@ public class Match implements Spectatable {
 	}
 
 	public boolean incrementTeamHitCount(Profile attacker, Profile victim) {
-		attacker.getMatchStatisticCollector().increaseHitCount();
-		victim.getMatchStatisticCollector().resetCombo();
+		stat(attacker, MatchStatisticCollector::increaseHitCount);
+		stat(victim, MatchStatisticCollector::resetCombo);
 
-		if (attacker.getMatchStatisticCollector().getHitCount() >= 100 && getData().isBoxing()) {
-			end(victim);
+		stat(attacker, collector -> {
+			if (collector.getHitCount() >= 100 && getData().isBoxing())
+				end(victim);
+		});
+
+		if (isEnded())
 			return true;
-		}
 
 		return false;
 	}
@@ -350,13 +387,13 @@ public class Match implements Spectatable {
 	}
 
 	public void end(Profile attacker, Profile victim) {
-		attacker.getMatchStatisticCollector().end(true);
-		victim.getMatchStatisticCollector().end(false);
+		stat(attacker, collector -> collector.end(true));
+		stat(victim, collector -> collector.end(false));
 
 		deathAnimation(attacker, victim);
 
-		setInventoryStats(attacker, attacker.getMatchStatisticCollector());
-		setInventoryStats(victim, victim.getMatchStatisticCollector());
+		stat(attacker, collector -> setInventoryStats(collector));
+		stat(victim, collector -> setInventoryStats(collector));
 
 		val winMessage = getWinMessage(attacker);
 		val loseMessage = getLoseMessage(victim);
@@ -415,24 +452,24 @@ public class Match implements Spectatable {
 
 	public TextComponent getWinMessage(Profile profile) {
 		val winMessage = new TextComponent(CC.GREEN + " Winner: " + CC.GRAY + profile.getName());
-		winMessage.setHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT,
+		stat(profile, collector -> winMessage.setHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT,
 				new ComponentBuilder(CC.GREEN + "Health Potions Remaining: "
-						+ profile.getMatchStatisticCollector().getPotionsRemaining() + "\n" + CC.GREEN
-						+ "Hits: " + profile.getMatchStatisticCollector().getHitCount() + "\n" + CC.GREEN + "Health: "
-						+ profile.getMatchStatisticCollector().getRemainingHealth()).create()));
+						+ collector.getPotionsRemaining() + "\n" + CC.GREEN
+						+ "Hits: " + collector.getHitCount() + "\n" + CC.GREEN + "Health: "
+						+ collector.getRemainingHealth()).create())));
 		winMessage.setClickEvent(new ClickEvent(ClickEvent.Action.RUN_COMMAND, "/viewinventory " + profile.getName()));
 		return winMessage;
 	}
 
 	public TextComponent getLoseMessage(Profile profile) {
 		val loseMessage = new TextComponent(CC.RED + "Loser: " + CC.GRAY + profile.getName());
-		loseMessage.setHoverEvent(
+		stat(profile, collector -> loseMessage.setHoverEvent(
 				new HoverEvent(HoverEvent.Action.SHOW_TEXT,
 						new ComponentBuilder(CC.RED + "Health Potions Remaining: "
-								+ profile.getMatchStatisticCollector().getPotionsRemaining() + "\n"
-								+ CC.RED + "Hits: " + profile.getMatchStatisticCollector().getHitCount() + "\n"
+								+ collector.getPotionsRemaining() + "\n"
+								+ CC.RED + "Hits: " + collector.getHitCount() + "\n"
 								+ CC.RED + "Health: 0")
-								.create()));
+								.create())));
 		loseMessage.setClickEvent(new ClickEvent(ClickEvent.Action.RUN_COMMAND, "/viewinventory " + profile.getName()));
 		return loseMessage;
 	}
@@ -515,7 +552,9 @@ public class Match implements Spectatable {
 		}, getPostMatchTime() + 1);
 	}
 
-	public InventoryStatsMenu setInventoryStats(Profile profile, MatchStatisticCollector matchStatisticCollector) {
+	public InventoryStatsMenu setInventoryStats(MatchStatisticCollector matchStatisticCollector) {
+
+		val profile = matchStatisticCollector.getProfile();
 
 		val menu = new InventoryStatsMenu(profile, getOpponent(profile).getName(),
 				matchStatisticCollector);

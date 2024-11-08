@@ -15,7 +15,7 @@ public class DefaultScoreboard implements Scoreboard {
 		board.updateTitle(CC.PRIMARY + CC.B + "Mineral");
 		board.updateLines(CC.BOARD_SEPARATOR,
 				CC.ACCENT + "Online: " + CC.SECONDARY
-						+ ProfileManager.getProfiles().getPlayerCount(),
+						+ ProfileManager.getProfiles().size(),
 				CC.ACCENT + "Bots: " + CC.SECONDARY
 						+ ProfileManager.countBots(),
 				CC.ACCENT + "In Game: " + CC.SECONDARY

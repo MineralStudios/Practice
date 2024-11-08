@@ -18,6 +18,7 @@ import gg.mineral.practice.entity.Profile;
 import gg.mineral.practice.entity.ProfileData;
 import gg.mineral.practice.inventory.menus.InventoryStatsMenu;
 import gg.mineral.practice.util.messages.Message;
+import it.unimi.dsi.fastutil.objects.Object2ObjectFunction;
 import it.unimi.dsi.fastutil.objects.Object2ObjectOpenHashMap;
 import lombok.Getter;
 import lombok.val;
@@ -34,41 +35,19 @@ public class ProfileManager {
 	public
 
 	static class ProfileMap extends Object2ObjectOpenHashMap<UUID, Profile> {
-
-		private int playerCount = 0, botCount = 0, lastCheckedSize = 0;
-
-		public int getPlayerCount() {
-			if (lastCheckedSize != size()) {
-				playerCount = 0;
-				botCount = 0;
-
-				for (val profile : values()) {
-					if (BotAPI.INSTANCE.isFakePlayer(profile.getUuid()))
-						botCount++;
-					else
-						playerCount++;
-				}
-
-				lastCheckedSize = size();
-			}
-			return playerCount;
+		@Override
+		public Profile computeIfAbsent(UUID key,
+				Object2ObjectFunction<? super UUID, ? extends Profile> mappingFunction) {
+			if (BotAPI.INSTANCE.isFakePlayer(key))
+				return mappingFunction.apply(key);
+			return super.computeIfAbsent(key, mappingFunction);
 		}
 
-		public int getBotCount() {
-			if (lastCheckedSize != size()) {
-				playerCount = 0;
-				botCount = 0;
-
-				for (val profile : values()) {
-					if (BotAPI.INSTANCE.isFakePlayer(profile.getUuid()))
-						botCount++;
-					else
-						playerCount++;
-				}
-
-				lastCheckedSize = size();
-			}
-			return botCount;
+		@Override
+		public Profile put(UUID key, Profile value) {
+			if (BotAPI.INSTANCE.isFakePlayer(key))
+				return value;
+			return super.put(key, value);
 		}
 	}
 
@@ -76,10 +55,6 @@ public class ProfileManager {
 	private static ProfileMap profiles = new ProfileMap();
 	private static Object2ObjectOpenHashMap<String, InventoryStatsMenu> inventoryStats = new Object2ObjectOpenHashMap<>();
 	private static Object2ObjectOpenHashMap<String, List<InventoryStatsMenu>> teamInventoryStats = new Object2ObjectOpenHashMap<>();
-
-	public static void add(Profile profile) {
-		profiles.put(profile.getUuid(), profile);
-	}
 
 	public static void remove(Profile profile) {
 		profiles.remove(profile.getUuid());
@@ -105,8 +80,21 @@ public class ProfileManager {
 		return count;
 	}
 
+	private static int lastOnline = 0, lastCount = 0;
+
 	public static int countBots() {
-		return profiles.botCount;
+		if (lastOnline == Bukkit.getOnlinePlayers().size())
+			return lastCount;
+		int count = 0;
+		lastOnline = Bukkit.getOnlinePlayers().size();
+		for (val player : Bukkit.getOnlinePlayers()) {
+			if (!BotAPI.INSTANCE.isFakePlayer(player.getUniqueId()))
+				continue;
+
+			count++;
+		}
+
+		return lastCount = count;
 	}
 
 	public static ProfileData getProfileData(String name, UUID uuid) {
@@ -187,7 +175,7 @@ public class ProfileManager {
 	}
 
 	public static void broadcast(Collection<Profile> c, Message message) {
-		for (Profile p : c)
+		for (val p : c)
 			p.message(message);
 	}
 

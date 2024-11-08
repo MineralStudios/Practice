@@ -28,7 +28,8 @@ public class InventoryStatsMenu extends PracticeMenu {
     public void update() {
         if (opponent != null)
             setSlot(53, ItemStacks.VIEW_OPPONENT_INVENTORY,
-                    interaction -> interaction.getProfile().getPlayer().performCommand("viewinventory " + opponent));
+                    interaction -> interaction.getProfile().getPlayer()
+                            .performCommand("viewinventory " + opponent));
 
         setContents(matchStatisticCollector.getInventoryContents());
         setSlot(36, matchStatisticCollector.getHelmet());
@@ -39,28 +40,36 @@ public class InventoryStatsMenu extends PracticeMenu {
         setSlot(45, !matchStatisticCollector.isAlive() ? ItemStacks.NO_HEALTH
                 : ItemStacks.HEALTH
                         .name(CC.SECONDARY + CC.B + "Health")
-                        .lore(" ", CC.WHITE + "Remaining:", CC.GOLD + matchStatisticCollector.getRemainingHealth())
+                        .lore(" ", CC.WHITE + "Remaining:",
+                                CC.GOLD + matchStatisticCollector.getRemainingHealth())
                         .amount(matchStatisticCollector.getRemainingHealth()).build());
 
         setSlot(46, ItemStacks.HEALTH_POTIONS_LEFT
                 .lore(" ", CC.WHITE + "Thrown: " + CC.GOLD + matchStatisticCollector.getPotionsThrown(),
-                        CC.WHITE + "Missed: " + CC.GOLD + matchStatisticCollector.getPotionsMissed(),
-                        CC.WHITE + "Stolen: " + CC.GOLD + matchStatisticCollector.getPotionsStolen(),
-                        CC.WHITE + "Accuracy: " + CC.GOLD + matchStatisticCollector.getPotionAccuracy() + "%")
+                        CC.WHITE + "Missed: " + CC.GOLD
+                                + matchStatisticCollector.getPotionsMissed(),
+                        CC.WHITE + "Stolen: " + CC.GOLD
+                                + matchStatisticCollector.getPotionsStolen(),
+                        CC.WHITE + "Accuracy: " + CC.GOLD
+                                + matchStatisticCollector.getPotionAccuracy() + "%")
                 .amount(Math.max(matchStatisticCollector.getPotionsRemaining(), 1)).build());
 
         setSlot(47, ItemStacks.SOUP_LEFT
                 .amount(Math.max(matchStatisticCollector.getSoupsRemaining(), 1)).build());
 
         setSlot(48, ItemStacks.HITS
-                .name(CC.SECONDARY + CC.B + profile.getMatchStatisticCollector().getHitCount() + " Hits")
-                .lore(CC.WHITE + "Longest Combo: " + CC.GOLD + matchStatisticCollector.getLongestCombo(),
-                        CC.WHITE + "Average Combo: " + CC.GOLD + matchStatisticCollector.getAverageCombo(),
-                        CC.WHITE + "W Tap Accuracy: " + CC.GOLD + matchStatisticCollector.getWTapAccuracy() + "%")
+                .name(CC.SECONDARY + CC.B + matchStatisticCollector.getHitCount() + " Hits")
+                .lore(CC.WHITE + "Longest Combo: " + CC.GOLD
+                        + matchStatisticCollector.getLongestCombo(),
+                        CC.WHITE + "Average Combo: " + CC.GOLD
+                                + matchStatisticCollector.getAverageCombo(),
+                        CC.WHITE + "W Tap Accuracy: " + CC.GOLD
+                                + matchStatisticCollector.getWTapAccuracy() + "%")
                 .build());
 
         setSlot(49, ItemStacks.CLICKS
-                .name(CC.SECONDARY + CC.B + "Highest CPS: " + matchStatisticCollector.getHighestCps()).build());
+                .name(CC.SECONDARY + CC.B + "Highest CPS: " + matchStatisticCollector.getHighestCps())
+                .build());
 
         setSlot(50, ItemStacks.POTION_EFFECTS
                 .lore(matchStatisticCollector.getPotionEffectStringArray()).build());

@@ -9,6 +9,7 @@ import org.bukkit.potion.PotionEffectType;
 
 import gg.mineral.api.event.PlayerThrowPearlEvent;
 import gg.mineral.practice.entity.PlayerStatus;
+import gg.mineral.practice.managers.MatchManager;
 import gg.mineral.practice.managers.ProfileManager;
 import gg.mineral.practice.util.messages.impl.ChatMessages;
 import lombok.val;
@@ -20,10 +21,6 @@ public class ProjectileListener implements Listener {
             return;
 
         val shooter = (Player) e.getEntity().getShooter();
-        val shooterProfile = ProfileManager.getProfile(shooter.getUniqueId());
-
-        if (shooterProfile == null)
-            return;
 
         for (val effect : e.getEntity().getEffects()) {
             if (!effect.getType().equals(PotionEffectType.HEAL))
@@ -33,15 +30,24 @@ public class ProjectileListener implements Listener {
                 if (entity.getUniqueId().equals(shooter.getUniqueId()) || !(entity instanceof Player))
                     continue;
 
-                val entityProfile = ProfileManager.getProfile(entity.getUniqueId());
+                val uuid = entity.getUniqueId();
+                val match = MatchManager.getMatchByParticipant(uuid);
 
-                if (entityProfile == null)
+                if (match == null || match.isEnded())
                     continue;
 
-                entityProfile.getMatchStatisticCollector().stolenPotion();
+                match.stat(uuid, collector -> collector.stolenPotion());
             }
 
-            shooterProfile.getMatchStatisticCollector().thrownPotion(e.getIntensity((LivingEntity) shooter) <= 0.5);
+            val uuid = shooter.getUniqueId();
+            val match = MatchManager.getMatchByParticipant(uuid);
+
+            if (match == null || match.isEnded())
+                continue;
+
+            if (shooter instanceof LivingEntity livingEntity)
+                match.stat(uuid,
+                        collector -> collector.thrownPotion(e.getIntensity(livingEntity) <= 0.5));
             break;
         }
     }

@@ -3,11 +3,13 @@ package gg.mineral.practice.util.collection;
 import java.util.Collection;
 import java.util.Iterator;
 import java.util.List;
+import java.util.UUID;
 import java.util.concurrent.ConcurrentLinkedQueue;
 
 import gg.mineral.api.collection.GlueList;
 import gg.mineral.practice.entity.Profile;
 import lombok.Getter;
+import lombok.val;
 
 public class ProfileList extends ConcurrentLinkedQueue<Profile> {
 
@@ -87,5 +89,14 @@ public class ProfileList extends ConcurrentLinkedQueue<Profile> {
 
     public Profile getFirst() {
         return peek();
+    }
+
+    public Profile get(UUID uuid) {
+        // TODO: Optimize this using hashmaps
+        for (val profile : this)
+            if (profile.getUuid().equals(uuid))
+                return profile;
+
+        return null;
     }
 }

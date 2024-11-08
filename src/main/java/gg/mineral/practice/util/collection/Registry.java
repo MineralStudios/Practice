@@ -11,8 +11,8 @@ import lombok.RequiredArgsConstructor;
 
 @RequiredArgsConstructor
 public class Registry<T, Q> {
-    Map<Q, T> keyValueMap = new Object2ObjectOpenHashMap<>();
-    final Function<T, Q> function;
+    private Map<Q, T> keyValueMap = new Object2ObjectOpenHashMap<>();
+    private final Function<T, Q> function;
 
     public Collection<T> getRegisteredObjects() {
         return keyValueMap.values();

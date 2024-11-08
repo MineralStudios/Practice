@@ -34,7 +34,6 @@ import gg.mineral.practice.managers.KitEditorManager;
 import gg.mineral.practice.managers.ProfileManager;
 import gg.mineral.practice.match.Match;
 
-import gg.mineral.practice.match.data.MatchStatisticCollector;
 import gg.mineral.practice.party.Party;
 
 import gg.mineral.practice.queue.QueueSettings;
@@ -78,7 +77,6 @@ public class Profile extends ProfileData implements QueuedEntity {
 	private DuelSettings duelSettings;
 	private SpectateHandler spectateHandler = new SpectateHandler(this);
 	private RequestHandler requestHandler = new RequestHandler(this);
-	private MatchStatisticCollector matchStatisticCollector = new MatchStatisticCollector(this);
 	private boolean playersVisible = true, partyOpenCooldown = false, scoreboardEnabled = true;
 	@Setter
 	boolean nightMode = false, dead = false;
