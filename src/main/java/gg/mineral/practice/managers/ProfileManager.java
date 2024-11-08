@@ -18,7 +18,6 @@ import gg.mineral.practice.entity.Profile;
 import gg.mineral.practice.entity.ProfileData;
 import gg.mineral.practice.inventory.menus.InventoryStatsMenu;
 import gg.mineral.practice.util.messages.Message;
-import it.unimi.dsi.fastutil.objects.Object2ObjectFunction;
 import it.unimi.dsi.fastutil.objects.Object2ObjectOpenHashMap;
 import lombok.Getter;
 import lombok.val;
@@ -35,73 +34,41 @@ public class ProfileManager {
 	public
 
 	static class ProfileMap extends Object2ObjectOpenHashMap<UUID, Profile> {
-		@Getter
-		private int playerCount = 0, botCount = 0;
 
-		@Override
-		public Profile computeIfAbsent(UUID key,
-				Object2ObjectFunction<? super UUID, ? extends Profile> mappingFunction) {
-			int oldSize = size();
-			val profile = super.computeIfAbsent(key, mappingFunction);
-			int newSize = size();
+		private int playerCount = 0, botCount = 0, lastCheckedSize = 0;
 
-			if (oldSize < newSize) {
-				if (BotAPI.INSTANCE.isFakePlayer(key))
-					botCount++;
-				else
-					playerCount++;
-			} else if (oldSize > newSize) {
-				if (BotAPI.INSTANCE.isFakePlayer(key))
-					botCount--;
-				else
-					playerCount--;
-			}
+		public int getPlayerCount() {
+			if (lastCheckedSize != size()) {
+				playerCount = 0;
+				botCount = 0;
 
-			return profile;
-		}
-
-		@Override
-		public Profile put(UUID key, Profile value) {
-			int oldSize = size();
-			val profile = super.put(key, value);
-			int newSize = size();
-
-			if (oldSize < newSize) {
-				if (BotAPI.INSTANCE.isFakePlayer(key))
-					botCount++;
-				else
-					playerCount++;
-			} else if (oldSize > newSize) {
-				if (BotAPI.INSTANCE.isFakePlayer(key))
-					botCount--;
-				else
-					playerCount--;
-			}
-
-			return profile;
-		}
-
-		@Override
-		public Profile remove(Object key) {
-			int oldSize = size();
-			val profile = super.remove(key);
-			int newSize = size();
-
-			if (key instanceof UUID uuid) {
-				if (oldSize < newSize) {
-					if (BotAPI.INSTANCE.isFakePlayer(uuid))
+				for (val profile : values()) {
+					if (BotAPI.INSTANCE.isFakePlayer(profile.getUuid()))
 						botCount++;
 					else
 						playerCount++;
-				} else if (oldSize > newSize) {
-					if (BotAPI.INSTANCE.isFakePlayer(uuid))
-						botCount--;
-					else
-						playerCount--;
 				}
-			}
 
-			return profile;
+				lastCheckedSize = size();
+			}
+			return playerCount;
+		}
+
+		public int getBotCount() {
+			if (lastCheckedSize != size()) {
+				playerCount = 0;
+				botCount = 0;
+
+				for (val profile : values()) {
+					if (BotAPI.INSTANCE.isFakePlayer(profile.getUuid()))
+						botCount++;
+					else
+						playerCount++;
+				}
+
+				lastCheckedSize = size();
+			}
+			return botCount;
 		}
 	}
 
