@@ -30,41 +30,70 @@ public class ProfileManager {
 			"plugins/Practice/PlayerData");
 	@Getter
 	static Location spawnLocation;
+
 	@Getter
-	private static Object2ObjectOpenHashMap<UUID, Profile> profiles = new Object2ObjectOpenHashMap<>() {
+	public
+
+	static class ProfileMap extends Object2ObjectOpenHashMap<UUID, Profile> {
+		@Getter
+		private int playerCount = 0, botCount = 0;
 
 		@Override
 		public Profile computeIfAbsent(UUID key,
 				Object2ObjectFunction<? super UUID, ? extends Profile> mappingFunction) {
-			if (BotAPI.INSTANCE.isFakePlayer(key))
-				return botProfiles.computeIfAbsent(key, mappingFunction);
-			return super.computeIfAbsent(key, mappingFunction);
+			val oldVal = super.get(key);
+			Profile value = null;
+
+			if (oldVal == null) {
+				if (BotAPI.INSTANCE.isFakePlayer(key))
+					botCount++;
+				else
+					playerCount++;
+			} else if ((value = mappingFunction.apply(key)) == null) {
+				if (BotAPI.INSTANCE.isFakePlayer(key))
+					botCount--;
+				else
+					playerCount--;
+			}
+
+			return value != null ? value : mappingFunction.apply(key);
 		}
 
 		@Override
 		public Profile put(UUID key, Profile value) {
-			if (BotAPI.INSTANCE.isFakePlayer(key))
-				return botProfiles.put(key, value);
-			return super.put(key, value);
+			val oldVal = super.put(key, value);
+
+			if (oldVal == null) {
+				if (BotAPI.INSTANCE.isFakePlayer(key))
+					botCount++;
+				else
+					playerCount++;
+			} else if (value == null) {
+				if (BotAPI.INSTANCE.isFakePlayer(key))
+					botCount--;
+				else
+					playerCount--;
+			}
+
+			return oldVal;
 		}
 
 		@Override
 		public Profile remove(Object key) {
 			val profile = super.remove(key);
-			if (profile != null)
-				return profile;
-			return botProfiles.remove(key);
-		}
+			if (profile != null && key instanceof UUID uuid) {
+				if (BotAPI.INSTANCE.isFakePlayer(uuid))
+					botCount--;
+				else
+					playerCount--;
+			}
 
-		@Override
-		public Profile get(Object key) {
-			val profile = super.get(key);
-			if (profile != null)
-				return profile;
-			return botProfiles.get(key);
+			return profile;
 		}
-	};
-	private static Object2ObjectOpenHashMap<UUID, Profile> botProfiles = new Object2ObjectOpenHashMap<>();
+	}
+
+	@Getter
+	private static ProfileMap profiles = new ProfileMap();
 	private static Object2ObjectOpenHashMap<String, InventoryStatsMenu> inventoryStats = new Object2ObjectOpenHashMap<>();
 	private static Object2ObjectOpenHashMap<String, List<InventoryStatsMenu>> teamInventoryStats = new Object2ObjectOpenHashMap<>();
 
@@ -97,7 +126,7 @@ public class ProfileManager {
 	}
 
 	public static int countBots() {
-		return botProfiles.size();
+		return profiles.botCount;
 	}
 
 	public static ProfileData getProfileData(String name, UUID uuid) {
