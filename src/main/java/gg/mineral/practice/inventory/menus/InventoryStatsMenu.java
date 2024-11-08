@@ -4,7 +4,6 @@ import gg.mineral.practice.util.items.ItemStacks;
 import gg.mineral.practice.util.messages.CC;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
-import gg.mineral.practice.entity.Profile;
 import gg.mineral.practice.inventory.ClickCancelled;
 import gg.mineral.practice.inventory.PracticeMenu;
 import gg.mineral.practice.match.data.MatchStatisticCollector;
@@ -13,13 +12,11 @@ import gg.mineral.practice.match.data.MatchStatisticCollector;
 @Getter
 @RequiredArgsConstructor
 public class InventoryStatsMenu extends PracticeMenu {
-    private final Profile profile;
     private final String opponent;
     private final MatchStatisticCollector matchStatisticCollector;
 
     public InventoryStatsMenu(InventoryStatsMenu m) {
         super(m);
-        this.profile = m.getProfile();
         this.opponent = m.getOpponent();
         this.matchStatisticCollector = m.getMatchStatisticCollector();
     }
@@ -77,7 +74,7 @@ public class InventoryStatsMenu extends PracticeMenu {
 
     @Override
     public String getTitle() {
-        return CC.BLUE + profile.getName();
+        return CC.BLUE + matchStatisticCollector.getProfile().getName();
     }
 
     @Override

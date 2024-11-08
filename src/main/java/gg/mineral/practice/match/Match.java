@@ -133,8 +133,6 @@ public class Match implements Spectatable {
 	}
 
 	protected void stat(Profile profile, Consumer<MatchStatisticCollector> consumer) {
-		if (isEnded())
-			return;
 		val collector = matchStatisticMap.computeIfAbsent(profile.getUuid(),
 				u -> new MatchStatisticCollector(profile));
 		consumer.accept(collector);
@@ -556,7 +554,7 @@ public class Match implements Spectatable {
 
 		val profile = matchStatisticCollector.getProfile();
 
-		val menu = new InventoryStatsMenu(profile, getOpponent(profile).getName(),
+		val menu = new InventoryStatsMenu(getOpponent(profile).getName(),
 				matchStatisticCollector);
 
 		if (!(this instanceof TeamMatch))
