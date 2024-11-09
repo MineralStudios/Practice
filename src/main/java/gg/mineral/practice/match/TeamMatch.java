@@ -40,6 +40,7 @@ public class TeamMatch extends Match {
     protected ProfileList team1RemainingPlayers, team2RemainingPlayers;
     protected List<InventoryStatsMenu> team1InventoryStatsMenus = new GlueList<>(),
             team2InventoryStatsMenus = new GlueList<>();
+    @Getter
     protected NametagGroup[] nametagGroups;
 
     @Getter
