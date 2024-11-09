@@ -45,7 +45,6 @@ import gg.mineral.practice.tournaments.Tournament;
 
 import gg.mineral.practice.util.PlayerUtil;
 import gg.mineral.practice.util.collection.Registry;
-import gg.mineral.practice.util.math.PearlCooldown;
 import gg.mineral.practice.util.messages.Message;
 import gg.mineral.practice.util.messages.impl.ChatMessages;
 import gg.mineral.practice.util.messages.impl.ErrorMessages;
@@ -88,7 +87,6 @@ public class Profile extends ProfileData implements QueuedEntity {
 	private Event event;
 	@Setter
 	private Profile killer;
-	private PearlCooldown pearlCooldown = new PearlCooldown(this);
 	@Setter
 	private boolean kitLoaded = false, inMatchCountdown = false;
 	private Registry<BlockData, String> fakeBlocks = new Registry<>(BlockData::toString);
@@ -129,8 +127,6 @@ public class Profile extends ProfileData implements QueuedEntity {
 
 		fakeBlockTaskId = Bukkit.getServer().getScheduler().scheduleSyncRepeatingTask(PracticePlugin.INSTANCE,
 				() -> fakeBlocks.getRegisteredObjects().forEach(blockData -> blockData.update(this.getPlayer())), 0, 3);
-
-		pearlCooldown.start();
 	}
 
 	private ItemStack[] getCustomKit(Gametype gametype, ConfigurationSection cs) {
@@ -572,10 +568,6 @@ public class Profile extends ProfileData implements QueuedEntity {
 
 	public void resetQueueSettings() {
 		queueSettings = new QueueSettings();
-	}
-
-	public void setPearlCooldown(int i) {
-		pearlCooldown.setTimeRemaining(i);
 	}
 
 	public void startPartyOpenCooldown() {

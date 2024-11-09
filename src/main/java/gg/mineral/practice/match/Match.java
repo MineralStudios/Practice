@@ -47,6 +47,7 @@ import gg.mineral.practice.util.collection.ProfileList;
 import gg.mineral.practice.util.items.ItemStacks;
 import gg.mineral.practice.util.math.Countdown;
 import gg.mineral.practice.util.math.MathUtil;
+import gg.mineral.practice.util.math.PearlCooldown;
 import gg.mineral.practice.util.messages.CC;
 import gg.mineral.practice.util.messages.impl.ErrorMessages;
 import gg.mineral.practice.util.messages.impl.Strings;
@@ -84,6 +85,8 @@ public class Match implements Spectatable {
 	Queue<Item> itemRemovalQueue = new ConcurrentLinkedQueue<>();
 	org.bukkit.World world = null;
 	private Map<UUID, MatchStatisticCollector> matchStatisticMap = new Object2ObjectOpenHashMap<>();
+	@Getter
+	protected static PearlCooldown pearlCooldown = new PearlCooldown();
 
 	public Match(Profile profile1, Profile profile2, MatchData matchData) {
 		this(matchData);
@@ -482,6 +485,9 @@ public class Match implements Spectatable {
 	public void giveQueueAgainItem(Profile profile) {
 		val queuetype = data.getQueuetype();
 		val gametype = data.getGametype();
+
+		if (queuetype == null || gametype == null)
+			return;
 		Bukkit.getServer().getScheduler().runTaskLater(PracticePlugin.INSTANCE,
 				() -> profile.getInventory().setItem(profile.getInventory().getHeldItemSlot(),
 						ItemStacks.QUEUE_AGAIN,
@@ -497,7 +503,7 @@ public class Match implements Spectatable {
 
 	public void resetPearlCooldown(Profile... profiles) {
 		for (val profile : profiles)
-			profile.setPearlCooldown(0);
+			pearlCooldown.getCooldowns().removeInt(profile.getUuid());
 	}
 
 	public void clearItems() {

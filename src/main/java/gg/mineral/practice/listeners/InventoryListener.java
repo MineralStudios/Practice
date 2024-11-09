@@ -13,6 +13,7 @@ import org.bukkit.event.player.PlayerPickupItemEvent;
 import gg.mineral.practice.PracticePlugin;
 import gg.mineral.practice.entity.PlayerStatus;
 import gg.mineral.practice.inventory.Interaction;
+import gg.mineral.practice.managers.MatchManager;
 import gg.mineral.practice.managers.ProfileManager;
 import lombok.val;
 
@@ -67,21 +68,28 @@ public class InventoryListener implements Listener {
 
 	@EventHandler
 	public void onPlayerDropItem(PlayerDropItemEvent e) {
-		val profile = ProfileManager.getOrCreateProfile(e.getPlayer());
-		boolean canDrop = profile.getPlayer().isOp() && profile.getPlayer().getGameMode().equals(GameMode.CREATIVE);
+		val player = e.getPlayer();
+		boolean canDrop = player.isOp() && player.getGameMode().equals(GameMode.CREATIVE);
 
-		if (profile.isInKitCreator() || profile.isInKitEditor()) {
-			e.setCancelled(false);
-			Bukkit.getScheduler().runTaskLater(PracticePlugin.INSTANCE, () -> e.getItemDrop().remove(), 20L);
-			return;
+		val profile = ProfileManager.getProfile(player);
+
+		if (profile != null) {
+			if (profile.isInKitCreator() || profile.isInKitEditor()) {
+				e.setCancelled(false);
+				Bukkit.getScheduler().runTaskLater(PracticePlugin.INSTANCE, () -> e.getItemDrop().remove(), 20L);
+				return;
+			}
 		}
 
-		if (profile.getPlayerStatus() == PlayerStatus.FIGHTING) {
-			profile.getMatch().getItemRemovalQueue().add(e.getItemDrop());
+		val match = MatchManager.getMatchByParticipant(player.getUniqueId());
+
+		if (match != null) {
+			match.getItemRemovalQueue().add(e.getItemDrop());
 			return;
 		}
 
 		e.setCancelled(!canDrop);
+
 	}
 
 	@EventHandler

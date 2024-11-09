@@ -8,7 +8,6 @@ import org.bukkit.craftbukkit.v1_8_R3.entity.CraftEntity;
 import org.bukkit.craftbukkit.v1_8_R3.entity.CraftPlayer;
 import org.bukkit.entity.Arrow;
 import org.bukkit.entity.Item;
-import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
 import org.bukkit.entity.Projectile;
 import org.bukkit.event.EventHandler;
@@ -521,9 +520,9 @@ public class PacketListener implements Listener {
         if (dropper == null)
             return;
 
-        val receiverProfile = ProfileManager.getOrCreateProfile(receiver);
+        val receiverProfile = ProfileManager.getProfile(receiver);
 
-        if (!receiverProfile.getVisiblePlayers().contains(dropper))
+        if (receiverProfile == null || !receiverProfile.getVisiblePlayers().contains(dropper))
             event.setCancelled(true);
     }
 
@@ -551,28 +550,24 @@ public class PacketListener implements Listener {
             return;
 
         val shooter = (Player) arrow.getShooter();
-        val receiverProfile = ProfileManager.getOrCreateProfile(receiver);
-        if (!receiverProfile.getVisiblePlayers().contains(shooter.getUniqueId()))
+        val receiverProfile = ProfileManager.getProfile(receiver);
+        if (receiverProfile == null || !receiverProfile.getVisiblePlayers().contains(shooter.getUniqueId()))
             event.setCancelled(true);
     }
 
     @EventHandler(priority = EventPriority.MONITOR)
     public void onPotionSplash(PotionSplashEvent event) {
         val potion = event.getEntity();
-        if (!(potion.getShooter() instanceof Player))
-            return;
-
-        val shooter = (Player) potion.getShooter();
-
-        for (LivingEntity livingEntity : event.getAffectedEntities()) {
-            if (!(livingEntity instanceof Player))
-                return;
-
-            val receiver = (Player) livingEntity;
-            val receiverProfile = ProfileManager.getOrCreateProfile(receiver);
-            if (!receiverProfile.getVisiblePlayers().contains(shooter.getUniqueId())) {
-                event.setCancelled(true);
-                event.setIntensity(receiver, 0.0D);
+        if (potion.getShooter() instanceof Player shooter) {
+            for (val livingEntity : event.getAffectedEntities()) {
+                if (livingEntity instanceof Player receiver) {
+                    val receiverProfile = ProfileManager.getProfile(receiver);
+                    if (receiverProfile == null
+                            || !receiverProfile.getVisiblePlayers().contains(shooter.getUniqueId())) {
+                        event.setCancelled(true);
+                        event.setIntensity(receiver, 0.0D);
+                    }
+                }
             }
         }
     }

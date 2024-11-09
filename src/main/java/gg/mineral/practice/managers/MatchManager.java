@@ -9,6 +9,7 @@ import gg.mineral.practice.gametype.Gametype;
 import gg.mineral.practice.match.Match;
 import gg.mineral.practice.queue.Queuetype;
 import lombok.Getter;
+import lombok.val;
 
 public class MatchManager {
 	@Getter
@@ -44,7 +45,7 @@ public class MatchManager {
 
 	@Nullable
 	public static Match getMatchByParticipant(UUID uuid) {
-		for (Match match : matches)
+		for (val match : matches)
 			if (match.getParticipants().get(uuid) != null)
 				return match;
 

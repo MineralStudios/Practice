@@ -10,6 +10,7 @@ import gg.mineral.api.event.PlayerThrowPearlEvent;
 import gg.mineral.practice.entity.PlayerStatus;
 import gg.mineral.practice.managers.MatchManager;
 import gg.mineral.practice.managers.ProfileManager;
+import gg.mineral.practice.match.Match;
 import gg.mineral.practice.util.messages.impl.ChatMessages;
 import lombok.val;
 
@@ -52,20 +53,25 @@ public class ProjectileListener implements Listener {
 
     @EventHandler
     public void onThrowPearl(final PlayerThrowPearlEvent e) {
-        val profile = ProfileManager.getOrCreateProfile(e.getPlayer());
+        val player = e.getPlayer();
+        val profile = ProfileManager.getProfile(player);
 
-        if (profile.isInMatchCountdown() || profile.getPlayerStatus() != PlayerStatus.FIGHTING) {
+        if (profile != null && (profile.isInMatchCountdown() || profile.getPlayerStatus() != PlayerStatus.FIGHTING)) {
             e.setCancelled(true);
             return;
         }
 
-        if (profile.getPearlCooldown().isActive()) {
+        val uuid = player.getUniqueId();
+
+        if (Match.getPearlCooldown().isActive(uuid)) {
             e.setCancelled(true);
-            ChatMessages.PEARL.clone().replace("%time%", "" + profile.getPearlCooldown().getTimeRemaining())
-                    .send(profile.getPlayer());
+            int timeRemaining = Match.getPearlCooldown().getTimeRemaining(uuid);
+            ChatMessages.PEARL.clone().replace("%time%", "" + timeRemaining)
+                    .send(player);
             return;
         }
 
-        profile.getPearlCooldown().setTimeRemaining(profile.getMatch().getData().getPearlCooldown());
+        val match = MatchManager.getMatchByParticipant(uuid);
+        Match.getPearlCooldown().getCooldowns().put(uuid, match.getData().getPearlCooldown());
     }
 }

@@ -2,7 +2,6 @@ package gg.mineral.practice.entity.handler;
 
 import org.bukkit.GameMode;
 
-import gg.mineral.api.nametag.NametagGroup;
 import gg.mineral.practice.entity.PlayerStatus;
 import gg.mineral.practice.entity.Profile;
 import gg.mineral.practice.events.Event;
@@ -119,16 +118,12 @@ public class SpectateHandler {
         if (spectatable instanceof TeamMatch match) {
             val groups = match.getNametagGroups();
 
-            NametagGroup chosenGroup = null;
+            if (groups != null) {
+                val group = groups[0];
 
-            for (val group : groups)
-                if (group.getPlayers().contains(profile.getPlayer())) {
-                    chosenGroup = group;
-                    break;
-                }
-
-            if (chosenGroup != null)
-                chosenGroup.add(this.profile.getPlayer());
+                if (group != null)
+                    group.add(this.profile.getPlayer());
+            }
         }
 
         profile.setGameMode(GameMode.SPECTATOR);

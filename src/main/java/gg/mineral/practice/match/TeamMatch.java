@@ -130,7 +130,7 @@ public class TeamMatch extends Match {
 
         stat(victim, collector -> victimInventoryStatsMenus.add(setInventoryStats(collector)));
 
-        victim.setPearlCooldown(0);
+        pearlCooldown.getCooldowns().removeInt(victim.getUuid());
         victim.heal();
         victim.removePotionEffects();
         victim.getInventory().clear();
@@ -245,12 +245,14 @@ public class TeamMatch extends Match {
         stat(attacker, collector -> attackerInventoryStatsMenus
                 .add(setInventoryStats(collector)));
 
-        attacker.setPearlCooldown(0);
+        pearlCooldown.getCooldowns().removeInt(attacker.getUuid());
         attacker.heal();
         attacker.removePotionEffects();
         attacker.getInventory().clear();
 
         attacker.setScoreboard(MatchEndScoreboard.INSTANCE);
+
+        giveQueueAgainItem(attacker);
 
         Bukkit.getServer().getScheduler().runTaskLater(PracticePlugin.INSTANCE, () -> {
             attacker.teleportToLobby();
