@@ -8,7 +8,6 @@ import org.bukkit.potion.PotionEffectType;
 
 import gg.mineral.api.event.PlayerThrowPearlEvent;
 import gg.mineral.practice.entity.PlayerStatus;
-import gg.mineral.practice.managers.MatchManager;
 import gg.mineral.practice.managers.ProfileManager;
 import gg.mineral.practice.match.Match;
 import gg.mineral.practice.util.messages.impl.ChatMessages;
@@ -31,7 +30,10 @@ public class ProjectileListener implements Listener {
                     continue;
 
                 val uuid = entity.getUniqueId();
-                val match = MatchManager.getMatchByParticipant(uuid);
+                val profile = ProfileManager.getProfile(uuid);
+                if (profile == null || profile.getPlayerStatus() != PlayerStatus.FIGHTING)
+                    continue;
+                val match = profile.getMatch();
 
                 if (match == null || match.isEnded())
                     continue;
@@ -40,7 +42,13 @@ public class ProjectileListener implements Listener {
             }
 
             val uuid = shooter.getUniqueId();
-            val match = MatchManager.getMatchByParticipant(uuid);
+            val profile = ProfileManager.getProfile(uuid);
+            if (profile == null || profile.getPlayerStatus() != PlayerStatus.FIGHTING)
+                continue;
+            val match = profile.getMatch();
+
+            if (match == null || match.isEnded())
+                continue;
 
             if (match == null || match.isEnded())
                 continue;
@@ -71,7 +79,13 @@ public class ProjectileListener implements Listener {
             return;
         }
 
-        val match = MatchManager.getMatchByParticipant(uuid);
+        if (profile == null)
+            return;
+
+        val match = profile.getMatch();
+
+        if (match == null)
+            return;
         Match.getPearlCooldown().getCooldowns().put(uuid, match.getData().getPearlCooldown());
     }
 }

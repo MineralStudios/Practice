@@ -28,7 +28,7 @@ public class SpectateHandler {
     @Getter
     Spectatable spectatable;
     @Getter
-    Profile following;
+    private Profile following;
     @Getter
     ProfileList followers = new ProfileList();
 
@@ -50,7 +50,8 @@ public class SpectateHandler {
     }
 
     public void stopSpectating() {
-        if (profile.getPlayerStatus() != PlayerStatus.SPECTATING) {
+        if (profile.getPlayerStatus() != PlayerStatus.SPECTATING
+                && profile.getPlayerStatus() != PlayerStatus.FOLLOWING) {
             profile.message(ErrorMessages.NOT_SPEC);
             return;
         }
@@ -63,12 +64,15 @@ public class SpectateHandler {
         profile.teleportToLobby();
 
         profile.setGameMode(GameMode.SURVIVAL);
-        if (profile.isInParty())
-            profile.getInventory().setInventoryForParty();
-        else
-            profile.getInventory().setInventoryForLobby();
+        if (profile.getPlayerStatus() != PlayerStatus.FOLLOWING) {
+            if (profile.isInParty())
+                profile.getInventory().setInventoryForParty();
+            else
+                profile.getInventory().setInventoryForLobby();
+        }
 
-        profile.setScoreboard(DefaultScoreboard.INSTANCE);
+        profile.setScoreboard(profile.getPlayerStatus() == PlayerStatus.FOLLOWING ? FollowingScoreboard.INSTANCE
+                : DefaultScoreboard.INSTANCE);
     }
 
     public void stopFollowing() {
@@ -80,6 +84,8 @@ public class SpectateHandler {
 
         following.getSpectateHandler().getFollowers().remove(profile);
         following = null;
+
+        profile.setPlayerStatus(PlayerStatus.SPECTATING);
 
         stopSpectating();
     }
@@ -144,12 +150,12 @@ public class SpectateHandler {
             }
         }
 
+        profile.setScoreboard(SpectatorScoreboard.INSTANCE);
         if (profile.getPlayerStatus() == PlayerStatus.FOLLOWING)
             return;
 
         profile.getInventory().setInventoryForSpectating();
         profile.setPlayerStatus(PlayerStatus.SPECTATING);
-        profile.setScoreboard(SpectatorScoreboard.INSTANCE);
     }
 
     private void updateVisiblity() {

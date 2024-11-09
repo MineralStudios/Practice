@@ -112,6 +112,26 @@ public class Profile extends ProfileData implements QueuedEntity {
 		}
 	};
 
+	@Getter
+	private final ConcurrentLinkedQueue<UUID> setVisiblePlayers = new ConcurrentLinkedQueue<UUID>() {
+		@Override
+		public boolean add(UUID uuid) {
+			if (contains(uuid))
+				return false;
+			return super.add(uuid);
+		}
+	};
+
+	@Getter
+	private final ConcurrentLinkedQueue<UUID> setVisiblePlayersOnTab = new ConcurrentLinkedQueue<UUID>() {
+		@Override
+		public boolean add(UUID uuid) {
+			if (contains(uuid))
+				return false;
+			return super.add(uuid);
+		}
+	};
+
 	public Profile(org.bukkit.entity.Player player) {
 		super(player.getUniqueId(), player.getName());
 		this.player = (CraftPlayer) player;
@@ -276,19 +296,20 @@ public class Profile extends ProfileData implements QueuedEntity {
 	}
 
 	public boolean testVisibility(UUID uuid) {
-		val p = ProfileManager.getProfile(uuid);
 
-		val match = getMatch();
+		val match = this.getMatch();
 		if (playerStatus == PlayerStatus.FIGHTING
-				&& match != null && p != null && match.getParticipants().contains(p))
+				&& match != null && match.getParticipants().get(uuid) != null)
 			return true;
 
 		val spectatable = spectateHandler.getSpectatable();
 
 		if (spectatable != null)
 			if ((playerStatus == PlayerStatus.FOLLOWING || playerStatus == PlayerStatus.SPECTATING)
-					&& p != null && spectatable.getParticipants().contains(p))
+					&& spectatable.getParticipants().get(uuid) != null)
 				return true;
+
+		val p = ProfileManager.getProfile(uuid);
 
 		if (this.isPlayersVisible() && p != null)
 			if ((playerStatus == PlayerStatus.QUEUEING || playerStatus == PlayerStatus.IDLE)
@@ -300,20 +321,19 @@ public class Profile extends ProfileData implements QueuedEntity {
 	}
 
 	public boolean testTabVisibility(UUID uuid) {
-		val p = ProfileManager.getProfile(uuid);
 
-		val isBot = BotAPI.INSTANCE.isFakePlayer(uuid);
-
-		val match = getMatch();
+		val match = this.getMatch();
 		if (playerStatus == PlayerStatus.FIGHTING
-				&& match != null && p != null && match.getParticipants().contains(p))
+				&& match != null && match.getParticipants().get(uuid) != null)
 			return true;
 
 		val spectatable = spectateHandler.getSpectatable();
 
+		val isBot = BotAPI.INSTANCE.isFakePlayer(uuid);
+
 		if (spectatable != null)
 			if ((playerStatus == PlayerStatus.FOLLOWING || playerStatus == PlayerStatus.SPECTATING)
-					&& p != null && spectatable.getParticipants().contains(p))
+					&& spectatable.getParticipants().get(uuid) != null)
 				return true;
 
 		if (!isBot)
@@ -398,7 +418,7 @@ public class Profile extends ProfileData implements QueuedEntity {
 	}
 
 	public void leaveKitEditor() {
-		setScoreboard(new DefaultScoreboard());
+		setScoreboard(DefaultScoreboard.INSTANCE);
 		getInventory().setInventoryClickCancelled(true);
 		this.kitEditor = null;
 		teleportToLobby();
@@ -406,7 +426,7 @@ public class Profile extends ProfileData implements QueuedEntity {
 	}
 
 	public void leaveKitCreator() {
-		setScoreboard(new DefaultScoreboard());
+		setScoreboard(DefaultScoreboard.INSTANCE);
 		this.player.setGameMode(GameMode.SURVIVAL);
 		leaveKitEditor();
 		openMenu(new MechanicsMenu(kitCreator.getSubmitAction()));
@@ -472,50 +492,59 @@ public class Profile extends ProfileData implements QueuedEntity {
 	}
 
 	public void removeFromTab(UUID uuid) {
-		if (!visiblePlayersOnTab.contains(uuid))
-			return;
-		val profile = ProfileManager.getProfile(uuid);
-		if (profile == null)
+		setVisiblePlayersOnTab.remove(uuid);
+		if (!visiblePlayersOnTab.contains(uuid) || uuid == this.getUuid())
 			return;
 
-		this.getPlayer().getHandle().playerConnection.sendPacket(
-				new PacketPlayOutPlayerInfo(EnumPlayerInfoAction.REMOVE_PLAYER,
-						profile.getPlayer().getHandle()));
+		val player = Bukkit.getPlayer(uuid);
+
+		if (player instanceof CraftPlayer craftPlayer)
+			this.getPlayer().getHandle().playerConnection.sendPacket(
+					new PacketPlayOutPlayerInfo(EnumPlayerInfoAction.REMOVE_PLAYER,
+							craftPlayer.getHandle()));
 	}
 
 	public void showOnTab(UUID uuid) {
-		if (visiblePlayersOnTab.contains(uuid))
-			return;
-		val profile = ProfileManager.getProfile(uuid);
-		if (profile == null)
+		setVisiblePlayersOnTab.add(uuid);
+		if (visiblePlayersOnTab.contains(uuid) || uuid == this.getUuid())
 			return;
 
-		this.getPlayer().getHandle().playerConnection.sendPacket(
-				new PacketPlayOutPlayerInfo(EnumPlayerInfoAction.ADD_PLAYER, profile.getPlayer().getHandle()));
+		val player = Bukkit.getPlayer(uuid);
+
+		if (player instanceof CraftPlayer craftPlayer)
+			this.getPlayer().getHandle().playerConnection.sendPacket(
+					new PacketPlayOutPlayerInfo(EnumPlayerInfoAction.ADD_PLAYER, craftPlayer.getHandle()));
 	}
 
 	public void removeFromView(UUID uuid) {
-		if (!visiblePlayers.contains(uuid))
+		setVisiblePlayers.remove(uuid);
+		if (!visiblePlayers.contains(uuid) || uuid == this.getUuid())
 			return;
-		val profile = ProfileManager.getProfile(uuid);
-		if (profile == null)
-			return;
-		val entry = ((WorldServer) getPlayer().getHandle().getWorld()).tracker.trackedEntities
-				.get(profile.getPlayer().getHandle().getId());
-		if (entry != null && !entry.trackedPlayers.contains(this.getPlayer().getHandle()))
-			entry.clear(this.getPlayer().getHandle());
+		val player = Bukkit.getPlayer(uuid);
+
+		if (player instanceof CraftPlayer craftPlayer
+				&& getPlayer().getHandle().getWorld() instanceof WorldServer worldServer) {
+			val entry = worldServer.tracker.trackedEntities
+					.get(craftPlayer.getHandle().getId());
+			if (entry != null && !entry.trackedPlayers.contains(this.getPlayer().getHandle()))
+				entry.clear(this.getPlayer().getHandle());
+		}
 	}
 
 	public void showPlayer(UUID uuid) {
-		if (visiblePlayers.contains(uuid))
+		setVisiblePlayers.add(uuid);
+		if (visiblePlayers.contains(uuid) || uuid == this.getUuid())
 			return;
-		val profile = ProfileManager.getProfile(uuid);
-		if (profile == null)
-			return;
-		val entry = ((WorldServer) getPlayer().getHandle().getWorld()).tracker.trackedEntities
-				.get(profile.getPlayer().getHandle().getId());
-		if (entry != null && !entry.trackedPlayers.contains(this.getPlayer().getHandle()))
-			entry.updatePlayer(this.getPlayer().getHandle());
+
+		val player = Bukkit.getPlayer(uuid);
+
+		if (player instanceof CraftPlayer craftPlayer
+				&& getPlayer().getHandle().getWorld() instanceof WorldServer worldServer) {
+			val entry = worldServer.tracker.trackedEntities
+					.get(craftPlayer.getHandle().getId());
+			if (entry != null && !entry.trackedPlayers.contains(this.getPlayer().getHandle()))
+				entry.updatePlayer(this.getPlayer().getHandle());
+		}
 	}
 
 	public void updateVisiblity() {

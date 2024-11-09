@@ -15,7 +15,6 @@ import gg.mineral.practice.entity.PlayerStatus;
 
 import gg.mineral.practice.inventory.menus.AddItemsMenu;
 import gg.mineral.practice.inventory.menus.SaveLoadKitsMenu;
-import gg.mineral.practice.managers.MatchManager;
 import gg.mineral.practice.managers.ProfileManager;
 import gg.mineral.practice.match.data.MatchStatisticCollector;
 import gg.mineral.practice.util.items.ItemStacks;
@@ -35,7 +34,8 @@ public class InteractListener implements Listener {
 		}
 
 		val uuid = e.getPlayer().getUniqueId();
-		val match = MatchManager.getMatchByParticipant(uuid);
+		val profile = ProfileManager.getOrCreateProfile(e.getPlayer());
+		val match = profile.getMatch();
 
 		if (match != null
 				&& (action == Action.LEFT_CLICK_AIR || action == Action.LEFT_CLICK_BLOCK))
@@ -43,7 +43,6 @@ public class InteractListener implements Listener {
 
 		if (action != Action.RIGHT_CLICK_AIR && action != Action.RIGHT_CLICK_BLOCK)
 			return;
-		val profile = ProfileManager.getOrCreateProfile(e.getPlayer());
 
 		val predicate = profile.getInventory().getTask(profile.getInventory().getHeldItemSlot());
 

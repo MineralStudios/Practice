@@ -13,7 +13,6 @@ import org.bukkit.event.player.PlayerPickupItemEvent;
 import gg.mineral.practice.PracticePlugin;
 import gg.mineral.practice.entity.PlayerStatus;
 import gg.mineral.practice.inventory.Interaction;
-import gg.mineral.practice.managers.MatchManager;
 import gg.mineral.practice.managers.ProfileManager;
 import lombok.val;
 
@@ -79,13 +78,13 @@ public class InventoryListener implements Listener {
 				Bukkit.getScheduler().runTaskLater(PracticePlugin.INSTANCE, () -> e.getItemDrop().remove(), 20L);
 				return;
 			}
-		}
 
-		val match = MatchManager.getMatchByParticipant(player.getUniqueId());
+			val match = profile.getMatch();
 
-		if (match != null) {
-			match.getItemRemovalQueue().add(e.getItemDrop());
-			return;
+			if (match != null) {
+				match.getItemRemovalQueue().add(e.getItemDrop());
+				return;
+			}
 		}
 
 		e.setCancelled(!canDrop);

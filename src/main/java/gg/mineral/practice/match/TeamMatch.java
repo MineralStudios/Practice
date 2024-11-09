@@ -10,6 +10,7 @@ import gg.mineral.api.collection.GlueList;
 import gg.mineral.api.nametag.NametagGroup;
 import gg.mineral.bot.api.BotAPI;
 import gg.mineral.practice.PracticePlugin;
+import gg.mineral.practice.entity.PlayerStatus;
 import gg.mineral.practice.entity.Profile;
 import gg.mineral.practice.inventory.menus.InventoryStatsMenu;
 import gg.mineral.practice.managers.ArenaManager;
@@ -255,6 +256,8 @@ public class TeamMatch extends Match {
         giveQueueAgainItem(attacker);
 
         Bukkit.getServer().getScheduler().runTaskLater(PracticePlugin.INSTANCE, () -> {
+            if (attacker.getPlayerStatus() == PlayerStatus.FIGHTING && !attacker.getMatch().isEnded())
+                return;
             attacker.teleportToLobby();
             if (attacker.isInParty())
                 attacker.getInventory().setInventoryForParty();

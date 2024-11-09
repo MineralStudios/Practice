@@ -35,19 +35,19 @@ public class BotTestingCommand extends PlayerCommand {
 
         val difficulty = queueSettings.getOpponentBotDifficulty();
 
-        val friendlyTeam = new GlueList<BotConfiguration>();
-        friendlyTeam.add(difficulty.getConfiguration(queueSettings));
-        friendlyTeam.add(difficulty.getConfiguration(queueSettings));
+        for (int i = 0; i < amount; i++) {
+            val friendlyTeam = new GlueList<BotConfiguration>();
+            friendlyTeam.add(difficulty.getConfiguration(queueSettings));
+            friendlyTeam.add(difficulty.getConfiguration(queueSettings));
 
-        val opponentTeam = new GlueList<BotConfiguration>();
-        opponentTeam.add(difficulty.getConfiguration(queueSettings));
-        opponentTeam.add(difficulty.getConfiguration(queueSettings));
-
-        for (int i = 0; i < amount; i++)
+            val opponentTeam = new GlueList<BotConfiguration>();
+            opponentTeam.add(difficulty.getConfiguration(queueSettings));
+            opponentTeam.add(difficulty.getConfiguration(queueSettings));
             new BotTeamMatch(new GlueList<>(), new GlueList<>(),
                     friendlyTeam,
                     opponentTeam,
                     new MatchData(queuetype, gametype, profile.getQueueSettings())).start();
+        }
 
     }
 }

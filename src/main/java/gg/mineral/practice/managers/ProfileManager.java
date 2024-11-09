@@ -18,7 +18,6 @@ import gg.mineral.practice.entity.Profile;
 import gg.mineral.practice.entity.ProfileData;
 import gg.mineral.practice.inventory.menus.InventoryStatsMenu;
 import gg.mineral.practice.util.messages.Message;
-import it.unimi.dsi.fastutil.objects.Object2ObjectFunction;
 import it.unimi.dsi.fastutil.objects.Object2ObjectOpenHashMap;
 import lombok.Getter;
 import lombok.val;
@@ -35,20 +34,6 @@ public class ProfileManager {
 	public
 
 	static class ProfileMap extends Object2ObjectOpenHashMap<UUID, Profile> {
-		@Override
-		public Profile computeIfAbsent(UUID key,
-				Object2ObjectFunction<? super UUID, ? extends Profile> mappingFunction) {
-			if (BotAPI.INSTANCE.isFakePlayer(key))
-				return mappingFunction.apply(key);
-			return super.computeIfAbsent(key, mappingFunction);
-		}
-
-		@Override
-		public Profile put(UUID key, Profile value) {
-			if (BotAPI.INSTANCE.isFakePlayer(key))
-				return value;
-			return super.put(key, value);
-		}
 	}
 
 	@Getter

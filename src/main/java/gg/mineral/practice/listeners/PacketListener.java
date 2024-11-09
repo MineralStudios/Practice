@@ -2,6 +2,7 @@ package gg.mineral.practice.listeners;
 
 import java.util.UUID;
 
+import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.craftbukkit.v1_8_R3.entity.CraftEntity;
@@ -66,21 +67,20 @@ public class PacketListener implements Listener {
         profile.getPlayer().getHandle().playerConnection.getOutgoingPacketListeners().add(packet -> {
             if (packet instanceof PacketPlayOutNamedEntitySpawn namedEntitySpawn) {
                 val uuid = namedEntitySpawn.getB();
-                if (!profile.testVisibility(uuid)) {
-                    profile.getVisiblePlayers().remove(uuid);
+                if (!uuid.equals(profile.getUuid()) && !profile.getSetVisiblePlayers().contains(uuid))
                     return true;
-                }
+
                 profile.getVisiblePlayers().add(uuid);
             }
 
             if (packet instanceof PacketPlayOutEntityDestroy destroy)
                 for (int id : destroy.getA())
-                    for (val uuid : profile.getVisiblePlayers())
-                        if (profile.getPlayer().getHandle().getId() == id)
-                            if (!profile.testVisibility(uuid))
+                    for (val uuid : profile.getVisiblePlayers()) {
+                        val player = Bukkit.getPlayer(uuid);
+                        if (player instanceof CraftPlayer craftPlayer)
+                            if (craftPlayer.getHandle().getId() == id)
                                 profile.getVisiblePlayers().remove(uuid);
-                            else
-                                return true;
+                    }
 
             if (packet instanceof PacketPlayOutPlayerInfo playerInfo) {
                 val action = playerInfo.getA();
@@ -93,9 +93,8 @@ public class PacketListener implements Listener {
                         continue;
                     val uuid = playerInfoData.a().getId();
 
-                    if (!profile.testTabVisibility(uuid)
+                    if (!uuid.equals(profile.getUuid()) && !profile.getSetVisiblePlayersOnTab().contains(uuid)
                             && action != PacketPlayOutPlayerInfo.EnumPlayerInfoAction.REMOVE_PLAYER) {
-                        profile.getVisiblePlayersOnTab().remove(uuid);
                         data.remove();
                         continue;
                     }
@@ -104,7 +103,7 @@ public class PacketListener implements Listener {
                         profile.getVisiblePlayersOnTab().add(uuid);
                     else if (action == PacketPlayOutPlayerInfo.EnumPlayerInfoAction.REMOVE_PLAYER)
                         profile.getVisiblePlayersOnTab().remove(uuid);
-                    else if (!profile.getVisiblePlayersOnTab().contains(uuid))
+                    else if (!uuid.equals(profile.getUuid()) && !profile.getVisiblePlayersOnTab().contains(uuid))
                         data.remove();
                 }
 
