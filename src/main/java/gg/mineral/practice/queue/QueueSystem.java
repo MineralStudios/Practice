@@ -123,6 +123,9 @@ public class QueueSystem {
             throw new IllegalStateException("An unknown error occurred while trying to find a match");
 
         val queueRecords = queueMap.get(queueAndGametypeHash);
+
+        if (queueRecords == null)
+            return false;
         val compatibleQueueRecords = new RecordSet();
 
         for (val record : queueRecords)
