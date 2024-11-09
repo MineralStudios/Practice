@@ -15,6 +15,7 @@ import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.World;
 import org.bukkit.craftbukkit.v1_8_R3.CraftWorld;
+import org.bukkit.entity.Animals;
 import org.bukkit.entity.Arrow;
 import org.bukkit.entity.Item;
 import org.bukkit.entity.Player;
@@ -275,6 +276,7 @@ public class Match implements Spectatable {
 	}
 
 	public void setWorldParameters(World world) {
+		world.getEntities().stream().filter(entity -> entity instanceof Animals).forEach(entity -> entity.remove());
 		val nmsWorld = ((CraftWorld) world).getHandle();
 		nmsWorld.getWorldData().f(false);
 		nmsWorld.getWorldData().setThundering(false);
