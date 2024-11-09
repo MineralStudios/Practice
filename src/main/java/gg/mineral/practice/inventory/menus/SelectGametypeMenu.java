@@ -149,12 +149,14 @@ public class SelectGametypeMenu extends PracticeMenu {
 
 	@Override
 	public void update() {
+		clear();
 		val queueSettings = viewer.getQueueSettings();
 
 		if (type == Type.UNRANKED) {
+			val botQueue = viewer.getQueueSettings().isBotQueue();
 			if (!viewer.isInParty()) {
 				val teamSize = queueSettings.getTeamSize();
-				setSlot(2,
+				setSlot(botQueue ? 2 : 3,
 						ItemStacks.TEAMFIGHT.lore(
 								CC.WHITE + "Allows you to queue in a " + CC.SECONDARY + "team" + CC.WHITE + " match.",
 								" ", CC.WHITE + "Currently:", teamSizeColors.get(teamSize), " ", CC.BOARD_SEPARATOR,
@@ -166,34 +168,33 @@ public class SelectGametypeMenu extends PracticeMenu {
 			val opponentDifficulty = queueSettings.getOpponentDifficulty();
 			val teamDifficulty = queueSettings.getTeammateDifficulty();
 
-			if (queueSettings.getTeamSize() == 1)
-				setSlot(4,
-						ItemStacks.BOT_SETTINGS.lore(
-								CC.WHITE + "Allows you to configure the " + CC.SECONDARY + "difficulty" + CC.WHITE
-										+ ".",
-								" ", CC.WHITE + "Selected Difficulty: ",
-								Difficulty.values()[opponentDifficulty].getDisplay(), " ",
-								CC.BOARD_SEPARATOR, " ", CC.GREEN + "Left Click to change difficulty.",
-								CC.RED + "Right Click to configure custom difficulty.").build(),
-						DIFFICULTY_INTERACTION);
-			else
-				setSlot(4,
-						ItemStacks.BOT_SETTINGS.lore(
-								CC.WHITE + "Allows you to configure the " + CC.SECONDARY + "difficulty" + CC.WHITE
-										+ ".",
-								" ",
-								CC.WHITE + "Opponent Difficulty: ",
-								Difficulty.values()[opponentDifficulty].getDisplay(), " ",
-								CC.WHITE + "Team Difficulty: ",
-								Difficulty.values()[teamDifficulty].getDisplay(), " ",
-								CC.BOARD_SEPARATOR, " ", CC.GREEN + "Left Click to change opponent difficulty.",
-								CC.PINK + "Middle Click to change team difficulty.",
-								CC.RED + "Right Click to configure custom difficulty.").build(),
-						DIFFICULTY_INTERACTION);
-
 			var item = ItemStacks.BOT_QUEUE_DISABLED;
+			if (botQueue) {
+				if (queueSettings.getTeamSize() == 1)
+					setSlot(4,
+							ItemStacks.BOT_SETTINGS.lore(
+									CC.WHITE + "Allows you to configure the " + CC.SECONDARY + "difficulty" + CC.WHITE
+											+ ".",
+									" ", CC.WHITE + "Selected Difficulty: ",
+									Difficulty.values()[opponentDifficulty].getDisplay(), " ",
+									CC.BOARD_SEPARATOR, " ", CC.GREEN + "Left Click to change difficulty.",
+									CC.RED + "Right Click to configure custom difficulty.").build(),
+							DIFFICULTY_INTERACTION);
+				else
+					setSlot(4,
+							ItemStacks.BOT_SETTINGS.lore(
+									CC.WHITE + "Allows you to configure the " + CC.SECONDARY + "difficulty" + CC.WHITE
+											+ ".",
+									" ",
+									CC.WHITE + "Opponent Difficulty: ",
+									Difficulty.values()[opponentDifficulty].getDisplay(), " ",
+									CC.WHITE + "Team Difficulty: ",
+									Difficulty.values()[teamDifficulty].getDisplay(), " ",
+									CC.BOARD_SEPARATOR, " ", CC.GREEN + "Left Click to change opponent difficulty.",
+									CC.PINK + "Middle Click to change team difficulty.",
+									CC.RED + "Right Click to configure custom difficulty.").build(),
+							DIFFICULTY_INTERACTION);
 
-			if (viewer.getQueueSettings().isBotQueue()) {
 				if (queueSettings.getTeamSize() > 1 && !viewer.isInParty()) {
 					switch (queueSettings.getBotTeamSetting()) {
 						case BOTH:
@@ -229,7 +230,7 @@ public class SelectGametypeMenu extends PracticeMenu {
 					item = ItemStacks.BOT_QUEUE_ENABLED;
 			}
 
-			setSlot(6, item, BOT_QUEUE_INTERACTION);
+			setSlot(botQueue ? 6 : 5, item, BOT_QUEUE_INTERACTION);
 
 			setSlot(48, ItemStacks.RANDOM_QUEUE, interaction -> {
 				val gametype = viewer.getQueueSettings().isBotQueue() ? queuetype.randomGametypeWithBotsEnabled()
