@@ -115,17 +115,6 @@ public class SpectateHandler {
 
         spectatable.getSpectators().add(profile);
 
-        if (spectatable instanceof TeamMatch match) {
-            val groups = match.getNametagGroups();
-
-            if (groups != null) {
-                val group = groups[0];
-
-                if (group != null)
-                    group.add(this.profile.getPlayer());
-            }
-        }
-
         profile.setGameMode(GameMode.SPECTATOR);
 
         val arena = ArenaManager.getArenas().get(spectatable instanceof Event event ? event.getEventArenaId()
@@ -143,6 +132,17 @@ public class SpectateHandler {
         ChatMessages.STOP_SPECTATING.send(profile.getPlayer());
 
         updateVisiblity();
+
+        if (spectatable instanceof TeamMatch match) {
+            val groups = match.getNametagGroups();
+
+            if (groups != null) {
+                val group = groups[0];
+
+                if (group != null)
+                    group.add(this.profile.getPlayer());
+            }
+        }
 
         if (profile.getPlayerStatus() == PlayerStatus.FOLLOWING)
             return;
