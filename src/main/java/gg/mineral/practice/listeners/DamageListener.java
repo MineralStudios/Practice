@@ -25,10 +25,8 @@ public class DamageListener implements Listener {
 
 	@EventHandler
 	public void onEntityDamage(EntityDamageEvent e) {
-		if (!(e.getEntity() instanceof Player)) {
-			e.setCancelled(true);
+		if (!(e.getEntity() instanceof Player))
 			return;
-		}
 
 		PlayerDamageEvent event;
 
