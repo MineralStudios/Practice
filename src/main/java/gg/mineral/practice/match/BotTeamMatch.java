@@ -98,19 +98,17 @@ public class BotTeamMatch extends TeamMatch {
         this.team1RequiredHitCount = team1RemainingPlayers.size() * 100;
         this.team2RequiredHitCount = team2RemainingPlayers.size() * 100;
 
-        val team1sb = getDisplayNameBoard(team1RemainingPlayers,
+        this.nametagGroups = setDisplayNameBoard(team1RemainingPlayers,
                 team2RemainingPlayers);
-        val team2sb = getDisplayNameBoard(team2RemainingPlayers,
-                team1RemainingPlayers);
 
         for (val teamMember : team1RemainingPlayers) {
-            prepareForMatch(teamMember, team1sb);
+            prepareForMatch(teamMember);
             for (val instance : team1BotInstances)
                 instance.getConfiguration().getFriendlyUUIDs().add(teamMember.getUuid());
         }
 
         for (val teamMember : team2RemainingPlayers) {
-            prepareForMatch(teamMember, team2sb);
+            prepareForMatch(teamMember);
             for (val instance : team2BotInstances)
                 instance.getConfiguration().getFriendlyUUIDs().add(teamMember.getUuid());
         }
