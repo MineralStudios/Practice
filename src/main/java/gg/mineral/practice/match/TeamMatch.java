@@ -1,10 +1,10 @@
 package gg.mineral.practice.match;
 
 import java.util.Collection;
-
 import java.util.List;
 
 import org.bukkit.Bukkit;
+import org.bukkit.entity.Player;
 
 import gg.mineral.api.collection.GlueList;
 import gg.mineral.api.nametag.NametagGroup;
@@ -24,7 +24,6 @@ import gg.mineral.practice.scoreboard.impl.TeamBoxingScoreboard;
 import gg.mineral.practice.util.PlayerUtil;
 import gg.mineral.practice.util.collection.ProfileList;
 import gg.mineral.practice.util.messages.CC;
-import gg.mineral.practice.util.messages.ChatMessage;
 import gg.mineral.practice.util.messages.impl.ChatMessages;
 import gg.mineral.practice.util.messages.impl.Strings;
 import io.isles.nametagapi.NametagAPI;
@@ -142,7 +141,7 @@ public class TeamMatch extends Match {
 
         for (val profile : participants) {
             boolean hasKiller = victim.getKiller() != null;
-            ChatMessage message = hasKiller ? ChatMessages.KILLED_BY_PLAYER : ChatMessages.DIED;
+            var message = hasKiller ? ChatMessages.KILLED_BY_PLAYER : ChatMessages.DIED;
             message = message.clone().replace("%victim%", victim.getName());
             profile.message(hasKiller ? message.replace("%attacker%", victim.getKiller().getName()) : message);
         }
@@ -162,8 +161,11 @@ public class TeamMatch extends Match {
 
         ended = true;
 
-        for (val nametagGroup : nametagGroups)
+        for (val nametagGroup : nametagGroups) {
             nametagGroup.delete();
+            for (val player : nametagGroup.getPlayers())
+                refreshBukkitScoreboard(player);
+        }
 
         val attackerTeamIterator = attackerTeam.iterator();
 
@@ -282,6 +284,14 @@ public class TeamMatch extends Match {
         }
 
         return false;
+    }
+
+    public void refreshBukkitScoreboard(Player player) {
+        val scoreboard = player.getScoreboard();
+        val manager = Bukkit.getScoreboardManager();
+        val blankScoreboard = manager.getNewScoreboard();
+        player.setScoreboard(blankScoreboard);
+        Bukkit.getScheduler().runTaskLater(PracticePlugin.INSTANCE, () -> player.setScoreboard(scoreboard), 1L);
     }
 
     public NametagGroup[] setDisplayNameBoard(ProfileList playerTeam, ProfileList opponentTeam) {

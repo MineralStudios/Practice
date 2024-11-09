@@ -10,9 +10,7 @@ import org.bukkit.Bukkit;
 import org.bukkit.GameMode;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.craftbukkit.v1_8_R3.entity.CraftPlayer;
-
 import org.bukkit.inventory.ItemStack;
-
 import org.eclipse.jdt.annotation.NonNull;
 import org.eclipse.jdt.annotation.Nullable;
 
