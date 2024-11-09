@@ -119,7 +119,7 @@ public class QueueSystem {
             return true;
         }
 
-        if (teamSize > 1 && botTeamSetting == QueueSettings.BotTeamSetting.BOTH)
+        if (teamSize > 1 && bots && botTeamSetting == QueueSettings.BotTeamSetting.BOTH)
             throw new IllegalStateException("An unknown error occurred while trying to find a match");
 
         val queueRecords = queueMap.get(queueAndGametypeHash);
