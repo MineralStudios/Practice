@@ -7,6 +7,7 @@ import java.util.List;
 import org.bukkit.Bukkit;
 
 import gg.mineral.api.collection.GlueList;
+import gg.mineral.api.nametag.NametagGroup;
 import gg.mineral.bot.api.BotAPI;
 import gg.mineral.practice.PracticePlugin;
 import gg.mineral.practice.entity.Profile;
@@ -26,6 +27,7 @@ import gg.mineral.practice.util.messages.CC;
 import gg.mineral.practice.util.messages.ChatMessage;
 import gg.mineral.practice.util.messages.impl.ChatMessages;
 import gg.mineral.practice.util.messages.impl.Strings;
+import io.isles.nametagapi.NametagAPI;
 import lombok.Getter;
 import lombok.val;
 import net.md_5.bungee.api.chat.ClickEvent;
@@ -35,8 +37,10 @@ import net.md_5.bungee.api.chat.TextComponent;
 
 public class TeamMatch extends Match {
     @Getter
-    ProfileList team1RemainingPlayers, team2RemainingPlayers;
-    List<InventoryStatsMenu> team1InventoryStatsMenus = new GlueList<>(), team2InventoryStatsMenus = new GlueList<>();
+    protected ProfileList team1RemainingPlayers, team2RemainingPlayers;
+    protected List<InventoryStatsMenu> team1InventoryStatsMenus = new GlueList<>(),
+            team2InventoryStatsMenus = new GlueList<>();
+    protected NametagGroup[] nametagGroups;
 
     @Getter
     int team1HitCount = 0, team2HitCount = 0, team1RequiredHitCount, team2RequiredHitCount;
@@ -85,35 +89,24 @@ public class TeamMatch extends Match {
         this.team1RequiredHitCount = team1RemainingPlayers.size() * 100;
         this.team2RequiredHitCount = team2RemainingPlayers.size() * 100;
 
-        val team1sb = getDisplayNameBoard(team1RemainingPlayers, team2RemainingPlayers);
-        val team2sb = getDisplayNameBoard(team2RemainingPlayers, team1RemainingPlayers);
+        this.nametagGroups = setDisplayNameBoard(team1RemainingPlayers, team2RemainingPlayers);
 
         for (val teamMember : team1RemainingPlayers) {
-            prepareForMatch(teamMember, team1sb);
+            prepareForMatch(teamMember);
             PlayerUtil.teleport(teamMember.getPlayer(), location1);
         }
 
         for (val teamMember : team2RemainingPlayers) {
-            prepareForMatch(teamMember, team2sb);
+            prepareForMatch(teamMember);
             PlayerUtil.teleport(teamMember.getPlayer(), location2);
         }
 
         startCountdown();
     }
 
-    public void prepareForMatch(Profile profile, org.bukkit.scoreboard.Scoreboard teamSb) {
-        prepareForMatch(profile);
-        profile.getPlayer().setScoreboard(teamSb);
-    }
-
     @Override
     public void setScoreboard(Profile p) {
-        if (getData().isBoxing()) {
-            p.setScoreboard(TeamBoxingScoreboard.INSTANCE);
-            return;
-        }
-
-        p.setScoreboard(PartyMatchScoreboard.INSTANCE);
+        p.setScoreboard(getData().isBoxing() ? TeamBoxingScoreboard.INSTANCE : PartyMatchScoreboard.INSTANCE);
     }
 
     @Override
@@ -167,6 +160,9 @@ public class TeamMatch extends Match {
         }
 
         ended = true;
+
+        for (val nametagGroup : nametagGroups)
+            nametagGroup.delete();
 
         val attackerTeamIterator = attackerTeam.iterator();
 
@@ -287,22 +283,30 @@ public class TeamMatch extends Match {
         return false;
     }
 
-    public org.bukkit.scoreboard.Scoreboard getDisplayNameBoard(ProfileList playerTeam, ProfileList opponentTeam) {
+    public NametagGroup[] setDisplayNameBoard(ProfileList playerTeam, ProfileList opponentTeam) {
 
-        val scoreboard = Bukkit.getScoreboardManager().getNewScoreboard();
-
-        val teammates = scoreboard.registerNewTeam("teammates");
-        val opponents = scoreboard.registerNewTeam("opponents");
-
-        teammates.setPrefix(CC.GREEN);
-        opponents.setPrefix(CC.RED);
+        val playerGroup = new NametagGroup();
 
         for (val profile : playerTeam)
-            teammates.addEntry(profile.getName());
+            playerGroup.add(profile.getPlayer());
+
+        val opponentGroup = new NametagGroup();
 
         for (val profile : opponentTeam)
-            opponents.addEntry(profile.getName());
+            opponentGroup.add(profile.getPlayer());
 
-        return scoreboard;
+        for (val profile : playerTeam)
+            NametagAPI.setPrefix(playerGroup, profile.getName(), CC.GREEN);
+
+        for (val profile : opponentTeam)
+            NametagAPI.setPrefix(playerGroup, profile.getName(), CC.RED);
+
+        for (val profile : opponentTeam)
+            NametagAPI.setPrefix(opponentGroup, profile.getName(), CC.GREEN);
+
+        for (val profile : playerTeam)
+            NametagAPI.setPrefix(opponentGroup, profile.getName(), CC.RED);
+
+        return new NametagGroup[] { playerGroup, opponentGroup };
     }
 }
