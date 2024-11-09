@@ -22,7 +22,7 @@ repositories {
 }
 
 dependencies {
-    implementation "gg.mineral:nametag-api:20241108-17.57.35"
+    compileOnly "gg.mineral:nametag-api:20241108-17.57.35"
     compileOnly 'gg.mineral.mineralspigot:mineralspigot-server:20241106-17.09.41'
     compileOnly 'gg.mineral:bot-api:20241108-06.57.18'
     compileOnly 'gg.mineral:database-api:20241108-10.20.26'
