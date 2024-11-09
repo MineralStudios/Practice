@@ -26,7 +26,7 @@ dependencies {
     compileOnly 'gg.mineral.mineralspigot:mineralspigot-server:20241106-17.09.41'
     compileOnly 'gg.mineral:bot-api:20241108-06.40.58'
     compileOnly 'gg.mineral:database-api:20241108-10.20.26'
-    compileOnly 'de.jeezycore:jeezy-core:20241107-12.23.46'
+    compileOnly 'de.jeezycore:jeezy-core:20241108-10.28.30'
     compileOnly 'gg.mineral:bot-intelligence:20241108-06.57.18'
     compileOnly 'org.projectlombok:lombok:1.18.34'
     annotationProcessor 'org.projectlombok:lombok:1.18.34'
