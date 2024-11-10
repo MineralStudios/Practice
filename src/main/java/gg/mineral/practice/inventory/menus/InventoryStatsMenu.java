@@ -15,12 +15,6 @@ public class InventoryStatsMenu extends PracticeMenu {
     private final String opponent;
     private final MatchStatisticCollector matchStatisticCollector;
 
-    public InventoryStatsMenu(InventoryStatsMenu m) {
-        super(m);
-        this.opponent = m.getOpponent();
-        this.matchStatisticCollector = m.getMatchStatisticCollector();
-    }
-
     @Override
     public void update() {
         if (opponent != null)

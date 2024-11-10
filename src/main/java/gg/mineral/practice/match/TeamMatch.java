@@ -177,8 +177,16 @@ public class TeamMatch extends Match {
         while (attackerTeamIterator.hasNext())
             attackerEndMatch(attackerTeamIterator.next(), attackerInventoryStatsMenus);
 
-        ProfileManager.setInventoryStats(attackerTeamLeader, attackerInventoryStatsMenus);
-        ProfileManager.setInventoryStats(victim, victimInventoryStatsMenus);
+        for (val invStats : attackerInventoryStatsMenus) {
+            val profile = invStats.getMatchStatisticCollector().getProfile();
+            ProfileManager.setInventoryStats(profile, attackerInventoryStatsMenus);
+        }
+
+        for (val invStats : victimInventoryStatsMenus) {
+            val profile = invStats.getMatchStatisticCollector().getProfile();
+            ProfileManager.setInventoryStats(profile, victimInventoryStatsMenus);
+        }
+
         MatchManager.remove(this);
 
         val winMessage = new TextComponent(
@@ -194,10 +202,10 @@ public class TeamMatch extends Match {
                 new ComponentBuilder(CC.GREEN + "Hits: " + attackerTeamHits).create()));
         loseMessage
                 .setClickEvent(
-                        new ClickEvent(ClickEvent.Action.RUN_COMMAND, "/viewteaminventory " + victim.getName()));
+                        new ClickEvent(ClickEvent.Action.RUN_COMMAND, "/viewinventory " + victim.getName()));
         winMessage.setClickEvent(
                 new ClickEvent(ClickEvent.Action.RUN_COMMAND,
-                        "/viewteaminventory " + attackerTeamLeader.getName()));
+                        "/viewinventory " + attackerTeamLeader.getName()));
 
         for (val profile : participants) {
             profile.getPlayer().sendMessage(CC.SEPARATOR);
@@ -237,6 +245,12 @@ public class TeamMatch extends Match {
     @Override
     public ProfileList getTeam(Profile p) {
         return team1RemainingPlayers.contains(p) ? team1RemainingPlayers : team2RemainingPlayers;
+    }
+
+    @Override
+    public Profile getOpponent(Profile p) {
+        return team1RemainingPlayers.contains(p) ? team2RemainingPlayers.getFirst()
+                : team1RemainingPlayers.getFirst();
     }
 
     private void attackerEndMatch(Profile attacker, List<InventoryStatsMenu> attackerInventoryStatsMenus) {

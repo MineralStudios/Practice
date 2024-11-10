@@ -107,8 +107,6 @@ public class UsageMessages {
 	public static final UsageMessage FOLLOW = new UsageMessage("/follow <Player>");
 	// View Inventory Command
 	public static final UsageMessage VIEW_INV = new UsageMessage("/viewinventory <Player>");
-	// View Team Inventory Command
-	public static final UsageMessage VIEW_TEAM_INV = new UsageMessage("/viewteaminventory <Player>");
 	// Join Command
 	public static final UsageMessage JOIN = new UsageMessage("/join <Name>");
 }
