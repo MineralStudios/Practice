@@ -23,6 +23,11 @@ public class Countdown {
 		val scheduler = Bukkit.getServer().getScheduler();
 		for (val profile : match.getParticipants())
 			profile.setInMatchCountdown(true);
+
+		scheduler.scheduleSyncDelayedTask(PracticePlugin.INSTANCE, () -> {
+			for (val profile : match.getParticipants())
+				match.onCountdownStart(profile);
+		}, 2L);
 		taskID = scheduler.scheduleSyncRepeatingTask(PracticePlugin.INSTANCE, () -> {
 			if (time == 0) {
 				cancel();

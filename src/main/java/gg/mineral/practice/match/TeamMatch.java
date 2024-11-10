@@ -37,7 +37,6 @@ import net.md_5.bungee.api.chat.ClickEvent;
 import net.md_5.bungee.api.chat.ComponentBuilder;
 import net.md_5.bungee.api.chat.HoverEvent;
 import net.md_5.bungee.api.chat.TextComponent;
-import net.minecraft.server.v1_8_R3.EntityArmorStand;
 
 public class TeamMatch extends Match {
 
@@ -128,7 +127,6 @@ public class TeamMatch extends Match {
         val location1 = arena.getLocation1().clone();
         val location2 = arena.getLocation2().clone();
         setupLocations(location1, location2);
-        val armorStands = createArmorStands(location1, location2);
 
         team1RemainingPlayers.alive(teamMember -> this.participants.add(teamMember));
         team2RemainingPlayers.alive(teamMember -> this.participants.add(teamMember));
@@ -151,18 +149,6 @@ public class TeamMatch extends Match {
         });
 
         startCountdown();
-        val scheduler = Bukkit.getServer().getScheduler();
-
-        scheduler.scheduleSyncDelayedTask(PracticePlugin.INSTANCE, () -> {
-            spawnInArmorStands(armorStands);
-            attachPlayersToArmorStands(armorStands);
-        });
-    }
-
-    @Override
-    public void attachPlayersToArmorStands(EntityArmorStand... armorStands) {
-        team1RemainingPlayers.alive(teamMember -> attachToArmorStand(teamMember, armorStands[0]));
-        team2RemainingPlayers.alive(teamMember -> attachToArmorStand(teamMember, armorStands[1]));
     }
 
     @Override
