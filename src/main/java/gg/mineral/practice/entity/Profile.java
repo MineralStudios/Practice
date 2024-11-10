@@ -551,47 +551,48 @@ public class Profile extends ProfileData implements QueuedEntity {
 
 		val players = getPlayer().getWorld().getPlayers();
 
-		for (val uuid : getVisiblePlayers())
+		for (val uuid : getSetVisiblePlayers())
 			if (!testVisibility(uuid))
 				removeFromView(uuid);
 
-		for (val uuid : getVisiblePlayersOnTab())
+		for (val uuid : getSetVisiblePlayersOnTab())
 			if (!testTabVisibility(uuid))
 				removeFromTab(uuid);
 
 		for (val player : players) {
+			val uuid = player.getUniqueId();
 			var removedFromTab = false;
 
-			if (testTabVisibility(player.getUniqueId()))
-				showOnTab(player.getUniqueId());
+			if (testTabVisibility(uuid))
+				showOnTab(uuid);
 			else {
-				removeFromTab(player.getUniqueId());
+				removeFromTab(uuid);
 				removedFromTab = true;
 			}
 
-			if (!removedFromTab && testVisibility(player.getUniqueId()))
-				showPlayer(player.getUniqueId());
+			if (!removedFromTab && testVisibility(uuid))
+				showPlayer(uuid);
 			else
-				removeFromView(player.getUniqueId());
+				removeFromView(uuid);
 
-			val profile = ProfileManager.getProfile(player.getUniqueId());
+			val profile = ProfileManager.getProfile(uuid);
 
 			if (profile == null)
 				continue;
 
 			removedFromTab = false;
 
-			if (profile.testTabVisibility(player.getUniqueId()))
-				profile.showOnTab(uuid);
+			if (profile.testTabVisibility(this.uuid))
+				profile.showOnTab(this.uuid);
 			else {
-				profile.removeFromTab(uuid);
+				profile.removeFromTab(this.uuid);
 				removedFromTab = true;
 			}
 
-			if (!removedFromTab && profile.testVisibility(player.getUniqueId()))
-				profile.showPlayer(uuid);
+			if (!removedFromTab && profile.testVisibility(this.uuid))
+				profile.showPlayer(this.uuid);
 			else
-				profile.removeFromView(uuid);
+				profile.removeFromView(this.uuid);
 		}
 	}
 
