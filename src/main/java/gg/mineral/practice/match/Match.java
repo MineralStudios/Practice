@@ -187,23 +187,6 @@ public class Match implements Spectatable {
 		handleFollowers(p);
 	}
 
-	public void rideInvisibleArmorStand(Profile profile) {
-		val loc = profile.getPlayer().getLocation();
-		val x = loc.getX();
-		val y = loc.getY();
-		val z = loc.getZ();
-		val handle = profile.getPlayer().getHandle();
-		val entity = new EntityArmorStand(handle.getWorld(), x, y, z);
-		entity.setInvisible(true);
-		entity.setCustomNameVisible(false);
-		entity.setGravity(false);
-		val spawnArmorStand = new PacketPlayOutSpawnEntityLiving(entity);
-		handle.playerConnection.sendPacket(spawnArmorStand);
-		val ridingPacket = new PacketPlayOutAttachEntity(0, handle, entity);
-		handle.playerConnection.sendPacket(ridingPacket);
-		profile.setRidingEntityID(entity.getId());
-	}
-
 	public void destroyArmorStand(Profile profile) {
 		val handle = profile.getPlayer().getHandle();
 		val entityID = profile.getRidingEntityID();
@@ -234,16 +217,11 @@ public class Match implements Spectatable {
 					});
 	}
 
-	public void onCountdownStart(Profile p) {
-		rideInvisibleArmorStand(p);
-	}
-
 	public void onMatchStart(Profile p) {
+		destroyArmorStand(p);
 
 		if (!p.isKitLoaded())
 			p.giveKit(getKit());
-
-		destroyArmorStand(p);
 	}
 
 	public void onMatchStart() {
@@ -334,11 +312,62 @@ public class Match implements Spectatable {
 		val location2 = arena.getLocation2().clone();
 
 		setupLocations(location1, location2);
+		val armorStands = createArmorStands(location1, location2);
 		teleportPlayers(location1, location2);
 
 		prepareForMatch(participants);
 		handleOpponentMessages();
 		startCountdown();
+		val scheduler = Bukkit.getServer().getScheduler();
+
+		scheduler.scheduleSyncDelayedTask(PracticePlugin.INSTANCE, () -> {
+			spawnInArmorStands(armorStands);
+			attachPlayersToArmorStands(armorStands);
+		});
+	}
+
+	public EntityArmorStand[] createArmorStands(Location... locations) {
+		val armorStands = new EntityArmorStand[locations.length];
+		for (int i = 0; i < locations.length; i++) {
+			val loc = locations[i];
+			val x = loc.getX();
+			val y = loc.getY();
+			val z = loc.getZ();
+			if (loc.getWorld() instanceof CraftWorld craftWorld) {
+				val nmsWorld = craftWorld.getHandle();
+				val entity = new EntityArmorStand(nmsWorld, x, y, z);
+				entity.setInvisible(true);
+				entity.setCustomNameVisible(false);
+				entity.setGravity(false);
+				armorStands[i] = entity;
+			}
+		}
+
+		return armorStands;
+	}
+
+	public void attachPlayersToArmorStands(EntityArmorStand... armorStands) {
+		attachToArmorStand(profile1, armorStands[0]);
+		attachToArmorStand(profile2, armorStands[1]);
+	}
+
+	public void spawnInArmorStands(EntityArmorStand... armorStands) {
+		for (val entity : armorStands) {
+			val spawnArmorStand = new PacketPlayOutSpawnEntityLiving(entity);
+			for (val p : getParticipants())
+				p.getPlayer().getHandle().playerConnection.sendPacket(spawnArmorStand);
+		}
+	}
+
+	public void attachToArmorStand(Profile profile, EntityArmorStand entity) {
+		val handle = profile.getPlayer().getHandle();
+		val ridingPacket = new PacketPlayOutAttachEntity(0, handle, entity);
+
+		for (val p : getParticipants()) {
+			val h = p.getPlayer().getHandle();
+			h.playerConnection.sendPacket(ridingPacket);
+		}
+		profile.setRidingEntityID(entity.getId());
 	}
 
 	public void end(Profile victim) {

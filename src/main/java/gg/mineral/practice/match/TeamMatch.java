@@ -37,6 +37,7 @@ import net.md_5.bungee.api.chat.ClickEvent;
 import net.md_5.bungee.api.chat.ComponentBuilder;
 import net.md_5.bungee.api.chat.HoverEvent;
 import net.md_5.bungee.api.chat.TextComponent;
+import net.minecraft.server.v1_8_R3.EntityArmorStand;
 
 public class TeamMatch extends Match {
 
@@ -127,6 +128,7 @@ public class TeamMatch extends Match {
         val location1 = arena.getLocation1().clone();
         val location2 = arena.getLocation2().clone();
         setupLocations(location1, location2);
+        val armorStands = createArmorStands(location1, location2);
 
         team1RemainingPlayers.alive(teamMember -> this.participants.add(teamMember));
         team2RemainingPlayers.alive(teamMember -> this.participants.add(teamMember));
@@ -149,6 +151,18 @@ public class TeamMatch extends Match {
         });
 
         startCountdown();
+        val scheduler = Bukkit.getServer().getScheduler();
+
+        scheduler.scheduleSyncDelayedTask(PracticePlugin.INSTANCE, () -> {
+            spawnInArmorStands(armorStands);
+            attachPlayersToArmorStands(armorStands);
+        });
+    }
+
+    @Override
+    public void attachPlayersToArmorStands(EntityArmorStand... armorStands) {
+        team1RemainingPlayers.alive(teamMember -> attachToArmorStand(teamMember, armorStands[0]));
+        team2RemainingPlayers.alive(teamMember -> attachToArmorStand(teamMember, armorStands[1]));
     }
 
     @Override
@@ -278,11 +292,12 @@ public class TeamMatch extends Match {
         BotAPI.INSTANCE.despawn(victim.getPlayer().getUniqueId());
 
         for (val spectator : getSpectators()) {
-            spectator.getPlayer().sendMessage(CC.SEPARATOR);
-            spectator.getPlayer().sendMessage(Strings.MATCH_RESULTS);
-            spectator.getPlayer().spigot().sendMessage(winMessage);
-            spectator.getPlayer().spigot().sendMessage(loseMessage);
-            spectator.getPlayer().sendMessage(CC.SEPARATOR);
+            val player = spectator.getPlayer();
+            player.sendMessage(CC.SEPARATOR);
+            player.sendMessage(Strings.MATCH_RESULTS);
+            player.spigot().sendMessage(winMessage);
+            player.spigot().sendMessage(loseMessage);
+            player.sendMessage(CC.SEPARATOR);
             spectator.getSpectateHandler().stopSpectating();
         }
 

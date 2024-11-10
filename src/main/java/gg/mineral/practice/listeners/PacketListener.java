@@ -85,13 +85,16 @@ public class PacketListener implements Listener {
             }
 
             if (packet instanceof PacketPlayOutEntityDestroy destroy)
-                for (int id : destroy.getA())
+                for (int id : destroy.getA()) {
+                    if (id == profile.getRidingEntityID())
+                        profile.setRidingEntityID(-1);
                     for (val uuid : profile.getVisiblePlayers()) {
                         val player = Bukkit.getPlayer(uuid);
                         if (player instanceof CraftPlayer craftPlayer)
                             if (craftPlayer.getHandle().getId() == id)
                                 profile.getVisiblePlayers().remove(uuid);
                     }
+                }
 
             if (packet instanceof PacketPlayOutPlayerInfo playerInfo) {
                 val action = playerInfo.getA();
