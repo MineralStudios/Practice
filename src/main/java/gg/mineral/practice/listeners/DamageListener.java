@@ -86,12 +86,7 @@ public class DamageListener implements Listener {
 				.getProfile(e.getDamager().getUniqueId(),
 						p -> p.getPlayerStatus() == PlayerStatus.FIGHTING);
 
-		if (attacker == null) {
-			e.setCancelled(true);
-			return;
-		}
-
-		if (attacker.getMatch().isEnded()) {
+		if (attacker == null || attacker.getMatch().isEnded()) {
 			e.setCancelled(true);
 			return;
 		}
@@ -105,13 +100,15 @@ public class DamageListener implements Listener {
 			return;
 		}
 
+		victim.setKiller(attacker);
+
 		if (victim.getMatch().isEnded()) {
 			e.setCancelled(true);
 			return;
 		}
 
 		if (attacker.getMatch() instanceof TeamMatch
-				&& attacker.getMatch().getTeam(attacker).contains(victim)) {
+				&& attacker.getMatch().getTeam(attacker, true).contains(victim)) {
 			e.setCancelled(true);
 			return;
 		}
@@ -121,8 +118,6 @@ public class DamageListener implements Listener {
 			e.setCancelled(true);
 			return;
 		}
-
-		victim.setKiller(attacker);
 	}
 
 	@EventHandler
@@ -136,12 +131,7 @@ public class DamageListener implements Listener {
 		val attacker = ProfileManager
 				.getProfile(shooter.getUniqueId(), p -> p.getPlayerStatus() == PlayerStatus.FIGHTING);
 
-		if (attacker == null) {
-			e.setCancelled(true);
-			return;
-		}
-
-		if (attacker.getMatch().isEnded()) {
+		if (attacker == null || attacker.getMatch().isEnded()) {
 			e.setCancelled(true);
 			return;
 		}
@@ -156,7 +146,7 @@ public class DamageListener implements Listener {
 		}
 
 		if (attacker.getMatch() instanceof TeamMatch
-				&& attacker.getMatch().getTeam(attacker).contains(victim)) {
+				&& attacker.getMatch().getTeam(attacker, true).contains(victim)) {
 			e.setCancelled(true);
 			return;
 		}
@@ -190,6 +180,6 @@ public class DamageListener implements Listener {
 		}
 
 		if (attacker.isInParty())
-			e.setCancelled(attacker.getMatch().getTeam(attacker).contains(victim));
+			e.setCancelled(attacker.getMatch().getTeam(attacker, true).contains(victim));
 	}
 }

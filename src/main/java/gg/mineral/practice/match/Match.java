@@ -1,6 +1,7 @@
 package gg.mineral.practice.match;
 
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.Map;
 import java.util.Queue;
 import java.util.UUID;
@@ -573,8 +574,8 @@ public class Match implements Spectatable {
 		participants.addAll(Arrays.asList(players));
 	}
 
-	public ProfileList getTeam(Profile profile) {
-		return new ProfileList(Arrays.asList(profile));
+	public ProfileList getTeam(Profile profile, boolean alive) {
+		return new ProfileList(Collections.singletonList(profile));
 	}
 
 	/*

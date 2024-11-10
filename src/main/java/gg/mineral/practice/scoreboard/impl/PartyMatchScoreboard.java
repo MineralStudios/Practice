@@ -20,7 +20,7 @@ public class PartyMatchScoreboard
         if (match == null)
             return;
 
-        val team = match.getTeam(profile);
+        val team = match.getTeam(profile, true);
         val opponents = new ProfileList(match.getParticipants());
         opponents.removeAll(team);
 

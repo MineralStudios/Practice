@@ -64,11 +64,8 @@ public class BotTeamMatch extends TeamMatch {
         val location2 = arena.getLocation2().clone();
         setupLocations(location1, location2);
 
-        for (val teamMember : team1RemainingPlayers)
-            PlayerUtil.teleport(teamMember.getPlayer(), location1);
-
-        for (val teamMember : team2RemainingPlayers)
-            PlayerUtil.teleport(teamMember.getPlayer(), location2);
+        team1RemainingPlayers.alive(teamMember -> PlayerUtil.teleport(teamMember.getPlayer(), location1));
+        team2RemainingPlayers.alive(teamMember -> PlayerUtil.teleport(teamMember.getPlayer(), location2));
 
         startCountdown();
 
@@ -78,7 +75,7 @@ public class BotTeamMatch extends TeamMatch {
             config.setUsernameSuffix("" + (suffix++));
             val instance = Difficulty.spawn(config, location1);
             this.team1RemainingPlayers
-                    .add(ProfileManager.getOrCreateProfile(Bukkit.getPlayer(config.getUuid())));
+                    .put(ProfileManager.getOrCreateProfile(Bukkit.getPlayer(config.getUuid())), true);
             team1BotInstances.add(instance);
         }
 
@@ -86,32 +83,31 @@ public class BotTeamMatch extends TeamMatch {
             config.setUsernameSuffix("" + (suffix++));
             val clientInstance = Difficulty.spawn(config, location2);
             this.team2RemainingPlayers
-                    .add(ProfileManager.getOrCreateProfile(Bukkit.getPlayer(config.getUuid())));
+                    .put(ProfileManager.getOrCreateProfile(Bukkit.getPlayer(config.getUuid())), true);
             team2BotInstances.add(clientInstance);
         }
 
-        this.participants.addAll(team1RemainingPlayers);
-        this.participants.addAll(team2RemainingPlayers);
+        team1RemainingPlayers.alive(teamMember -> this.participants.add(teamMember));
+        team2RemainingPlayers.alive(teamMember -> this.participants.add(teamMember));
 
-        this.profile1 = team1RemainingPlayers.getFirst();
-        this.profile2 = team2RemainingPlayers.getFirst();
+        this.profile1 = team1RemainingPlayers.firstKey();
+        this.profile2 = team2RemainingPlayers.firstKey();
         this.team1RequiredHitCount = team1RemainingPlayers.size() * 100;
         this.team2RequiredHitCount = team2RemainingPlayers.size() * 100;
 
-        this.nametagGroups = setDisplayNameBoard(team1RemainingPlayers,
-                team2RemainingPlayers);
+        this.nametagGroups = setDisplayNameBoard();
 
-        for (val teamMember : team1RemainingPlayers) {
+        team1RemainingPlayers.alive(teamMember -> {
             prepareForMatch(teamMember);
             for (val instance : team1BotInstances)
                 instance.getConfiguration().getFriendlyUUIDs().add(teamMember.getUuid());
-        }
+        });
 
-        for (val teamMember : team2RemainingPlayers) {
+        team2RemainingPlayers.alive(teamMember -> {
             prepareForMatch(teamMember);
             for (val instance : team2BotInstances)
                 instance.getConfiguration().getFriendlyUUIDs().add(teamMember.getUuid());
-        }
+        });
     }
 
 }

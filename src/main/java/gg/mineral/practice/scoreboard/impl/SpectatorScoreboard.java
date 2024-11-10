@@ -23,8 +23,8 @@ public class SpectatorScoreboard
                 val spectatable = profile.getSpectateHandler().getSpectatable();
 
                 if (spectatable instanceof TeamMatch match) {
-                        ProfileList team = match.getTeam(match.getProfile1());
-                        ProfileList opponents = new ProfileList(match.getParticipants());
+                        val team = match.getTeam(match.getProfile1(), true);
+                        val opponents = new ProfileList(match.getParticipants());
                         opponents.removeAll(team);
 
                         if (match.getData().isBoxing()) {
