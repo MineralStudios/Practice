@@ -89,6 +89,8 @@ public class Profile extends ProfileData implements QueuedEntity {
 	private Profile killer;
 	@Setter
 	private boolean kitLoaded = false, inMatchCountdown = false;
+	@Setter
+	private int ridingEntityID = -1;
 	private Registry<BlockData, String> fakeBlocks = new Registry<>(BlockData::toString);
 	private final Short2ObjectOpenHashMap<Int2ObjectOpenHashMap<ItemStack[]>> customKits = new Short2ObjectOpenHashMap<>();
 

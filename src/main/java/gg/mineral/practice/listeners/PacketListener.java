@@ -25,6 +25,7 @@ import gg.mineral.practice.managers.ProfileManager;
 import lombok.val;
 import net.minecraft.server.v1_8_R3.EntityItem;
 import net.minecraft.server.v1_8_R3.MathHelper;
+import net.minecraft.server.v1_8_R3.PacketPlayInSteerVehicle;
 import net.minecraft.server.v1_8_R3.PacketPlayOutAnimation;
 import net.minecraft.server.v1_8_R3.PacketPlayOutAttachEntity;
 import net.minecraft.server.v1_8_R3.PacketPlayOutBed;
@@ -64,7 +65,17 @@ public class PacketListener implements Listener {
 
     protected void injectPlayer(Profile profile) {
 
-        profile.getPlayer().getHandle().playerConnection.getOutgoingPacketListeners().add(packet -> {
+        val playerConnection = profile.getPlayer().getHandle().playerConnection;
+
+        playerConnection.getIncomingPacketListeners().add(packet -> {
+            if (packet instanceof PacketPlayInSteerVehicle)
+                if (profile.isInMatchCountdown())
+                    return true;
+
+            return false;
+        });
+
+        playerConnection.getOutgoingPacketListeners().add(packet -> {
             if (packet instanceof PacketPlayOutNamedEntitySpawn namedEntitySpawn) {
                 val uuid = namedEntitySpawn.getB();
                 if (!uuid.equals(profile.getUuid()) && !profile.getSetVisiblePlayers().contains(uuid))

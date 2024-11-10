@@ -53,8 +53,6 @@ import gg.mineral.practice.util.messages.CC;
 import gg.mineral.practice.util.messages.impl.ErrorMessages;
 import gg.mineral.practice.util.messages.impl.Strings;
 import gg.mineral.practice.util.messages.impl.TextComponents;
-import gg.mineral.practice.util.world.BlockData;
-import gg.mineral.practice.util.world.BlockUtil;
 import gg.mineral.practice.util.world.WorldUtil;
 import it.unimi.dsi.fastutil.objects.Object2ObjectOpenHashMap;
 import lombok.Getter;
@@ -63,6 +61,10 @@ import net.md_5.bungee.api.chat.ClickEvent;
 import net.md_5.bungee.api.chat.ComponentBuilder;
 import net.md_5.bungee.api.chat.HoverEvent;
 import net.md_5.bungee.api.chat.TextComponent;
+import net.minecraft.server.v1_8_R3.EntityArmorStand;
+import net.minecraft.server.v1_8_R3.PacketPlayOutAttachEntity;
+import net.minecraft.server.v1_8_R3.PacketPlayOutEntityDestroy;
+import net.minecraft.server.v1_8_R3.PacketPlayOutSpawnEntityLiving;
 
 public class Match implements Spectatable {
 
@@ -185,24 +187,29 @@ public class Match implements Spectatable {
 		handleFollowers(p);
 	}
 
-	public void encapsulate(Profile profile) {
+	public void rideInvisibleArmorStand(Profile profile) {
+		val loc = profile.getPlayer().getLocation();
+		val x = loc.getX();
+		val y = loc.getY();
+		val z = loc.getZ();
+		val handle = profile.getPlayer().getHandle();
+		val entity = new EntityArmorStand(handle.getWorld(), x, y, z);
+		entity.setInvisible(true);
+		entity.setCustomNameVisible(false);
+		entity.setGravity(false);
+		val spawnArmorStand = new PacketPlayOutSpawnEntityLiving(entity);
+		handle.playerConnection.sendPacket(spawnArmorStand);
+		val ridingPacket = new PacketPlayOutAttachEntity(0, handle, entity);
+		handle.playerConnection.sendPacket(ridingPacket);
+		profile.setRidingEntityID(entity.getId());
+	}
 
-		val blockData = new BlockData(profile.getPlayer().getLocation(), Material.BEDROCK,
-				(byte) 0);
-
-		int radius = 1;
-
-		for (int x = -radius; x <= radius; x++) {
-			for (int z = -radius; z <= radius; z++) {
-				if (x == -radius || x == radius || z == -radius || z == radius)
-					for (int i = 0; i <= 2; i++)
-						BlockUtil.sendFakeBlock(profile,
-								blockData.clone().setType(Material.IRON_FENCE).translate(x, i, z));
-
-				BlockUtil.sendFakeBlock(profile, blockData.clone().translate(x, -1, z));
-				BlockUtil.sendFakeBlock(profile, blockData.clone().translate(x, 3, z));
-			}
-		}
+	public void destroyArmorStand(Profile profile) {
+		val handle = profile.getPlayer().getHandle();
+		val entityID = profile.getRidingEntityID();
+		val destroyPacket = new PacketPlayOutEntityDestroy(entityID);
+		handle.playerConnection.sendPacket(destroyPacket);
+		profile.setRidingEntityID(-1);
 	}
 
 	public void giveLoadoutSelection(Profile p) {
@@ -228,7 +235,7 @@ public class Match implements Spectatable {
 	}
 
 	public void onCountdownStart(Profile p) {
-		encapsulate(p);
+		rideInvisibleArmorStand(p);
 	}
 
 	public void onMatchStart(Profile p) {
@@ -236,7 +243,7 @@ public class Match implements Spectatable {
 		if (!p.isKitLoaded())
 			p.giveKit(getKit());
 
-		BlockUtil.clearFakeBlocks(p);
+		destroyArmorStand(p);
 	}
 
 	public void onMatchStart() {
