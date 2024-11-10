@@ -1,8 +1,8 @@
 package gg.mineral.practice.commands.stats;
 
 import gg.mineral.practice.commands.PlayerCommand;
+import gg.mineral.practice.inventory.menus.InventoryStatsListMenu;
 
-import gg.mineral.practice.inventory.menus.InventoryStatsMenu;
 import gg.mineral.practice.managers.ProfileManager;
 import gg.mineral.practice.util.messages.impl.ErrorMessages;
 import gg.mineral.practice.util.messages.impl.UsageMessages;
@@ -25,11 +25,16 @@ public class ViewInventoryCommand extends PlayerCommand {
 
 		val inventoryStats = ProfileManager.getInventoryStats(args[0]);
 
-		if (inventoryStats == null) {
+		if (inventoryStats == null || inventoryStats.isEmpty()) {
 			profile.message(ErrorMessages.PLAYER_INVENTORY_NOT_FOUND);
 			return;
 		}
 
-		profile.openMenu(new InventoryStatsMenu(inventoryStats));
+		if (inventoryStats.size() == 1) {
+			profile.openMenu(inventoryStats.get(0));
+			return;
+		}
+
+		profile.openMenu(new InventoryStatsListMenu(inventoryStats));
 	}
 }

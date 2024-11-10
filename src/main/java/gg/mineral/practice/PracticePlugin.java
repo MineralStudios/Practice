@@ -36,7 +36,6 @@ import gg.mineral.practice.commands.stats.EloCommand;
 import gg.mineral.practice.commands.stats.LeaderboardsCommand;
 import gg.mineral.practice.commands.stats.PotsCommand;
 import gg.mineral.practice.commands.stats.ViewInventoryCommand;
-import gg.mineral.practice.commands.stats.ViewTeamInventoryCommand;
 import gg.mineral.practice.commands.testing.BotTestingCommand;
 import gg.mineral.practice.commands.tournament.JoinCommand;
 import gg.mineral.practice.commands.tournament.TournamentCommand;
@@ -96,7 +95,7 @@ public class PracticePlugin extends JavaPlugin {
 				new ToggleDuelRequestsCommand(), new TogglePartyRequestsCommand(), new CatagoryCommand(),
 				new SettingsCommand(),
 				new StopSpectatingCommand(), new TournamentCommand(), new JoinCommand(), new EventCommand(),
-				new ViewTeamInventoryCommand(), new LeaveCommand(), new SpectateConfigCommand(),
+				new LeaveCommand(), new SpectateConfigCommand(),
 				new LeaderboardConfigCommand(), new ToggleScoreboardCommand(), new BotTestingCommand(),
 				new DayCommand(), new NightCommand());
 

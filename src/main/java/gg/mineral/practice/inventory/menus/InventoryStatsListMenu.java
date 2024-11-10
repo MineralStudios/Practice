@@ -18,10 +18,8 @@ public class InventoryStatsListMenu extends PracticeMenu {
     public void update() {
         for (val inventoryStatsMenu : list)
             add(ItemStacks.INVENTORY_STATS.name(CC.SECONDARY + CC.B + inventoryStatsMenu.getTitle())
-                    .lore(CC.ACCENT + "Click to view.").build(), interaction -> {
-                        val p = interaction.getProfile();
-                        p.openMenu(inventoryStatsMenu);
-                    });
+                    .lore(CC.ACCENT + "Click to view.").build(),
+                    interaction -> interaction.getProfile().openMenu(inventoryStatsMenu));
     }
 
     @Override

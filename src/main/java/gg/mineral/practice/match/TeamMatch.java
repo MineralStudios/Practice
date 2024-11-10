@@ -177,8 +177,8 @@ public class TeamMatch extends Match {
         while (attackerTeamIterator.hasNext())
             attackerEndMatch(attackerTeamIterator.next(), attackerInventoryStatsMenus);
 
-        ProfileManager.setTeamInventoryStats(attackerTeamLeader, attackerInventoryStatsMenus);
-        ProfileManager.setTeamInventoryStats(victim, victimInventoryStatsMenus);
+        ProfileManager.setInventoryStats(attackerTeamLeader, attackerInventoryStatsMenus);
+        ProfileManager.setInventoryStats(victim, victimInventoryStatsMenus);
         MatchManager.remove(this);
 
         val winMessage = new TextComponent(

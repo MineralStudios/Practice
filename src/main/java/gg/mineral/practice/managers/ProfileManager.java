@@ -1,6 +1,7 @@
 package gg.mineral.practice.managers;
 
 import java.util.Collection;
+import java.util.Collections;
 import java.util.List;
 import java.util.UUID;
 import java.util.function.Predicate;
@@ -38,19 +39,14 @@ public class ProfileManager {
 
 	@Getter
 	private static ProfileMap profiles = new ProfileMap();
-	private static Object2ObjectOpenHashMap<String, InventoryStatsMenu> inventoryStats = new Object2ObjectOpenHashMap<>();
-	private static Object2ObjectOpenHashMap<String, List<InventoryStatsMenu>> teamInventoryStats = new Object2ObjectOpenHashMap<>();
+	private static Object2ObjectOpenHashMap<String, List<InventoryStatsMenu>> inventoryStats = new Object2ObjectOpenHashMap<>();
 
 	public static void remove(Profile profile) {
 		profiles.remove(profile.getUuid());
 	}
 
-	public static InventoryStatsMenu getInventoryStats(String s) {
+	public static List<InventoryStatsMenu> getInventoryStats(String s) {
 		return inventoryStats.get(s);
-	}
-
-	public static List<InventoryStatsMenu> getTeamInventoryStats(String s) {
-		return teamInventoryStats.get(s);
 	}
 
 	public static int count(Predicate<Profile> predicate) {
@@ -152,11 +148,11 @@ public class ProfileManager {
 	}
 
 	public static void setInventoryStats(Profile p, InventoryStatsMenu menu) {
-		inventoryStats.put(p.getName(), menu);
+		inventoryStats.put(p.getName(), Collections.singletonList(menu));
 	}
 
-	public static void setTeamInventoryStats(Profile p, List<InventoryStatsMenu> menus) {
-		teamInventoryStats.put(p.getName(), menus);
+	public static void setInventoryStats(Profile p, List<InventoryStatsMenu> menus) {
+		inventoryStats.put(p.getName(), menus);
 	}
 
 	public static void broadcast(Collection<Profile> c, Message message) {
