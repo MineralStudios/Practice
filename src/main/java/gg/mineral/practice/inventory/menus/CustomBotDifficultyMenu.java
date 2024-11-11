@@ -31,8 +31,7 @@ public class CustomBotDifficultyMenu extends PracticeMenu {
 
                 val queueSettings = viewer.getQueueSettings();
 
-                val difficulty = queueSettings.getCustomBotConfiguration();
-                queueSettings.setCustomBotConfiguration(difficulty);
+                val difficulty = premadeDifficulty.getConfiguration(queueSettings);
                 queueSettings.setOpponentDifficulty((byte) Difficulty.CUSTOM.ordinal());
 
                 setSlot(0, ItemStacks.AIM_SPEED.name(CC.SECONDARY + CC.B + "Aim Speed")
@@ -172,11 +171,7 @@ public class CustomBotDifficultyMenu extends PracticeMenu {
                                                                 value -> difficulty.setLatencyDeviation(value),
                                                                 int.class)));
 
-                setSlot(29, ItemStacks.BACK, interaction -> {
-                        val p = interaction.getProfile();
-                        p.getQueueSettings().setCustomBotConfiguration(difficulty);
-                        p.openMenu(menu);
-                });
+                setSlot(29, ItemStacks.BACK, interaction -> interaction.getProfile().openMenu(menu));
 
                 setSlot(31, ItemStacks.CLICK_TO_APPLY_CHANGES.name(CC.SECONDARY + CC.B + "Save Difficulty").build(),
                                 interaction -> {
@@ -194,15 +189,12 @@ public class CustomBotDifficultyMenu extends PracticeMenu {
                                 premadeDifficulty.getDisplay(), " ",
                                 CC.BOARD_SEPARATOR, " ", CC.GREEN + "Left Click to change difficulty.").build(),
                                 interaction -> {
-                                        val queueSettings1 = interaction.getProfile().getQueueSettings();
                                         premadeDifficulty = Difficulty.values()[(premadeDifficulty.ordinal() + 1)
                                                         % Difficulty.values().length];
                                         if (premadeDifficulty == Difficulty.CUSTOM)
                                                 premadeDifficulty = Difficulty
                                                                 .values()[(premadeDifficulty.ordinal() + 1)
                                                                                 % Difficulty.values().length];
-                                        queueSettings1.setCustomBotConfiguration(
-                                                        premadeDifficulty.getConfiguration(queueSettings1));
                                         reload();
                                 });
         }
