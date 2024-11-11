@@ -393,7 +393,7 @@ public class Profile extends ProfileData implements QueuedEntity {
 					.replace("%gametype%", gametype.getDisplayName());
 
 			if (isInParty())
-				for (Profile p : party.getPartyMembers())
+				for (val p : party.getPartyMembers())
 					p.message(message);
 			else
 				message(message);
