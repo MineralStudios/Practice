@@ -16,10 +16,12 @@ public class InventoryStatsListMenu extends PracticeMenu {
 
     @Override
     public void update() {
-        for (val inventoryStatsMenu : list)
+        for (val inventoryStatsMenu : list) {
+            inventoryStatsMenu.setPreviousMenu(this);
             add(ItemStacks.INVENTORY_STATS.name(CC.SECONDARY + CC.B + inventoryStatsMenu.getTitle())
                     .lore(CC.ACCENT + "Click to view.").build(),
                     interaction -> interaction.getProfile().openMenu(inventoryStatsMenu));
+        }
     }
 
     @Override
