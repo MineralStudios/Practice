@@ -278,11 +278,12 @@ public class TeamMatch extends Match {
         BotAPI.INSTANCE.despawn(victim.getPlayer().getUniqueId());
 
         for (val spectator : getSpectators()) {
-            spectator.getPlayer().sendMessage(CC.SEPARATOR);
-            spectator.getPlayer().sendMessage(Strings.MATCH_RESULTS);
-            spectator.getPlayer().spigot().sendMessage(winMessage);
-            spectator.getPlayer().spigot().sendMessage(loseMessage);
-            spectator.getPlayer().sendMessage(CC.SEPARATOR);
+            val player = spectator.getPlayer();
+            player.sendMessage(CC.SEPARATOR);
+            player.sendMessage(Strings.MATCH_RESULTS);
+            player.spigot().sendMessage(winMessage);
+            player.spigot().sendMessage(loseMessage);
+            player.sendMessage(CC.SEPARATOR);
             spectator.getSpectateHandler().stopSpectating();
         }
 

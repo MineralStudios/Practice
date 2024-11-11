@@ -3,31 +3,31 @@ package gg.mineral.practice.util.math;
 import org.bukkit.Bukkit;
 
 import gg.mineral.practice.PracticePlugin;
-import gg.mineral.practice.entity.Profile;
 import gg.mineral.practice.managers.ProfileManager;
 import gg.mineral.practice.match.Match;
 import gg.mineral.practice.util.messages.impl.ChatMessages;
+import lombok.RequiredArgsConstructor;
 import lombok.val;
 
+@RequiredArgsConstructor
 public class Countdown {
 	int time, taskID;
 	private final Match match;
 
 	public Countdown(int seconds, Match match) {
+		this(match);
 		this.time = seconds;
-		this.match = match;
 	}
 
 	public void start() {
 		val scheduler = Bukkit.getServer().getScheduler();
+		for (val profile : match.getParticipants())
+			profile.setInMatchCountdown(true);
 
 		scheduler.scheduleSyncDelayedTask(PracticePlugin.INSTANCE, () -> {
-			for (Profile profile : match.getParticipants()) {
-				profile.setInMatchCountdown(true);
+			for (val profile : match.getParticipants())
 				match.onCountdownStart(profile);
-			}
-		}, 1L);
-
+		}, 2L);
 		taskID = scheduler.scheduleSyncRepeatingTask(PracticePlugin.INSTANCE, () -> {
 			if (time == 0) {
 				cancel();
