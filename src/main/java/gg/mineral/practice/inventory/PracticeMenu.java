@@ -13,7 +13,6 @@ import gg.mineral.practice.entity.Profile;
 import gg.mineral.practice.util.items.ItemStacks;
 import gg.mineral.practice.util.math.MathUtil;
 import gg.mineral.practice.util.messages.CC;
-import it.unimi.dsi.fastutil.ints.Int2ObjectMap.Entry;
 import it.unimi.dsi.fastutil.ints.Int2ObjectOpenHashMap;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -55,14 +54,10 @@ public abstract class PracticeMenu implements Menu {
 		int slotOnPage = firstPage ? slot : slot % pageSize;
 		int pageNumber = firstPage ? 0 : slot / pageSize;
 
-		var page = pageMap.get(pageNumber);
+		val page = pageMap.computeIfAbsent(pageNumber, Page::new);
 
-		if (page == null) {
-			pageMap.put(pageNumber, page = new Page(pageNumber));
-
-			if (pageMap.size() > 1)
-				slotOnPage = slot % 45;
-		}
+		if (pageMap.size() > 1)
+			slotOnPage = slot % 45;
 
 		page.setSlot(slotOnPage, item);
 	}
@@ -73,14 +68,9 @@ public abstract class PracticeMenu implements Menu {
 		int slotOnPage = firstPage ? slot : slot % pageSize;
 		int pageNumber = firstPage ? 0 : slot / pageSize;
 
-		var page = pageMap.get(pageNumber);
-
-		if (page == null) {
-			pageMap.put(pageNumber, page = new Page(pageNumber));
-
-			if (pageMap.size() > 1)
-				slotOnPage = slot % 45;
-		}
+		val page = pageMap.computeIfAbsent(pageNumber, Page::new);
+		if (pageMap.size() > 1)
+			slotOnPage = slot % 45;
 
 		page.setSlot(slotOnPage, item, d);
 	}
@@ -161,9 +151,7 @@ public abstract class PracticeMenu implements Menu {
 				return page;
 
 		int pageNumber = pageMap.size();
-		val page = new Page(pageNumber);
-		pageMap.put(pageNumber, page);
-		return page;
+		return pageMap.put(pageNumber, new Page(pageNumber));
 	}
 
 	protected boolean needsUpdate = true;
@@ -180,10 +168,7 @@ public abstract class PracticeMenu implements Menu {
 			hadUpdate = true;
 		}
 
-		var page = pageMap.get(pageNumber);
-
-		if (page == null)
-			pageMap.put(pageNumber, page = new Page(pageNumber));
+		val page = pageMap.computeIfAbsent(pageNumber, Page::new);
 
 		page.open(viewer, hadUpdate);
 
@@ -215,7 +200,7 @@ public abstract class PracticeMenu implements Menu {
 	}
 
 	public void clear() {
-		for (Page page : pageMap.values())
+		for (val page : pageMap.values())
 			page.clear();
 	}
 
@@ -257,7 +242,7 @@ public abstract class PracticeMenu implements Menu {
 								CC.GOLD + pageNumber,
 								CC.BOARD_SEPARATOR, CC.ACCENT + "Click to go to the previous page.").build(),
 								interaction -> {
-									Profile p = interaction.getProfile();
+									val p = interaction.getProfile();
 									if (pageNumber <= 0)
 										return;
 
@@ -270,7 +255,7 @@ public abstract class PracticeMenu implements Menu {
 								CC.GOLD + pageNumber,
 								CC.BOARD_SEPARATOR, CC.ACCENT + "Click to go to the next page.").build(),
 								interaction -> {
-									Profile p = interaction.getProfile();
+									val p = interaction.getProfile();
 									if (pageNumber >= pageMap.size() - 1)
 										return;
 
@@ -285,10 +270,10 @@ public abstract class PracticeMenu implements Menu {
 		}
 
 		protected Inventory toInventory(Player player) {
-			Inventory inventory = Bukkit.createInventory(player, Math.max(MathUtil.roundUp(size, 9), 9),
+			val inventory = Bukkit.createInventory(player, Math.max(MathUtil.roundUp(size, 9), 9),
 					getTitle());
 
-			for (Entry<ItemStack> e : items.int2ObjectEntrySet())
+			for (val e : items.int2ObjectEntrySet())
 				inventory.setItem(e.getIntKey(), e.getValue());
 
 			return inventory;
@@ -333,7 +318,7 @@ public abstract class PracticeMenu implements Menu {
 
 		@Nullable
 		public ItemStack getItemByType(Material m) {
-			for (ItemStack i : items.values())
+			for (val i : items.values())
 				if (i.getType() == m)
 					return i;
 
