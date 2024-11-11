@@ -24,7 +24,7 @@ repositories {
 dependencies {
     compileOnly "gg.mineral:nametag-api:20241108-17.57.35"
     compileOnly 'gg.mineral.mineralspigot:mineralspigot-server:20241110-17.58.51'
-    compileOnly 'gg.mineral:bot-api:20241108-06.57.18'
+    compileOnly 'gg.mineral:bot-api:20241110-08.17.11'
     compileOnly 'gg.mineral:database-api:20241108-10.20.26'
     compileOnly 'de.jeezycore:jeezy-core:20241108-10.28.30'
     compileOnly 'gg.mineral:bot-intelligence:20241108-06.57.18'
