@@ -1,10 +1,8 @@
 package gg.mineral.practice.inventory.menus;
 
-import gg.mineral.practice.entity.PlayerStatus;
 import gg.mineral.practice.inventory.ClickCancelled;
 import gg.mineral.practice.inventory.PracticeMenu;
 import gg.mineral.practice.managers.MatchManager;
-import gg.mineral.practice.managers.ProfileManager;
 import gg.mineral.practice.util.items.ItemBuilder;
 import gg.mineral.practice.util.messages.CC;
 import gg.mineral.practice.util.messages.impl.ErrorMessages;
@@ -32,16 +30,11 @@ public class SpectateMenu extends PracticeMenu {
             add(skull, interaction -> {
                 val profile = interaction.getProfile();
 
-                val profileToSpectate = ProfileManager
-                        .getProfile(m.getParticipants().getFirst().getUuid(),
-                                p -> p.getPlayerStatus() == PlayerStatus.FIGHTING || p.isInEvent());
-
-                if (profileToSpectate == null) {
+                val profileToSpectate = m.getParticipants().getFirst();
+                if (profileToSpectate == null)
                     profile.message(ErrorMessages.PLAYER_NOT_IN_MATCH_OR_EVENT);
-                    return;
-                }
-
-                profile.getSpectateHandler().spectate(profileToSpectate);
+                else
+                    profile.getSpectateHandler().spectate(profileToSpectate);
             });
         }
     }
