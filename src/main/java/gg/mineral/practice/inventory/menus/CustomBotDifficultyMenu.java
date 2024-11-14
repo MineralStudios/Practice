@@ -21,8 +21,8 @@ import lombok.val;
 public class CustomBotDifficultyMenu extends PracticeMenu {
     private final SelectGametypeMenu menu;
     final static DecimalFormat DECIMAL_FORMAT = new DecimalFormat("#.###");
-    private Difficulty premadeDifficulty = Difficulty.RANDOM;
-    private BotConfiguration difficulty = Difficulty.RANDOM.getConfiguration(null);
+    private Difficulty premadeDifficulty = Difficulty.EASY;
+    private BotConfiguration difficulty = Difficulty.EASY.getConfiguration(null);
 
     static {
         DECIMAL_FORMAT.setRoundingMode(RoundingMode.HALF_DOWN);
@@ -121,7 +121,8 @@ public class CustomBotDifficultyMenu extends PracticeMenu {
                 interaction -> {
                     interaction.getProfile().openMenu(
                             ConfigureValueMenu.of(this,
-                                    value -> difficulty.setSprintResetAccuracy(value),
+                                    value -> difficulty
+                                            .setSprintResetAccuracy(value),
                                     float.class));
                     premadeDifficulty = Difficulty.CUSTOM;
                 });
@@ -155,7 +156,8 @@ public class CustomBotDifficultyMenu extends PracticeMenu {
                 interaction -> {
                     interaction.getProfile()
                             .openMenu(ConfigureValueMenu.of(this,
-                                    value -> difficulty.setAverageCps(value), int.class));
+                                    value -> difficulty.setAverageCps(value),
+                                    int.class));
                     premadeDifficulty = Difficulty.CUSTOM;
                 });
 
@@ -194,6 +196,7 @@ public class CustomBotDifficultyMenu extends PracticeMenu {
                     val p = interaction.getProfile();
                     p.getQueueSettings()
                             .setCustomBotConfiguration(difficulty);
+                    p.getQueueSettings().setOpponentDifficulty((byte) premadeDifficulty.ordinal());
                     p.openMenu(menu);
                 });
 
@@ -203,14 +206,23 @@ public class CustomBotDifficultyMenu extends PracticeMenu {
                         + ".",
                 " ", CC.WHITE + "Selected Difficulty: ",
                 premadeDifficulty.getDisplay(), " ",
-                CC.BOARD_SEPARATOR, " ", CC.GREEN + "Left Click to change difficulty.").build(),
+                CC.BOARD_SEPARATOR, " ", CC.GREEN + "Left Click to change difficulty.",
+                CC.RED + "Right Click to choose random difficulty.").build(),
                 interaction -> {
-                    premadeDifficulty = Difficulty.values()[(premadeDifficulty.ordinal() + 1)
-                            % Difficulty.values().length];
-                    if (premadeDifficulty == Difficulty.CUSTOM)
-                        premadeDifficulty = Difficulty
-                                .values()[(premadeDifficulty.ordinal() + 1)
-                                        % Difficulty.values().length];
+                    if (interaction.getClickType() == ClickType.RIGHT) {
+                        premadeDifficulty = Difficulty.RANDOM;
+                    } else {
+                        premadeDifficulty = Difficulty.values()[(premadeDifficulty.ordinal() + 1)
+                                % Difficulty.values().length];
+                        if (premadeDifficulty == Difficulty.CUSTOM)
+                            premadeDifficulty = Difficulty
+                                    .values()[(premadeDifficulty.ordinal() + 1)
+                                            % Difficulty.values().length];
+                        if (premadeDifficulty == Difficulty.RANDOM)
+                            premadeDifficulty = Difficulty
+                                    .values()[(premadeDifficulty.ordinal() + 1)
+                                            % Difficulty.values().length];
+                    }
                     difficulty = premadeDifficulty.getConfiguration(queueSettings);
                     reload();
                 });
