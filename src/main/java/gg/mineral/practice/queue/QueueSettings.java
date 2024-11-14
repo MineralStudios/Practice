@@ -51,7 +51,9 @@ public class QueueSettings {
             byte opponentDifficulty,
             BotTeamSetting bot2v2Setting,
             Byte2BooleanOpenHashMap enabledArenas) {
-        return new QueueEntry(queuetype, gametype, teamSize, botsEnabled, opponentDifficulty, bot2v2Setting,
+        return new QueueEntry(queuetype, gametype, teamSize,
+                queuetype.isBotsEnabled() && gametype.isBotsEnabled() && botsEnabled,
+                opponentDifficulty, bot2v2Setting,
                 enabledArenas);
     }
 
