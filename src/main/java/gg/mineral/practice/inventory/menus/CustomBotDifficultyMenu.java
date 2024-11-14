@@ -33,8 +33,6 @@ public class CustomBotDifficultyMenu extends PracticeMenu {
 
         val queueSettings = viewer.getQueueSettings();
 
-        queueSettings.setOpponentDifficulty((byte) Difficulty.CUSTOM.ordinal());
-
         setSlot(0, ItemStacks.AIM_SPEED.name(CC.SECONDARY + CC.B + "Aim Speed")
                 .lore(CC.WHITE + "The speed the bot " + CC.SECONDARY + "rotates" + CC.WHITE
                         + " its head.", " ",
