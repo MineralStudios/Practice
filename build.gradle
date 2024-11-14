@@ -27,7 +27,7 @@ dependencies {
     compileOnly 'gg.mineral:bot-api:20241108-06.57.18'
     compileOnly 'gg.mineral:database-api:20241108-10.20.26'
     compileOnly 'de.jeezycore:jeezy-core:20241108-10.28.30'
-    compileOnly 'gg.mineral:bot-intelligence:20241108-06.57.18'
+    compileOnly 'gg.mineral:bot-intelligence:20241114-10.08.53'
     compileOnly 'org.projectlombok:lombok:1.18.34'
     annotationProcessor 'org.projectlombok:lombok:1.18.34'
     compileOnly 'org.eclipse.jdt:org.eclipse.jdt.annotation:2.3.0'
