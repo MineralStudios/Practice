@@ -602,6 +602,10 @@ public class Profile extends ProfileData implements QueuedEntity {
 		queueSettings = new QueueSettings();
 	}
 
+	public void resetDuelSettings() {
+		duelSettings = new DuelSettings();
+	}
+
 	public void startPartyOpenCooldown() {
 		partyOpenCooldown = true;
 

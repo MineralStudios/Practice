@@ -43,7 +43,7 @@ public class Queuetype implements SaveableData {
 	boolean ranked, community, unranked, botsEnabled;
 	final String path;
 	@Getter
-	KnockbackProfile knockback = null;
+	KnockbackProfile knockback = KnockbackProfileList.getDefaultKnockbackProfile();
 	@Getter
 	Object2IntOpenHashMap<Gametype> gametypes = new Object2IntOpenHashMap<>();
 	@Getter

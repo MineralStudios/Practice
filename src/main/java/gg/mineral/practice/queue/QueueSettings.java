@@ -1,6 +1,5 @@
 package gg.mineral.practice.queue;
 
-import java.util.Collection;
 import java.util.UUID;
 
 import gg.mineral.bot.api.configuration.BotConfiguration;
@@ -38,17 +37,14 @@ public class QueueSettings {
 
         public boolean isCompatible(QueueEntry entry) {
             return queuetype == entry.queuetype && gametype == entry.gametype && teamSize == entry.teamSize
+                    && botsEnabled == entry.botsEnabled
                     && (teamSize > 1 && botsEnabled && entry.botsEnabled ? botTeamSetting == entry.botTeamSetting
                             : true)
                     && (botsEnabled ? opponentDifficulty == entry.opponentDifficulty : true)
-                    && enabledArenas.byte2BooleanEntrySet().stream()
-                            .anyMatch(arena -> entry.enabledArenas.get(arena.getByteKey()) == arena.getBooleanValue());
+                    && (enabledArenas.isEmpty() || entry.enabledArenas.isEmpty() || enabledArenas.byte2BooleanEntrySet()
+                            .stream()
+                            .anyMatch(arena -> entry.enabledArenas.get(arena.getByteKey()) == arena.getBooleanValue()));
         }
-    }
-
-    public void setEnabledArenas(Collection<Arena> enabledArenas) {
-        for (val arena : enabledArenas)
-            this.enabledArenas.put(arena.getId(), true);
     }
 
     public static QueueEntry toEntry(Queuetype queuetype, Gametype gametype, int teamSize, boolean botsEnabled,

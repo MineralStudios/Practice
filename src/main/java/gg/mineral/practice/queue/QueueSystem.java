@@ -126,6 +126,7 @@ public class QueueSystem {
 
         if (queueRecords == null)
             return false;
+
         val compatibleQueueRecords = new RecordSet();
 
         for (val record : queueRecords)
@@ -145,14 +146,14 @@ public class QueueSystem {
         while (iter.hasNext()) {
             val record = iter.next();
             val profiles = record.entity().getProfiles();
-            if (records.playerCount() + profiles.size() < requiredPlayers)
+            if (records.playerCount() + profiles.size() <= requiredPlayers)
                 records.add(record);
         }
 
-        if (records.size() < requiredPlayers)
+        if (records.playerCount() < requiredPlayers)
             return false;
 
-        startMatch(queueRecord, records, queueAndGametypeHash, bots);
+        startMatch(queueRecord, records, teamSize, bots);
         return true;
     }
 
@@ -201,12 +202,21 @@ public class QueueSystem {
         // First, find common arenas
         val allEnabledArenas = new ByteOpenHashSet();
         val allDisabledArenas = new ByteOpenHashSet();
-        for (val record : records)
-            for (val e : record.queueEntry().enabledArenas().byte2BooleanEntrySet())
+        for (val record : records) {
+            val enabledArenas = record.queueEntry().enabledArenas();
+
+            if (enabledArenas.isEmpty()) {
+                allEnabledArenas
+                        .addAll(record.queueEntry().queuetype().filterArenasByGametype(record.queueEntry().gametype()));
+                continue;
+            }
+
+            for (val e : enabledArenas.byte2BooleanEntrySet())
                 if (e.getBooleanValue())
                     allEnabledArenas.add(e.getByteKey());
                 else
                     allDisabledArenas.add(e.getByteKey());
+        }
 
         allEnabledArenas.removeAll(allDisabledArenas);
 
@@ -222,28 +232,33 @@ public class QueueSystem {
             throw new IllegalStateException("Arena not found for ID: " + selectedArenaId);
 
         val teamA = new GlueList<Profile>();
+        val teamB = new GlueList<Profile>();
 
         val recordIter = records.iterator();
 
         while (recordIter.hasNext()) {
             val record = recordIter.next();
             val profiles = record.entity().getProfiles();
-            if (teamA.size() + profiles.size() < teamSize)
+            if (teamA.size() + profiles.size() <= teamSize)
                 teamA.addAll(profiles);
+            else
+                teamB.addAll(profiles);
         }
 
         val bots = sampleRecord.queueEntry().botsEnabled();
         val matchData = new MatchData(sampleRecord.queueEntry());
         matchData.setArenaId(selectedArenaId);
 
+        val difficulty = Difficulty.values()[sampleRecord.queueEntry().opponentDifficulty()];
+
         if (bots) {
+            teamA.addAll(teamB);
             val teamBBots = new GlueList<BotConfiguration>();
             for (int i = 0; i < teamSize; i++)
-                teamBBots.add(Difficulty.RANDOM.getConfiguration(null));
+                teamBBots.add(difficulty.getConfiguration(null));
             new BotTeamMatch(teamA, new GlueList<>(), new GlueList<>(), teamBBots, matchData).start();
+            return;
         }
-
-        val teamB = new GlueList<Profile>();
 
         if (teamSize == 1)
             new Match(teamA.get(0), teamB.get(0), matchData).start();

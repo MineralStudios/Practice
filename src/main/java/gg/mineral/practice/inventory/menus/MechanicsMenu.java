@@ -136,7 +136,7 @@ public class MechanicsMenu extends PracticeMenu {
 				});
 
 		setSlot(27, ItemStacks.RESET_SETTINGS, interaction -> {
-			viewer.resetQueueSettings();
+			viewer.resetDuelSettings();
 			reload();
 		});
 
