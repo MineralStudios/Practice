@@ -5,7 +5,6 @@ import gg.mineral.practice.inventory.PracticeMenu;
 import gg.mineral.practice.managers.MatchManager;
 import gg.mineral.practice.util.items.ItemBuilder;
 import gg.mineral.practice.util.messages.CC;
-import gg.mineral.practice.util.messages.impl.ErrorMessages;
 import lombok.val;
 
 @ClickCancelled(true)
@@ -16,24 +15,23 @@ public class SpectateMenu extends PracticeMenu {
         clear();
         for (val m : MatchManager.getMatches()) {
             val item = m.getData().getGametype().getDisplayItem().clone();
+            val gametype = m.getData().getGametype();
 
-            if (m.getProfile1() == null || m.getProfile2() == null)
+            if (m.getProfile1() == null || m.getProfile2() == null || gametype == null)
                 continue;
 
             val skull = new ItemBuilder(item.clone())
                     .name(CC.SECONDARY + CC.B + m.getProfile1().getName() + " vs " + m.getProfile2().getName())
                     .lore(
                             CC.WHITE + "Game type:",
-                            CC.GOLD + m.getData().getGametype().getName(),
+                            CC.GOLD + gametype.getName(),
                             CC.BOARD_SEPARATOR, CC.ACCENT + "Click to spectate.")
                     .build();
             add(skull, interaction -> {
                 val profile = interaction.getProfile();
 
                 val profileToSpectate = m.getParticipants().getFirst();
-                if (profileToSpectate == null)
-                    profile.message(ErrorMessages.PLAYER_NOT_IN_MATCH_OR_EVENT);
-                else
+                if (profileToSpectate != null)
                     profile.getSpectateHandler().spectate(profileToSpectate);
             });
         }
