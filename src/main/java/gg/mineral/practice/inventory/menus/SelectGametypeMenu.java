@@ -100,10 +100,16 @@ public class SelectGametypeMenu extends PracticeMenu {
 
 		val menu = p.getOpenMenu();
 
-		if (interaction.getClickType() == ClickType.LEFT)
+		if (interaction.getClickType() == ClickType.LEFT) {
 			queueSettings.setOpponentDifficulty((byte) ((queueSettings.getOpponentDifficulty() + 1)
 					% Difficulty.values().length));
-		else if (interaction.getClickType() == ClickType.RIGHT) {
+
+			val difficulty = queueSettings.getOpponentBotDifficulty();
+
+			if (difficulty == Difficulty.CUSTOM)
+				queueSettings.setOpponentDifficulty((byte) ((queueSettings.getOpponentDifficulty() + 1)
+						% Difficulty.values().length));
+		} else if (interaction.getClickType() == ClickType.RIGHT) {
 
 			if (p.getPlayer().hasPermission("practice.custombot")
 					&& menu instanceof SelectGametypeMenu selectGametypeMenu)
