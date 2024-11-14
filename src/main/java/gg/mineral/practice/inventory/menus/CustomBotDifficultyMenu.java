@@ -169,9 +169,13 @@ public class CustomBotDifficultyMenu extends PracticeMenu {
                         CC.GOLD + DECIMAL_FORMAT.format(difficulty.getLatency()),
                         CC.BOARD_SEPARATOR, CC.ACCENT + "Click to change value.")
                 .build(),
-                interaction -> interaction.getProfile()
-                        .openMenu(ConfigureValueMenu.of(this,
-                                value -> difficulty.setLatency(value), int.class)));
+                interaction -> {
+                    interaction.getProfile()
+                            .openMenu(ConfigureValueMenu.of(this,
+                                    value -> difficulty.setLatency(value),
+                                    int.class));
+                    premadeDifficulty = Difficulty.CUSTOM;
+                });
 
         setSlot(7, ItemStacks.PING_DEVIATION.name(CC.SECONDARY + CC.B + "Ping Deviation")
                 .lore(CC.WHITE + "Simulates the " + CC.SECONDARY + "variation in time", CC.WHITE
@@ -212,8 +216,9 @@ public class CustomBotDifficultyMenu extends PracticeMenu {
                     if (interaction.getClickType() == ClickType.RIGHT) {
                         premadeDifficulty = Difficulty.RANDOM;
                     } else {
-                        premadeDifficulty = Difficulty.values()[(premadeDifficulty.ordinal() + 1)
-                                % Difficulty.values().length];
+                        premadeDifficulty = Difficulty
+                                .values()[(premadeDifficulty.ordinal() + 1)
+                                        % Difficulty.values().length];
                         if (premadeDifficulty == Difficulty.CUSTOM)
                             premadeDifficulty = Difficulty
                                     .values()[(premadeDifficulty.ordinal() + 1)
