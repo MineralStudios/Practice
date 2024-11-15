@@ -37,7 +37,10 @@ public class InventoryStatsListMenu extends PracticeMenu {
 
     @Override
     public String getTitle() {
-        return CC.BLUE + "Inventories";
+        if (list.isEmpty())
+            return CC.RED + "No Inventories";
+        else
+            return CC.BLUE + list.get(0).getTitle() + "'s Team";
     }
 
     @Override

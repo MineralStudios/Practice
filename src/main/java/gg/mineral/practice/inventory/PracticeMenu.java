@@ -151,7 +151,7 @@ public abstract class PracticeMenu implements Menu {
 				return page;
 
 		int pageNumber = pageMap.size();
-		return pageMap.put(pageNumber, new Page(pageNumber));
+		return pageMap.computeIfAbsent(pageNumber, p -> new Page(p));
 	}
 
 	protected boolean needsUpdate = true;
