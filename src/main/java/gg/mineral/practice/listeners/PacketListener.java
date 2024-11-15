@@ -193,8 +193,10 @@ public class PacketListener implements Listener {
                         if (pass) {
                             isInMatch = true;
                             if (player.getUniqueId().equals(profile.getUuid())
-                                    || profile.getVisiblePlayers().contains(player.getUniqueId()))
+                                    || profile.getVisiblePlayers().contains(player.getUniqueId())) {
                                 isVisible = true;
+                                break;
+                            }
                         }
                     }
 
@@ -227,8 +229,10 @@ public class PacketListener implements Listener {
                     isInMatch = true;
                     val shooter = (Player) projectile.getShooter();
                     if (shooter.getUniqueId().equals(profile.getUuid())
-                            || profile.getVisiblePlayers().contains(shooter.getUniqueId()))
+                            || profile.getVisiblePlayers().contains(shooter.getUniqueId())) {
                         isVisible = true;
+                        break;
+                    }
                 }
 
                 if (isInMatch && !isVisible)
@@ -307,8 +311,10 @@ public class PacketListener implements Listener {
                     isInMatch = true;
                     val shooter = (Player) projectile.getShooter();
                     if (shooter.getUniqueId().equals(profile.getUuid())
-                            || profile.getVisiblePlayers().contains(shooter.getUniqueId()))
+                            || profile.getVisiblePlayers().contains(shooter.getUniqueId())) {
                         isVisible = true;
+                        break;
+                    }
                 }
 
                 if (isInMatch && !isVisible)
@@ -353,8 +359,10 @@ public class PacketListener implements Listener {
 
                     isInMatch = true;
                     if (player.getUniqueId().equals(profile.getUuid())
-                            || profile.getVisiblePlayers().contains(player.getUniqueId()))
+                            || profile.getVisiblePlayers().contains(player.getUniqueId())) {
                         isVisible = true;
+                        break;
+                    }
                 }
 
                 if (isInMatch && !isVisible)
@@ -376,8 +384,10 @@ public class PacketListener implements Listener {
 
                     isInMatch = true;
                     if (player.getUniqueId().equals(profile.getUuid())
-                            || profile.getVisiblePlayers().contains(player.getUniqueId()))
+                            || profile.getVisiblePlayers().contains(player.getUniqueId())) {
                         isVisible = true;
+                        break;
+                    }
                 }
 
                 if (isInMatch && !isVisible)
