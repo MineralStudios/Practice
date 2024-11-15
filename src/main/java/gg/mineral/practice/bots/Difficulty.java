@@ -30,6 +30,20 @@ public enum Difficulty {
                     .horizontalErraticness(0.3f).averageCps(5).latency(50).sprintResetAccuracy(0.25F)
                     .hitSelectAccuracy(0.0F).build();
         }
+
+        @Override
+        public boolean configEquals(BotConfiguration botConfiguration) {
+            return botConfiguration.getHorizontalAimSpeed() == 0.3F
+                    && botConfiguration.getVerticalAimSpeed() == 0.3F
+                    && botConfiguration.getHorizontalAimAccuracy() == 0.3F
+                    && botConfiguration.getVerticalAimAccuracy() == 0.25F
+                    && botConfiguration.getHorizontalErraticness() == 0.3f
+                    && botConfiguration.getAverageCps() == 5
+                    && botConfiguration.getLatency() == 50
+                    && botConfiguration.getSprintResetAccuracy() == 0.25F
+                    && botConfiguration.getHitSelectAccuracy() == 0.0F;
+        }
+
     },
     MEDIUM(CC.YELLOW + "Medium") {
         @Override
@@ -38,6 +52,18 @@ public enum Difficulty {
                     .skin(Skins.MINERAL_YELLOW).horizontalAimSpeed(0.4F)
                     .verticalAimSpeed(0.4F).horizontalAimAccuracy(0.35F).verticalAimAccuracy(0.35F).averageCps(8)
                     .latency(50).sprintResetAccuracy(0.45F).hitSelectAccuracy(0.3f).build();
+        }
+
+        @Override
+        public boolean configEquals(BotConfiguration botConfiguration) {
+            return botConfiguration.getHorizontalAimSpeed() == 0.4F
+                    && botConfiguration.getVerticalAimSpeed() == 0.4F
+                    && botConfiguration.getHorizontalAimAccuracy() == 0.35F
+                    && botConfiguration.getVerticalAimAccuracy() == 0.35F
+                    && botConfiguration.getAverageCps() == 8
+                    && botConfiguration.getLatency() == 50
+                    && botConfiguration.getSprintResetAccuracy() == 0.45F
+                    && botConfiguration.getHitSelectAccuracy() == 0.3f;
         }
     },
     HARD(CC.GOLD + "Hard") {
@@ -48,6 +74,18 @@ public enum Difficulty {
                     .verticalAimSpeed(0.5F).horizontalAimAccuracy(0.6F).verticalAimAccuracy(0.6F).averageCps(11)
                     .latency(50).sprintResetAccuracy(0.8F).hitSelectAccuracy(0.6f).build();
         }
+
+        @Override
+        public boolean configEquals(BotConfiguration botConfiguration) {
+            return botConfiguration.getHorizontalAimSpeed() == 0.5F
+                    && botConfiguration.getVerticalAimSpeed() == 0.5F
+                    && botConfiguration.getHorizontalAimAccuracy() == 0.6F
+                    && botConfiguration.getVerticalAimAccuracy() == 0.6F
+                    && botConfiguration.getAverageCps() == 11
+                    && botConfiguration.getLatency() == 50
+                    && botConfiguration.getSprintResetAccuracy() == 0.8F
+                    && botConfiguration.getHitSelectAccuracy() == 0.6f;
+        }
     },
     EXPERT(CC.RED + "Expert") {
         @Override
@@ -56,6 +94,18 @@ public enum Difficulty {
                     .horizontalAimSpeed(0.8F)
                     .verticalAimSpeed(0.8F).horizontalAimAccuracy(0.8F).verticalAimAccuracy(0.8F).averageCps(14)
                     .latency(50).sprintResetAccuracy(0.85F).hitSelectAccuracy(0.9f).build();
+        }
+
+        @Override
+        public boolean configEquals(BotConfiguration botConfiguration) {
+            return botConfiguration.getHorizontalAimSpeed() == 0.8F
+                    && botConfiguration.getVerticalAimSpeed() == 0.8F
+                    && botConfiguration.getHorizontalAimAccuracy() == 0.8F
+                    && botConfiguration.getVerticalAimAccuracy() == 0.8F
+                    && botConfiguration.getAverageCps() == 14
+                    && botConfiguration.getLatency() == 50
+                    && botConfiguration.getSprintResetAccuracy() == 0.85F
+                    && botConfiguration.getHitSelectAccuracy() == 0.9f;
         }
     },
     PRO(CC.PURPLE + "Pro") {
@@ -66,6 +116,18 @@ public enum Difficulty {
                     .verticalAimSpeed(0.95F).horizontalAimAccuracy(0.95F).verticalAimAccuracy(0.95F).averageCps(17)
                     .latency(50).sprintResetAccuracy(0.95F).hitSelectAccuracy(0.98f).build();
         }
+
+        @Override
+        public boolean configEquals(BotConfiguration botConfiguration) {
+            return botConfiguration.getHorizontalAimSpeed() == 0.95F
+                    && botConfiguration.getVerticalAimSpeed() == 0.95F
+                    && botConfiguration.getHorizontalAimAccuracy() == 0.95F
+                    && botConfiguration.getVerticalAimAccuracy() == 0.95F
+                    && botConfiguration.getAverageCps() == 17
+                    && botConfiguration.getLatency() == 50
+                    && botConfiguration.getSprintResetAccuracy() == 0.95F
+                    && botConfiguration.getHitSelectAccuracy() == 0.98f;
+        }
     },
     HARDCORE(CC.PINK + "Hardcore") {
         @Override
@@ -75,6 +137,18 @@ public enum Difficulty {
                     .horizontalAimSpeed(1.1F).verticalAimSpeed(1.1F).horizontalAimAccuracy(1.1F)
                     .verticalAimAccuracy(1.1F).averageCps(20).latency(50).sprintResetAccuracy(1.0F)
                     .hitSelectAccuracy(1.0F).build();
+        }
+
+        @Override
+        public boolean configEquals(BotConfiguration botConfiguration) {
+            return botConfiguration.getHorizontalAimSpeed() == 1.1F
+                    && botConfiguration.getVerticalAimSpeed() == 1.1F
+                    && botConfiguration.getHorizontalAimAccuracy() == 1.1F
+                    && botConfiguration.getVerticalAimAccuracy() == 1.1F
+                    && botConfiguration.getAverageCps() == 20
+                    && botConfiguration.getLatency() == 50
+                    && botConfiguration.getSprintResetAccuracy() == 1.0F
+                    && botConfiguration.getHitSelectAccuracy() == 1.0F;
         }
     },
     CUSTOM(CC.GRAY + "Custom") {
@@ -94,6 +168,11 @@ public enum Difficulty {
                     .latencyDeviation(customBotConfiguration.getLatencyDeviation())
                     .sprintResetAccuracy(customBotConfiguration.getSprintResetAccuracy())
                     .hitSelectAccuracy(customBotConfiguration.getHitSelectAccuracy()).build();
+        }
+
+        @Override
+        public boolean configEquals(BotConfiguration botConfiguration) {
+            return false;
         }
     },
     RANDOM(CC.AQUA + "Random") {
@@ -115,6 +194,11 @@ public enum Difficulty {
                     .latency(latency).latencyDeviation(r.nextInt((int) ((latency / 30) + 1)))
                     .sprintResetAccuracy(0.25f + r.nextFloat() * (1.0f - 0.25f))
                     .hitSelectAccuracy(r.nextFloat()).build();
+        }
+
+        @Override
+        public boolean configEquals(BotConfiguration botConfiguration) {
+            return false;
         }
     };
 
@@ -161,4 +245,14 @@ public enum Difficulty {
     }
 
     public abstract BotConfiguration getConfiguration(QueueSettings settings);
+
+    public abstract boolean configEquals(BotConfiguration botConfiguration);
+
+    public static Difficulty getDifficulty(BotConfiguration botConfiguration) {
+        for (val difficulty : values())
+            if (difficulty.configEquals(botConfiguration))
+                return difficulty;
+
+        return null;
+    }
 }

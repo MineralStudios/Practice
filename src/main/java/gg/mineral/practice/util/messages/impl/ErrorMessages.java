@@ -47,8 +47,6 @@ public class ErrorMessages {
 			PARTY_DOES_NOT_EXIST = new ErrorMessage("That party does not exist."),
 			PARTY_NOT_BIG_ENOUGH = new ErrorMessage(
 					"You need to be in a party with at least 2 people."),
-			PARTY_NOT_CORRECT_SIZE = new ErrorMessage(
-					"You need to be in a party with exactly 2 people."),
 			PARTY_NOT_OPEN = new ErrorMessage("That party is not open."), PARTY_REQUESTS_DISABLED = new ErrorMessage(
 					"That player has party requests disabled."),
 			YOU_CAN_NOT_INVITE_YOURSELF = new ErrorMessage("You can not invite yourself."),
