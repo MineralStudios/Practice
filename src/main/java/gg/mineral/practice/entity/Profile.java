@@ -91,10 +91,10 @@ public class Profile extends ProfileData implements QueuedEntity {
 	private final Short2ObjectOpenHashMap<Int2ObjectOpenHashMap<ItemStack[]>> customKits = new Short2ObjectOpenHashMap<>();
 
 	@Getter
-	private final Set<UUID> visiblePlayers = Collections.synchronizedSet(new ObjectOpenHashSet<>());
+	private final Set<UUID> visiblePlayers = new ObjectOpenHashSet<>();
 
 	@Getter
-	private final Set<UUID> visiblePlayersOnTab = Collections.synchronizedSet(new ObjectOpenHashSet<>());
+	private final Set<UUID> visiblePlayersOnTab = new ObjectOpenHashSet<>();
 
 	@Getter
 	private final Set<UUID> setVisiblePlayers = new ObjectOpenHashSet<>();
