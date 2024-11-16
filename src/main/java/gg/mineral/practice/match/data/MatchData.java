@@ -28,11 +28,11 @@ public class MatchData {
 	private Queuetype queuetype;
 	private Gametype gametype;
 	@Setter
-	byte arenaId;
-	Kit kit;
-	Knockback knockback;
-	int noDamageTicks = 20, pearlCooldown = 15;
-	boolean hunger = true, boxing = false, build = false, damage = true, griefing = false, deadlyWater = false,
+	private byte arenaId;
+	private Kit kit;
+	private Knockback knockback;
+	private int noDamageTicks = 20, pearlCooldown = 15;
+	private boolean hunger = true, boxing = false, build = false, damage = true, griefing = false, deadlyWater = false,
 			regeneration = true;
 	private boolean ranked = false;
 	protected Byte2BooleanOpenHashMap enabledArenas = new Byte2BooleanOpenHashMap();
