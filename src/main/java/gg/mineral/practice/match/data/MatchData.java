@@ -43,7 +43,9 @@ public class MatchData {
 		if (!GametypeManager.getGametypes().isEmpty())
 			setGametype(GametypeManager.getGametypes().values().iterator().next());
 
-		this.knockback = KnockbackProfileList.getDefaultKnockbackProfile();
+		if (this.knockback == null)
+			this.knockback = noDamageTicks < 10 ? KnockbackProfileList.getComboKnockbackProfile()
+					: KnockbackProfileList.getDefaultKnockbackProfile();
 	}
 
 	public MatchData(Queuetype queuetype, Gametype gametype, QueueSettings queueSettings) {
@@ -51,6 +53,10 @@ public class MatchData {
 		setQueuetype(queuetype);
 		setGametype(gametype);
 		this.enabledArenas = new Byte2BooleanOpenHashMap(queueSettings.getEnabledArenas());
+
+		if (this.knockback == null)
+			this.knockback = noDamageTicks < 10 ? KnockbackProfileList.getComboKnockbackProfile()
+					: KnockbackProfileList.getDefaultKnockbackProfile();
 	}
 
 	public MatchData(QueueEntry queueEntry, QueueSettings queueSettings) {

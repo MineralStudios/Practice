@@ -29,7 +29,6 @@ public class DuelSettings {
     private ItemStack displayItem = ItemStacks.WOOD_AXE;
 
     public DuelSettings() {
-        this.knockback = KnockbackProfileList.getDefaultKnockbackProfile();
         val defaultGametype = GametypeManager.getGametypes().get((byte) 0);
         if (defaultGametype != null)
             setGametype(defaultGametype);
@@ -42,11 +41,19 @@ public class DuelSettings {
             setQueuetype(defaultQueuetype);
         else
             throw new IllegalStateException("No default queuetype found.");
+
+        if (this.knockback == null)
+            this.knockback = noDamageTicks < 10 ? KnockbackProfileList.getComboKnockbackProfile()
+                    : KnockbackProfileList.getDefaultKnockbackProfile();
     }
 
     public DuelSettings(Queuetype queuetype, Gametype gametype) {
         setQueuetype(queuetype);
         setGametype(gametype);
+
+        if (this.knockback == null)
+            this.knockback = noDamageTicks < 10 ? KnockbackProfileList.getComboKnockbackProfile()
+                    : KnockbackProfileList.getDefaultKnockbackProfile();
     }
 
     private void setQueuetype(@NonNull Queuetype queuetype) {
