@@ -10,7 +10,6 @@ import gg.mineral.practice.managers.GametypeManager;
 import gg.mineral.practice.managers.QueuetypeManager;
 import gg.mineral.practice.queue.Queuetype;
 import gg.mineral.practice.util.items.ItemStacks;
-import gg.mineral.server.combat.KnockbackProfileList;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.val;
@@ -41,19 +40,11 @@ public class DuelSettings {
             setQueuetype(defaultQueuetype);
         else
             throw new IllegalStateException("No default queuetype found.");
-
-        if (this.knockback == null)
-            this.knockback = noDamageTicks < 10 ? KnockbackProfileList.getComboKnockbackProfile()
-                    : KnockbackProfileList.getDefaultKnockbackProfile();
     }
 
     public DuelSettings(Queuetype queuetype, Gametype gametype) {
         setQueuetype(queuetype);
         setGametype(gametype);
-
-        if (this.knockback == null)
-            this.knockback = noDamageTicks < 10 ? KnockbackProfileList.getComboKnockbackProfile()
-                    : KnockbackProfileList.getDefaultKnockbackProfile();
     }
 
     private void setQueuetype(@NonNull Queuetype queuetype) {
