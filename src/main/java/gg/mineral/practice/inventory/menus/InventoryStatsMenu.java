@@ -1,12 +1,16 @@
 package gg.mineral.practice.inventory.menus;
 
+import org.eclipse.jdt.annotation.Nullable;
+
+import gg.mineral.practice.inventory.ClickCancelled;
+import gg.mineral.practice.inventory.Menu;
+import gg.mineral.practice.inventory.PracticeMenu;
+import gg.mineral.practice.match.data.MatchStatisticCollector;
 import gg.mineral.practice.util.items.ItemStacks;
 import gg.mineral.practice.util.messages.CC;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
-import gg.mineral.practice.inventory.ClickCancelled;
-import gg.mineral.practice.inventory.PracticeMenu;
-import gg.mineral.practice.match.data.MatchStatisticCollector;
+import lombok.Setter;
 
 @ClickCancelled(true)
 @Getter
@@ -14,10 +18,14 @@ import gg.mineral.practice.match.data.MatchStatisticCollector;
 public class InventoryStatsMenu extends PracticeMenu {
     private final String opponent;
     private final MatchStatisticCollector matchStatisticCollector;
+    @Nullable
+    @Setter
+    private Menu previousMenu = null;
 
     @Override
     public void update() {
-        if (opponent != null)
+        boolean hasPreviousMenu = previousMenu != null;
+        if (opponent != null && !hasPreviousMenu)
             setSlot(53, ItemStacks.VIEW_OPPONENT_INVENTORY,
                     interaction -> interaction.getProfile().getPlayer()
                             .performCommand("viewinventory " + opponent));
@@ -28,14 +36,17 @@ public class InventoryStatsMenu extends PracticeMenu {
         setSlot(38, matchStatisticCollector.getLeggings());
         setSlot(39, matchStatisticCollector.getBoots());
 
-        setSlot(45, !matchStatisticCollector.isAlive() ? ItemStacks.NO_HEALTH
+        if (hasPreviousMenu)
+            setSlot(45, ItemStacks.BACK, interaction -> interaction.getProfile().openMenu(previousMenu));
+
+        setSlot(hasPreviousMenu ? 48 : 45, !matchStatisticCollector.isAlive() ? ItemStacks.NO_HEALTH
                 : ItemStacks.HEALTH
                         .name(CC.SECONDARY + CC.B + "Health")
                         .lore(" ", CC.WHITE + "Remaining:",
                                 CC.GOLD + matchStatisticCollector.getRemainingHealth())
                         .amount(matchStatisticCollector.getRemainingHealth()).build());
 
-        setSlot(46, ItemStacks.HEALTH_POTIONS_LEFT
+        setSlot(hasPreviousMenu ? 49 : 46, ItemStacks.HEALTH_POTIONS_LEFT
                 .lore(" ", CC.WHITE + "Thrown: " + CC.GOLD + matchStatisticCollector.getPotionsThrown(),
                         CC.WHITE + "Missed: " + CC.GOLD
                                 + matchStatisticCollector.getPotionsMissed(),
@@ -45,10 +56,10 @@ public class InventoryStatsMenu extends PracticeMenu {
                                 + matchStatisticCollector.getPotionAccuracy() + "%")
                 .amount(Math.max(matchStatisticCollector.getPotionsRemaining(), 1)).build());
 
-        setSlot(47, ItemStacks.SOUP_LEFT
+        setSlot(hasPreviousMenu ? 50 : 47, ItemStacks.SOUP_LEFT
                 .amount(Math.max(matchStatisticCollector.getSoupsRemaining(), 1)).build());
 
-        setSlot(48, ItemStacks.HITS
+        setSlot(hasPreviousMenu ? 51 : 48, ItemStacks.HITS
                 .name(CC.SECONDARY + CC.B + matchStatisticCollector.getHitCount() + " Hits")
                 .lore(CC.WHITE + "Longest Combo: " + CC.GOLD
                         + matchStatisticCollector.getLongestCombo(),
@@ -58,11 +69,11 @@ public class InventoryStatsMenu extends PracticeMenu {
                                 + matchStatisticCollector.getWTapAccuracy() + "%")
                 .build());
 
-        setSlot(49, ItemStacks.CLICKS
+        setSlot(hasPreviousMenu ? 52 : 49, ItemStacks.CLICKS
                 .name(CC.SECONDARY + CC.B + "Highest CPS: " + matchStatisticCollector.getHighestCps())
                 .build());
 
-        setSlot(50, ItemStacks.POTION_EFFECTS
+        setSlot(hasPreviousMenu ? 53 : 50, ItemStacks.POTION_EFFECTS
                 .lore(matchStatisticCollector.getPotionEffectStringArray()).build());
     }
 
