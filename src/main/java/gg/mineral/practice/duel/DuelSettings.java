@@ -10,7 +10,6 @@ import gg.mineral.practice.managers.GametypeManager;
 import gg.mineral.practice.managers.QueuetypeManager;
 import gg.mineral.practice.queue.Queuetype;
 import gg.mineral.practice.util.items.ItemStacks;
-import gg.mineral.server.combat.KnockbackProfileList;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.val;
@@ -29,7 +28,6 @@ public class DuelSettings {
     private ItemStack displayItem = ItemStacks.WOOD_AXE;
 
     public DuelSettings() {
-        this.knockback = KnockbackProfileList.getDefaultKnockbackProfile();
         val defaultGametype = GametypeManager.getGametypes().get((byte) 0);
         if (defaultGametype != null)
             setGametype(defaultGametype);
