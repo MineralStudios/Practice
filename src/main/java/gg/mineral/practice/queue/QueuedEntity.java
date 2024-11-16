@@ -1,12 +1,12 @@
 package gg.mineral.practice.queue;
 
-import java.util.List;
+import java.util.Queue;
 
 import gg.mineral.practice.entity.Profile;
 import java.util.UUID;
 
 public interface QueuedEntity {
-    List<Profile> getProfiles();
+    Queue<Profile> getProfiles();
 
     UUID getUuid();
 

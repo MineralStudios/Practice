@@ -2,6 +2,7 @@ package gg.mineral.practice.match;
 
 import java.util.Collection;
 import java.util.List;
+import java.util.Queue;
 import java.util.Set;
 import java.util.function.Consumer;
 
@@ -69,7 +70,7 @@ public class TeamMatch extends Match {
     }
 
     @Getter
-    protected final Team team1RemainingPlayers = new Team(), team2RemainingPlayers = new Team();
+    protected final Team team1Players = new Team(), team2Players = new Team();
     protected List<InventoryStatsMenu> team1InventoryStatsMenus = new GlueList<>(),
             team2InventoryStatsMenus = new GlueList<>();
     @Getter
@@ -78,24 +79,24 @@ public class TeamMatch extends Match {
     @Getter
     int team1HitCount = 0, team2HitCount = 0, team1RequiredHitCount, team2RequiredHitCount;
 
-    public TeamMatch(Collection<Profile> team1, Collection<Profile> team2, MatchData matchData) {
+    public TeamMatch(Queue<Profile> team1, Queue<Profile> team2, MatchData matchData) {
         super(matchData);
 
         for (val profile : team1)
-            this.team1RemainingPlayers.add(profile);
+            this.team1Players.add(profile);
 
         for (val profile : team2)
-            this.team2RemainingPlayers.add(profile);
+            this.team2Players.add(profile);
     }
 
     public TeamMatch(Party party1, Party party2, MatchData matchData) {
         super(matchData);
 
         for (val profile : party1.getPartyMembers())
-            this.team1RemainingPlayers.add(profile);
+            this.team1Players.add(profile);
 
         for (val profile : party2.getPartyMembers())
-            this.team2RemainingPlayers.add(profile);
+            this.team2Players.add(profile);
     }
 
     public TeamMatch(Party party, MatchData matchData) {
@@ -110,10 +111,10 @@ public class TeamMatch extends Match {
         val team2 = participants.subList((size + 1) / 2, size);
 
         for (val profile : team1)
-            this.team1RemainingPlayers.add(profile);
+            this.team1Players.add(profile);
 
         for (val profile : team2)
-            this.team2RemainingPlayers.add(profile);
+            this.team2Players.add(profile);
     }
 
     @Override
@@ -128,22 +129,22 @@ public class TeamMatch extends Match {
         val location2 = arena.getLocation2().clone();
         setupLocations(location1, location2);
 
-        team1RemainingPlayers.alive(teamMember -> this.participants.add(teamMember));
-        team2RemainingPlayers.alive(teamMember -> this.participants.add(teamMember));
+        team1Players.alive(teamMember -> this.participants.add(teamMember));
+        team2Players.alive(teamMember -> this.participants.add(teamMember));
 
-        this.profile1 = team1RemainingPlayers.firstKey();
-        this.profile2 = team2RemainingPlayers.firstKey();
-        this.team1RequiredHitCount = team1RemainingPlayers.size() * 100;
-        this.team2RequiredHitCount = team2RemainingPlayers.size() * 100;
+        this.profile1 = team1Players.firstKey();
+        this.profile2 = team2Players.firstKey();
+        this.team1RequiredHitCount = team1Players.size() * 100;
+        this.team2RequiredHitCount = team2Players.size() * 100;
 
         this.nametagGroups = setDisplayNameBoard();
 
-        team1RemainingPlayers.alive(teamMember -> {
+        team1Players.alive(teamMember -> {
             prepareForMatch(teamMember);
             PlayerUtil.teleport(teamMember.getPlayer(), location1);
         });
 
-        team2RemainingPlayers.alive(teamMember -> {
+        team2Players.alive(teamMember -> {
             prepareForMatch(teamMember);
             PlayerUtil.teleport(teamMember.getPlayer(), location2);
         });
@@ -165,9 +166,9 @@ public class TeamMatch extends Match {
 
         stat(victim, collector -> collector.end(false));
 
-        boolean isTeam1 = team1RemainingPlayers.all().contains(victim);
-        val attackerTeam = isTeam1 ? team2RemainingPlayers : team1RemainingPlayers;
-        val victimTeam = isTeam1 ? team1RemainingPlayers : team2RemainingPlayers;
+        boolean isTeam1 = team1Players.all().contains(victim);
+        val attackerTeam = isTeam1 ? team2Players : team1Players;
+        val victimTeam = isTeam1 ? team1Players : team2Players;
         val attackerInventoryStatsMenus = isTeam1 ? team2InventoryStatsMenus
                 : team1InventoryStatsMenus;
         val victimInventoryStatsMenus = isTeam1 ? team1InventoryStatsMenus
@@ -293,15 +294,15 @@ public class TeamMatch extends Match {
 
     @Override
     public ProfileList getTeam(Profile p, boolean alive) {
-        val profileSet = team1RemainingPlayers.all().contains(p) ? team1RemainingPlayers
-                : team2RemainingPlayers;
+        val profileSet = team1Players.all().contains(p) ? team1Players
+                : team2Players;
         return profileSet.alive();
     }
 
     @Override
     public Profile getOpponent(Profile p) {
-        return team1RemainingPlayers.all().contains(p) ? team2RemainingPlayers.firstKey()
-                : team1RemainingPlayers.firstKey();
+        return team1Players.all().contains(p) ? team2Players.firstKey()
+                : team1Players.firstKey();
     }
 
     private void attackerEndMatch(Profile attacker, List<InventoryStatsMenu> attackerInventoryStatsMenus) {
@@ -340,10 +341,10 @@ public class TeamMatch extends Match {
         stat(attacker, collector -> collector.increaseHitCount());
         stat(victim, collector -> collector.resetCombo());
 
-        boolean isTeam1 = team1RemainingPlayers.all().contains(attacker);
+        boolean isTeam1 = team1Players.all().contains(attacker);
         int hitCount = isTeam1 ? ++team1HitCount : ++team2HitCount;
         int requiredHitCount = isTeam1 ? team1RequiredHitCount : team2RequiredHitCount;
-        val opponentTeam = isTeam1 ? team2RemainingPlayers : team1RemainingPlayers;
+        val opponentTeam = isTeam1 ? team2Players : team1Players;
 
         if (hitCount >= requiredHitCount
                 && getData().isBoxing()) {
@@ -367,14 +368,14 @@ public class TeamMatch extends Match {
         val playerGroup = new NametagGroup();
         val opponentGroup = new NametagGroup();
 
-        team1RemainingPlayers.alive(profile -> playerGroup.add(profile.getPlayer()));
-        team2RemainingPlayers.alive(profile -> opponentGroup.add(profile.getPlayer()));
+        team1Players.alive(profile -> playerGroup.add(profile.getPlayer()));
+        team2Players.alive(profile -> opponentGroup.add(profile.getPlayer()));
 
-        team1RemainingPlayers.alive(profile -> NametagAPI.setPrefix(playerGroup, profile.getName(), CC.GREEN));
-        team2RemainingPlayers.alive(profile -> NametagAPI.setPrefix(playerGroup, profile.getName(), CC.RED));
+        team1Players.alive(profile -> NametagAPI.setPrefix(playerGroup, profile.getName(), CC.GREEN));
+        team2Players.alive(profile -> NametagAPI.setPrefix(playerGroup, profile.getName(), CC.RED));
 
-        team2RemainingPlayers.alive(profile -> NametagAPI.setPrefix(opponentGroup, profile.getName(), CC.GREEN));
-        team1RemainingPlayers.alive(profile -> NametagAPI.setPrefix(opponentGroup, profile.getName(), CC.RED));
+        team2Players.alive(profile -> NametagAPI.setPrefix(opponentGroup, profile.getName(), CC.GREEN));
+        team1Players.alive(profile -> NametagAPI.setPrefix(opponentGroup, profile.getName(), CC.RED));
 
         return new NametagGroup[] { playerGroup, opponentGroup };
     }

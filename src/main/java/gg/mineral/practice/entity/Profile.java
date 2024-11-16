@@ -1,7 +1,8 @@
 package gg.mineral.practice.entity;
 
 import java.util.Collections;
-import java.util.List;
+import java.util.LinkedList;
+import java.util.Queue;
 import java.util.Set;
 import java.util.UUID;
 
@@ -638,7 +639,7 @@ public class Profile extends ProfileData implements QueuedEntity {
 	}
 
 	@Override
-	public List<Profile> getProfiles() {
-		return Collections.singletonList(this);
+	public Queue<Profile> getProfiles() {
+		return new LinkedList<>(Collections.singletonList(this));
 	}
 }
