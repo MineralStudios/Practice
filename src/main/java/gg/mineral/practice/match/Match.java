@@ -208,6 +208,7 @@ public class Match implements Spectatable {
 	}
 
 	public void destroyArmorStand(Profile profile) {
+		profile.getPlayer().setFallDistance(0);
 		val entityID = profile.getRidingEntityID();
 		val destroyPacket = new PacketPlayOutEntityDestroy(entityID);
 		for (val p : getParticipants())
