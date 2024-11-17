@@ -105,7 +105,12 @@ public class SpectateHandler {
 
         this.spectatable = toBeSpectated.isInEvent() ? toBeSpectated.getEvent() : toBeSpectated.getMatch();
 
-        if (spectatable == null || spectatable.isEnded())
+        if (spectatable == null) {
+            this.profile.message(ErrorMessages.PLAYER_NOT_IN_MATCH);
+            return;
+        }
+
+        if (spectatable.isEnded())
             return;
 
         if (!toBeSpectated.isInEvent()) {
