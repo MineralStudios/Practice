@@ -443,6 +443,8 @@ public class Profile extends ProfileData implements QueuedEntity {
 	}
 
 	public void setPlayerStatus(PlayerStatus newPlayerStatus) {
+		if (this.playerStatus == newPlayerStatus)
+			return;
 		val canFly = newPlayerStatus.getCanFly().apply(this);
 
 		this.getPlayer().setAllowFlight(canFly);
