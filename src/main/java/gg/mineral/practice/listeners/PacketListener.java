@@ -572,6 +572,8 @@ public class PacketListener implements Listener {
             return;
 
         val shooter = (Player) arrow.getShooter();
+        if (shooter.getUniqueId().equals(receiver.getUniqueId()))
+            return;
         val receiverProfile = ProfileManager.getProfile(receiver);
         if (receiverProfile == null || !receiverProfile.getVisiblePlayers().containsValue(shooter.getUniqueId()))
             event.setCancelled(true);
@@ -583,6 +585,8 @@ public class PacketListener implements Listener {
         if (potion.getShooter() instanceof Player shooter) {
             for (val livingEntity : event.getAffectedEntities()) {
                 if (livingEntity instanceof Player receiver) {
+                    if (shooter.getUniqueId().equals(receiver.getUniqueId()))
+                        return;
                     val receiverProfile = ProfileManager.getProfile(receiver);
                     if (receiverProfile == null
                             || !receiverProfile.getVisiblePlayers().containsValue(shooter.getUniqueId())) {

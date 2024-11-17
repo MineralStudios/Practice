@@ -36,7 +36,8 @@ public class SelectArenaMenu extends PracticeMenu {
     @Override
     public void update() {
         val arenas = ArenaManager.getArenas();
-        val arenaIds = simpleMode ? viewer.getDuelSettings().getGametype().getArenas().iterator()
+        val gametype = viewer.getDuelSettings().getGametype();
+        val arenaIds = simpleMode && gametype != null ? gametype.getArenas().iterator()
                 : arenas.keySet().iterator();
 
         while (arenaIds.hasNext()) {
