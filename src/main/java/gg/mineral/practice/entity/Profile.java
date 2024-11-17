@@ -98,10 +98,10 @@ public class Profile extends ProfileData implements QueuedEntity {
 	private final Set<UUID> visiblePlayersOnTab = new ObjectOpenHashSet<>();
 
 	@Getter
-	private final Set<UUID> setVisiblePlayers = new ObjectOpenHashSet<>();
+	private final Set<UUID> setVisiblePlayers = Collections.synchronizedSet(new ObjectOpenHashSet<>());
 
 	@Getter
-	private final Set<UUID> setVisiblePlayersOnTab = new ObjectOpenHashSet<>();
+	private final Set<UUID> setVisiblePlayersOnTab = Collections.synchronizedSet(new ObjectOpenHashSet<>());
 
 	public Profile(org.bukkit.entity.Player player) {
 		super(player.getUniqueId(), player.getName());
