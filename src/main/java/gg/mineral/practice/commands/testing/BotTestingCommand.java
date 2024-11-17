@@ -1,16 +1,15 @@
 package gg.mineral.practice.commands.testing;
 
+import java.util.LinkedList;
+
 import gg.mineral.api.collection.GlueList;
 import gg.mineral.bot.api.configuration.BotConfiguration;
-
 import gg.mineral.practice.commands.PlayerCommand;
-
 import gg.mineral.practice.managers.GametypeManager;
 import gg.mineral.practice.managers.ProfileManager;
 import gg.mineral.practice.managers.QueuetypeManager;
 import gg.mineral.practice.match.BotTeamMatch;
 import gg.mineral.practice.match.data.MatchData;
-
 import lombok.val;
 
 public class BotTestingCommand extends PlayerCommand {
@@ -43,7 +42,7 @@ public class BotTestingCommand extends PlayerCommand {
             val opponentTeam = new GlueList<BotConfiguration>();
             opponentTeam.add(difficulty.getConfiguration(queueSettings));
             opponentTeam.add(difficulty.getConfiguration(queueSettings));
-            new BotTeamMatch(new GlueList<>(), new GlueList<>(),
+            new BotTeamMatch(new LinkedList<>(), new LinkedList<>(),
                     friendlyTeam,
                     opponentTeam,
                     new MatchData(queuetype, gametype, profile.getQueueSettings())).start();
