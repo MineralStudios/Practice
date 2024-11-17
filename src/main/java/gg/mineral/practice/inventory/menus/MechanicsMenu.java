@@ -6,6 +6,7 @@ import gg.mineral.practice.inventory.SubmitAction;
 import gg.mineral.practice.managers.ArenaManager;
 import gg.mineral.practice.util.items.ItemStacks;
 import gg.mineral.practice.util.messages.CC;
+import gg.mineral.server.combat.KnockbackProfileList;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import lombok.val;
@@ -19,6 +20,11 @@ public class MechanicsMenu extends PracticeMenu {
 	@Override
 	public void update() {
 		val duelSettings = viewer.getDuelSettings();
+		val noDamageTicks = duelSettings.getNoDamageTicks();
+		val knockback = duelSettings.getKnockback() == null
+				? noDamageTicks < 10 ? KnockbackProfileList.getComboKnockbackProfile()
+						: KnockbackProfileList.getDefaultKnockbackProfile()
+				: duelSettings.getKnockback();
 
 		setSlot(10,
 				ItemStacks.SELECT_KIT
@@ -32,7 +38,7 @@ public class MechanicsMenu extends PracticeMenu {
 				ItemStacks.CHANGE_KNOCKBACK
 						.lore(CC.WHITE + "Changes the amount of" + CC.SECONDARY + " knockback" + CC.WHITE
 								+ " you recieve.", " ",
-								CC.WHITE + "Currently:", CC.GOLD + duelSettings.getKnockback().getName(),
+								CC.WHITE + "Currently:", CC.GOLD + knockback.getName(),
 								CC.BOARD_SEPARATOR, CC.ACCENT + "Click to change knockback.")
 						.build(),
 				interaction -> interaction.getProfile().openMenu(new SelectKnockbackMenu(this)));
@@ -40,7 +46,7 @@ public class MechanicsMenu extends PracticeMenu {
 		setSlot(12, ItemStacks.HIT_DELAY
 				.lore(CC.WHITE + "Changes how " + CC.SECONDARY + "frequently " + CC.WHITE
 						+ "you can attack.", " ",
-						CC.WHITE + "Currently:", CC.GOLD + duelSettings.getNoDamageTicks() + " Ticks",
+						CC.WHITE + "Currently:", CC.GOLD + noDamageTicks + " Ticks",
 						CC.BOARD_SEPARATOR, CC.ACCENT + "Click to change hit delay.")
 				.build(),
 				interaction -> interaction.getProfile()
@@ -136,7 +142,7 @@ public class MechanicsMenu extends PracticeMenu {
 				});
 
 		setSlot(27, ItemStacks.RESET_SETTINGS, interaction -> {
-			viewer.resetQueueSettings();
+			viewer.resetDuelSettings();
 			reload();
 		});
 

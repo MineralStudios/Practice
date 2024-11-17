@@ -4,16 +4,16 @@ import org.bukkit.inventory.ItemStack;
 import org.eclipse.jdt.annotation.NonNull;
 
 import gg.mineral.api.knockback.Knockback;
-
 import gg.mineral.practice.gametype.Gametype;
 import gg.mineral.practice.kit.Kit;
+import gg.mineral.practice.managers.GametypeManager;
+import gg.mineral.practice.managers.QueuetypeManager;
 import gg.mineral.practice.queue.Queuetype;
 import gg.mineral.practice.util.items.ItemStacks;
 import lombok.Getter;
-import lombok.NoArgsConstructor;
 import lombok.Setter;
+import lombok.val;
 
-@NoArgsConstructor
 @Getter
 @Setter
 public class DuelSettings {
@@ -26,6 +26,21 @@ public class DuelSettings {
     private boolean hunger = true, boxing = false, build = false, damage = true, griefing = false, deadlyWater = false,
             regeneration = true;
     private ItemStack displayItem = ItemStacks.WOOD_AXE;
+
+    public DuelSettings() {
+        val defaultGametype = GametypeManager.getGametypes().get((byte) 0);
+        if (defaultGametype != null)
+            setGametype(defaultGametype);
+        else
+            throw new IllegalStateException("No default gametype found.");
+
+        val defaultQueuetype = QueuetypeManager.getQueuetypes().get((byte) 0);
+
+        if (defaultQueuetype != null)
+            setQueuetype(defaultQueuetype);
+        else
+            throw new IllegalStateException("No default queuetype found.");
+    }
 
     public DuelSettings(Queuetype queuetype, Gametype gametype) {
         setQueuetype(queuetype);

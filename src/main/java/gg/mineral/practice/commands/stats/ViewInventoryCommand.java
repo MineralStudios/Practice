@@ -30,11 +30,13 @@ public class ViewInventoryCommand extends PlayerCommand {
 			return;
 		}
 
+		val firstEntry = inventoryStats.get(0);
+
 		if (inventoryStats.size() == 1) {
-			profile.openMenu(inventoryStats.get(0));
+			profile.openMenu(firstEntry);
 			return;
 		}
 
-		profile.openMenu(new InventoryStatsListMenu(inventoryStats));
+		profile.openMenu(new InventoryStatsListMenu(inventoryStats, firstEntry.getOpponent()));
 	}
 }
