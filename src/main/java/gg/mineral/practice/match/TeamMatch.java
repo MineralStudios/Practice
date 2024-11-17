@@ -139,15 +139,10 @@ public class TeamMatch extends Match {
 
         this.nametagGroups = setDisplayNameBoard();
 
-        team1Players.alive(teamMember -> {
-            prepareForMatch(teamMember);
-            PlayerUtil.teleport(teamMember.getPlayer(), location1);
-        });
+        team1Players.alive(teamMember -> PlayerUtil.teleport(teamMember.getPlayer(), location1));
+        team2Players.alive(teamMember -> PlayerUtil.teleport(teamMember.getPlayer(), location2));
 
-        team2Players.alive(teamMember -> {
-            prepareForMatch(teamMember);
-            PlayerUtil.teleport(teamMember.getPlayer(), location2);
-        });
+        participants.forEach(profile -> prepareForMatch(profile));
 
         startCountdown();
     }

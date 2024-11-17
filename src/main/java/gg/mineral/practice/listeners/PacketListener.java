@@ -544,6 +544,9 @@ public class PacketListener implements Listener {
         if (dropper == null)
             return;
 
+        if (dropper.equals(receiver.getUniqueId()))
+            return;
+
         val receiverProfile = ProfileManager.getProfile(receiver);
 
         if (receiverProfile == null || !receiverProfile.getVisiblePlayers().contains(dropper))
