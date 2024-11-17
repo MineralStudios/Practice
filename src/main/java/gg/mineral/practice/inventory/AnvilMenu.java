@@ -246,6 +246,7 @@ public abstract class AnvilMenu implements Menu {
         return items.containsValue(item);
     }
 
+    @SuppressWarnings("deprecation")
     @Override
     public void open(Profile viewer) {
         closed = false;
@@ -269,6 +270,7 @@ public abstract class AnvilMenu implements Menu {
         setActiveContainerId(container, containerId);
         addActiveContainerSlotListener(container, viewer.getPlayer());
         viewer.setOpenMenu(this);
+        viewer.getPlayer().updateInventory();
     }
 
     @Override
