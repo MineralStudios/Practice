@@ -173,7 +173,12 @@ public class Match implements Spectatable {
 
 		QueueSystem.removePlayerFromQueue(p);
 
+		val currentMatch = p.getMatch();
 		p.setMatch(this);
+
+		if (currentMatch != null && !currentMatch.isEnded())
+			currentMatch.end(p);
+
 		p.getRequestHandler().getRecievedDuelRequests().clear();
 		stat(p, MatchStatisticCollector::start);
 		p.setKitLoaded(false);
@@ -426,6 +431,7 @@ public class Match implements Spectatable {
 
 		victim.heal();
 		victim.removePotionEffects();
+
 		sendBackToLobby(victim);
 
 		giveQueueAgainItem(attacker);
@@ -506,6 +512,8 @@ public class Match implements Spectatable {
 	}
 
 	public void sendBackToLobby(Profile profile) {
+		if (!profile.getMatch().equals(this))
+			return;
 		profile.teleportToLobby();
 		profile.getInventory().setInventoryForLobby();
 		profile.removeFromMatch();
