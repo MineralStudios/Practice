@@ -63,6 +63,8 @@ public class EventMatch extends Match {
         sendBackToLobby(victim);
 
         Bukkit.getServer().getScheduler().runTaskLater(PracticePlugin.INSTANCE, () -> {
+            if (attacker.getPlayerStatus() == PlayerStatus.FIGHTING && !attacker.getMatch().isEnded())
+                return;
             attacker.setScoreboard(DefaultScoreboard.INSTANCE);
             event.removePlayer(victim);
             event.removeMatch(EventMatch.this);
@@ -78,7 +80,8 @@ public class EventMatch extends Match {
                 attacker.getInventory().setInventoryForLobby();
             }
 
-            attacker.removeFromMatch();
+            if (attacker.getMatch().equals(this))
+                attacker.removeFromMatch();
 
             if (CoreConnector.connected()) {
                 // CoreConnector.INSTANCE.getNameTagAPI().giveTagAfterMatch(profile1.getPlayer(),

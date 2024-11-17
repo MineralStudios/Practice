@@ -198,7 +198,8 @@ public class TeamMatch extends Match {
         if (victimsAlive.size() > 0) {
 
             participants.remove(victim);
-            victim.removeFromMatch();
+            if (victim.getMatch().equals(this))
+                victim.removeFromMatch();
 
             if (BotAPI.INSTANCE.despawn(victim.getPlayer().getUniqueId()))
                 return;
@@ -273,7 +274,8 @@ public class TeamMatch extends Match {
         else
             victim.getInventory().setInventoryForLobby();
 
-        victim.removeFromMatch();
+        if (victim.getMatch().equals(this))
+            victim.removeFromMatch();
 
         BotAPI.INSTANCE.despawn(victim.getPlayer().getUniqueId());
 
@@ -329,7 +331,8 @@ public class TeamMatch extends Match {
             else
                 attacker.getInventory().setInventoryForLobby();
 
-            attacker.removeFromMatch();
+            if (attacker.getMatch().equals(this))
+                attacker.removeFromMatch();
             attacker.setScoreboard(DefaultScoreboard.INSTANCE);
             BotAPI.INSTANCE.despawn(attacker.getPlayer().getUniqueId());
         }, getPostMatchTime());
