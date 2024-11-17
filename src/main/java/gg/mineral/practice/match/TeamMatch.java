@@ -241,7 +241,7 @@ public class TeamMatch extends Match {
         val winMessage = new TextComponent(
                 CC.GREEN + "Winner: " + CC.GRAY + attackerTeamLeader.getName() + "\'s team");
         val loseMessage = new TextComponent(
-                CC.RED + "Loser: " + CC.GRAY + victim.getName() + "\'s team");
+                CC.RED + "Loser: " + CC.GRAY + victimTeam.firstKey().getName() + "\'s team");
         loseMessage
                 .setHoverEvent(
                         new HoverEvent(HoverEvent.Action.SHOW_TEXT,
