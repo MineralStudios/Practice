@@ -16,7 +16,6 @@ import gg.mineral.practice.queue.Queuetype;
 import gg.mineral.practice.queue.QueueSettings.QueueEntry;
 import gg.mineral.practice.util.items.ItemStacks;
 import gg.mineral.practice.util.messages.CC;
-import gg.mineral.server.combat.KnockbackProfileList;
 import it.unimi.dsi.fastutil.bytes.Byte2BooleanOpenHashMap;
 import it.unimi.dsi.fastutil.ints.Int2ObjectOpenHashMap;
 import lombok.Getter;
@@ -28,11 +27,11 @@ public class MatchData {
 	private Queuetype queuetype;
 	private Gametype gametype;
 	@Setter
-	byte arenaId;
-	Kit kit;
-	Knockback knockback;
-	int noDamageTicks = 20, pearlCooldown = 15;
-	boolean hunger = true, boxing = false, build = false, damage = true, griefing = false, deadlyWater = false,
+	private byte arenaId;
+	private Kit kit;
+	private Knockback knockback;
+	private int noDamageTicks = 20, pearlCooldown = 15;
+	private boolean hunger = true, boxing = false, build = false, damage = true, griefing = false, deadlyWater = false,
 			regeneration = true;
 	private boolean ranked = false;
 	protected Byte2BooleanOpenHashMap enabledArenas = new Byte2BooleanOpenHashMap();
@@ -42,8 +41,6 @@ public class MatchData {
 
 		if (!GametypeManager.getGametypes().isEmpty())
 			setGametype(GametypeManager.getGametypes().values().iterator().next());
-
-		this.knockback = KnockbackProfileList.getDefaultKnockbackProfile();
 	}
 
 	public MatchData(Queuetype queuetype, Gametype gametype, QueueSettings queueSettings) {
