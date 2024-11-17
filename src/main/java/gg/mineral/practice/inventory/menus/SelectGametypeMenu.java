@@ -100,10 +100,16 @@ public class SelectGametypeMenu extends PracticeMenu {
 
 		val menu = p.getOpenMenu();
 
-		if (interaction.getClickType() == ClickType.LEFT)
+		if (interaction.getClickType() == ClickType.LEFT) {
 			queueSettings.setOpponentDifficulty((byte) ((queueSettings.getOpponentDifficulty() + 1)
 					% Difficulty.values().length));
-		else if (interaction.getClickType() == ClickType.RIGHT) {
+
+			val difficulty = queueSettings.getOpponentBotDifficulty();
+
+			if (difficulty == Difficulty.CUSTOM)
+				queueSettings.setOpponentDifficulty((byte) ((queueSettings.getOpponentDifficulty() + 1)
+						% Difficulty.values().length));
+		} else if (interaction.getClickType() == ClickType.RIGHT) {
 
 			if (p.getPlayer().hasPermission("practice.custombot")
 					&& menu instanceof SelectGametypeMenu selectGametypeMenu)
@@ -180,7 +186,7 @@ public class SelectGametypeMenu extends PracticeMenu {
 									CC.BOARD_SEPARATOR, " ", CC.GREEN + "Left Click to change difficulty.",
 									CC.RED + "Right Click to configure custom difficulty.").build(),
 							DIFFICULTY_INTERACTION);
-				else
+				else if (queueSettings.getBotTeamSetting() == BotTeamSetting.BOTH)
 					setSlot(4,
 							ItemStacks.BOT_SETTINGS.lore(
 									CC.WHITE + "Allows you to configure the " + CC.SECONDARY + "difficulty" + CC.WHITE
@@ -192,6 +198,17 @@ public class SelectGametypeMenu extends PracticeMenu {
 									Difficulty.values()[teamDifficulty].getDisplay(), " ",
 									CC.BOARD_SEPARATOR, " ", CC.GREEN + "Left Click to change opponent difficulty.",
 									CC.PINK + "Middle Click to change team difficulty.",
+									CC.RED + "Right Click to configure custom difficulty.").build(),
+							DIFFICULTY_INTERACTION);
+				else
+					setSlot(4,
+							ItemStacks.BOT_SETTINGS.lore(
+									CC.WHITE + "Allows you to configure the " + CC.SECONDARY + "difficulty" + CC.WHITE
+											+ ".",
+									" ",
+									CC.WHITE + "Opponent Difficulty: ",
+									Difficulty.values()[opponentDifficulty].getDisplay(), " ",
+									CC.BOARD_SEPARATOR, " ", CC.GREEN + "Left Click to change opponent difficulty.",
 									CC.RED + "Right Click to configure custom difficulty.").build(),
 							DIFFICULTY_INTERACTION);
 

@@ -246,8 +246,8 @@ public class PlayerInventory extends CraftInventoryPlayer {
                             return true;
                         }
 
-                        if (p.getParty().getPartyMembers().size() != 2) {
-                            p.message(ErrorMessages.PARTY_NOT_CORRECT_SIZE);
+                        if (p.getParty().getPartyMembers().size() < 2) {
+                            p.message(ErrorMessages.PARTY_NOT_BIG_ENOUGH);
                             return true;
                         }
 

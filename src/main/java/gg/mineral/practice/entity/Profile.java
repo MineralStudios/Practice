@@ -1,10 +1,9 @@
 package gg.mineral.practice.entity;
 
 import java.util.Collections;
-
 import java.util.List;
+import java.util.Set;
 import java.util.UUID;
-import java.util.concurrent.ConcurrentLinkedQueue;
 
 import org.bukkit.Bukkit;
 import org.bukkit.GameMode;
@@ -31,9 +30,7 @@ import gg.mineral.practice.kit.KitEditor;
 import gg.mineral.practice.managers.KitEditorManager;
 import gg.mineral.practice.managers.ProfileManager;
 import gg.mineral.practice.match.Match;
-
 import gg.mineral.practice.party.Party;
-
 import gg.mineral.practice.queue.QueueSettings;
 import gg.mineral.practice.queue.QueueSystem;
 import gg.mineral.practice.queue.QueuedEntity;
@@ -42,7 +39,6 @@ import gg.mineral.practice.scoreboard.Scoreboard;
 import gg.mineral.practice.scoreboard.ScoreboardHandler;
 import gg.mineral.practice.scoreboard.impl.DefaultScoreboard;
 import gg.mineral.practice.tournaments.Tournament;
-
 import gg.mineral.practice.util.PlayerUtil;
 import gg.mineral.practice.util.collection.Registry;
 import gg.mineral.practice.util.messages.Message;
@@ -50,11 +46,11 @@ import gg.mineral.practice.util.messages.impl.ChatMessages;
 import gg.mineral.practice.util.messages.impl.ErrorMessages;
 import gg.mineral.practice.util.world.BlockData;
 import it.unimi.dsi.fastutil.ints.Int2ObjectOpenHashMap;
+import it.unimi.dsi.fastutil.objects.ObjectOpenHashSet;
 import it.unimi.dsi.fastutil.shorts.Short2ObjectOpenHashMap;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.val;
-
 import net.minecraft.server.v1_8_R3.PacketPlayOutPlayerInfo;
 import net.minecraft.server.v1_8_R3.PacketPlayOutPlayerInfo.EnumPlayerInfoAction;
 import net.minecraft.server.v1_8_R3.WorldServer;
@@ -95,44 +91,16 @@ public class Profile extends ProfileData implements QueuedEntity {
 	private final Short2ObjectOpenHashMap<Int2ObjectOpenHashMap<ItemStack[]>> customKits = new Short2ObjectOpenHashMap<>();
 
 	@Getter
-	private final ConcurrentLinkedQueue<UUID> visiblePlayers = new ConcurrentLinkedQueue<UUID>() {
-		@Override
-		public boolean add(UUID uuid) {
-			if (contains(uuid))
-				return false;
-			return super.add(uuid);
-		}
-	};
+	private final Set<UUID> visiblePlayers = new ObjectOpenHashSet<>();
 
 	@Getter
-	private final ConcurrentLinkedQueue<UUID> visiblePlayersOnTab = new ConcurrentLinkedQueue<UUID>() {
-		@Override
-		public boolean add(UUID uuid) {
-			if (contains(uuid))
-				return false;
-			return super.add(uuid);
-		}
-	};
+	private final Set<UUID> visiblePlayersOnTab = new ObjectOpenHashSet<>();
 
 	@Getter
-	private final ConcurrentLinkedQueue<UUID> setVisiblePlayers = new ConcurrentLinkedQueue<UUID>() {
-		@Override
-		public boolean add(UUID uuid) {
-			if (contains(uuid))
-				return false;
-			return super.add(uuid);
-		}
-	};
+	private final Set<UUID> setVisiblePlayers = new ObjectOpenHashSet<>();
 
 	@Getter
-	private final ConcurrentLinkedQueue<UUID> setVisiblePlayersOnTab = new ConcurrentLinkedQueue<UUID>() {
-		@Override
-		public boolean add(UUID uuid) {
-			if (contains(uuid))
-				return false;
-			return super.add(uuid);
-		}
-	};
+	private final Set<UUID> setVisiblePlayersOnTab = new ObjectOpenHashSet<>();
 
 	public Profile(org.bukkit.entity.Player player) {
 		super(player.getUniqueId(), player.getName());
@@ -600,6 +568,10 @@ public class Profile extends ProfileData implements QueuedEntity {
 
 	public void resetQueueSettings() {
 		queueSettings = new QueueSettings();
+	}
+
+	public void resetDuelSettings() {
+		duelSettings = new DuelSettings();
 	}
 
 	public void startPartyOpenCooldown() {
