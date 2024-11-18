@@ -1,12 +1,12 @@
 package gg.mineral.practice.queue;
 
+import java.util.LinkedList;
 import java.util.List;
 
 import org.eclipse.jdt.annotation.Nullable;
 
 import gg.mineral.api.collection.GlueList;
 import gg.mineral.bot.api.configuration.BotConfiguration;
-
 import gg.mineral.practice.bots.Difficulty;
 import gg.mineral.practice.entity.Profile;
 import gg.mineral.practice.gametype.Gametype;
@@ -17,9 +17,7 @@ import gg.mineral.practice.match.Match;
 import gg.mineral.practice.match.TeamMatch;
 import gg.mineral.practice.match.data.MatchData;
 import gg.mineral.practice.queue.QueueSettings.QueueEntry;
-
 import it.unimi.dsi.fastutil.bytes.ByteOpenHashSet;
-
 import it.unimi.dsi.fastutil.objects.ObjectOpenHashSet;
 import it.unimi.dsi.fastutil.shorts.Short2ObjectOpenHashMap;
 import lombok.val;
@@ -115,7 +113,7 @@ public class QueueSystem {
             for (int i = 0; i < teamSize; i++)
                 opponentBots.add(opponentBotDifficulty.getConfiguration(queueSettings));
 
-            new BotTeamMatch(entity.getProfiles(), new GlueList<>(), teamBots, opponentBots, data).start();
+            new BotTeamMatch(entity.getProfiles(), new LinkedList<>(), teamBots, opponentBots, data).start();
             return true;
         }
 
@@ -248,8 +246,8 @@ public class QueueSystem {
         if (selectedArena == null)
             throw new IllegalStateException("Arena not found for ID: " + selectedArenaId);
 
-        val teamA = new GlueList<Profile>();
-        val teamB = new GlueList<Profile>();
+        val teamA = new LinkedList<Profile>();
+        val teamB = new LinkedList<Profile>();
 
         val recordIter = records.iterator();
 
@@ -273,7 +271,7 @@ public class QueueSystem {
             val teamBBots = new GlueList<BotConfiguration>();
             for (int i = 0; i < teamSize; i++)
                 teamBBots.add(difficulty.getConfiguration(null));
-            new BotTeamMatch(teamA, new GlueList<>(), new GlueList<>(), teamBBots, matchData).start();
+            new BotTeamMatch(teamA, new LinkedList<>(), new GlueList<>(), teamBBots, matchData).start();
             return;
         }
 

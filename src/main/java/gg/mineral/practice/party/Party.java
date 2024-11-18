@@ -1,11 +1,11 @@
 package gg.mineral.practice.party;
 
 import java.util.Iterator;
-import java.util.List;
+import java.util.LinkedList;
+import java.util.Queue;
 import java.util.UUID;
 import java.util.concurrent.ConcurrentLinkedQueue;
 
-import gg.mineral.api.collection.GlueList;
 import gg.mineral.practice.entity.Profile;
 import gg.mineral.practice.managers.PartyManager;
 import gg.mineral.practice.queue.QueueSettings;
@@ -69,8 +69,8 @@ public class Party implements QueuedEntity {
 	}
 
 	@Override
-	public List<Profile> getProfiles() {
-		return new GlueList<>(partyMembers);
+	public Queue<Profile> getProfiles() {
+		return new LinkedList<>(partyMembers);
 	}
 
 	@Override

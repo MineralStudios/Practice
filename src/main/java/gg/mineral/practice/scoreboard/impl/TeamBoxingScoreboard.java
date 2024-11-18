@@ -14,7 +14,7 @@ public class TeamBoxingScoreboard
     public void updateBoard(ScoreboardHandler board, Profile profile) {
         board.updateTitle(CC.PRIMARY + CC.B + "Mineral");
         if (profile.getMatch() instanceof TeamMatch match) {
-            boolean isTeam1 = match.getTeam1RemainingPlayers().all().contains(profile);
+            boolean isTeam1 = match.getTeam1Players().all().contains(profile);
             int hitCount = isTeam1 ? match.getTeam1HitCount() : match.getTeam2HitCount();
             int opponentHitCount = isTeam1 ? match.getTeam2HitCount() : match.getTeam1HitCount();
             int requiredHitCount = isTeam1 ? match.getTeam1RequiredHitCount() : match.getTeam2RequiredHitCount();
