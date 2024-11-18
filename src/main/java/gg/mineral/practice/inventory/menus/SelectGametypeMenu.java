@@ -359,8 +359,10 @@ public class SelectGametypeMenu extends PracticeMenu {
                 val sb = new GlueList<String>();
                 sb.add(CC.SECONDARY + "Includes:");
 
-                for (val g : catagory.getGametypes())
-                    sb.add(CC.WHITE + g.getDisplayName());
+                for (val g : catagory.getGametypes()) {
+                    boolean isQueued = QueueSystem.getQueueEntry(viewer, queuetype, g) != null;
+                    sb.add(CC.WHITE + g.getDisplayName() + (isQueued ? " - " + CC.GREEN + "Queued" : ""));
+                }
 
                 sb.add(" ");
                 sb.add(CC.BOARD_SEPARATOR);
