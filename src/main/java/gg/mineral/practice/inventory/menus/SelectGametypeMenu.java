@@ -148,9 +148,15 @@ public class SelectGametypeMenu extends PracticeMenu {
                     + 1) % BotTeamSetting.values().length]);
 
         val menu = viewer.getOpenMenu();
+        val botQueue = queueSettings.isBotQueue();
 
         if (menu != null)
-            menu.reload();
+            if (menu instanceof SelectCategorizedGametypeMenu selectCategorizedGametypeMenu && botQueue
+                    && !selectCategorizedGametypeMenu.catagory.isBotsEnabled())
+                viewer.openMenu(new SelectGametypeMenu(selectCategorizedGametypeMenu.queuetype,
+                        selectCategorizedGametypeMenu.type));
+            else
+                menu.reload();
     };
 
     protected static final Consumer<Interaction> ARENA_INTERACTION = interaction -> {

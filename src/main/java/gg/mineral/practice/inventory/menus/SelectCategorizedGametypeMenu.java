@@ -11,7 +11,7 @@ import it.unimi.dsi.fastutil.objects.Object2IntLinkedOpenHashMap;
 
 @ClickCancelled(true)
 public class SelectCategorizedGametypeMenu extends SelectGametypeMenu {
-	private final Catagory catagory;
+	protected final Catagory catagory;
 
 	public SelectCategorizedGametypeMenu(Queuetype queuetype, Catagory catagory, Type type) {
 		super();
