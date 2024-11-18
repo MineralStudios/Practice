@@ -89,6 +89,12 @@ public abstract class PracticeMenu implements Menu {
 		page.removeSlot(slotOnPage);
 	}
 
+	public void addAfter(int afterSlot, ItemStack item, Consumer<Interaction> d) {
+		val page = findUnusedPage();
+		int slot = page.findUnusedSlot(afterSlot);
+		page.setSlot(slot, item, d);
+	}
+
 	public void add(ItemStack item) {
 		val page = findUnusedPage();
 		int slot = page.findUnusedSlot();
@@ -330,7 +336,11 @@ public abstract class PracticeMenu implements Menu {
 		}
 
 		public int findUnusedSlot() {
-			for (int i = 0; i <= size; i++)
+			return findUnusedSlot(0);
+		}
+
+		public int findUnusedSlot(int start) {
+			for (int i = start; i <= size; i++)
 				if (items.get(i) == null)
 					return i;
 
