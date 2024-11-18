@@ -62,6 +62,7 @@ import net.md_5.bungee.api.chat.ComponentBuilder;
 import net.md_5.bungee.api.chat.HoverEvent;
 import net.md_5.bungee.api.chat.TextComponent;
 import net.minecraft.server.v1_8_R3.EntityArmorStand;
+import net.minecraft.server.v1_8_R3.MathHelper;
 import net.minecraft.server.v1_8_R3.PacketPlayOutAttachEntity;
 import net.minecraft.server.v1_8_R3.PacketPlayOutEntityDestroy;
 import net.minecraft.server.v1_8_R3.PacketPlayOutSpawnEntityLiving;
@@ -202,7 +203,16 @@ public class Match implements Spectatable {
 		entity.setInvisible(true);
 		entity.setCustomNameVisible(false);
 		entity.setGravity(false);
-		val spawnArmorStand = new PacketPlayOutSpawnEntityLiving(entity);
+		val spawnArmorStand = new PacketPlayOutSpawnEntityLiving();
+		spawnArmorStand.setA(entity.getId());
+		spawnArmorStand.setB(30);
+		spawnArmorStand.setC(MathHelper.floor(entity.locX * 32.0D));
+		spawnArmorStand.setD(MathHelper.floor(entity.locY * 32.0D));
+		spawnArmorStand.setE(MathHelper.floor(entity.locZ * 32.0D));
+		spawnArmorStand.setI((byte) ((int) (entity.yaw * 256.0F / 360.0F)));
+		spawnArmorStand.setJ((byte) ((int) (entity.pitch * 256.0F / 360.0F)));
+		spawnArmorStand.setK((byte) ((int) (entity.aK * 256.0F / 360.0F)));
+		spawnArmorStand.setL(entity.getDataWatcher());
 		val ridingPacket = new PacketPlayOutAttachEntity(0, handle, entity);
 		for (val p : getParticipants()) {
 			val h = p.getPlayer().getHandle();
