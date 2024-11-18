@@ -1,6 +1,5 @@
 package gg.mineral.practice.managers;
 
-import java.sql.ResultSet;
 import java.util.UUID;
 import java.util.concurrent.CompletableFuture;
 
@@ -12,9 +11,8 @@ import gg.mineral.practice.entity.ProfileData;
 import gg.mineral.practice.gametype.Gametype;
 import gg.mineral.practice.queue.Queuetype;
 import gg.mineral.practice.util.collection.LeaderboardMap;
-import it.unimi.dsi.fastutil.objects.Object2IntMap;
-import it.unimi.dsi.fastutil.objects.Object2LongMap;
 import it.unimi.dsi.fastutil.objects.Object2LongOpenHashMap;
+import lombok.val;
 
 public class EloManager {
 	final static String TABLE = "elo";
@@ -55,7 +53,7 @@ public class EloManager {
 							uuid.toString())
 					.thenApply(queryResult -> {
 						int elo = 1000;
-						try (ResultSet r = queryResult.getResultSet()) {
+						try (val r = queryResult.getResultSet()) {
 
 							if (r.next())
 								elo = r.getInt("ELO");
@@ -78,7 +76,7 @@ public class EloManager {
 							gametype.getName())
 					.thenApply(queryResult -> {
 						int elo = 1000;
-						try (ResultSet r = queryResult.getResultSet()) {
+						try (val r = queryResult.getResultSet()) {
 							if (r.next())
 								elo = r.getInt("ELO");
 
@@ -97,7 +95,7 @@ public class EloManager {
 			DatabaseAPIPlugin.INSTANCE.retrieveSqlManager().get()
 					.executeQuery("SELECT * FROM " + TABLE)
 					.thenAccept(queryResult -> {
-						try (ResultSet r = queryResult.getResultSet()) {
+						try (val r = queryResult.getResultSet()) {
 							while (r.next()) {
 								String playerName = r.getString("PLAYER");
 								int elo = r.getInt("ELO");
@@ -124,35 +122,40 @@ public class EloManager {
 
 	public static LeaderboardMap getGlobalEloLeaderboard(Queuetype queuetype) {
 		// The ordered map with all global elo that is returned
-		LeaderboardMap map = new LeaderboardMap();
+		val map = new LeaderboardMap();
 
 		// The map that will be used to store the elo sum and divisor <Player, Elo Sum
 		// and Divisor>
-		Object2LongOpenHashMap<ProfileData> globalEloMap = new Object2LongOpenHashMap<>();
+		val globalEloMap = new Object2LongOpenHashMap<ProfileData>();
+
+		int maxDivisor = 0;
 
 		// Iterates through every gametype in ranked, eg. NoDebuff, Debuff, Gapple etc.
-		for (Gametype gametype : queuetype.getGametypes().keySet()) {
+		for (val menuEntry : queuetype.getMenuEntries().keySet()) {
 
-			// Iterate through entries and put the sum of elo in the map for each player
-			for (Object2IntMap.Entry<ProfileData> e : gametype.getEloCache().object2IntEntrySet()) {
-				// Get the combined value (eloSum and divisor)
-				long combinedValue = globalEloMap.getOrDefault(e.getKey(), 0L);
-				int eloSum = (int) (combinedValue >>> 32);
-				int divisor = (int) combinedValue;
+			if (menuEntry instanceof Gametype gametype) {
 
-				// Add elo
-				eloSum += e.getIntValue();
-				divisor += 1;
+				maxDivisor++;
 
-				// Update the map with the new combined value
-				globalEloMap.put(e.getKey(), (((long) eloSum) << 32) | (divisor & 0xFFFFFFFFL));
+				// Iterate through entries and put the sum of elo in the map for each player
+				for (val e : gametype.getEloCache().object2IntEntrySet()) {
+					// Get the combined value (eloSum and divisor)
+					long combinedValue = globalEloMap.getOrDefault(e.getKey(), 0L);
+					int eloSum = (int) (combinedValue >>> 32);
+					int divisor = (int) combinedValue;
+
+					// Add elo
+					eloSum += e.getIntValue();
+					divisor += 1;
+
+					// Update the map with the new combined value
+					globalEloMap.put(e.getKey(), (((long) eloSum) << 32) | (divisor & 0xFFFFFFFFL));
+				}
 			}
 		}
 
-		int maxDivisor = queuetype.getGametypes().size();
-
 		// Iterate through globalEloMap
-		for (Object2LongMap.Entry<ProfileData> e : globalEloMap.object2LongEntrySet()) {
+		for (val e : globalEloMap.object2LongEntrySet()) {
 			long combinedValue = e.getLongValue();
 			int eloSum = (int) (combinedValue >>> 32);
 			int divisor = (int) combinedValue;

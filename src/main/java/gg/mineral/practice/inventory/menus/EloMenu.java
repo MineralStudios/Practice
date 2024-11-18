@@ -1,57 +1,72 @@
 package gg.mineral.practice.inventory.menus;
 
 import gg.mineral.api.collection.GlueList;
-
+import gg.mineral.practice.catagory.Catagory;
 import gg.mineral.practice.entity.ProfileData;
-
+import gg.mineral.practice.gametype.Gametype;
 import gg.mineral.practice.inventory.ClickCancelled;
 import gg.mineral.practice.inventory.PracticeMenu;
-import gg.mineral.practice.managers.QueuetypeManager;
-
+import gg.mineral.practice.queue.Queuetype;
+import gg.mineral.practice.queue.QueuetypeMenuEntry;
 import gg.mineral.practice.util.items.ItemBuilder;
 import gg.mineral.practice.util.items.ItemStacks;
 import gg.mineral.practice.util.messages.CC;
-import lombok.RequiredArgsConstructor;
+import it.unimi.dsi.fastutil.objects.Object2IntLinkedOpenHashMap;
+import lombok.NoArgsConstructor;
 import lombok.val;
 
 @ClickCancelled(true)
-@RequiredArgsConstructor
+@NoArgsConstructor(access = lombok.AccessLevel.PROTECTED)
 public class EloMenu extends PracticeMenu {
 
-    private final ProfileData arg;
+    protected ProfileData arg;
+    protected Queuetype queuetype;
+    protected Object2IntLinkedOpenHashMap<QueuetypeMenuEntry> menuEntries;
+
+    public EloMenu(ProfileData arg, Queuetype queuetype) {
+        this.arg = arg;
+        this.queuetype = queuetype;
+        this.menuEntries = getMenuEntries();
+    }
+
+    protected Object2IntLinkedOpenHashMap<QueuetypeMenuEntry> getMenuEntries() {
+        return queuetype.getMenuEntries();
+    }
+
+    protected boolean shouldSkip(QueuetypeMenuEntry menuEntry) {
+        return menuEntry instanceof Gametype gametype && gametype.isInCatagory();
+    }
 
     @Override
     public void update() {
+        setSlot(4,
+                ItemStacks.GLOBAL_ELO.name(
+                        CC.SECONDARY + CC.B + arg.getName() + "'s Global Elo")
+                        .lore(CC.WHITE + "The " + CC.SECONDARY + "average elo" + CC.WHITE
+                                + " across all game types.",
+                                " ",
+                                CC.WHITE + "Currently:",
+                                CC.GOLD + queuetype.getGlobalElo(arg))
 
-        for (val queuetype : QueuetypeManager.getQueuetypes().values()) {
-            if (!queuetype.isRanked())
+                        .build());
+
+        for (val entry : menuEntries.object2IntEntrySet()) {
+            val menuEntry = entry.getKey();
+            if (shouldSkip(menuEntry))
                 continue;
-            setSlot(4,
-                    ItemStacks.GLOBAL_ELO.name(
-                            CC.SECONDARY + CC.B + arg.getName() + "'s Global Elo")
-                            .lore(CC.WHITE + "The " + CC.SECONDARY + "average elo" + CC.WHITE
-                                    + " across all game types.",
-                                    " ",
-                                    CC.WHITE + "Currently:",
-                                    CC.GOLD + queuetype.getGlobalElo(arg))
 
-                            .build());
-
-            for (val gametype : queuetype.getGametypes().keySet()) {
-                if (gametype.isInCatagory())
-                    continue;
-                val item = new ItemBuilder(gametype.getDisplayItem())
-                        .name(CC.SECONDARY + CC.B + gametype.getDisplayName())
+            if (menuEntry instanceof Gametype gametype) {
+                val item = new ItemBuilder(menuEntry.getDisplayItem())
+                        .name(CC.SECONDARY + CC.B + menuEntry.getDisplayName())
                         .lore(" ",
                                 CC.WHITE + arg.getName() + "'s Elo:",
                                 CC.GOLD + gametype.getElo(arg))
                         .build();
-                setSlot(queuetype.getGametypes().getInt(gametype) + 18, item);
+                setSlot(entry.getIntValue() + 18, item);
+                continue;
             }
 
-            for (val entry : queuetype.getCatagories()
-                    .object2IntEntrySet()) {
-                val c = entry.getKey();
+            if (menuEntry instanceof Catagory c) {
                 val itemBuild = new ItemBuilder(c.getDisplayItem())
                         .name(CC.SECONDARY + CC.B + c.getDisplayName());
 

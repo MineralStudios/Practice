@@ -1,10 +1,10 @@
 package gg.mineral.practice.commands.stats;
 
 import gg.mineral.practice.commands.PlayerCommand;
-
-import gg.mineral.practice.entity.ProfileData;
 import gg.mineral.practice.inventory.menus.EloMenu;
 import gg.mineral.practice.managers.ProfileManager;
+import gg.mineral.practice.managers.QueuetypeManager;
+import gg.mineral.practice.queue.Queuetype;
 import lombok.val;
 
 public class EloCommand extends PlayerCommand {
@@ -17,13 +17,15 @@ public class EloCommand extends PlayerCommand {
 	public void execute(org.bukkit.entity.Player pl, String[] args) {
 		val profile = ProfileManager.getOrCreateProfile(pl);
 
-		if (args.length == 0) {
-			profile.openMenu(new EloMenu(profile));
-			return;
-		}
+		QueuetypeManager.getQueuetypes().values().stream().filter(Queuetype::isRanked).findAny()
+				.ifPresent(queuetype -> {
+					if (args.length == 0) {
+						profile.openMenu(new EloMenu(profile, queuetype));
+						return;
+					}
 
-		ProfileData eloProfile = ProfileManager.getProfileData(args[0], null);
-		profile.openMenu(new EloMenu(eloProfile));
-
+					val eloProfile = ProfileManager.getProfileData(args[0], null);
+					profile.openMenu(new EloMenu(eloProfile, queuetype));
+				});
 	}
 }
