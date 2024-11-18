@@ -29,7 +29,7 @@ public class PearlCooldown {
 	}
 
 	public boolean isActive(UUID uuid) {
-		return cooldowns.containsKey(uuid);
+		return cooldowns.getInt(uuid) > 0;
 	}
 
 	public int getTimeRemaining(UUID uuid) {

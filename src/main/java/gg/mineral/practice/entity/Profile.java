@@ -2,9 +2,11 @@ package gg.mineral.practice.entity;
 
 import java.util.Collections;
 import java.util.LinkedList;
+import java.util.List;
 import java.util.Queue;
-import java.util.Set;
+
 import java.util.UUID;
+import java.util.concurrent.CopyOnWriteArrayList;
 
 import org.bukkit.Bukkit;
 import org.bukkit.GameMode;
@@ -92,16 +94,16 @@ public class Profile extends ProfileData implements QueuedEntity {
 	private final Short2ObjectOpenHashMap<Int2ObjectOpenHashMap<ItemStack[]>> customKits = new Short2ObjectOpenHashMap<>();
 
 	@Getter
-	private final Set<UUID> visiblePlayers = new ObjectOpenHashSet<>();
+	private final Int2ObjectOpenHashMap<UUID> visiblePlayers = new Int2ObjectOpenHashMap<>();
 
 	@Getter
-	private final Set<UUID> visiblePlayersOnTab = new ObjectOpenHashSet<>();
+	private final ObjectOpenHashSet<UUID> visiblePlayersOnTab = new ObjectOpenHashSet<>();
 
 	@Getter
-	private final Set<UUID> setVisiblePlayers = new ObjectOpenHashSet<>();
+	private final List<UUID> setVisiblePlayers = new CopyOnWriteArrayList<>();
 
 	@Getter
-	private final Set<UUID> setVisiblePlayersOnTab = new ObjectOpenHashSet<>();
+	private final List<UUID> setVisiblePlayersOnTab = new CopyOnWriteArrayList<>();
 
 	public Profile(org.bukkit.entity.Player player) {
 		super(player.getUniqueId(), player.getName());
@@ -491,7 +493,7 @@ public class Profile extends ProfileData implements QueuedEntity {
 
 	public void removeFromView(UUID uuid) {
 		setVisiblePlayers.remove(uuid);
-		if (!visiblePlayers.contains(uuid) || uuid == this.getUuid())
+		if (!visiblePlayers.containsValue(uuid) || uuid == this.getUuid())
 			return;
 		val player = Bukkit.getPlayer(uuid);
 
@@ -506,7 +508,7 @@ public class Profile extends ProfileData implements QueuedEntity {
 
 	public void showPlayer(UUID uuid) {
 		setVisiblePlayers.add(uuid);
-		if (visiblePlayers.contains(uuid) || uuid == this.getUuid())
+		if (visiblePlayers.containsValue(uuid) || uuid == this.getUuid())
 			return;
 
 		val player = Bukkit.getPlayer(uuid);

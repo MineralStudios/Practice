@@ -2,20 +2,18 @@ package gg.mineral.practice.match.data;
 
 import org.bukkit.inventory.ItemStack;
 import org.eclipse.jdt.annotation.NonNull;
+import org.eclipse.jdt.annotation.Nullable;
 
 import gg.mineral.api.knockback.Knockback;
-import gg.mineral.practice.arena.Arena;
 import gg.mineral.practice.duel.DuelSettings;
 import gg.mineral.practice.entity.Profile;
 import gg.mineral.practice.gametype.Gametype;
 import gg.mineral.practice.kit.Kit;
-import gg.mineral.practice.managers.ArenaManager;
 import gg.mineral.practice.managers.GametypeManager;
 import gg.mineral.practice.queue.QueueSettings;
 import gg.mineral.practice.queue.Queuetype;
 import gg.mineral.practice.queue.QueueSettings.QueueEntry;
 import gg.mineral.practice.util.items.ItemStacks;
-import gg.mineral.practice.util.messages.CC;
 import it.unimi.dsi.fastutil.bytes.Byte2BooleanOpenHashMap;
 import it.unimi.dsi.fastutil.ints.Int2ObjectOpenHashMap;
 import lombok.Getter;
@@ -28,7 +26,9 @@ public class MatchData {
 	private Gametype gametype;
 	@Setter
 	private byte arenaId;
+	@NonNull
 	private Kit kit;
+	@Nullable
 	private Knockback knockback;
 	private int noDamageTicks = 20, pearlCooldown = 15;
 	private boolean hunger = true, boxing = false, build = false, damage = true, griefing = false, deadlyWater = false,
@@ -71,7 +71,8 @@ public class MatchData {
 		if (gametype != null)
 			setGametype(gametype);
 		this.arenaId = duelSettings.getArenaId();
-		this.kit = duelSettings.getKit();
+		this.kit = duelSettings.getKit() == null ? GametypeManager.getGametypes().get((byte) 0).getKit()
+				: duelSettings.getKit();
 		this.knockback = duelSettings.getKnockback();
 		this.noDamageTicks = duelSettings.getNoDamageTicks();
 		this.hunger = duelSettings.isHunger();
@@ -102,43 +103,6 @@ public class MatchData {
 		this.deadlyWater = gametype.isDeadlyWater();
 		this.regeneration = gametype.isRegeneration();
 		this.pearlCooldown = gametype.getPearlCooldown();
-	}
-
-	public String toString() {
-		StringBuilder sb = new StringBuilder();
-		String newLine = CC.R + "\n";
-
-		Arena arena = ArenaManager.getArenas().get(arenaId);
-
-		sb.append(CC.GREEN + "Kit: " + kit.getName());
-		sb.append(newLine);
-		sb.append(CC.GREEN + "Arena: " + arena.getDisplayName());
-		sb.append(newLine);
-		sb.append(CC.GREEN + "Knockback: " + knockback.getName());
-		sb.append(newLine);
-		sb.append(CC.GREEN + "Hit Delay: " + noDamageTicks);
-		sb.append(newLine);
-		sb.append(CC.GREEN + "Hunger: " + hunger);
-		sb.append(newLine);
-		sb.append(CC.GREEN + "Build: " + build);
-		sb.append(newLine);
-		sb.append(CC.GREEN + "Damage: " + damage);
-		sb.append(newLine);
-		sb.append(CC.GREEN + "Griefing: " + griefing);
-		sb.append(newLine);
-		sb.append(CC.GREEN + "Deadly Water: " + deadlyWater);
-		sb.append(newLine);
-		sb.append(CC.GREEN + "Regeneration: " + regeneration);
-		// TODO 2v2 with bots in /duel
-		// sb.append(newLine);
-		// sb.append(CC.GREEN + "2v2: " + team2v2);
-		// sb.append(newLine);
-		// sb.append(CC.GREEN + "Bots: " + bots);
-		sb.append(newLine);
-		sb.append(CC.GREEN + "Boxing: " + boxing);
-		sb.append(newLine);
-		sb.append(CC.GREEN + "Pearl Cooldown: " + pearlCooldown + " seconds");
-		return sb.toString();
 	}
 
 	public Int2ObjectOpenHashMap<ItemStack[]> getCustomKits(Profile p) {

@@ -2,7 +2,6 @@ package gg.mineral.practice.listeners;
 
 import java.util.UUID;
 
-import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.craftbukkit.v1_8_R3.entity.CraftEntity;
@@ -79,22 +78,18 @@ public class PacketListener implements Listener {
         playerConnection.getOutgoingPacketListeners().add(packet -> {
             if (packet instanceof PacketPlayOutNamedEntitySpawn namedEntitySpawn) {
                 val uuid = namedEntitySpawn.getB();
+                val entityID = namedEntitySpawn.getA();
                 if (!uuid.equals(profile.getUuid()) && !profile.getSetVisiblePlayers().contains(uuid))
                     return true;
 
-                profile.getVisiblePlayers().add(uuid);
+                profile.getVisiblePlayers().put(entityID, uuid);
             }
 
             if (packet instanceof PacketPlayOutEntityDestroy destroy)
                 for (int id : destroy.getA()) {
                     if (id == profile.getRidingEntityID())
                         profile.setRidingEntityID(-1);
-                    for (val uuid : profile.getVisiblePlayers()) {
-                        val player = Bukkit.getPlayer(uuid);
-                        if (player instanceof CraftPlayer craftPlayer)
-                            if (craftPlayer.getHandle().getId() == id)
-                                profile.getVisiblePlayers().remove(uuid);
-                    }
+                    profile.getVisiblePlayers().remove(id);
                 }
 
             if (packet instanceof PacketPlayOutPlayerInfo playerInfo) {
@@ -114,11 +109,11 @@ public class PacketListener implements Listener {
                         continue;
                     }
 
-                    if (action == PacketPlayOutPlayerInfo.EnumPlayerInfoAction.ADD_PLAYER)
+                    if (action == PacketPlayOutPlayerInfo.EnumPlayerInfoAction.ADD_PLAYER) {
                         profile.getVisiblePlayersOnTab().add(uuid);
-                    else if (action == PacketPlayOutPlayerInfo.EnumPlayerInfoAction.REMOVE_PLAYER)
+                    } else if (action == PacketPlayOutPlayerInfo.EnumPlayerInfoAction.REMOVE_PLAYER) {
                         profile.getVisiblePlayersOnTab().remove(uuid);
-                    else if (!uuid.equals(profile.getUuid()) && !profile.getVisiblePlayersOnTab().contains(uuid))
+                    } else if (!uuid.equals(profile.getUuid()) && !profile.getVisiblePlayersOnTab().contains(uuid))
                         data.remove();
                 }
 
@@ -194,7 +189,7 @@ public class PacketListener implements Listener {
                         if (pass) {
                             isInMatch = true;
                             if (player.getUniqueId().equals(profile.getUuid())
-                                    || profile.getVisiblePlayers().contains(player.getUniqueId())) {
+                                    || profile.getVisiblePlayers().containsValue(player.getUniqueId())) {
                                 isVisible = true;
                                 break;
                             }
@@ -230,7 +225,7 @@ public class PacketListener implements Listener {
                     isInMatch = true;
                     val shooter = (Player) projectile.getShooter();
                     if (shooter.getUniqueId().equals(profile.getUuid())
-                            || profile.getVisiblePlayers().contains(shooter.getUniqueId())) {
+                            || profile.getVisiblePlayers().containsValue(shooter.getUniqueId())) {
                         isVisible = true;
                         break;
                     }
@@ -250,7 +245,7 @@ public class PacketListener implements Listener {
                 if (entity == null)
                     return false;
 
-                if (!profile.getVisiblePlayers().contains(entity.getUniqueID()))
+                if (!profile.getVisiblePlayers().containsValue(entity.getUniqueID()))
                     return true;
             }
 
@@ -263,7 +258,7 @@ public class PacketListener implements Listener {
                 if (entity == null)
                     return false;
 
-                if (!profile.getVisiblePlayers().contains(entity.getUniqueID()))
+                if (!profile.getVisiblePlayers().containsValue(entity.getUniqueID()))
                     return true;
             }
 
@@ -276,7 +271,7 @@ public class PacketListener implements Listener {
                 if (entity == null)
                     return false;
 
-                if (!profile.getVisiblePlayers().contains(entity.getUniqueID()))
+                if (!profile.getVisiblePlayers().containsValue(entity.getUniqueID()))
                     return true;
             }
 
@@ -290,7 +285,7 @@ public class PacketListener implements Listener {
                 if (entity == null)
                     return false;
 
-                if (!profile.getVisiblePlayers().contains(entity.getUniqueID()))
+                if (!profile.getVisiblePlayers().containsValue(entity.getUniqueID()))
                     return true;
             }
 
@@ -312,7 +307,7 @@ public class PacketListener implements Listener {
                     isInMatch = true;
                     val shooter = (Player) projectile.getShooter();
                     if (shooter.getUniqueId().equals(profile.getUuid())
-                            || profile.getVisiblePlayers().contains(shooter.getUniqueId())) {
+                            || profile.getVisiblePlayers().containsValue(shooter.getUniqueId())) {
                         isVisible = true;
                         break;
                     }
@@ -332,7 +327,7 @@ public class PacketListener implements Listener {
                 if (entity == null)
                     return false;
 
-                if (!profile.getVisiblePlayers().contains(entity.getUniqueID()))
+                if (!profile.getVisiblePlayers().containsValue(entity.getUniqueID()))
                     return true;
             }
 
@@ -360,7 +355,7 @@ public class PacketListener implements Listener {
 
                     isInMatch = true;
                     if (player.getUniqueId().equals(profile.getUuid())
-                            || profile.getVisiblePlayers().contains(player.getUniqueId())) {
+                            || profile.getVisiblePlayers().containsValue(player.getUniqueId())) {
                         isVisible = true;
                         break;
                     }
@@ -385,7 +380,7 @@ public class PacketListener implements Listener {
 
                     isInMatch = true;
                     if (player.getUniqueId().equals(profile.getUuid())
-                            || profile.getVisiblePlayers().contains(player.getUniqueId())) {
+                            || profile.getVisiblePlayers().containsValue(player.getUniqueId())) {
                         isVisible = true;
                         break;
                     }
@@ -404,7 +399,7 @@ public class PacketListener implements Listener {
                 if (entity == null)
                     return false;
 
-                if (!profile.getVisiblePlayers().contains(entity.getUniqueID()))
+                if (!profile.getVisiblePlayers().containsValue(entity.getUniqueID()))
                     return true;
             }
 
@@ -417,7 +412,7 @@ public class PacketListener implements Listener {
                 if (entity == null)
                     return false;
 
-                if (!profile.getVisiblePlayers().contains(entity.getUniqueID()))
+                if (!profile.getVisiblePlayers().containsValue(entity.getUniqueID()))
                     return true;
             }
 
@@ -430,7 +425,7 @@ public class PacketListener implements Listener {
                 if (entity == null)
                     return false;
 
-                if (!profile.getVisiblePlayers().contains(entity.getUniqueID()))
+                if (!profile.getVisiblePlayers().containsValue(entity.getUniqueID()))
                     return true;
             }
 
@@ -443,7 +438,7 @@ public class PacketListener implements Listener {
                 if (entity == null)
                     return false;
 
-                if (!profile.getVisiblePlayers().contains(entity.getUniqueID()))
+                if (!profile.getVisiblePlayers().containsValue(entity.getUniqueID()))
                     return true;
             }
 
@@ -456,7 +451,7 @@ public class PacketListener implements Listener {
                 if (entity == null)
                     return false;
 
-                if (!profile.getVisiblePlayers().contains(entity.getUniqueID()))
+                if (!profile.getVisiblePlayers().containsValue(entity.getUniqueID()))
                     return true;
             }
 
@@ -469,7 +464,7 @@ public class PacketListener implements Listener {
                 if (entity == null)
                     return false;
 
-                if (!profile.getVisiblePlayers().contains(entity.getUniqueID()))
+                if (!profile.getVisiblePlayers().containsValue(entity.getUniqueID()))
                     return true;
             }
 
@@ -482,7 +477,7 @@ public class PacketListener implements Listener {
                 if (entity == null)
                     return false;
 
-                if (!profile.getVisiblePlayers().contains(entity.getUniqueID()))
+                if (!profile.getVisiblePlayers().containsValue(entity.getUniqueID()))
                     return true;
             }
 
@@ -495,7 +490,7 @@ public class PacketListener implements Listener {
                 if (entity == null)
                     return false;
 
-                if (!profile.getVisiblePlayers().contains(entity.getUniqueID()))
+                if (!profile.getVisiblePlayers().containsValue(entity.getUniqueID()))
                     return true;
             }
 
@@ -508,7 +503,7 @@ public class PacketListener implements Listener {
                 if (entity == null)
                     return false;
 
-                if (!profile.getVisiblePlayers().contains(entity.getUniqueID()))
+                if (!profile.getVisiblePlayers().containsValue(entity.getUniqueID()))
                     return true;
             }
 
@@ -523,7 +518,7 @@ public class PacketListener implements Listener {
                 if (entity == null)
                     return false;
 
-                if (!profile.getVisiblePlayers().contains(entity.getUniqueID()))
+                if (!profile.getVisiblePlayers().containsValue(entity.getUniqueID()))
                     return true;
             }
 
@@ -544,9 +539,12 @@ public class PacketListener implements Listener {
         if (dropper == null)
             return;
 
+        if (dropper.equals(receiver.getUniqueId()))
+            return;
+
         val receiverProfile = ProfileManager.getProfile(receiver);
 
-        if (receiverProfile == null || !receiverProfile.getVisiblePlayers().contains(dropper))
+        if (receiverProfile == null || !receiverProfile.getVisiblePlayers().containsValue(dropper))
             event.setCancelled(true);
     }
 
@@ -574,8 +572,10 @@ public class PacketListener implements Listener {
             return;
 
         val shooter = (Player) arrow.getShooter();
+        if (shooter.getUniqueId().equals(receiver.getUniqueId()))
+            return;
         val receiverProfile = ProfileManager.getProfile(receiver);
-        if (receiverProfile == null || !receiverProfile.getVisiblePlayers().contains(shooter.getUniqueId()))
+        if (receiverProfile == null || !receiverProfile.getVisiblePlayers().containsValue(shooter.getUniqueId()))
             event.setCancelled(true);
     }
 
@@ -585,9 +585,11 @@ public class PacketListener implements Listener {
         if (potion.getShooter() instanceof Player shooter) {
             for (val livingEntity : event.getAffectedEntities()) {
                 if (livingEntity instanceof Player receiver) {
+                    if (shooter.getUniqueId().equals(receiver.getUniqueId()))
+                        return;
                     val receiverProfile = ProfileManager.getProfile(receiver);
                     if (receiverProfile == null
-                            || !receiverProfile.getVisiblePlayers().contains(shooter.getUniqueId())) {
+                            || !receiverProfile.getVisiblePlayers().containsValue(shooter.getUniqueId())) {
                         event.setCancelled(true);
                         event.setIntensity(receiver, 0.0D);
                     }

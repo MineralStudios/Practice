@@ -5,6 +5,7 @@ import org.bukkit.Instrument;
 import org.bukkit.Note;
 import org.bukkit.entity.Arrow;
 import org.bukkit.entity.Player;
+import org.bukkit.entity.Projectile;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.entity.EntityCombustByEntityEvent;
@@ -12,8 +13,8 @@ import org.bukkit.event.entity.EntityDamageByEntityEvent;
 import org.bukkit.event.entity.EntityDamageEvent;
 import org.bukkit.event.entity.EntityDamageEvent.DamageCause;
 
-import gg.mineral.practice.bukkit.events.PlayerDamageByArrowEvent;
 import gg.mineral.practice.bukkit.events.PlayerDamageByPlayerEvent;
+import gg.mineral.practice.bukkit.events.PlayerDamageByProjectileEvent;
 import gg.mineral.practice.bukkit.events.PlayerDamageEvent;
 import gg.mineral.practice.entity.PlayerStatus;
 import gg.mineral.practice.managers.ProfileManager;
@@ -31,15 +32,14 @@ public class DamageListener implements Listener {
 		PlayerDamageEvent event;
 
 		if (e instanceof EntityDamageByEntityEvent entityDamageByEntityEvent) {
-			if (entityDamageByEntityEvent.getDamager() instanceof Arrow arrow)
-				event = new PlayerDamageByArrowEvent(
-						arrow, e);
+			if (entityDamageByEntityEvent.getDamager() instanceof Projectile projectile)
+				event = new PlayerDamageByProjectileEvent(
+						projectile, e);
 			else if (entityDamageByEntityEvent.getDamager() instanceof Player damager)
 				event = new PlayerDamageByPlayerEvent(
 						damager, e);
 			else
 				event = new PlayerDamageEvent(e);
-
 		} else
 			event = new PlayerDamageEvent(e);
 
@@ -73,11 +73,6 @@ public class DamageListener implements Listener {
 			e.setCancelled(true);
 			return;
 		}
-
-		if (e instanceof PlayerDamageByPlayerEvent || e instanceof PlayerDamageByArrowEvent)
-			return;
-
-		victim.setKiller(null);
 	}
 
 	@EventHandler
@@ -121,13 +116,13 @@ public class DamageListener implements Listener {
 	}
 
 	@EventHandler
-	public void onPlayerDamageByArrow(PlayerDamageByArrowEvent e) {
-		val arrow = e.getDamager();
+	public void onPlayerDamageByProjectile(PlayerDamageByProjectileEvent e) {
+		val projectile = e.getDamager();
 
-		if (!(arrow.getShooter() instanceof Player))
+		if (!(projectile.getShooter() instanceof Player))
 			return;
 
-		val shooter = (Player) arrow.getShooter();
+		val shooter = (Player) projectile.getShooter();
 		val attacker = ProfileManager
 				.getProfile(shooter.getUniqueId(), p -> p.getPlayerStatus() == PlayerStatus.FIGHTING);
 
@@ -151,10 +146,12 @@ public class DamageListener implements Listener {
 			return;
 		}
 
-		int health = (int) e.getPlayer().getHealth();
-		ChatMessages.HEALTH.clone().replace("%player%", e.getPlayer().getName()).replace("%health%", "" + health)
-				.send(shooter);
-		shooter.playNote(shooter.getLocation(), Instrument.PIANO, new Note(20));
+		if (projectile instanceof Arrow) {
+			int health = (int) e.getPlayer().getHealth();
+			ChatMessages.HEALTH.clone().replace("%player%", e.getPlayer().getName()).replace("%health%", "" + health)
+					.send(shooter);
+			shooter.playNote(shooter.getLocation(), Instrument.PIANO, new Note(20));
+		}
 
 		victim.setKiller(attacker);
 	}

@@ -4,6 +4,7 @@ import gg.mineral.practice.inventory.ClickCancelled;
 import gg.mineral.practice.inventory.PracticeMenu;
 import gg.mineral.practice.inventory.SubmitAction;
 import gg.mineral.practice.managers.ArenaManager;
+import gg.mineral.practice.managers.GametypeManager;
 import gg.mineral.practice.util.items.ItemStacks;
 import gg.mineral.practice.util.messages.CC;
 import gg.mineral.server.combat.KnockbackProfileList;
@@ -26,10 +27,13 @@ public class MechanicsMenu extends PracticeMenu {
 						: KnockbackProfileList.getDefaultKnockbackProfile()
 				: duelSettings.getKnockback();
 
+		val kit = duelSettings.getKit() == null ? GametypeManager.getGametypes().get((byte) 0).getKit()
+				: duelSettings.getKit();
+
 		setSlot(10,
 				ItemStacks.SELECT_KIT
 						.lore(CC.WHITE + "The " + CC.SECONDARY + "items" + CC.WHITE + " in your inventory.", " ",
-								CC.WHITE + "Currently:", CC.GOLD + duelSettings.getKit().getName(),
+								CC.WHITE + "Currently:", CC.GOLD + kit.getName(),
 								CC.BOARD_SEPARATOR, CC.ACCENT + "Click to change kit.")
 						.build(),
 				interaction -> interaction.getProfile().openMenu(new SelectKitMenu(this)));

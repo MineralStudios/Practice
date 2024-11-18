@@ -1,5 +1,6 @@
 package gg.mineral.practice.entity.handler;
 
+import org.bukkit.Bukkit;
 import org.bukkit.GameMode;
 
 import gg.mineral.practice.entity.PlayerStatus;
@@ -15,7 +16,6 @@ import gg.mineral.practice.scoreboard.impl.SpectatorScoreboard;
 import gg.mineral.practice.traits.Spectatable;
 import gg.mineral.practice.util.PlayerUtil;
 import gg.mineral.practice.util.collection.ProfileList;
-
 import gg.mineral.practice.util.messages.impl.ChatMessages;
 import gg.mineral.practice.util.messages.impl.ErrorMessages;
 import lombok.Getter;
@@ -105,7 +105,13 @@ public class SpectateHandler {
 
         this.spectatable = toBeSpectated.isInEvent() ? toBeSpectated.getEvent() : toBeSpectated.getMatch();
 
-        if (spectatable == null || spectatable.isEnded())
+        if (spectatable == null) {
+            Bukkit.getLogger().warning("SpectateHandler#spectate: spectatable is null");
+            this.profile.message(ErrorMessages.PLAYER_NOT_IN_MATCH);
+            return;
+        }
+
+        if (spectatable.isEnded())
             return;
 
         if (!toBeSpectated.isInEvent()) {

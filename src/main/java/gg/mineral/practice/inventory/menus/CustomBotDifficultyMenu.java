@@ -21,8 +21,8 @@ import lombok.val;
 public class CustomBotDifficultyMenu extends PracticeMenu {
     private final SelectGametypeMenu menu;
     final static DecimalFormat DECIMAL_FORMAT = new DecimalFormat("#.###");
-    private Difficulty premadeDifficulty = Difficulty.EASY;
-    private BotConfiguration difficulty = Difficulty.EASY.getConfiguration(null);
+    private Difficulty premadeDifficulty = Difficulty.CUSTOM;
+    private BotConfiguration difficulty = null;
 
     static {
         DECIMAL_FORMAT.setRoundingMode(RoundingMode.HALF_DOWN);
@@ -32,6 +32,19 @@ public class CustomBotDifficultyMenu extends PracticeMenu {
     public void update() {
 
         val queueSettings = viewer.getQueueSettings();
+
+        if (this.difficulty == null) {
+            val savedDiff = queueSettings.getCustomBotConfiguration();
+
+            for (val diff : Difficulty.values()) {
+                if (diff.configEquals(savedDiff)) {
+                    premadeDifficulty = diff;
+                    break;
+                }
+            }
+
+            this.difficulty = premadeDifficulty.getConfiguration(queueSettings);
+        }
 
         setSlot(0, ItemStacks.AIM_SPEED.name(CC.SECONDARY + CC.B + "Aim Speed")
                 .lore(CC.WHITE + "The speed the bot " + CC.SECONDARY + "rotates" + CC.WHITE

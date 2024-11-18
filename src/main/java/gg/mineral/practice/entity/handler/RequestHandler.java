@@ -65,7 +65,7 @@ public class RequestHandler {
         ChatMessages.DUEL_REQUEST_SENT.clone().replace("%player%", receiver.getName()).send(profile.getPlayer());
 
         val hoverEvent = new HoverEvent(HoverEvent.Action.SHOW_TEXT,
-                new ComponentBuilder(profile.getQueueSettings().toString()).create());
+                new ComponentBuilder(profile.getDuelSettings().toString()).create());
 
         ChatMessages.DUEL_REQUEST_RECIEVED.clone().replace("%player%", sender)
                 .setTextEvent(new ClickEvent(ClickEvent.Action.RUN_COMMAND, "/accept " + profile.getName()),
