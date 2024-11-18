@@ -143,7 +143,7 @@ public class TeamMatch extends Match {
         team2Players.alive(teamMember -> PlayerUtil.teleport(teamMember.getPlayer(), location2));
 
         participants.forEach(profile -> prepareForMatch(profile));
-
+      
         startCountdown();
     }
 
