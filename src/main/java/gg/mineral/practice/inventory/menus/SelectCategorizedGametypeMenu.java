@@ -43,7 +43,7 @@ public class SelectCategorizedGametypeMenu extends SelectGametypeMenu {
 
 	@Override
 	public void onClose() {
-		if (viewer.getPlayerStatus() == PlayerStatus.FIGHTING || viewer.getQueueSettings().isArenaSelection())
+		if (viewer.getPlayerStatus() == PlayerStatus.FIGHTING || viewer.getOpenMenu() != null)
 			return;
 
 		viewer.openMenu(new SelectGametypeMenu(queuetype, type));
