@@ -67,7 +67,8 @@ public class TournamentMatch extends Match {
             } else
                 attacker.getInventory().setInventoryForLobby();
 
-            attacker.removeFromMatch();
+            if (attacker.getMatch().equals(this))
+                attacker.removeFromMatch();
 
         }, getPostMatchTime());
 

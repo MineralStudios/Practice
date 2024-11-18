@@ -158,6 +158,11 @@ public class QueueSystem {
     }
 
     @Nullable
+    public static QueueEntry getQueueEntry(Profile profile, Queuetype queuetype, Gametype gametype) {
+        return getQueueEntry(profile.isInParty() ? profile.getParty() : profile, queuetype, gametype);
+    }
+
+    @Nullable
     public static QueueEntry getQueueEntry(QueuedEntity entity, Queuetype queuetype, Gametype gametype) {
         short queueAndGametypeHash = (short) (queuetype.getId() << 8 | gametype.getId());
 
@@ -171,6 +176,10 @@ public class QueueSystem {
         return null;
     }
 
+    public static List<QueueEntry> getQueueEntries(Profile profile) {
+        return getQueueEntries(profile.isInParty() ? profile.getParty() : profile);
+    }
+
     public static List<QueueEntry> getQueueEntries(QueuedEntity entity) {
         val queueEntries = new GlueList<QueueEntry>();
 
@@ -182,6 +191,10 @@ public class QueueSystem {
         return queueEntries;
     }
 
+    public static boolean removePlayerFromQueue(Profile profile, Queuetype queuetype, Gametype gametype) {
+        return removePlayerFromQueue(profile.isInParty() ? profile.getParty() : profile, queuetype, gametype);
+    }
+
     public static boolean removePlayerFromQueue(QueuedEntity entity, Queuetype queuetype, Gametype gametype) {
         short queueAndGametypeHash = (short) (queuetype.getId() << 8 | gametype.getId());
 
@@ -190,6 +203,10 @@ public class QueueSystem {
         queueRecords.removeIf(record -> record.entity().equals(entity));
         return queueMap.values().stream()
                 .anyMatch(set -> set.stream().anyMatch(record -> record.entity().equals(entity)));
+    }
+
+    public static void removePlayerFromQueue(Profile profile) {
+        removePlayerFromQueue(profile.isInParty() ? profile.getParty() : profile);
     }
 
     public static void removePlayerFromQueue(QueuedEntity player) {

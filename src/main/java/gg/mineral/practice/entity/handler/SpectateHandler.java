@@ -105,7 +105,7 @@ public class SpectateHandler {
 
         this.spectatable = toBeSpectated.isInEvent() ? toBeSpectated.getEvent() : toBeSpectated.getMatch();
 
-        if (spectatable.isEnded())
+        if (spectatable == null || spectatable.isEnded())
             return;
 
         if (!toBeSpectated.isInEvent()) {
