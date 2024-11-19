@@ -143,8 +143,6 @@ public class SpectateHandler {
 
         ChatMessages.STOP_SPECTATING.send(profile.getPlayer());
 
-        updateVisiblity();
-
         if (spectatable instanceof TeamMatch match) {
             val groups = match.getNametagGroups();
 
@@ -162,9 +160,5 @@ public class SpectateHandler {
 
         profile.getInventory().setInventoryForSpectating();
         profile.setPlayerStatus(PlayerStatus.SPECTATING);
-    }
-
-    private void updateVisiblity() {
-        profile.updateVisiblity();
     }
 }

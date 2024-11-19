@@ -17,8 +17,16 @@ public class MovementListener implements Listener {
     @EventHandler
     public void onPearlTeleport(PlayerTeleportEvent event) {
 
-        if (event.getCause() != PlayerTeleportEvent.TeleportCause.ENDER_PEARL)
+        if (event.getCause() != PlayerTeleportEvent.TeleportCause.ENDER_PEARL) {
+            val profile = ProfileManager.getProfile(
+                    event.getPlayer().getUniqueId());
+
+            if (profile == null)
+                return;
+
+            profile.updateVisiblity();
             return;
+        }
 
         val pearlLocation = event.getTo();
         val fromLocation = event.getFrom();

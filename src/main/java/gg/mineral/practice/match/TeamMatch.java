@@ -119,12 +119,13 @@ public class TeamMatch extends Match {
 
     @Override
     protected void startMatchTimeLimit() {
-        Bukkit.getServer().getScheduler().runTaskLater(PracticePlugin.INSTANCE, () -> {
-            if (isEnded())
-                return;
-            for (val profile : team1Players.alive())
-                end(profile);
-        }, getTimeLimitMillis());
+        Bukkit.getServer().getScheduler().scheduleSyncDelayedTask(PracticePlugin.INSTANCE,
+                () -> {
+                    if (isEnded())
+                        return;
+                    for (val profile : team1Players.alive())
+                        end(profile);
+                }, getTimeLimitMillis());
     }
 
     @Override
@@ -152,10 +153,10 @@ public class TeamMatch extends Match {
         team1Players.alive(teamMember -> PlayerUtil.teleport(teamMember.getPlayer(), location1));
         team2Players.alive(teamMember -> PlayerUtil.teleport(teamMember.getPlayer(), location2));
 
-        participants.forEach(profile -> prepareForMatch(profile));
+        prepareForMatch(participants);
 
-        startCountdown();
         startMatchTimeLimit();
+        startCountdown();
     }
 
     @Override
@@ -229,7 +230,6 @@ public class TeamMatch extends Match {
         }
 
         ended = true;
-        matchTimeLimitTask.cancel();
 
         for (val nametagGroup : nametagGroups) {
             nametagGroup.delete();

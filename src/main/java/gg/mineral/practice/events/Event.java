@@ -205,8 +205,4 @@ public class Event implements Spectatable {
             }.runTaskLater(PracticePlugin.INSTANCE, 100);
         }
     }
-
-    public void updateVisiblity(Event event, Profile profile) {
-        profile.updateVisiblity();
-    }
 }

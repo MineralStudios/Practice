@@ -73,7 +73,9 @@ public class Profile extends ProfileData implements QueuedEntity {
 	private DuelSettings duelSettings;
 	private SpectateHandler spectateHandler = new SpectateHandler(this);
 	private RequestHandler requestHandler = new RequestHandler(this);
-	private boolean playersVisible = true, partyOpenCooldown = false, scoreboardEnabled = true;
+	@Setter
+	private boolean playersVisible = true;
+	private boolean partyOpenCooldown = false, scoreboardEnabled = true;
 	@Setter
 	boolean nightMode = false, dead = false;
 	@Setter
@@ -185,13 +187,6 @@ public class Profile extends ProfileData implements QueuedEntity {
 
 	public void openMenu(Menu m) {
 		m.open(this);
-	}
-
-	public void setPlayersVisible(boolean playersVisible) {
-		if (getPlayerStatus() != PlayerStatus.IDLE && getPlayerStatus() != PlayerStatus.QUEUEING)
-			return;
-
-		this.playersVisible = playersVisible;
 	}
 
 	public void removeScoreboard() {
@@ -501,7 +496,7 @@ public class Profile extends ProfileData implements QueuedEntity {
 				&& getPlayer().getHandle().getWorld() instanceof WorldServer worldServer) {
 			val entry = worldServer.tracker.trackedEntities
 					.get(craftPlayer.getHandle().getId());
-			if (entry != null && !entry.trackedPlayers.contains(this.getPlayer().getHandle()))
+			if (entry != null && entry.trackedPlayers.contains(this.getPlayer().getHandle()))
 				entry.clear(this.getPlayer().getHandle());
 		}
 	}
@@ -524,51 +519,55 @@ public class Profile extends ProfileData implements QueuedEntity {
 
 	public void updateVisiblity() {
 
-		val players = getPlayer().getWorld().getPlayers();
+		Bukkit.getScheduler().scheduleSyncDelayedTask(PracticePlugin.INSTANCE, () -> {
 
-		for (val uuid : getSetVisiblePlayers())
-			if (!testVisibility(uuid))
-				removeFromView(uuid);
+			for (val uuid : getSetVisiblePlayersOnTab())
+				if (!testTabVisibility(uuid))
+					removeFromTab(uuid);
 
-		for (val uuid : getSetVisiblePlayersOnTab())
-			if (!testTabVisibility(uuid))
-				removeFromTab(uuid);
+			for (val uuid : getSetVisiblePlayers())
+				if (!testVisibility(uuid))
+					removeFromView(uuid);
 
-		for (val player : players) {
-			val uuid = player.getUniqueId();
-			var removedFromTab = false;
+			val players = getPlayer().getWorld().getPlayers();
 
-			if (testTabVisibility(uuid))
-				showOnTab(uuid);
-			else {
-				removeFromTab(uuid);
-				removedFromTab = true;
+			for (val player : players) {
+				val uuid = player.getUniqueId();
+				var removedFromTab = false;
+
+				if (this.testTabVisibility(uuid))
+					showOnTab(uuid);
+				else {
+					removeFromTab(uuid);
+					removedFromTab = true;
+				}
+
+				if (!removedFromTab && testVisibility(uuid))
+					showPlayer(uuid);
+				else
+					removeFromView(uuid);
+
+				val profile = ProfileManager.getProfile(uuid);
+
+				if (profile == null)
+					continue;
+
+				removedFromTab = false;
+
+				if (profile.testTabVisibility(this.uuid))
+					profile.showOnTab(this.uuid);
+				else {
+					profile.removeFromTab(this.uuid);
+					removedFromTab = true;
+				}
+
+				if (!removedFromTab && profile.testVisibility(this.uuid))
+					profile.showPlayer(this.uuid);
+				else
+					profile.removeFromView(this.uuid);
 			}
+		});
 
-			if (!removedFromTab && testVisibility(uuid))
-				showPlayer(uuid);
-			else
-				removeFromView(uuid);
-
-			val profile = ProfileManager.getProfile(uuid);
-
-			if (profile == null)
-				continue;
-
-			removedFromTab = false;
-
-			if (profile.testTabVisibility(this.uuid))
-				profile.showOnTab(this.uuid);
-			else {
-				profile.removeFromTab(this.uuid);
-				removedFromTab = true;
-			}
-
-			if (!removedFromTab && profile.testVisibility(this.uuid))
-				profile.showPlayer(this.uuid);
-			else
-				profile.removeFromView(this.uuid);
-		}
 	}
 
 	public void resetQueueSettings() {
