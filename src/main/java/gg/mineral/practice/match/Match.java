@@ -23,6 +23,7 @@ import org.bukkit.inventory.ItemStack;
 import org.bukkit.potion.PotionEffect;
 import org.bukkit.potion.PotionEffectType;
 import org.bukkit.projectiles.ProjectileSource;
+import org.bukkit.scheduler.BukkitTask;
 import org.eclipse.jdt.annotation.Nullable;
 
 import gg.mineral.api.collection.GlueList;
@@ -56,6 +57,7 @@ import gg.mineral.practice.util.messages.impl.TextComponents;
 import gg.mineral.practice.util.world.WorldUtil;
 import it.unimi.dsi.fastutil.objects.Object2ObjectOpenHashMap;
 import lombok.Getter;
+import lombok.RequiredArgsConstructor;
 import lombok.val;
 import net.md_5.bungee.api.chat.ClickEvent;
 import net.md_5.bungee.api.chat.ComponentBuilder;
@@ -67,6 +69,7 @@ import net.minecraft.server.v1_8_R3.PacketPlayOutAttachEntity;
 import net.minecraft.server.v1_8_R3.PacketPlayOutEntityDestroy;
 import net.minecraft.server.v1_8_R3.PacketPlayOutSpawnEntityLiving;
 
+@RequiredArgsConstructor
 public class Match implements Spectatable {
 
 	@Getter
@@ -92,6 +95,8 @@ public class Match implements Spectatable {
 	@Getter
 	protected static PearlCooldown pearlCooldown = new PearlCooldown();
 
+	protected BukkitTask matchTimeLimitTask;
+
 	public Match(Profile profile1, Profile profile2, MatchData matchData) {
 		this(matchData);
 		this.profile1 = profile1;
@@ -99,13 +104,22 @@ public class Match implements Spectatable {
 		addParicipants(profile1, profile2);
 	}
 
-	public Match(MatchData matchData) {
-		this.data = matchData;
-	}
-
 	public void prepareForMatch(ProfileList profiles) {
 		for (val profile : profiles)
 			prepareForMatch(profile);
+	}
+
+	protected int getTimeLimitMillis() {
+		val mins = 5 * Math.log10(5 * participants.size());
+		return (int) (mins * 60 * 1000);
+	}
+
+	protected void startMatchTimeLimit() {
+		this.matchTimeLimitTask = Bukkit.getServer().getScheduler().runTaskLater(PracticePlugin.INSTANCE, () -> {
+			if (isEnded())
+				return;
+			end(profile1);
+		}, getTimeLimitMillis());
 	}
 
 	public Kit getKit(Profile p, int loadoutSlot) {
@@ -357,6 +371,7 @@ public class Match implements Spectatable {
 		prepareForMatch(participants);
 		handleOpponentMessages();
 		startCountdown();
+		startMatchTimeLimit();
 	}
 
 	public void end(Profile victim) {
@@ -364,6 +379,7 @@ public class Match implements Spectatable {
 			return;
 
 		ended = true;
+		matchTimeLimitTask.cancel();
 		end(getOpponent(victim), victim);
 	}
 

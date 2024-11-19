@@ -118,6 +118,16 @@ public class TeamMatch extends Match {
     }
 
     @Override
+    protected void startMatchTimeLimit() {
+        Bukkit.getServer().getScheduler().runTaskLater(PracticePlugin.INSTANCE, () -> {
+            if (isEnded())
+                return;
+            for (val profile : team1Players.alive())
+                end(profile);
+        }, getTimeLimitMillis());
+    }
+
+    @Override
     public void start() {
 
         if (noArenas())
@@ -145,6 +155,7 @@ public class TeamMatch extends Match {
         participants.forEach(profile -> prepareForMatch(profile));
 
         startCountdown();
+        startMatchTimeLimit();
     }
 
     @Override
@@ -218,6 +229,7 @@ public class TeamMatch extends Match {
         }
 
         ended = true;
+        matchTimeLimitTask.cancel();
 
         for (val nametagGroup : nametagGroups) {
             nametagGroup.delete();
