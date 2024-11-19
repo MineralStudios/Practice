@@ -200,6 +200,21 @@ public class TeamMatch extends Match {
             if (BotAPI.INSTANCE.despawn(victim.getPlayer().getUniqueId()))
                 return;
 
+            boolean allBots = true;
+
+            for (val profile : participants)
+                if (!BotAPI.INSTANCE.isFakePlayer(profile.getUuid())) {
+                    allBots = false;
+                    break;
+                }
+
+            if (allBots) {
+                for (val entry : victimTeam.object2BooleanEntrySet())
+                    if (entry.getBooleanValue())
+                        end(entry.getKey());
+                return;
+            }
+
             victim.getSpectateHandler().spectate(victimsAlive.getFirst());
 
             return;
