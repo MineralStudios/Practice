@@ -206,7 +206,7 @@ public class SelectGametypeMenu extends PracticeMenu {
                                 CC.BOARD_SEPARATOR, " ", CC.GREEN + "Left Click to change difficulty.",
                                 CC.RED + "Right Click to configure custom difficulty.").build(),
                         DIFFICULTY_INTERACTION);
-            else if (queueSettings.getBotTeamSetting() == BotTeamSetting.BOTH)
+            else if (queueSettings.getBotTeamSetting() == BotTeamSetting.BOTH && teamSize > partySize)
                 setSlot(4,
                         ItemStacks.BOT_SETTINGS.lore(
                                 CC.WHITE + "Allows you to configure the " + CC.SECONDARY + "difficulty" + CC.WHITE
