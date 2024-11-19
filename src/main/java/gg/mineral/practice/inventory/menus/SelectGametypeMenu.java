@@ -140,10 +140,12 @@ public class SelectGametypeMenu extends PracticeMenu {
     protected static final Consumer<Interaction> BOT_QUEUE_INTERACTION = interaction -> {
         val viewer = interaction.getProfile();
         val queueSettings = viewer.getQueueSettings();
+        val teamSize = queueSettings.getTeamSize();
+        val partySize = viewer.isInParty() ? viewer.getParty().getPartyMembers().size() : 1;
         if (interaction.getClickType() == ClickType.LEFT)
             queueSettings.setBotQueue(!queueSettings.isBotQueue());
         else if (viewer.getQueueSettings().isBotQueue() && interaction.getClickType() == ClickType.RIGHT
-                && queueSettings.getTeamSize() > 1 && !viewer.isInParty())
+                && teamSize > partySize)
             queueSettings.setBotTeamSetting(BotTeamSetting.values()[(queueSettings.getBotTeamSetting().ordinal()
                     + 1) % BotTeamSetting.values().length]);
 
@@ -174,16 +176,20 @@ public class SelectGametypeMenu extends PracticeMenu {
         if (type != Type.UNRANKED)
             return;
 
-        if (!viewer.isInParty()) {
-            val teamSize = queueSettings.getTeamSize();
-            setSlot(botQueue ? 2 : 3,
-                    ItemStacks.TEAMFIGHT.lore(
-                            CC.WHITE + "Allows you to queue in a " + CC.SECONDARY + "team" + CC.WHITE + " match.",
-                            " ", CC.WHITE + "Currently:", teamSizeColors.get(teamSize), " ", CC.BOARD_SEPARATOR,
-                            CC.ACCENT + "Click to change team size.").build(),
-                    TEAM_SIZE_INTERACTION);
-        } else
+        val partySize = viewer.isInParty() ? viewer.getParty().getPartyMembers().size() : 1;
+
+        if (queueSettings.getTeamSize() < partySize)
             queueSettings.setTeamSize((byte) (viewer.getParty().getPartyMembers().size()));
+
+        val teamSize = queueSettings.getTeamSize();
+        setSlot(botQueue ? 2 : 3,
+                ItemStacks.TEAMFIGHT.lore(
+                        CC.WHITE + "Allows you to queue in a " + CC.SECONDARY + "team" + CC.WHITE + " match.",
+                        " ", CC.WHITE + "Currently:", teamSizeColors.get(teamSize), " ", CC.BOARD_SEPARATOR,
+                        teamSize > teamSizeColors.size() ? CC.RED + "Maximum team size reached."
+                                : CC.ACCENT + "Click to change team size.")
+                        .build(),
+                TEAM_SIZE_INTERACTION);
 
         val opponentDifficulty = queueSettings.getOpponentDifficulty();
         val teamDifficulty = queueSettings.getTeammateDifficulty();
@@ -226,9 +232,9 @@ public class SelectGametypeMenu extends PracticeMenu {
                                 CC.RED + "Right Click to configure custom difficulty.").build(),
                         DIFFICULTY_INTERACTION);
 
-            if (queueSettings.getTeamSize() > 1 && !viewer.isInParty()) {
+            if (teamSize > partySize) {
                 switch (queueSettings.getBotTeamSetting()) {
-                    case BOTH:
+                    case BOTH -> {
                         item = ItemStacks.BOT_QUEUE_ENABLED_TEAM.lore(
                                 CC.WHITE + "Allows you to queue in a " + CC.SECONDARY + "team bot" + CC.WHITE
                                         + " match ",
@@ -241,8 +247,8 @@ public class SelectGametypeMenu extends PracticeMenu {
                                 CC.GREEN + "Left click to toggle bots.",
                                 CC.RED + "Right click to change team settings.")
                                 .build();
-                        break;
-                    case OPPONENT:
+                    }
+                    case OPPONENT -> {
                         item = ItemStacks.BOT_QUEUE_ENABLED_TEAM.lore(
                                 CC.WHITE + "Allows you to queue in a " + CC.SECONDARY + "team bot" + CC.WHITE
                                         + " match ",
@@ -255,7 +261,7 @@ public class SelectGametypeMenu extends PracticeMenu {
                                 CC.GREEN + "Left click to toggle bots.",
                                 CC.RED + "Right click to change team settings.")
                                 .build();
-                        break;
+                    }
                 }
             } else
                 item = ItemStacks.BOT_QUEUE_ENABLED;
