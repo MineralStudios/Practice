@@ -143,7 +143,7 @@ public class TeamMatch extends Match {
         team2Players.alive(teamMember -> PlayerUtil.teleport(teamMember.getPlayer(), location2));
 
         participants.forEach(profile -> prepareForMatch(profile));
-      
+
         startCountdown();
     }
 
@@ -262,18 +262,18 @@ public class TeamMatch extends Match {
 
         participants.remove(victim);
 
-        victim.removePotionEffects();
-        victim.teleportToLobby();
+        if (!BotAPI.INSTANCE.despawn(victim.getPlayer().getUniqueId())) {
+            victim.removePotionEffects();
+            victim.teleportToLobby();
 
-        if (victim.isInParty())
-            victim.getInventory().setInventoryForParty();
-        else
-            victim.getInventory().setInventoryForLobby();
+            if (victim.isInParty())
+                victim.getInventory().setInventoryForParty();
+            else
+                victim.getInventory().setInventoryForLobby();
+        }
 
         if (victim.getMatch().equals(this))
             victim.removeFromMatch();
-
-        BotAPI.INSTANCE.despawn(victim.getPlayer().getUniqueId());
 
         for (val spectator : getSpectators()) {
             val player = spectator.getPlayer();
