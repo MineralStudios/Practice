@@ -122,16 +122,28 @@ public class SelectGametypeMenu extends PracticeMenu {
                         % Difficulty.values().length));
         } else if (interaction.getClickType() == ClickType.RIGHT) {
 
-            if (p.getPlayer().hasPermission("practice.custombot")
-                    && menu instanceof SelectGametypeMenu selectGametypeMenu)
-                p.openMenu(new CustomBotDifficultyMenu(selectGametypeMenu));
-            else
-                ErrorMessages.RANK_REQUIRED.send(p.getPlayer());
-            return;
-        } else if (interaction.getClickType() == ClickType.MIDDLE)
-            if (queueSettings.getTeamSize() > 1)
+            if (queueSettings.getTeamSize() <= 1) {
+                if (p.getPlayer().hasPermission("practice.custombot")
+                        && menu instanceof SelectGametypeMenu selectGametypeMenu)
+                    p.openMenu(new CustomBotDifficultyMenu(selectGametypeMenu));
+                else
+                    ErrorMessages.RANK_REQUIRED.send(p.getPlayer());
+                return;
+            }
+
+            if (queueSettings.getBotTeamSetting() == BotTeamSetting.BOTH)
+                return;
+
+            queueSettings.setTeammateDifficulty((byte) ((queueSettings.getTeammateDifficulty() + 1)
+                    % Difficulty.values().length));
+
+            val difficulty = queueSettings.getTeammateBotDifficulty();
+
+            if (difficulty == Difficulty.CUSTOM)
                 queueSettings.setTeammateDifficulty((byte) ((queueSettings.getTeammateDifficulty() + 1)
                         % Difficulty.values().length));
+
+        }
 
         if (menu != null)
             menu.reload();
@@ -211,8 +223,7 @@ public class SelectGametypeMenu extends PracticeMenu {
                                 CC.WHITE + "Team Difficulty: ",
                                 Difficulty.values()[teamDifficulty].getDisplay(), " ",
                                 CC.BOARD_SEPARATOR, " ", CC.GREEN + "Left Click to change opponent difficulty.",
-                                CC.PINK + "Middle Click to change team difficulty.",
-                                CC.RED + "Right Click to configure custom difficulty.").build(),
+                                CC.RED + "Right Click to change team difficulty.").build(),
                         DIFFICULTY_INTERACTION);
             else
                 setSlot(4,
@@ -222,8 +233,8 @@ public class SelectGametypeMenu extends PracticeMenu {
                                 " ",
                                 CC.WHITE + "Opponent Difficulty: ",
                                 Difficulty.values()[opponentDifficulty].getDisplay(), " ",
-                                CC.BOARD_SEPARATOR, " ", CC.GREEN + "Left Click to change opponent difficulty.",
-                                CC.RED + "Right Click to configure custom difficulty.").build(),
+                                CC.BOARD_SEPARATOR, " ", CC.GREEN + "Left Click to change opponent difficulty.")
+                                .build(),
                         DIFFICULTY_INTERACTION);
 
             if (queueSettings.getTeamSize() > 1 && !viewer.isInParty()) {
