@@ -463,7 +463,7 @@ public class Profile extends ProfileData implements QueuedEntity {
 
 	public void removeFromTab(UUID uuid) {
 		setVisiblePlayersOnTab.remove(uuid);
-		if (!visiblePlayersOnTab.contains(uuid) || uuid == this.getUuid())
+		if (!visiblePlayersOnTab.contains(uuid))
 			return;
 
 		val player = Bukkit.getPlayer(uuid);
@@ -476,7 +476,7 @@ public class Profile extends ProfileData implements QueuedEntity {
 
 	public void showOnTab(UUID uuid) {
 		setVisiblePlayersOnTab.add(uuid);
-		if (visiblePlayersOnTab.contains(uuid) || uuid == this.getUuid())
+		if (visiblePlayersOnTab.contains(uuid))
 			return;
 
 		val player = Bukkit.getPlayer(uuid);
