@@ -143,7 +143,7 @@ public class TeamMatch extends Match {
         team2Players.alive(teamMember -> PlayerUtil.teleport(teamMember.getPlayer(), location2));
 
         participants.forEach(profile -> prepareForMatch(profile));
-      
+
         startCountdown();
     }
 
@@ -200,7 +200,19 @@ public class TeamMatch extends Match {
             if (BotAPI.INSTANCE.despawn(victim.getPlayer().getUniqueId()))
                 return;
 
+            boolean allBots = true;
+
+            for (val profile : participants)
+                if (!BotAPI.INSTANCE.isFakePlayer(profile.getUuid())) {
+                    allBots = false;
+                    break;
+                }
+
             victim.getSpectateHandler().spectate(victimsAlive.getFirst());
+
+            if (allBots)
+                for (val profile : victimsAlive)
+                    end(profile);
 
             return;
         }
@@ -262,18 +274,18 @@ public class TeamMatch extends Match {
 
         participants.remove(victim);
 
-        victim.removePotionEffects();
-        victim.teleportToLobby();
+        if (!BotAPI.INSTANCE.despawn(victim.getPlayer().getUniqueId())) {
+            victim.removePotionEffects();
+            victim.teleportToLobby();
 
-        if (victim.isInParty())
-            victim.getInventory().setInventoryForParty();
-        else
-            victim.getInventory().setInventoryForLobby();
+            if (victim.isInParty())
+                victim.getInventory().setInventoryForParty();
+            else
+                victim.getInventory().setInventoryForLobby();
+        }
 
         if (victim.getMatch().equals(this))
             victim.removeFromMatch();
-
-        BotAPI.INSTANCE.despawn(victim.getPlayer().getUniqueId());
 
         for (val spectator : getSpectators()) {
             val player = spectator.getPlayer();
