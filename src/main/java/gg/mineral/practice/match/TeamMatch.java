@@ -208,14 +208,11 @@ public class TeamMatch extends Match {
                     break;
                 }
 
-            if (allBots) {
-                for (val entry : victimTeam.object2BooleanEntrySet())
-                    if (entry.getBooleanValue())
-                        end(entry.getKey());
-                return;
-            }
-
             victim.getSpectateHandler().spectate(victimsAlive.getFirst());
+
+            if (allBots)
+                for (val profile : victimsAlive)
+                    end(profile);
 
             return;
         }

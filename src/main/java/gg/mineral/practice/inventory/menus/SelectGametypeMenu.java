@@ -131,7 +131,10 @@ public class SelectGametypeMenu extends PracticeMenu {
                 return;
             }
 
-            if (queueSettings.getBotTeamSetting() == BotTeamSetting.BOTH)
+            val teamSize = queueSettings.getTeamSize();
+            val partySize = p.isInParty() ? p.getParty().getPartyMembers().size() : 1;
+
+            if (queueSettings.getBotTeamSetting() == BotTeamSetting.BOTH && teamSize <= partySize)
                 return;
 
             queueSettings.setTeammateDifficulty((byte) ((queueSettings.getTeammateDifficulty() + 1)
