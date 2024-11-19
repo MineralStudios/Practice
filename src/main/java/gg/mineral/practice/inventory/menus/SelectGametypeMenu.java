@@ -308,10 +308,11 @@ public class SelectGametypeMenu extends PracticeMenu {
     public void update() {
         clear();
         val queueSettings = viewer.getQueueSettings();
-        val botQueue = viewer.getQueueSettings().isBotQueue();
 
-        if (!queuetype.isBotsEnabled() && botQueue)
+        if (!queuetype.isBotsEnabled() && viewer.getQueueSettings().isBotQueue())
             queueSettings.setBotQueue(false);
+
+        val botQueue = viewer.getQueueSettings().isBotQueue();
 
         addSurroundingButtons(queueSettings, botQueue);
 
