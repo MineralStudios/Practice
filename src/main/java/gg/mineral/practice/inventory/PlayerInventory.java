@@ -242,7 +242,7 @@ public class PlayerInventory extends CraftInventoryPlayer {
             setItem(queuetype.getSlotNumber(), item,
                     p -> {
                         if (!p.getParty().getPartyLeader().equals(p)) {
-                            p.message(ErrorMessages.PLAYER_NOT_IN_PARTY_OR_PARTY_LEADER);
+                            p.message(ErrorMessages.YOU_ARE_NOT_PARTY_LEADER);
                             return true;
                         }
 
