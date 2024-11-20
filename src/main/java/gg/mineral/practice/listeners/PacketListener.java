@@ -127,8 +127,11 @@ public class PacketListener implements Listener {
                 if (sound == null)
                     return false;
 
-                if (sound.equals("RANDOM.bow") || sound.equals("RANDOM.bowhit") || sound.equals("RANDOM.pop")
-                        || sound.equals("game.player.hurt")) {
+                if (sound.equalsIgnoreCase("RANDOM.drink") || sound.equalsIgnoreCase("RANDOM.eat")
+                        || sound.equalsIgnoreCase("RANDOM.bow")
+                        || sound.equalsIgnoreCase("RANDOM.bowhit")
+                        || sound.equalsIgnoreCase("RANDOM.pop")
+                        || sound.equalsIgnoreCase("game.player.hurt")) {
 
                     int x = soundEffect.getB(), y = soundEffect.getC(), z = soundEffect.getD();
 

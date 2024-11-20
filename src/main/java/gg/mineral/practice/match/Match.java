@@ -542,8 +542,10 @@ public class Match implements Spectatable {
     }
 
     public void resetPearlCooldown(Profile... profiles) {
-        for (val profile : profiles)
+        for (val profile : profiles) {
             pearlCooldown.getCooldowns().removeInt(profile.getUuid());
+            profile.getPlayer().setLevel(0);
+        }
     }
 
     public void clearItems() {
