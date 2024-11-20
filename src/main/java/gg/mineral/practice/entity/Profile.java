@@ -2,11 +2,9 @@ package gg.mineral.practice.entity;
 
 import java.util.Collections;
 import java.util.LinkedList;
-import java.util.List;
 import java.util.Queue;
-
+import java.util.Set;
 import java.util.UUID;
-import java.util.concurrent.CopyOnWriteArrayList;
 
 import org.bukkit.Bukkit;
 import org.bukkit.GameMode;
@@ -15,6 +13,8 @@ import org.bukkit.craftbukkit.v1_8_R3.entity.CraftPlayer;
 import org.bukkit.inventory.ItemStack;
 import org.eclipse.jdt.annotation.NonNull;
 import org.eclipse.jdt.annotation.Nullable;
+
+import com.google.common.collect.Sets;
 
 import gg.mineral.bot.api.BotAPI;
 import gg.mineral.practice.PracticePlugin;
@@ -54,9 +54,10 @@ import it.unimi.dsi.fastutil.shorts.Short2ObjectOpenHashMap;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.val;
+import net.minecraft.server.v1_8_R3.PacketPlayOutEntityDestroy;
+import net.minecraft.server.v1_8_R3.PacketPlayOutNamedEntitySpawn;
 import net.minecraft.server.v1_8_R3.PacketPlayOutPlayerInfo;
 import net.minecraft.server.v1_8_R3.PacketPlayOutPlayerInfo.EnumPlayerInfoAction;
-import net.minecraft.server.v1_8_R3.WorldServer;
 
 @Getter
 public class Profile extends ProfileData implements QueuedEntity {
@@ -102,10 +103,10 @@ public class Profile extends ProfileData implements QueuedEntity {
 	private final ObjectOpenHashSet<UUID> visiblePlayersOnTab = new ObjectOpenHashSet<>();
 
 	@Getter
-	private final List<UUID> setVisiblePlayers = new CopyOnWriteArrayList<>();
+	private final Set<UUID> setVisiblePlayers = Sets.newConcurrentHashSet();
 
 	@Getter
-	private final List<UUID> setVisiblePlayersOnTab = new CopyOnWriteArrayList<>();
+	private final Set<UUID> setVisiblePlayersOnTab = Sets.newConcurrentHashSet();
 
 	public Profile(org.bukkit.entity.Player player) {
 		super(player.getUniqueId(), player.getName());
@@ -492,13 +493,9 @@ public class Profile extends ProfileData implements QueuedEntity {
 			return;
 		val player = Bukkit.getPlayer(uuid);
 
-		if (player instanceof CraftPlayer craftPlayer
-				&& getPlayer().getHandle().getWorld() instanceof WorldServer worldServer) {
-			val entry = worldServer.tracker.trackedEntities
-					.get(craftPlayer.getHandle().getId());
-			if (entry != null && entry.trackedPlayers.contains(this.getPlayer().getHandle()))
-				entry.clear(this.getPlayer().getHandle());
-		}
+		if (player instanceof CraftPlayer craftPlayer)
+			this.getPlayer().getHandle().playerConnection
+					.sendPacket(new PacketPlayOutEntityDestroy(craftPlayer.getHandle().getId()));
 	}
 
 	public void showPlayer(UUID uuid) {
@@ -508,13 +505,9 @@ public class Profile extends ProfileData implements QueuedEntity {
 
 		val player = Bukkit.getPlayer(uuid);
 
-		if (player instanceof CraftPlayer craftPlayer
-				&& getPlayer().getHandle().getWorld() instanceof WorldServer worldServer) {
-			val entry = worldServer.tracker.trackedEntities
-					.get(craftPlayer.getHandle().getId());
-			if (entry != null && !entry.trackedPlayers.contains(this.getPlayer().getHandle()))
-				entry.updatePlayer(this.getPlayer().getHandle());
-		}
+		if (player instanceof CraftPlayer craftPlayer)
+			this.getPlayer().getHandle().playerConnection
+					.sendPacket(new PacketPlayOutNamedEntitySpawn(craftPlayer.getHandle()));
 	}
 
 	public void updateVisiblity() {
