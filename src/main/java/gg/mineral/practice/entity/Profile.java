@@ -340,7 +340,8 @@ public class Profile extends ProfileData implements QueuedEntity {
 		assert queuetype != null;
 		assert gametype != null;
 
-		if (queueSettings.isBotQueue() && (!queuetype.isBotsEnabled() || !gametype.isBotsEnabled())) {
+		val botQueue = !queuetype.isBotsEnabled() ? false : queueSettings.isBotQueue();
+		if (botQueue && !gametype.isBotsEnabled()) {
 			message(ErrorMessages.COMING_SOON);
 			return false;
 		}
@@ -505,9 +506,29 @@ public class Profile extends ProfileData implements QueuedEntity {
 
 		val player = Bukkit.getPlayer(uuid);
 
-		if (player instanceof CraftPlayer craftPlayer)
-			this.getPlayer().getHandle().playerConnection
-					.sendPacket(new PacketPlayOutNamedEntitySpawn(craftPlayer.getHandle()));
+		if (player instanceof CraftPlayer craftPlayer) {
+			// TODO: ensure player is only spawned if in a clientside loaded chunk
+			val entityplayer = this.getPlayer().getHandle();
+			val tracker = craftPlayer.getHandle();
+			boolean inVisibleChunk = entityplayer.u().getPlayerChunkMap().a(entityplayer,
+					tracker.ae,
+					tracker.ag);
+
+			// CraftBukkit start - this.*Loc / 30 -> this.tracker.loc*
+			double dX = entityplayer.locX - tracker.locX;
+			double dZ = entityplayer.locZ - tracker.locZ;
+			// CraftBukkit end
+
+			int range = 512;
+
+			boolean inRange = dX >= (double) (-range) && dX <= (double) range && dZ >= (double) (-range)
+					&& dZ <= (double) range
+					&& tracker.a(entityplayer);
+
+			if (inVisibleChunk && inRange)
+				this.getPlayer().getHandle().playerConnection
+						.sendPacket(new PacketPlayOutNamedEntitySpawn(craftPlayer.getHandle()));
+		}
 	}
 
 	public void updateVisiblity() {

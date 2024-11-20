@@ -81,7 +81,8 @@ public class SelectGametypeMenu extends PracticeMenu {
         };
 
         val queueSettings = viewer.getQueueSettings();
-        if (queueSettings.isBotQueue() && (!queuetype.isBotsEnabled() || !gametype.isBotsEnabled())) {
+        val botQueue = !queuetype.isBotsEnabled() || type != Type.UNRANKED ? false : queueSettings.isBotQueue();
+        if (botQueue && !gametype.isBotsEnabled()) {
             viewer.message(ErrorMessages.COMING_SOON);
             return;
         }

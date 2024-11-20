@@ -79,7 +79,8 @@ public class PacketListener implements Listener {
             if (packet instanceof PacketPlayOutNamedEntitySpawn namedEntitySpawn) {
                 val uuid = namedEntitySpawn.getB();
                 val entityID = namedEntitySpawn.getA();
-                if (!uuid.equals(profile.getUuid()) && !profile.getSetVisiblePlayers().contains(uuid))
+                if (!uuid.equals(profile.getUuid()) && !profile.getSetVisiblePlayers().contains(uuid)
+                        || profile.getVisiblePlayers().containsValue(uuid))
                     return true;
 
                 profile.getVisiblePlayers().put(entityID, uuid);
