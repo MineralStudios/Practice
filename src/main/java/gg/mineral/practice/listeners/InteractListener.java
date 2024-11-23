@@ -66,7 +66,7 @@ public class InteractListener implements Listener {
 				return;
 			}
 
-			if (e.getClickedBlock().getType() == Material.CHEST) {
+			if (e.getClickedBlock().getType() == Material.CHEST && profile.isInKitEditor()) {
 				profile.openMenu(new AddItemsMenu());
 				return;
 			}

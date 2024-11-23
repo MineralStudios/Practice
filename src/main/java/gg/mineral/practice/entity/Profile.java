@@ -508,40 +508,22 @@ public class Profile extends ProfileData implements QueuedEntity {
 
 		if (player instanceof CraftPlayer craftPlayer) {
 			// TODO: ensure player is only spawned if in a clientside loaded chunk
-			val entityplayer = this.getPlayer().getHandle();
-			val tracker = craftPlayer.getHandle();
-			boolean inVisibleChunk = entityplayer.u().getPlayerChunkMap().a(entityplayer,
-					tracker.ae,
-					tracker.ag);
-
-			// CraftBukkit start - this.*Loc / 30 -> this.tracker.loc*
-			double dX = entityplayer.locX - tracker.locX;
-			double dZ = entityplayer.locZ - tracker.locZ;
-			// CraftBukkit end
-
-			int range = 512;
-
-			boolean inRange = dX >= (double) (-range) && dX <= (double) range && dZ >= (double) (-range)
-					&& dZ <= (double) range
-					&& tracker.a(entityplayer);
-
-			if (inVisibleChunk && inRange)
-				this.getPlayer().getHandle().playerConnection
-						.sendPacket(new PacketPlayOutNamedEntitySpawn(craftPlayer.getHandle()));
+			this.getPlayer().getHandle().playerConnection
+					.sendPacket(new PacketPlayOutNamedEntitySpawn(craftPlayer.getHandle()));
 		}
 	}
 
 	public void updateVisiblity() {
 
+		for (val uuid : getSetVisiblePlayersOnTab())
+			if (!testTabVisibility(uuid))
+				removeFromTab(uuid);
+
+		for (val uuid : getSetVisiblePlayers())
+			if (!testVisibility(uuid))
+				removeFromView(uuid);
+
 		Bukkit.getScheduler().scheduleSyncDelayedTask(PracticePlugin.INSTANCE, () -> {
-
-			for (val uuid : getSetVisiblePlayersOnTab())
-				if (!testTabVisibility(uuid))
-					removeFromTab(uuid);
-
-			for (val uuid : getSetVisiblePlayers())
-				if (!testVisibility(uuid))
-					removeFromView(uuid);
 
 			val players = getPlayer().getWorld().getPlayers();
 
