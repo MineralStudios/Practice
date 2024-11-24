@@ -2,6 +2,7 @@ package gg.mineral.practice.kit;
 
 import org.bukkit.GameMode;
 
+import gg.mineral.practice.entity.PlayerStatus;
 import gg.mineral.practice.entity.Profile;
 import gg.mineral.practice.inventory.SubmitAction;
 import gg.mineral.practice.managers.KitEditorManager;
@@ -26,8 +27,9 @@ public class KitCreator {
     }
 
     public void start() {
+        profile.setPlayerStatus(PlayerStatus.KIT_CREATOR);
         profile.setScoreboard(KitCreatorScoreboard.INSTANCE);
-        PlayerUtil.teleportNoGlitch(profile.getPlayer(), KitEditorManager.getLocation());
+        PlayerUtil.teleportNoGlitch(profile, KitEditorManager.getLocation());
         profile.getInventory().setInventoryClickCancelled(false);
         profile.getInventory().clear();
 

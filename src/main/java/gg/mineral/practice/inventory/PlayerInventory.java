@@ -35,7 +35,6 @@ import net.minecraft.server.v1_8_R3.PlayerConnection;
 public class PlayerInventory extends CraftInventoryPlayer {
     ConcurrentHashMap<Integer, Predicate<Profile>> dataMap = new ConcurrentHashMap<>();
     Profile holder;
-    boolean fullClear = false;
     @Getter
     @Setter
     boolean inventoryClickCancelled = false;
@@ -147,13 +146,6 @@ public class PlayerInventory extends CraftInventoryPlayer {
     @Override
     public void clear() {
         dataMap.clear();
-
-        if (!fullClear) {
-            clearHotbar();
-            return;
-        }
-
-        fullClear = false;
         super.clear();
         setHelmet(null);
         setChestplate(null);
@@ -168,9 +160,6 @@ public class PlayerInventory extends CraftInventoryPlayer {
                 setItem(i, null);
                 continue;
             }
-
-            if (i < 8)
-                fullClear = true;
 
             setItem(i, items[i]);
         }

@@ -343,8 +343,8 @@ public class Match implements Spectatable {
     }
 
     public void teleportPlayers(Location location1, Location location2) {
-        PlayerUtil.teleport(profile1.getPlayer(), location1);
-        PlayerUtil.teleport(profile2.getPlayer(), location2);
+        PlayerUtil.teleport(profile1, location1);
+        PlayerUtil.teleport(profile2, location2);
     }
 
     public void startCountdown() {

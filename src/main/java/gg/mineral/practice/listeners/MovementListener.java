@@ -6,6 +6,7 @@ import org.bukkit.block.BlockFace;
 import org.bukkit.craftbukkit.v1_8_R3.CraftWorld; // Import for NMS world access
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
+import org.bukkit.event.player.PlayerChangedWorldEvent;
 import org.bukkit.event.player.PlayerMoveEvent;
 import org.bukkit.event.player.PlayerTeleportEvent;
 import org.spigotmc.event.entity.EntityDismountEvent;
@@ -44,6 +45,17 @@ public class MovementListener implements Listener {
             maxY += y;
             maxZ += z;
         }
+    }
+
+    @EventHandler
+    public void onPlayerChangeWorld(PlayerChangedWorldEvent e) {
+        val profile = ProfileManager.getProfile(
+                e.getPlayer().getUniqueId());
+
+        if (profile == null)
+            return;
+
+        profile.getVisiblePlayers().clear();
     }
 
     @EventHandler

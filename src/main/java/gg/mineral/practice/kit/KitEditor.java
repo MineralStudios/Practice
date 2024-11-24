@@ -1,5 +1,6 @@
 package gg.mineral.practice.kit;
 
+import gg.mineral.practice.entity.PlayerStatus;
 import gg.mineral.practice.entity.Profile;
 import gg.mineral.practice.gametype.Gametype;
 import gg.mineral.practice.managers.KitEditorManager;
@@ -62,8 +63,9 @@ public class KitEditor {
     }
 
     public void start() {
+        profile.setPlayerStatus(PlayerStatus.KIT_EDITOR);
         profile.setScoreboard(KitEditorScoreboard.INSTANCE);
-        PlayerUtil.teleportNoGlitch(profile.getPlayer(), KitEditorManager.getLocation());
+        PlayerUtil.teleportNoGlitch(profile, KitEditorManager.getLocation());
         profile.getInventory().setInventoryClickCancelled(false);
         profile.getInventory().clear();
 

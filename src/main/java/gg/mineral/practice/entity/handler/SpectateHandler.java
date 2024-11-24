@@ -132,7 +132,7 @@ public class SpectateHandler {
         val arena = ArenaManager.getArenas().get(spectatable instanceof Event event ? event.getEventArenaId()
                 : spectatable instanceof Match match ? match.getData().getArenaId() : 0);
 
-        PlayerUtil.teleport(profile.getPlayer(),
+        PlayerUtil.teleport(profile,
                 toBeSpectated.isInEvent() ? arena.getWaitingLocation()
                         : toBeSpectated.getPlayer().getLocation());
 

@@ -266,6 +266,9 @@ public class Profile extends ProfileData implements QueuedEntity {
 
 	public boolean testVisibility(UUID uuid) {
 
+		if (playerStatus == PlayerStatus.KIT_CREATOR || playerStatus == PlayerStatus.KIT_EDITOR)
+			return uuid == this.getUuid();
+
 		val match = this.getMatch();
 		if (playerStatus == PlayerStatus.FIGHTING
 				&& match != null && match.getParticipants().get(uuid) != null)
@@ -291,6 +294,11 @@ public class Profile extends ProfileData implements QueuedEntity {
 
 	public boolean testTabVisibility(UUID uuid) {
 
+		val isBot = BotAPI.INSTANCE.isFakePlayer(uuid);
+
+		if (!isBot)
+			return true;
+
 		val match = this.getMatch();
 		if (playerStatus == PlayerStatus.FIGHTING
 				&& match != null && match.getParticipants().get(uuid) != null)
@@ -298,15 +306,10 @@ public class Profile extends ProfileData implements QueuedEntity {
 
 		val spectatable = spectateHandler.getSpectatable();
 
-		val isBot = BotAPI.INSTANCE.isFakePlayer(uuid);
-
 		if (spectatable != null)
 			if ((playerStatus == PlayerStatus.FOLLOWING || playerStatus == PlayerStatus.SPECTATING)
 					&& spectatable.getParticipants().get(uuid) != null)
 				return true;
-
-		if (!isBot)
-			return true;
 
 		return uuid == this.getUuid();
 	}
@@ -381,7 +384,7 @@ public class Profile extends ProfileData implements QueuedEntity {
 		if (playerStatus == PlayerStatus.FIGHTING && !getMatch().isEnded())
 			return;
 
-		PlayerUtil.teleport(this.getPlayer(), ProfileManager.getSpawnLocation());
+		PlayerUtil.teleport(this, ProfileManager.getSpawnLocation());
 
 		if (playerStatus != PlayerStatus.FOLLOWING && playerStatus != PlayerStatus.QUEUEING)
 			setPlayerStatus(PlayerStatus.IDLE);
@@ -427,14 +430,6 @@ public class Profile extends ProfileData implements QueuedEntity {
 
 		this.kitCreator = new KitCreator(this, submitAction);
 		kitCreator.start();
-	}
-
-	public boolean isInKitEditor() {
-		return kitEditor != null;
-	}
-
-	public boolean isInKitCreator() {
-		return kitCreator != null;
 	}
 
 	public boolean equals(Profile p) {
@@ -495,8 +490,8 @@ public class Profile extends ProfileData implements QueuedEntity {
 		val player = Bukkit.getPlayer(uuid);
 
 		if (player instanceof CraftPlayer craftPlayer)
-			this.getPlayer().getHandle().playerConnection
-					.sendPacket(new PacketPlayOutEntityDestroy(craftPlayer.getHandle().getId()));
+			Bukkit.getScheduler().runTask(PracticePlugin.INSTANCE, () -> this.getPlayer().getHandle().playerConnection
+					.sendPacket(new PacketPlayOutEntityDestroy(craftPlayer.getHandle().getId())));
 	}
 
 	public void showPlayer(UUID uuid) {
@@ -506,24 +501,21 @@ public class Profile extends ProfileData implements QueuedEntity {
 
 		val player = Bukkit.getPlayer(uuid);
 
-		if (player instanceof CraftPlayer craftPlayer) {
-			// TODO: ensure player is only spawned if in a clientside loaded chunk
-			this.getPlayer().getHandle().playerConnection
-					.sendPacket(new PacketPlayOutNamedEntitySpawn(craftPlayer.getHandle()));
-		}
+		if (player instanceof CraftPlayer craftPlayer)
+			Bukkit.getScheduler().runTask(PracticePlugin.INSTANCE, () -> this.getPlayer().getHandle().playerConnection
+					.sendPacket(new PacketPlayOutNamedEntitySpawn(craftPlayer.getHandle())));
 	}
 
 	public void updateVisiblity() {
 
-		for (val uuid : getSetVisiblePlayersOnTab())
-			if (!testTabVisibility(uuid))
-				removeFromTab(uuid);
-
-		for (val uuid : getSetVisiblePlayers())
-			if (!testVisibility(uuid))
-				removeFromView(uuid);
-
 		Bukkit.getScheduler().scheduleSyncDelayedTask(PracticePlugin.INSTANCE, () -> {
+			for (val uuid : getSetVisiblePlayersOnTab())
+				if (!testTabVisibility(uuid))
+					removeFromTab(uuid);
+
+			for (val uuid : getSetVisiblePlayers())
+				if (!testVisibility(uuid))
+					removeFromView(uuid);
 
 			val players = getPlayer().getWorld().getPlayers();
 

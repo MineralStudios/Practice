@@ -66,7 +66,7 @@ public class BotMatch extends Match {
 
     @Override
     public void teleportPlayers(Location location1, Location location2) {
-        PlayerUtil.teleport(profile1.getPlayer(), location1);
+        PlayerUtil.teleport(profile1, location1);
     }
 
     @Override

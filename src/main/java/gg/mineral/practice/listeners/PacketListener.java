@@ -535,6 +535,7 @@ public class PacketListener implements Listener {
                 return false;
 
             } catch (Exception e) {
+                System.out.println("Error with packet: " + packet.getClass().getSimpleName());
                 e.printStackTrace();
                 return false;
             }

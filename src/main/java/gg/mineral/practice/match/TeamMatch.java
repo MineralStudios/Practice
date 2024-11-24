@@ -150,8 +150,8 @@ public class TeamMatch extends Match {
 
         this.nametagGroups = setDisplayNameBoard();
 
-        team1Players.alive(teamMember -> PlayerUtil.teleport(teamMember.getPlayer(), location1));
-        team2Players.alive(teamMember -> PlayerUtil.teleport(teamMember.getPlayer(), location2));
+        team1Players.alive(teamMember -> PlayerUtil.teleport(teamMember, location1));
+        team2Players.alive(teamMember -> PlayerUtil.teleport(teamMember, location2));
 
         prepareForMatch(participants);
 
