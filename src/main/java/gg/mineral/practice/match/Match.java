@@ -22,7 +22,6 @@ import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.potion.PotionEffect;
 import org.bukkit.potion.PotionEffectType;
-import org.bukkit.projectiles.ProjectileSource;
 import org.eclipse.jdt.annotation.Nullable;
 
 import gg.mineral.api.collection.GlueList;
@@ -565,7 +564,7 @@ public class Match implements Spectatable {
             item.remove();
 
         for (val arrow : arena.getLocation1().getWorld().getEntitiesByClass(Arrow.class)) {
-            ProjectileSource shooter = arrow.getShooter();
+            val shooter = arrow.getShooter();
 
             if (shooter instanceof Player pShooter) {
                 val profile = ProfileManager.getProfile(pShooter.getUniqueId());

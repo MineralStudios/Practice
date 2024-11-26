@@ -209,6 +209,11 @@ public class TeamMatch extends Match {
             if (victim.getMatch().equals(this))
                 victim.removeFromMatch();
 
+            for (val nametagGroup : nametagGroups) {
+                nametagGroup.remove(victim.getPlayer());
+                refreshBukkitScoreboard(victim.getPlayer());
+            }
+
             if (BotAPI.INSTANCE.despawn(victim.getPlayer().getUniqueId()))
                 return;
 
@@ -377,7 +382,7 @@ public class TeamMatch extends Match {
         return false;
     }
 
-    public void refreshBukkitScoreboard(Player player) {
+    public static void refreshBukkitScoreboard(Player player) {
         val scoreboard = player.getScoreboard();
         val manager = Bukkit.getScoreboardManager();
         val blankScoreboard = manager.getNewScoreboard();
