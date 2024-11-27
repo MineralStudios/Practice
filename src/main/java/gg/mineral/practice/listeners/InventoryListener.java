@@ -73,7 +73,8 @@ public class InventoryListener implements Listener {
 		val profile = ProfileManager.getProfile(player);
 
 		if (profile != null) {
-			if (profile.isInKitCreator() || profile.isInKitEditor()) {
+			if (profile.getPlayerStatus() == PlayerStatus.KIT_CREATOR
+					|| profile.getPlayerStatus() == PlayerStatus.KIT_EDITOR) {
 				e.setCancelled(false);
 				Bukkit.getScheduler().runTaskLater(PracticePlugin.INSTANCE, () -> e.getItemDrop().remove(), 20L);
 				return;

@@ -72,7 +72,7 @@ public class EventMatch extends Match {
             val eventArena = ArenaManager.getArenas().get(event.getEventArenaId());
 
             if (!event.isEnded()) {
-                PlayerUtil.teleport(attacker.getPlayer(), eventArena.getWaitingLocation());
+                PlayerUtil.teleport(attacker, eventArena.getWaitingLocation());
                 attacker.setPlayerStatus(PlayerStatus.IDLE);
                 attacker.getInventory().setInventoryForEvent();
             } else {

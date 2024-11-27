@@ -54,8 +54,9 @@ public class InteractListener implements Listener {
 			return;
 		}
 
-		if (profile.isInKitCreator()
-				|| profile.isInKitEditor()) {
+		if (profile.getPlayerStatus() == PlayerStatus.KIT_CREATOR
+				|| profile.getPlayerStatus() == PlayerStatus.KIT_EDITOR) {
+
 			e.setCancelled(true);
 
 			if (e.getClickedBlock() == null)
@@ -66,18 +67,17 @@ public class InteractListener implements Listener {
 				return;
 			}
 
-			if (e.getClickedBlock().getType() == Material.CHEST) {
+			if (e.getClickedBlock().getType() == Material.CHEST
+					&& profile.getPlayerStatus() == PlayerStatus.KIT_EDITOR) {
 				profile.openMenu(new AddItemsMenu());
 				return;
 			}
 
 			if (e.getClickedBlock().getType() == Material.WOODEN_DOOR) {
-				if (profile.isInKitCreator()) {
+				if (profile.getPlayerStatus() == PlayerStatus.KIT_CREATOR)
 					profile.leaveKitCreator();
-					return;
-				}
-
-				profile.leaveKitEditor();
+				else
+					profile.leaveKitEditor();
 				return;
 			}
 

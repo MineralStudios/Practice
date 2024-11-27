@@ -69,7 +69,7 @@ public class Event implements Spectatable {
 
         val eventArena = ArenaManager.getArenas().get(eventArenaId);
 
-        PlayerUtil.teleport(p.getPlayer(), eventArena.getWaitingLocation());
+        PlayerUtil.teleport(p, eventArena.getWaitingLocation());
         p.setEvent(this);
         participants.add(p);
 
@@ -204,9 +204,5 @@ public class Event implements Spectatable {
                 }
             }.runTaskLater(PracticePlugin.INSTANCE, 100);
         }
-    }
-
-    public void updateVisiblity(Event event, Profile profile) {
-        profile.updateVisiblity();
     }
 }

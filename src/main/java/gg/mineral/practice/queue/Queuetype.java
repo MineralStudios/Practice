@@ -2,7 +2,6 @@ package gg.mineral.practice.queue;
 
 import java.util.List;
 import java.util.Random;
-import java.util.stream.Collectors;
 
 import org.bukkit.inventory.ItemStack;
 import org.eclipse.jdt.annotation.Nullable;
@@ -10,7 +9,6 @@ import org.eclipse.jdt.annotation.Nullable;
 import gg.mineral.api.collection.GlueList;
 import gg.mineral.api.config.FileConfiguration;
 import gg.mineral.practice.arena.Arena;
-import gg.mineral.practice.catagory.Catagory;
 import gg.mineral.practice.entity.ProfileData;
 import gg.mineral.practice.gametype.Gametype;
 import gg.mineral.practice.managers.ArenaManager;
@@ -24,7 +22,8 @@ import gg.mineral.server.combat.KnockbackProfile;
 import gg.mineral.server.combat.KnockbackProfileList;
 import it.unimi.dsi.fastutil.bytes.ByteOpenHashSet;
 import it.unimi.dsi.fastutil.bytes.ByteSet;
-import it.unimi.dsi.fastutil.objects.Object2IntOpenHashMap;
+import it.unimi.dsi.fastutil.objects.Object2IntLinkedOpenHashMap;
+import it.unimi.dsi.fastutil.objects.Object2IntMap;
 import lombok.Getter;
 import lombok.val;
 
@@ -45,11 +44,30 @@ public class Queuetype implements SaveableData {
 	@Getter
 	KnockbackProfile knockback;
 	@Getter
-	Object2IntOpenHashMap<Gametype> gametypes = new Object2IntOpenHashMap<>();
+	Object2IntLinkedOpenHashMap<QueuetypeMenuEntry> menuEntries = new Object2IntLinkedOpenHashMap<QueuetypeMenuEntry>() {
+		@Override
+		public int put(QueuetypeMenuEntry key, int value) {
+			int slot = super.put(key, value);
+			sortByValues();
+			return slot;
+		}
+
+		private void sortByValues() {
+			Object2IntMap<QueuetypeMenuEntry> sorted = object2IntEntrySet().stream()
+					.sorted((e1, e2) -> Integer.compare(e1.getIntValue(), e2.getIntValue()))
+					.collect(Object2IntLinkedOpenHashMap::new,
+							(map, entry) -> map.put(entry.getKey(), entry.getIntValue()),
+							Object2IntLinkedOpenHashMap::putAll);
+
+			clear();
+
+			for (val entry : sorted.object2IntEntrySet())
+				super.put(entry.getKey(), entry.getIntValue());
+		}
+
+	};
 	@Getter
 	ByteSet arenas = new ByteOpenHashSet();
-	@Getter
-	Object2IntOpenHashMap<Catagory> catagories = new Object2IntOpenHashMap<>();
 	@Getter
 	private final byte id;
 	private long arenaIndex = 0;
@@ -63,14 +81,25 @@ public class Queuetype implements SaveableData {
 	ByteSet arenaQueue = new ByteOpenHashSet();
 
 	public Gametype randomGametype() {
-		val list = new GlueList<>(gametypes.keySet());
+
+		val list = new GlueList<Gametype>();
+
+		for (val menuEntry : menuEntries.keySet())
+			if (menuEntry instanceof Gametype gametype)
+				list.add(gametype);
+
 		val rand = new Random();
 		return list.get(rand.nextInt(list.size()));
 	}
 
 	public Gametype randomGametypeWithBotsEnabled() {
-		val list = new GlueList<>(gametypes.keySet()).stream().filter(g -> g.isBotsEnabled())
-				.collect(Collectors.toList());
+
+		val list = new GlueList<Gametype>();
+
+		for (val menuEntry : menuEntries.keySet())
+			if (menuEntry instanceof Gametype gametype && gametype.isBotsEnabled())
+				list.add(gametype);
+
 		val rand = new Random();
 		return list.get(rand.nextInt(list.size()));
 	}
@@ -85,14 +114,17 @@ public class Queuetype implements SaveableData {
 
 	public int getGlobalElo(ProfileData profile) {
 
-		val set = getGametypes().keySet();
+		val set = getMenuEntries().keySet();
 
-		int sum = 0;
+		int sum = 0, divisor = 0;
 
-		for (Gametype gametype : set)
-			sum += gametype.getElo(profile);
+		for (val menuEntry : set)
+			if (menuEntry instanceof Gametype gametype) {
+				sum += gametype.getElo(profile);
+				divisor++;
+			}
 
-		return Math.round(sum / set.size());
+		return Math.round(sum / divisor);
 	}
 
 	public List<String> getGlobalLeaderboardLore() {
@@ -217,13 +249,8 @@ public class Queuetype implements SaveableData {
 		return q.getName().equalsIgnoreCase(getName());
 	}
 
-	public void addCatagory(Catagory catagory, int slot) {
-		catagories.put(catagory, slot);
-		save();
-	}
-
-	public void addGametype(Gametype gametype, int slot) {
-		gametypes.put(gametype, slot);
+	public void addMenuEntry(QueuetypeMenuEntry menuEntry, int slot) {
+		menuEntries.put(menuEntry, slot);
 		save();
 	}
 
