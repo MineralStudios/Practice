@@ -95,7 +95,7 @@ public final class ScoreboardReflection {
         }
     }
 
-    public static Object enumValueOf(Class<?> enumClass, String enumName) {
+    public static Enum<?> enumValueOf(Class<?> enumClass, String enumName) {
         return Enum.valueOf(enumClass.asSubclass(Enum.class), enumName);
     }
 

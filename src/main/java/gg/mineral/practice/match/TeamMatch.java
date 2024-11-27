@@ -211,11 +211,6 @@ public class TeamMatch extends Match {
             if (victim.getMatch().equals(this))
                 victim.removeFromMatch();
 
-            for (val nametagGroup : nametagGroups) {
-                nametagGroup.remove(victim.getPlayer());
-                refreshBukkitScoreboard(victim.getPlayer());
-            }
-
             if (BotAPI.INSTANCE.despawn(victim.getPlayer().getUniqueId()))
                 return;
 

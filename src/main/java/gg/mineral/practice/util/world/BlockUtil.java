@@ -1,6 +1,7 @@
 package gg.mineral.practice.util.world;
 
 import gg.mineral.practice.entity.Profile;
+import lombok.SneakyThrows;
 import lombok.val;
 
 public class BlockUtil {
@@ -10,6 +11,7 @@ public class BlockUtil {
         profile.getFakeBlocks().put(blockData);
     }
 
+    @SneakyThrows
     public static void sendFakeBlocks(Profile profile, BlockData blockData, int radius) {
         sendFakeBlock(profile, blockData);
         for (int i = -radius; i <= radius; i++) {

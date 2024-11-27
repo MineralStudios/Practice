@@ -1,5 +1,9 @@
 package gg.mineral.practice.commands.config;
 
+import java.util.Locale;
+
+import org.bukkit.entity.Player;
+
 import gg.mineral.practice.catagory.Catagory;
 import gg.mineral.practice.commands.PlayerCommand;
 import gg.mineral.practice.gametype.Gametype;
@@ -20,16 +24,14 @@ public class CatagoryCommand extends PlayerCommand {
 	}
 
 	@Override
-	public void execute(org.bukkit.entity.Player player, String[] args) {
-
-		val arg = args.length > 0 ? args[0] : "";
+	public void execute(Player player, String[] args) {
 
 		Catagory catagory;
 		Gametype gametype;
 		String catagoryName, gametypeName;
 		StringBuilder sb;
 
-		switch (arg.toLowerCase()) {
+		switch (args.length > 0 ? args[0].toLowerCase(Locale.ROOT) : "") {
 			default:
 				ChatMessages.CATAGORY_COMMANDS.send(player);
 				ChatMessages.CATAGORY_CREATE.send(player);
