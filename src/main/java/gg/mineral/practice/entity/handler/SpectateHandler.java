@@ -159,7 +159,18 @@ public class SpectateHandler {
         if (spectatable instanceof TeamMatch match) {
             val groups = match.getNametagGroups();
 
-            if (groups != null) {
+            boolean alreadyInGroup = false;
+
+            for (val group : groups) {
+                if (group == null)
+                    continue;
+                if (group.getPlayers().contains(profile.getPlayer())) {
+                    alreadyInGroup = true;
+                    break;
+                }
+            }
+
+            if (groups != null && !alreadyInGroup) {
                 val group = groups[0];
 
                 if (group != null)
