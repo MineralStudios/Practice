@@ -56,6 +56,19 @@ public class SpectateHandler {
             return;
         }
 
+        if (spectatable instanceof TeamMatch match) {
+            val groups = match.getNametagGroups();
+
+            if (groups != null) {
+                for (val nametagGroup : groups) {
+                    if (nametagGroup == null)
+                        continue;
+                    nametagGroup.remove(profile.getPlayer());
+                    TeamMatch.refreshBukkitScoreboard(profile.getPlayer());
+                }
+            }
+        }
+
         if (spectatable != null) {
             spectatable.getSpectators().remove(profile);
             spectatable = null;
@@ -132,7 +145,7 @@ public class SpectateHandler {
         val arena = ArenaManager.getArenas().get(spectatable instanceof Event event ? event.getEventArenaId()
                 : spectatable instanceof Match match ? match.getData().getArenaId() : 0);
 
-        PlayerUtil.teleport(profile.getPlayer(),
+        PlayerUtil.teleport(profile,
                 toBeSpectated.isInEvent() ? arena.getWaitingLocation()
                         : toBeSpectated.getPlayer().getLocation());
 
@@ -142,8 +155,6 @@ public class SpectateHandler {
             ChatMessages.SPECTATING.clone().replace("%player%", toBeSpectated.getName()).send(profile.getPlayer());
 
         ChatMessages.STOP_SPECTATING.send(profile.getPlayer());
-
-        updateVisiblity();
 
         if (spectatable instanceof TeamMatch match) {
             val groups = match.getNametagGroups();
@@ -162,9 +173,5 @@ public class SpectateHandler {
 
         profile.getInventory().setInventoryForSpectating();
         profile.setPlayerStatus(PlayerStatus.SPECTATING);
-    }
-
-    private void updateVisiblity() {
-        profile.updateVisiblity();
     }
 }

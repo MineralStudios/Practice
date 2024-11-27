@@ -8,7 +8,8 @@ import lombok.RequiredArgsConstructor;
 @RequiredArgsConstructor
 @Getter
 public enum PlayerStatus {
-	FOLLOWING(profile -> true), SPECTATING(profile -> true), FIGHTING(profile -> false),
+	FOLLOWING(profile -> true), SPECTATING(profile -> true), FIGHTING(profile -> false), KIT_EDITOR(profile -> false),
+	KIT_CREATOR(profile -> false),
 	IDLE(profile -> profile.getPlayer().hasPermission("practice.fly")),
 	QUEUEING(profile -> profile.getPlayer().hasPermission("practice.fly"));
 

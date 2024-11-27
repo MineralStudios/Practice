@@ -58,6 +58,7 @@ public class BotMatch extends Match {
                 .getOrCreateProfile(bukkitPl);
 
         handleOpponentMessages();
+        startMatchTimeLimit();
         startCountdown();
         addParicipants(profile2);
 
@@ -66,7 +67,7 @@ public class BotMatch extends Match {
 
     @Override
     public void teleportPlayers(Location location1, Location location2) {
-        PlayerUtil.teleport(profile1.getPlayer(), location1);
+        PlayerUtil.teleport(profile1, location1);
     }
 
     @Override

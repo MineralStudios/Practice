@@ -20,7 +20,7 @@ import gg.mineral.practice.managers.CatagoryManager;
 import gg.mineral.practice.managers.EloManager;
 import gg.mineral.practice.managers.GametypeManager;
 import gg.mineral.practice.managers.QueuetypeManager;
-import gg.mineral.practice.queue.Queuetype;
+import gg.mineral.practice.queue.QueuetypeMenuEntry;
 import gg.mineral.practice.util.SaveableData;
 import gg.mineral.practice.util.collection.LeaderboardMap;
 import gg.mineral.practice.util.items.ItemStacks;
@@ -33,7 +33,7 @@ import lombok.Getter;
 import lombok.Setter;
 import lombok.val;
 
-public class Gametype implements SaveableData {
+public class Gametype implements SaveableData, QueuetypeMenuEntry {
 	final FileConfiguration config = GametypeManager.getConfig();
 
 	@Getter
@@ -209,21 +209,6 @@ public class Gametype implements SaveableData {
 		save();
 	}
 
-	public void setSlot(Queuetype queuetype, int slot) {
-		queuetype.getGametypes().put(this, slot);
-		save();
-	}
-
-	public void addToQueuetype(Queuetype queuetype, int slot) {
-		queuetype.getGametypes().put(this, slot);
-		save();
-	}
-
-	public void removeFromQueuetype(Queuetype queuetype) {
-		queuetype.getGametypes().removeInt(this);
-		save();
-	}
-
 	public void enableArena(Arena arena, boolean enabled) {
 		if (enabled)
 			arenas.add(arena.getId());
@@ -299,11 +284,11 @@ public class Gametype implements SaveableData {
 			config.set(path + "Catagory", catagoryName);
 
 		for (val q : QueuetypeManager.getQueuetypes().values()) {
-			val containsGametype = q.getGametypes().containsKey(this);
+			val containsGametype = q.getMenuEntries().containsKey(this);
 			config.set(path + q.getName() + ".Enabled", containsGametype);
 
 			if (containsGametype) {
-				config.set(path + q.getName() + ".Slot", q.getGametypes().getInt(this));
+				config.set(path + q.getName() + ".Slot", q.getMenuEntries().getInt(this));
 
 				for (byte arenaId : q.getArenas()) {
 					Arena arena = ArenaManager.getArenas().get(arenaId);
@@ -379,7 +364,7 @@ public class Gametype implements SaveableData {
 			if (!config.getBoolean(path + q.getName() + ".Enabled", false))
 				continue;
 
-			q.addGametype(this, config.getInt(path + q.getName() + ".Slot", 0));
+			q.addMenuEntry(this, config.getInt(path + q.getName() + ".Slot", 0));
 		}
 
 		for (val a : ArenaManager.getArenas().values())

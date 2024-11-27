@@ -7,13 +7,13 @@ import gg.mineral.api.config.FileConfiguration;
 import gg.mineral.practice.gametype.Gametype;
 import gg.mineral.practice.managers.CatagoryManager;
 import gg.mineral.practice.managers.QueuetypeManager;
-import gg.mineral.practice.queue.Queuetype;
+import gg.mineral.practice.queue.QueuetypeMenuEntry;
 import gg.mineral.practice.util.SaveableData;
 import gg.mineral.practice.util.items.ItemStacks;
 import lombok.Getter;
 import lombok.val;
 
-public class Catagory implements SaveableData {
+public class Catagory implements SaveableData, QueuetypeMenuEntry {
 
 	final FileConfiguration config = CatagoryManager.getConfig();
 
@@ -32,6 +32,14 @@ public class Catagory implements SaveableData {
 		this.path = "Catagory." + getName() + ".";
 	}
 
+	@Override
+	public boolean isBotsEnabled() {
+		for (val gametype : gametypes)
+			if (gametype.isBotsEnabled())
+				return true;
+		return false;
+	}
+
 	public void setDisplayItem(ItemStack displayItem) {
 		this.displayItem = displayItem;
 		save();
@@ -39,11 +47,6 @@ public class Catagory implements SaveableData {
 
 	public void setDisplayName(String displayName) {
 		this.displayName = displayName;
-		save();
-	}
-
-	public void setSlot(Queuetype queuetype, int slot) {
-		queuetype.getCatagories().put(this, slot);
 		save();
 	}
 
@@ -57,16 +60,6 @@ public class Catagory implements SaveableData {
 		save();
 	}
 
-	public void addToQueuetype(Queuetype queuetype, int slot) {
-		queuetype.addCatagory(this, slot);
-		save();
-	}
-
-	public void removeFromQueuetype(Queuetype queuetype) {
-		queuetype.getCatagories().removeInt(this);
-		save();
-	}
-
 	public boolean equals(Catagory c) {
 		return c.getName().equalsIgnoreCase(getName());
 	}
@@ -75,12 +68,12 @@ public class Catagory implements SaveableData {
 	public void save() {
 		for (val q : QueuetypeManager.getQueuetypes().values()) {
 
-			if (!q.getCatagories().containsKey(this)) {
+			if (!q.getMenuEntries().containsKey(this)) {
 				config.set(path + q.getName() + ".Enabled", false);
 				continue;
 			}
 
-			int slot = q.getCatagories().getInt(this);
+			int slot = q.getMenuEntries().getInt(this);
 
 			config.set(path + q.getName() + ".Enabled", true);
 			config.set(path + q.getName() + ".Slot", slot);
@@ -100,7 +93,7 @@ public class Catagory implements SaveableData {
 
 		for (val q : QueuetypeManager.getQueuetypes().values())
 			if (config.getBoolean(path + q.getName() + ".Enabled", false))
-				q.getCatagories().put(this, (int) config.getInt(path + q.getName() + ".Slot", 0));
+				q.getMenuEntries().put(this, (int) config.getInt(path + q.getName() + ".Slot", 0));
 
 	}
 
@@ -111,7 +104,7 @@ public class Catagory implements SaveableData {
 
 		for (val q : QueuetypeManager.getQueuetypes().values())
 			if (config.getBoolean(path + q.getName() + ".Enabled", false))
-				q.getCatagories().put(this, 0);
+				q.getMenuEntries().put(this, 0);
 	}
 
 	@Override
