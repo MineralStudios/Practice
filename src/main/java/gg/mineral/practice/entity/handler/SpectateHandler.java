@@ -56,6 +56,19 @@ public class SpectateHandler {
             return;
         }
 
+        if (spectatable instanceof TeamMatch match) {
+            val groups = match.getNametagGroups();
+
+            if (groups != null) {
+                for (val nametagGroup : groups) {
+                    if (nametagGroup == null)
+                        continue;
+                    nametagGroup.remove(profile.getPlayer());
+                    TeamMatch.refreshBukkitScoreboard(profile.getPlayer());
+                }
+            }
+        }
+
         if (spectatable != null) {
             spectatable.getSpectators().remove(profile);
             spectatable = null;
