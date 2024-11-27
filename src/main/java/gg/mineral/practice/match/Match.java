@@ -277,6 +277,7 @@ public class Match implements Spectatable {
     }
 
     public void onMatchStart() {
+        startMatchTimeLimit();
     }
 
     public void setScoreboard(Profile p) {
@@ -368,7 +369,6 @@ public class Match implements Spectatable {
 
         prepareForMatch(participants);
         handleOpponentMessages();
-        startMatchTimeLimit();
         startCountdown();
     }
 

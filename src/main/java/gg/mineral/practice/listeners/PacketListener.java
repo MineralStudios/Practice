@@ -134,7 +134,8 @@ public class PacketListener implements Listener {
                     if (sound == null)
                         return false;
 
-                    if (sound.equalsIgnoreCase("RANDOM.drink") || sound.equalsIgnoreCase("RANDOM.eat")
+                    if (sound.equalsIgnoreCase("RANDOM.burp") || sound.equalsIgnoreCase("RANDOM.drink")
+                            || sound.equalsIgnoreCase("RANDOM.eat")
                             || sound.equalsIgnoreCase("RANDOM.bow")
                             || sound.equalsIgnoreCase("RANDOM.bowhit")
                             || sound.equalsIgnoreCase("RANDOM.pop")
