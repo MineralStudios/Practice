@@ -118,6 +118,19 @@ public class TeamMatch extends Match {
     }
 
     @Override
+    protected void startMatchTimeLimit() {
+        this.timeRemaining = getTimeLimitSec();
+        Bukkit.getServer().getScheduler().scheduleSyncRepeatingTask(PracticePlugin.INSTANCE,
+                () -> {
+                    if (isEnded())
+                        return;
+                    if (timeRemaining-- <= 0)
+                        for (val profile : team1Players.alive())
+                            end(profile);
+                }, 0, 20);
+    }
+
+    @Override
     public void start() {
 
         if (noArenas())
@@ -139,11 +152,12 @@ public class TeamMatch extends Match {
 
         this.nametagGroups = setDisplayNameBoard();
 
-        team1Players.alive(teamMember -> PlayerUtil.teleport(teamMember.getPlayer(), location1));
-        team2Players.alive(teamMember -> PlayerUtil.teleport(teamMember.getPlayer(), location2));
+        team1Players.alive(teamMember -> PlayerUtil.teleport(teamMember, location1));
+        team2Players.alive(teamMember -> PlayerUtil.teleport(teamMember, location2));
 
-        participants.forEach(profile -> prepareForMatch(profile));
-      
+        prepareForMatch(participants);
+
+        startMatchTimeLimit();
         startCountdown();
     }
 
@@ -197,15 +211,34 @@ public class TeamMatch extends Match {
             if (victim.getMatch().equals(this))
                 victim.removeFromMatch();
 
+            for (val nametagGroup : nametagGroups) {
+                nametagGroup.remove(victim.getPlayer());
+                refreshBukkitScoreboard(victim.getPlayer());
+            }
+
             if (BotAPI.INSTANCE.despawn(victim.getPlayer().getUniqueId()))
                 return;
 
+            boolean allBots = true;
+
+            for (val profile : participants)
+                if (!BotAPI.INSTANCE.isFakePlayer(profile.getUuid())) {
+                    allBots = false;
+                    break;
+                }
+
             victim.getSpectateHandler().spectate(victimsAlive.getFirst());
+
+            if (allBots)
+                for (val profile : victimsAlive)
+                    end(profile);
 
             return;
         }
 
         ended = true;
+
+        Bukkit.getScheduler().cancelTask(timeTaskId);
 
         for (val nametagGroup : nametagGroups) {
             nametagGroup.delete();
@@ -262,18 +295,18 @@ public class TeamMatch extends Match {
 
         participants.remove(victim);
 
-        victim.removePotionEffects();
-        victim.teleportToLobby();
+        if (!BotAPI.INSTANCE.despawn(victim.getPlayer().getUniqueId())) {
+            victim.removePotionEffects();
+            victim.teleportToLobby();
 
-        if (victim.isInParty())
-            victim.getInventory().setInventoryForParty();
-        else
-            victim.getInventory().setInventoryForLobby();
+            if (victim.isInParty())
+                victim.getInventory().setInventoryForParty();
+            else
+                victim.getInventory().setInventoryForLobby();
+        }
 
         if (victim.getMatch().equals(this))
             victim.removeFromMatch();
-
-        BotAPI.INSTANCE.despawn(victim.getPlayer().getUniqueId());
 
         for (val spectator : getSpectators()) {
             val player = spectator.getPlayer();
@@ -353,7 +386,7 @@ public class TeamMatch extends Match {
         return false;
     }
 
-    public void refreshBukkitScoreboard(Player player) {
+    public static void refreshBukkitScoreboard(Player player) {
         val scoreboard = player.getScoreboard();
         val manager = Bukkit.getScoreboardManager();
         val blankScoreboard = manager.getNewScoreboard();

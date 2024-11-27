@@ -25,10 +25,13 @@ public class CreateCustomKnockbackMenu extends PracticeMenu {
     @Override
     public void update() {
 
-        this.kb = viewer.getDuelSettings().getKnockback() != null
-                && viewer.getDuelSettings().getKnockback() instanceof CustomKnockback customKB
-                        ? customKB
-                        : new CustomKnockback();
+        val duelSettings = viewer.getDuelSettings();
+
+        if (this.kb == null)
+            this.kb = duelSettings.getKnockback() != null
+                    && duelSettings.getKnockback() instanceof CustomKnockback customKB
+                            ? customKB
+                            : new CustomKnockback();
 
         setSlot(0, ItemStacks.FRICTION.name(CC.SECONDARY + CC.B + "Friction")
                 .lore(CC.WHITE + "The amount " + CC.SECONDARY + "movement speed and direction",

@@ -64,8 +64,8 @@ public class BotTeamMatch extends TeamMatch {
         val location2 = arena.getLocation2().clone();
         setupLocations(location1, location2);
 
-        team1Players.alive(teamMember -> PlayerUtil.teleport(teamMember.getPlayer(), location1));
-        team2Players.alive(teamMember -> PlayerUtil.teleport(teamMember.getPlayer(), location2));
+        team1Players.alive(teamMember -> PlayerUtil.teleport(teamMember, location1));
+        team2Players.alive(teamMember -> PlayerUtil.teleport(teamMember, location2));
 
         startCountdown();
 

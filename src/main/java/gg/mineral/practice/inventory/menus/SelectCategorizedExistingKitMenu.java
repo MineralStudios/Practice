@@ -1,7 +1,7 @@
 package gg.mineral.practice.inventory.menus;
 
 import gg.mineral.practice.catagory.Catagory;
-
+import gg.mineral.practice.entity.PlayerStatus;
 import gg.mineral.practice.inventory.ClickCancelled;
 import gg.mineral.practice.inventory.PracticeMenu;
 import gg.mineral.practice.util.items.ItemBuilder;
@@ -28,7 +28,7 @@ public class SelectCategorizedExistingKitMenu extends SelectExistingKitMenu {
 			val item = new ItemBuilder(g.getDisplayItem().clone())
 					.name(CC.SECONDARY + CC.B + g.getDisplayName()).lore(CC.ACCENT + "Click to select.").build();
 			add(item, interaction -> {
-				if (viewer.isInKitCreator()) {
+				if (viewer.getPlayerStatus() == PlayerStatus.KIT_CREATOR) {
 					viewer.giveKit(g.getKit());
 					return;
 				}

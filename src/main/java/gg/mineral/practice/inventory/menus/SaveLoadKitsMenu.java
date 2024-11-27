@@ -1,5 +1,6 @@
 package gg.mineral.practice.inventory.menus;
 
+import gg.mineral.practice.entity.PlayerStatus;
 import gg.mineral.practice.inventory.ClickCancelled;
 import gg.mineral.practice.inventory.PracticeMenu;
 
@@ -13,7 +14,7 @@ public class SaveLoadKitsMenu extends PracticeMenu {
 
     @Override
     public void update() {
-        if (viewer.isInKitCreator()) {
+        if (viewer.getPlayerStatus() == PlayerStatus.KIT_CREATOR) {
             setSlot(4, ItemStacks.SAVE_KIT,
                     interaction -> viewer.getKitCreator().save());
             return;
