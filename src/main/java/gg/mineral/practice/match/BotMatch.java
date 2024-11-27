@@ -58,6 +58,7 @@ public class BotMatch extends Match {
                 .getOrCreateProfile(bukkitPl);
 
         handleOpponentMessages();
+        startMatchTimeLimit();
         startCountdown();
         addParicipants(profile2);
 

@@ -67,6 +67,7 @@ public class BotTeamMatch extends TeamMatch {
         team1Players.alive(teamMember -> PlayerUtil.teleport(teamMember, location1));
         team2Players.alive(teamMember -> PlayerUtil.teleport(teamMember, location2));
 
+        startMatchTimeLimit();
         startCountdown();
 
         int suffix = 0;

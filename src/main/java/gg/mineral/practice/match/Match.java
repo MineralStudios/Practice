@@ -92,6 +92,7 @@ public class Match implements Spectatable {
     private Map<UUID, MatchStatisticCollector> matchStatisticMap = new Object2ObjectOpenHashMap<>();
     @Getter
     protected static PearlCooldown pearlCooldown = new PearlCooldown();
+    protected int timeRemaining, timeTaskId;
 
     public Match(Profile profile1, Profile profile2, MatchData matchData) {
         this(matchData);
@@ -105,18 +106,20 @@ public class Match implements Spectatable {
             prepareForMatch(profile);
     }
 
-    protected int getTimeLimitMillis() {
+    protected int getTimeLimitSec() {
         val mins = 5 * Math.log10(5 * participants.size());
-        return (int) (mins * 60 * 1000);
+        return (int) (mins * 60);
     }
 
     protected void startMatchTimeLimit() {
-        Bukkit.getServer().getScheduler().scheduleSyncDelayedTask(PracticePlugin.INSTANCE,
+        this.timeRemaining = getTimeLimitSec();
+        this.timeTaskId = Bukkit.getServer().getScheduler().scheduleSyncRepeatingTask(PracticePlugin.INSTANCE,
                 () -> {
                     if (isEnded())
                         return;
-                    end(profile1);
-                }, getTimeLimitMillis());
+                    if (timeRemaining-- <= 0)
+                        end(profile1);
+                }, 0, 20);
     }
 
     public Kit getKit(Profile p, int loadoutSlot) {
@@ -428,6 +431,8 @@ public class Match implements Spectatable {
         stat(victim, collector -> collector.end(false));
 
         deathAnimation(attacker, victim);
+
+        Bukkit.getScheduler().cancelTask(timeTaskId);
 
         stat(attacker, collector -> setInventoryStats(collector));
         stat(victim, collector -> setInventoryStats(collector));
