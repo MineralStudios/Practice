@@ -407,7 +407,7 @@ public class SelectGametypeMenu extends PracticeMenu {
 
                 itemBuild.lore(sb.toArray(new String[0]));
                 val item = itemBuild.build();
-                setSlot(type == Type.UNRANKED ? entry.getIntValue() + 18 - offset : entry.getIntValue() - offset, item,
+                setSlot(entry.getIntValue() + 18 - offset, item,
                         interaction -> interaction.getProfile()
                                 .openMenu(new SelectCategorizedGametypeMenu(queuetype, catagory, type)));
             }
