@@ -208,6 +208,8 @@ public class ItemStacks {
                                         .name(CC.SECONDARY + CC.B + "Pearl Cooldown"),
                         ARENA = new ItemBuilder(Material.WATER_LILY)
                                         .name(CC.SECONDARY + CC.B + "Arena Selection"),
+                        OLD_COMBAT = new ItemBuilder(Material.STONE_SWORD)
+                                        .name(CC.SECONDARY + CC.B + "Old Combat Mechanics"),
                         REGENERATION = new ItemBuilder(Material.GOLDEN_APPLE)
                                         .name(CC.SECONDARY + CC.B + "Regeneration"),
                         BOXING = new ItemBuilder(Material.IRON_CHESTPLATE)

@@ -373,6 +373,7 @@ public class Profile extends ProfileData implements QueuedEntity {
 
 			return QueueSystem.addPlayerToQueue(isInParty() ? party : this,
 					QueueSettings.toEntry(queuetype, gametype, teamSize, queueSettings.isBotQueue(),
+							queueSettings.isOldCombat(),
 							queueSettings.getOpponentDifficulty(),
 							queueSettings.getBotTeamSetting(), queueSettings.getEnabledArenas()));
 		}
@@ -384,6 +385,7 @@ public class Profile extends ProfileData implements QueuedEntity {
 		if (playerStatus == PlayerStatus.FIGHTING && !getMatch().isEnded())
 			return;
 
+		this.getPlayer().getHandle().getBacktrackSystem().setEnabled(false);
 		PlayerUtil.teleport(this, ProfileManager.getSpawnLocation());
 
 		if (playerStatus != PlayerStatus.FOLLOWING && playerStatus != PlayerStatus.QUEUEING)

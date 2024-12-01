@@ -203,6 +203,7 @@ public class Match implements Spectatable {
         setPotionEffects(p);
         setScoreboard(p);
         handleFollowers(p);
+        p.getPlayer().getHandle().getBacktrackSystem().setEnabled(data.isOldCombat());
     }
 
     public void rideInvisibleArmorStand(Profile profile) {
