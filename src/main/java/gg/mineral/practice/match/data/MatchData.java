@@ -32,6 +32,7 @@ public class MatchData {
 	@Nullable
 	private Knockback knockback;
 	private int noDamageTicks = 20, pearlCooldown = 15;
+	@Setter
 	private boolean hunger = true, boxing = false, build = false, damage = true, griefing = false, deadlyWater = false,
 			regeneration = true, oldCombat = false;
 	private boolean ranked = false;
