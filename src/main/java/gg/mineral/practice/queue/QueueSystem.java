@@ -262,7 +262,6 @@ public class QueueSystem {
 
         val bots = sampleRecord.queueEntry().botsEnabled();
         val matchData = new MatchData(sampleRecord.queueEntry());
-        matchData.setOldCombat(sampleRecord.queueEntry().oldCombat());
         matchData.setArenaId(selectedArenaId);
 
         val difficulty = Difficulty.values()[sampleRecord.queueEntry().opponentDifficulty()];

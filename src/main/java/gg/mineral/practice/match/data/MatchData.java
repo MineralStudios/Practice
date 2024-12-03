@@ -65,6 +65,10 @@ public class MatchData {
 		val gametype = queueEntry.gametype();
 		setQueuetype(queuetype);
 		setGametype(gametype);
+
+		this.oldCombat = queueEntry.oldCombat();
+		if (knockback == null && this.oldCombat)
+			this.knockback = new OldStyleKnockback();
 	}
 
 	public MatchData(DuelSettings duelSettings) {
