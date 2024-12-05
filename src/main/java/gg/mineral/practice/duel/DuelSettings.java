@@ -33,7 +33,7 @@ public class DuelSettings {
     private Knockback knockback;
     private int noDamageTicks = 20, pearlCooldown = 15;
     private boolean hunger = true, boxing = false, build = false, damage = true, griefing = false, deadlyWater = false,
-            regeneration = true;
+            regeneration = true, oldCombat = false;
     private ItemStack displayItem = ItemStacks.WOOD_AXE;
 
     public DuelSettings(Queuetype queuetype, Gametype gametype) {

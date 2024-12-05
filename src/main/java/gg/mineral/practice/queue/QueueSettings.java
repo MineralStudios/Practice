@@ -20,7 +20,7 @@ import lombok.val;
 @RequiredArgsConstructor
 public class QueueSettings {
     private byte teamSize = 1, opponentDifficulty = 0, teammateDifficulty = 0;
-    private boolean botQueue = false, arenaSelection = true;
+    private boolean botQueue = false, arenaSelection = true, oldCombat = false;
     protected final Byte2BooleanOpenHashMap enabledArenas = new Byte2BooleanOpenHashMap();
     private BotTeamSetting botTeamSetting = BotTeamSetting.BOTH;
     @Setter
@@ -31,13 +31,14 @@ public class QueueSettings {
     }
 
     public record QueueEntry(Queuetype queuetype, Gametype gametype, int teamSize, boolean botsEnabled,
+            boolean oldCombat,
             byte opponentDifficulty,
             BotTeamSetting botTeamSetting,
             Byte2BooleanOpenHashMap enabledArenas) {
 
         public boolean isCompatible(QueueEntry entry) {
             return queuetype == entry.queuetype && gametype == entry.gametype && teamSize == entry.teamSize
-                    && botsEnabled == entry.botsEnabled
+                    && botsEnabled == entry.botsEnabled && oldCombat == entry.oldCombat
                     && (teamSize > 1 && botsEnabled && entry.botsEnabled ? botTeamSetting == entry.botTeamSetting
                             : true)
                     && (botsEnabled ? opponentDifficulty == entry.opponentDifficulty : true)
@@ -48,11 +49,12 @@ public class QueueSettings {
     }
 
     public static QueueEntry toEntry(Queuetype queuetype, Gametype gametype, int teamSize, boolean botsEnabled,
+            boolean oldCombat,
             byte opponentDifficulty,
             BotTeamSetting bot2v2Setting,
             Byte2BooleanOpenHashMap enabledArenas) {
         return new QueueEntry(queuetype, gametype, teamSize,
-                queuetype.isBotsEnabled() && gametype.isBotsEnabled() && botsEnabled,
+                queuetype.isBotsEnabled() && gametype.isBotsEnabled() && botsEnabled, oldCombat,
                 opponentDifficulty, bot2v2Setting,
                 enabledArenas);
     }

@@ -2,6 +2,7 @@ package gg.mineral.practice.queue;
 
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Random;
 
 import org.eclipse.jdt.annotation.Nullable;
 
@@ -24,6 +25,7 @@ import lombok.val;
 
 public class QueueSystem {
 
+    private static final Random random = new Random();
     private static final Short2ObjectOpenHashMap<RecordSet> queueMap = new Short2ObjectOpenHashMap<>();
 
     private static class RecordSet extends ObjectOpenHashSet<QueueRecord> {
@@ -214,33 +216,70 @@ public class QueueSystem {
 
     private static void startMatch(QueueRecord sampleRecord, RecordSet records, int teamSize,
             boolean opponentBot) {
-        // First, find common arenas
-        val allEnabledArenas = new ByteOpenHashSet();
-        val allDisabledArenas = new ByteOpenHashSet();
-        for (val record : records) {
-            val enabledArenas = record.queueEntry().enabledArenas();
+        // Get all arenas compatible with the gametype
+        val allCompatibleArenas = new ByteOpenHashSet(sampleRecord.queueEntry().queuetype()
+                .filterArenasByGametype(sampleRecord.queueEntry().gametype()));
 
-            if (enabledArenas.isEmpty()) {
-                allEnabledArenas
-                        .addAll(record.queueEntry().queuetype().filterArenasByGametype(record.queueEntry().gametype()));
-                continue;
-            }
-
-            for (val e : enabledArenas.byte2BooleanEntrySet())
-                if (e.getBooleanValue())
-                    allEnabledArenas.add(e.getByteKey());
-                else
-                    allDisabledArenas.add(e.getByteKey());
+        if (allCompatibleArenas.isEmpty()) {
+            // No arenas are compatible with the gametype; cannot start match
+            // Optionally notify players
+            return;
         }
 
-        allEnabledArenas.removeAll(allDisabledArenas);
+        // Initialize commonArenaIds with all compatible arenas
+        val commonArenaIds = new ByteOpenHashSet(allCompatibleArenas);
 
-        val commonArenaIds = allEnabledArenas;
+        for (val record : records) {
+            val arenas = new ByteOpenHashSet();
 
-        val selectedArenaId = commonArenaIds.isEmpty()
-                ? sampleRecord.queueEntry().queuetype().nextArenaId(sampleRecord.queueEntry().gametype())
-                : commonArenaIds.iterator().nextByte();
+            val enabledArenas = record.queueEntry().enabledArenas();
+            val disabledArenas = new ByteOpenHashSet();
 
+            // Collect explicitly enabled and disabled arenas
+            for (val e : enabledArenas.byte2BooleanEntrySet()) {
+                if (e.getBooleanValue()) {
+                    arenas.add(e.getByteKey());
+                } else {
+                    disabledArenas.add(e.getByteKey());
+                }
+            }
+
+            if (arenas.isEmpty()) {
+                // Player accepts all compatible arenas except explicitly disabled ones
+                arenas.addAll(allCompatibleArenas);
+                arenas.removeAll(disabledArenas);
+            } else {
+                // Remove explicitly disabled arenas from the enabled ones
+                arenas.removeAll(disabledArenas);
+            }
+
+            if (arenas.isEmpty()) {
+                // Player has no acceptable arenas; cannot start match
+                // Optionally notify players
+                return;
+            }
+
+            // Intersect with commonArenaIds
+            commonArenaIds.retainAll(arenas);
+
+            if (commonArenaIds.isEmpty()) {
+                // No common arenas, cannot start match
+                // Optionally notify players
+                return;
+            }
+        }
+
+        // Select a random arena from the common arenas using primitive arrays
+        byte selectedArenaId;
+        if (commonArenaIds.size() == 1) {
+            // Only one arena available, select it
+            selectedArenaId = commonArenaIds.iterator().nextByte();
+        } else {
+            // Convert the ByteOpenHashSet to a primitive byte array
+            val arenasArray = commonArenaIds.toByteArray();
+            int index = random.nextInt(arenasArray.length);
+            selectedArenaId = arenasArray[index];
+        }
         // Get the Arena object from the arena ID
         val selectedArena = ArenaManager.getArenas().get(selectedArenaId);
         if (selectedArena == null)

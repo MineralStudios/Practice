@@ -53,8 +53,16 @@ public class Arena implements SaveableData {
 		save();
 	}
 
-	public boolean equals(Arena a) {
-		return a.getName().equalsIgnoreCase(getName());
+	@Override
+	public boolean equals(Object obj) {
+		if (obj instanceof Arena arena)
+			return arena.getName().equalsIgnoreCase(getName());
+		return false;
+	}
+
+	@Override
+	public int hashCode() {
+		return getName().hashCode();
 	}
 
 	public void setWaitingLocation(Location waitingLocation) {

@@ -145,6 +145,16 @@ public class MechanicsMenu extends PracticeMenu {
 					reload();
 				});
 
+		setSlot(24, ItemStacks.OLD_COMBAT.lore(
+				CC.WHITE + "Play using " + CC.SECONDARY + "old combat" + CC.WHITE
+						+ " seen on servers from 2015-2017.",
+				" ",
+				CC.WHITE + "Currently:", duelSettings.isOldCombat() ? CC.GREEN + "Enabled" : CC.RED + "Disabled", " ",
+				CC.BOARD_SEPARATOR, CC.ACCENT + "Click to toggle old combat.").build(), interaction -> {
+					duelSettings.setOldCombat(!duelSettings.isOldCombat());
+					reload();
+				});
+
 		setSlot(27, ItemStacks.RESET_SETTINGS, interaction -> {
 			viewer.resetDuelSettings();
 			reload();

@@ -284,7 +284,7 @@ public class SelectGametypeMenu extends PracticeMenu {
 
         setSlot(botQueue ? 6 : 5, item, BOT_QUEUE_INTERACTION);
 
-        setSlot(48, ItemStacks.RANDOM_QUEUE, interaction -> {
+        setSlot(47, ItemStacks.RANDOM_QUEUE, interaction -> {
             val gametype = viewer.getQueueSettings().isBotQueue() ? queuetype.randomGametypeWithBotsEnabled()
                     : queuetype.randomGametype();
 
@@ -296,7 +296,7 @@ public class SelectGametypeMenu extends PracticeMenu {
 
         val arenaSelection = viewer.getQueueSettings().isArenaSelection();
 
-        setSlot(50,
+        setSlot(51,
                 ItemStacks.ARENA.lore(
                         CC.WHITE + "Select an " + CC.SECONDARY + "arena" + CC.WHITE + " when you queue.", " ",
                         CC.WHITE + "Currently:", arenaSelection ? CC.GREEN + "Enabled" : CC.RED + "Disabled", " ",
@@ -316,6 +316,20 @@ public class SelectGametypeMenu extends PracticeMenu {
         val botQueue = !queuetype.isBotsEnabled() || type != Type.UNRANKED ? false : queueSettings.isBotQueue();
 
         addSurroundingButtons(queueSettings, botQueue);
+
+        boolean oldCombat = queueSettings.isOldCombat();
+
+        setSlot(49,
+                ItemStacks.OLD_COMBAT.lore(
+                        CC.WHITE + "Play using " + CC.SECONDARY + "old combat" + CC.WHITE
+                                + " seen on servers from 2015-2017.",
+                        " ",
+                        CC.WHITE + "Currently:", oldCombat ? CC.GREEN + "Enabled" : CC.RED + "Disabled", " ",
+                        CC.BOARD_SEPARATOR, CC.ACCENT + "Click to toggle old combat.").build(),
+                interaction -> {
+                    interaction.getProfile().getQueueSettings().setOldCombat(!oldCombat);
+                    reload();
+                });
 
         int offset = 0;
 
@@ -338,6 +352,7 @@ public class SelectGametypeMenu extends PracticeMenu {
             if (menuEntry instanceof Gametype gametype) {
                 val teamSize = queueSettings.getTeamSize();
                 val queueEntry = QueueSettings.toEntry(queuetype, gametype, teamSize, queueSettings.isBotQueue(),
+                        queueSettings.isOldCombat(),
                         queueSettings.getOpponentDifficulty(),
                         queueSettings.getBotTeamSetting(),
                         queueSettings.getEnabledArenas());
@@ -359,7 +374,7 @@ public class SelectGametypeMenu extends PracticeMenu {
 
                 val item = itemBuild.build();
 
-                setSlot(type == Type.UNRANKED ? entry.getIntValue() + 18 - offset : entry.getIntValue() - offset, item,
+                setSlot(entry.getIntValue() + 18 - offset, item,
                         interaction -> {
 
                             if (type == Type.KIT_EDITOR) {
@@ -392,7 +407,7 @@ public class SelectGametypeMenu extends PracticeMenu {
 
                 itemBuild.lore(sb.toArray(new String[0]));
                 val item = itemBuild.build();
-                setSlot(type == Type.UNRANKED ? entry.getIntValue() + 18 - offset : entry.getIntValue() - offset, item,
+                setSlot(entry.getIntValue() + 18 - offset, item,
                         interaction -> interaction.getProfile()
                                 .openMenu(new SelectCategorizedGametypeMenu(queuetype, catagory, type)));
             }

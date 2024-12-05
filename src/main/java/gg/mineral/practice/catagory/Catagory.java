@@ -22,10 +22,11 @@ public class Catagory implements SaveableData, QueuetypeMenuEntry {
 	@Getter
 	String displayName;
 	@Getter
-	final String name;
+	private final String name;
 	@Getter
 	GlueList<Gametype> gametypes = new GlueList<>();
 	final String path;
+	private static final String ENABLED_STRING = ".Enabled";
 
 	public Catagory(String name) {
 		this.name = name;
@@ -60,8 +61,16 @@ public class Catagory implements SaveableData, QueuetypeMenuEntry {
 		save();
 	}
 
-	public boolean equals(Catagory c) {
-		return c.getName().equalsIgnoreCase(getName());
+	@Override
+	public boolean equals(Object obj) {
+		if (obj instanceof Catagory catagory)
+			return catagory.getName().equalsIgnoreCase(getName());
+		return false;
+	}
+
+	@Override
+	public int hashCode() {
+		return getName().hashCode();
 	}
 
 	@Override
@@ -69,13 +78,13 @@ public class Catagory implements SaveableData, QueuetypeMenuEntry {
 		for (val q : QueuetypeManager.getQueuetypes().values()) {
 
 			if (!q.getMenuEntries().containsKey(this)) {
-				config.set(path + q.getName() + ".Enabled", false);
+				config.set(path + q.getName() + ENABLED_STRING, false);
 				continue;
 			}
 
 			int slot = q.getMenuEntries().getInt(this);
 
-			config.set(path + q.getName() + ".Enabled", true);
+			config.set(path + q.getName() + ENABLED_STRING, true);
 			config.set(path + q.getName() + ".Slot", slot);
 		}
 
@@ -92,7 +101,7 @@ public class Catagory implements SaveableData, QueuetypeMenuEntry {
 		this.displayName = config.getString(path + "DisplayName", getName());
 
 		for (val q : QueuetypeManager.getQueuetypes().values())
-			if (config.getBoolean(path + q.getName() + ".Enabled", false))
+			if (config.getBoolean(path + q.getName() + ENABLED_STRING, false))
 				q.getMenuEntries().put(this, (int) config.getInt(path + q.getName() + ".Slot", 0));
 
 	}
@@ -103,7 +112,7 @@ public class Catagory implements SaveableData, QueuetypeMenuEntry {
 		this.displayName = getName();
 
 		for (val q : QueuetypeManager.getQueuetypes().values())
-			if (config.getBoolean(path + q.getName() + ".Enabled", false))
+			if (config.getBoolean(path + q.getName() + ENABLED_STRING, false))
 				q.getMenuEntries().put(this, 0);
 	}
 

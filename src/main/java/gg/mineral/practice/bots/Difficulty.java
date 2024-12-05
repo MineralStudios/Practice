@@ -20,8 +20,30 @@ import lombok.val;
 
 @RequiredArgsConstructor
 public enum Difficulty {
+    NOOB(CC.GREEN + "Noob") {
+        @Override
+        public BotConfiguration getConfiguration(QueueSettings settings) {
+            return BotConfiguration.builder().username("NoobBot").skin(Skins.MINERAL_GREEN)
+                    .horizontalAimSpeed(0.3F)
+                    .verticalAimSpeed(0.3F).horizontalAimAccuracy(0.3F).verticalAimAccuracy(0.25F)
+                    .horizontalErraticness(0.3f).averageCps(5).latency(50).sprintResetAccuracy(0.25F)
+                    .hitSelectAccuracy(0.0F).reach(1.5f).build();
+        }
 
-    EASY(CC.GREEN + "Easy") {
+        @Override
+        public boolean configEquals(BotConfiguration botConfiguration) {
+            return botConfiguration.getHorizontalAimSpeed() == 0.3F
+                    && botConfiguration.getVerticalAimSpeed() == 0.3F
+                    && botConfiguration.getHorizontalAimAccuracy() == 0.3F
+                    && botConfiguration.getVerticalAimAccuracy() == 0.25F
+                    && botConfiguration.getHorizontalErraticness() == 0.3f
+                    && botConfiguration.getAverageCps() == 5
+                    && botConfiguration.getLatency() == 50
+                    && botConfiguration.getSprintResetAccuracy() == 0.25F
+                    && botConfiguration.getHitSelectAccuracy() == 0.0F && botConfiguration.getReach() == 1.5f;
+        }
+    },
+    EASY(CC.D_GREEN + "Easy") {
         @Override
         public BotConfiguration getConfiguration(QueueSettings settings) {
             return BotConfiguration.builder().username("EasyBot").skin(Skins.MINERAL_GREEN)
@@ -41,7 +63,7 @@ public enum Difficulty {
                     && botConfiguration.getAverageCps() == 5
                     && botConfiguration.getLatency() == 50
                     && botConfiguration.getSprintResetAccuracy() == 0.25F
-                    && botConfiguration.getHitSelectAccuracy() == 0.0F;
+                    && botConfiguration.getHitSelectAccuracy() == 0.0F && botConfiguration.getReach() == 3.0f;
         }
 
     },

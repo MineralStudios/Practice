@@ -10,6 +10,7 @@ import gg.mineral.practice.entity.Profile;
 import gg.mineral.practice.gametype.Gametype;
 import gg.mineral.practice.kit.Kit;
 import gg.mineral.practice.managers.GametypeManager;
+import gg.mineral.practice.match.OldStyleKnockback;
 import gg.mineral.practice.queue.QueueSettings;
 import gg.mineral.practice.queue.Queuetype;
 import gg.mineral.practice.queue.QueueSettings.QueueEntry;
@@ -31,8 +32,9 @@ public class MatchData {
 	@Nullable
 	private Knockback knockback;
 	private int noDamageTicks = 20, pearlCooldown = 15;
+	@Setter
 	private boolean hunger = true, boxing = false, build = false, damage = true, griefing = false, deadlyWater = false,
-			regeneration = true;
+			regeneration = true, oldCombat = false;
 	private boolean ranked = false;
 	protected Byte2BooleanOpenHashMap enabledArenas = new Byte2BooleanOpenHashMap();
 	private ItemStack displayItem = ItemStacks.WOOD_AXE;
@@ -47,6 +49,9 @@ public class MatchData {
 		this();
 		setQueuetype(queuetype);
 		setGametype(gametype);
+		this.oldCombat = queueSettings.isOldCombat();
+		if (knockback == null && this.oldCombat)
+			this.knockback = new OldStyleKnockback();
 		this.enabledArenas = new Byte2BooleanOpenHashMap(queueSettings.getEnabledArenas());
 	}
 
@@ -60,6 +65,10 @@ public class MatchData {
 		val gametype = queueEntry.gametype();
 		setQueuetype(queuetype);
 		setGametype(gametype);
+
+		this.oldCombat = queueEntry.oldCombat();
+		if (knockback == null && this.oldCombat)
+			this.knockback = new OldStyleKnockback();
 	}
 
 	public MatchData(DuelSettings duelSettings) {
@@ -83,6 +92,7 @@ public class MatchData {
 		this.deadlyWater = duelSettings.isDeadlyWater();
 		this.regeneration = duelSettings.isRegeneration();
 		this.pearlCooldown = duelSettings.getPearlCooldown();
+		this.oldCombat = duelSettings.isOldCombat();
 	}
 
 	public void setQueuetype(@NonNull Queuetype queuetype) {

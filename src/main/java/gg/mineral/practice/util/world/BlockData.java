@@ -15,7 +15,8 @@ public class BlockData {
     private Material type;
     private byte data;
 
-    public BlockData clone() {
+    @Override
+    public BlockData clone() throws CloneNotSupportedException {
         return new BlockData(location.clone(), type, data);
     }
 
