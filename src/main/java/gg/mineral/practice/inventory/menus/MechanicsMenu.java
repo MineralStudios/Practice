@@ -45,7 +45,7 @@ public class MechanicsMenu extends PracticeMenu {
 								CC.WHITE + "Currently:", CC.GOLD + knockback.getName(),
 								CC.BOARD_SEPARATOR, CC.ACCENT + "Click to change knockback.")
 						.build(),
-				interaction -> interaction.getProfile().openMenu(new SelectKnockbackMenu(this)));
+				interaction -> interaction.getProfile().openMenu(new CreateCustomKnockbackMenu(this)));
 
 		setSlot(12, ItemStacks.HIT_DELAY
 				.lore(CC.WHITE + "Changes how " + CC.SECONDARY + "frequently " + CC.WHITE
@@ -142,16 +142,6 @@ public class MechanicsMenu extends PracticeMenu {
 						CC.BOARD_SEPARATOR, CC.ACCENT + "Click to toggle boxing.")
 				.build(), interaction -> {
 					duelSettings.setBoxing(!duelSettings.isBoxing());
-					reload();
-				});
-
-		setSlot(24, ItemStacks.OLD_COMBAT.lore(
-				CC.WHITE + "Play using " + CC.SECONDARY + "old combat" + CC.WHITE
-						+ " seen on servers from 2015-2017.",
-				" ",
-				CC.WHITE + "Currently:", duelSettings.isOldCombat() ? CC.GREEN + "Enabled" : CC.RED + "Disabled", " ",
-				CC.BOARD_SEPARATOR, CC.ACCENT + "Click to toggle old combat.").build(), interaction -> {
-					duelSettings.setOldCombat(!duelSettings.isOldCombat());
 					reload();
 				});
 

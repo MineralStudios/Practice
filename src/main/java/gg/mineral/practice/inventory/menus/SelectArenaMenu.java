@@ -6,31 +6,29 @@ import org.bukkit.inventory.ItemStack;
 
 import gg.mineral.practice.inventory.ClickCancelled;
 import gg.mineral.practice.inventory.Interaction;
+import gg.mineral.practice.inventory.Menu;
 import gg.mineral.practice.inventory.PracticeMenu;
 import gg.mineral.practice.inventory.SubmitAction;
 import gg.mineral.practice.managers.ArenaManager;
 import gg.mineral.practice.match.TeamMatch;
 import gg.mineral.practice.match.data.MatchData;
-
 import gg.mineral.practice.tournaments.Tournament;
 import gg.mineral.practice.util.items.ItemBuilder;
+import gg.mineral.practice.util.items.ItemStacks;
 import gg.mineral.practice.util.messages.CC;
 import gg.mineral.practice.util.messages.impl.ErrorMessages;
-
-import lombok.RequiredArgsConstructor;
 import lombok.val;
 
 @ClickCancelled(true)
-@RequiredArgsConstructor
 public class SelectArenaMenu extends PracticeMenu {
-    private MechanicsMenu menu;
+    private final Menu menu;
     private final SubmitAction action;
-    private boolean simpleMode = true;
+    private final boolean simpleMode;
 
-    public SelectArenaMenu(MechanicsMenu menu, SubmitAction action) {
-        this(action);
+    public SelectArenaMenu(Menu menu, SubmitAction action) {
         this.menu = menu;
-        this.simpleMode = false;
+        this.action = action;
+        this.simpleMode = !(menu instanceof MechanicsMenu);
     }
 
     @Override
@@ -100,6 +98,8 @@ public class SelectArenaMenu extends PracticeMenu {
 
             add(item, arenaRunnable);
         }
+
+        add(ItemStacks.BACK, interaction -> viewer.openMenu(menu));
     }
 
     @Override

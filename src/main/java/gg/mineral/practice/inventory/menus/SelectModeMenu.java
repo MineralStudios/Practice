@@ -19,7 +19,7 @@ public class SelectModeMenu extends PracticeMenu {
 		setSlot(2, ItemStacks.SIMPLE_MODE, interaction -> {
 			val p = interaction.getProfile();
 			p.resetQueueSettings();
-			p.openMenu(new SelectExistingKitMenu(new SelectArenaMenu(action), true));
+			p.openMenu(new SelectExistingKitMenu(new SelectArenaMenu(this, action), true));
 		});
 
 		setSlot(6, ItemStacks.ADVANCED_MODE,

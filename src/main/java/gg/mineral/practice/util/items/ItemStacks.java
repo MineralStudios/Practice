@@ -80,13 +80,6 @@ public class ItemStacks {
                                                         " ",
                                                         CC.BOARD_SEPARATOR, CC.ACCENT + "Click to create kit.")
                                         .build(),
-                        CHOOSE_EXISTING_KNOCKBACK = new ItemBuilder(Material.GOLD_SWORD)
-                                        .name(CC.SECONDARY + CC.B + "Choose Existing Knockback")
-                                        .lore(CC.WHITE + "Choose a " + CC.SECONDARY + "preconfigured knockback"
-                                                        + CC.WHITE + ".",
-                                                        " ",
-                                                        CC.BOARD_SEPARATOR, CC.ACCENT + "Click to select knockback.")
-                                        .build(),
                         CREATE_CUSTOM_KNOCKBACK = new ItemBuilder(Material.STONE_SWORD)
                                         .name(CC.SECONDARY + CC.B + "Create Custom Knockback")
                                         .lore(CC.WHITE + "Create a " + CC.SECONDARY + "custom knockback"
@@ -216,6 +209,8 @@ public class ItemStacks {
                                         .name(CC.SECONDARY + CC.B + "Boxing"),
                         OTHER_PARTY = new ItemBuilder(Material.SKULL_ITEM).lore(CC.ACCENT + "Click to duel."),
                         KNOCKBACK = new ItemBuilder(Material.GOLD_SWORD),
+                        CHOOSE_EXISTING_KNOCKBACK = new ItemBuilder(Material.GOLD_SWORD)
+                                        .name(CC.SECONDARY + CC.B + "Choose Existing Knockback"),
                         HEALTH_POTIONS_LEFT = new ItemBuilder(new ItemStack(Material.POTION, 1, (short) 16421))
                                         .name(CC.SECONDARY + CC.B + "Health Potions Left"),
                         SOUP_LEFT = new ItemBuilder(Material.MUSHROOM_SOUP).name(CC.SECONDARY + CC.B + "Soup Left"),
@@ -236,13 +231,11 @@ public class ItemStacks {
                         AIM_ACCURACY = new ItemBuilder(Material.ARROW).lore("Click to change value."),
                         AIM_ERRATICNESS = new ItemBuilder(Material.LEVER).lore("Click to change value."),
                         AIM_REACTION_TIME = new ItemBuilder(Material.EMERALD).lore("Click to change value."),
-                        BOW_AIMING_RADIUS = new ItemBuilder(Material.MAP)
-                                        .lore("Click to change value."),
+                        BOW_AIMING_RADIUS = new ItemBuilder(Material.MAP).lore("Click to change value."),
                         REACH = new ItemBuilder(Material.DIAMOND_SWORD).lore("Click to change value."),
                         SPRINT_RESET_ACCURACY = new ItemBuilder(Material.DIAMOND_BOOTS).lore("Click to change value."),
                         HIT_SELECT_ACCURACY = new ItemBuilder(Material.IRON_SWORD).lore("Click to change value."),
-                        DISTANCING_MINIMUM = new ItemBuilder(Material.GOLD_RECORD)
-                                        .lore("Click to change value."),
+                        DISTANCING_MINIMUM = new ItemBuilder(Material.GOLD_RECORD).lore("Click to change value."),
                         DISTANCING_MAXIMUM = new ItemBuilder(Material.GREEN_RECORD).lore("Click to change value."),
                         CPS = new ItemBuilder(Material.SUGAR).lore("Click to change value."),
                         PING = new ItemBuilder(Material.REDSTONE).lore("Click to change value."),
@@ -276,7 +269,6 @@ public class ItemStacks {
                                         .name(CC.SECONDARY + CC.B + "Next Page"),
                         PREVIOUS_PAGE = new ItemBuilder(new ItemStack(Material.WOOL, 1, DyeColor.RED.getData()))
                                         .name(CC.SECONDARY + CC.B + "Previous Page"),
-                        CHANGE_TIME = new ItemBuilder(Material.WATCH)
-                                        .name(CC.SECONDARY + CC.B + "Change Time");
+                        CHANGE_TIME = new ItemBuilder(Material.WATCH).name(CC.SECONDARY + CC.B + "Change Time");
 
 }
