@@ -46,7 +46,7 @@ public class CustomBotDifficultyMenu extends PracticeMenu {
             this.difficulty = premadeDifficulty.getConfiguration(queueSettings);
         }
 
-        setSlot(0, ItemStacks.AIM_SPEED.name(CC.SECONDARY + CC.B + "Aim Speed")
+        setSlot(10, ItemStacks.AIM_SPEED.name(CC.SECONDARY + CC.B + "Aim Speed")
                 .lore(CC.WHITE + "The speed the bot " + CC.SECONDARY + "rotates" + CC.WHITE
                         + " its head.", " ",
                         CC.WHITE + "Horizontal:",
@@ -69,7 +69,7 @@ public class CustomBotDifficultyMenu extends PracticeMenu {
                     premadeDifficulty = Difficulty.CUSTOM;
                 });
 
-        setSlot(1, ItemStacks.AIM_ACCURACY.name(CC.SECONDARY + CC.B + "Aim Accuracy")
+        setSlot(11, ItemStacks.AIM_ACCURACY.name(CC.SECONDARY + CC.B + "Aim Accuracy")
                 .lore(CC.WHITE + "The " + CC.SECONDARY + "accuracy" + CC.WHITE
                         + " the bot has when aiming.", " ",
                         CC.WHITE + "Horizontal:",
@@ -91,7 +91,7 @@ public class CustomBotDifficultyMenu extends PracticeMenu {
                     premadeDifficulty = Difficulty.CUSTOM;
                 });
 
-        setSlot(2, ItemStacks.AIM_ERRATICNESS.name(CC.SECONDARY + CC.B + "Aim Erraticness")
+        setSlot(12, ItemStacks.AIM_ERRATICNESS.name(CC.SECONDARY + CC.B + "Aim Erraticness")
                 .lore(CC.WHITE + "The " + CC.SECONDARY + "erraticness" + CC.WHITE
                         + " the bot has when aiming.", " ",
                         CC.WHITE + "Horizontal:",
@@ -117,7 +117,7 @@ public class CustomBotDifficultyMenu extends PracticeMenu {
                     premadeDifficulty = Difficulty.CUSTOM;
                 });
 
-        setSlot(3, ItemStacks.SPRINT_RESET_ACCURACY.name(CC.SECONDARY + CC.B + "Sprint Reset Accuracy")
+        setSlot(13, ItemStacks.SPRINT_RESET_ACCURACY.name(CC.SECONDARY + CC.B + "Sprint Reset Accuracy")
                 .lore(CC.WHITE + "The " + CC.SECONDARY + "accuracy" + CC.WHITE
                         + " the bot has when",
                         CC.WHITE + "sprint resetting for the purpose of ",
@@ -138,7 +138,7 @@ public class CustomBotDifficultyMenu extends PracticeMenu {
                     premadeDifficulty = Difficulty.CUSTOM;
                 });
 
-        setSlot(4, ItemStacks.HIT_SELECT_ACCURACY.name(CC.SECONDARY + CC.B + "Hit Select Accuracy")
+        setSlot(14, ItemStacks.HIT_SELECT_ACCURACY.name(CC.SECONDARY + CC.B + "Hit Select Accuracy")
                 .lore(CC.WHITE + "The " + CC.SECONDARY + "accuracy" + CC.WHITE
                         + " the bot has when",
                         CC.WHITE + "hit selecting for the purpose of ",
@@ -157,7 +157,7 @@ public class CustomBotDifficultyMenu extends PracticeMenu {
                     premadeDifficulty = Difficulty.CUSTOM;
                 });
 
-        setSlot(5, ItemStacks.CPS.name(CC.SECONDARY + CC.B + "CPS")
+        setSlot(15, ItemStacks.CPS.name(CC.SECONDARY + CC.B + "CPS")
                 .lore(CC.WHITE + "The " + CC.SECONDARY + "amount of clicks" + CC.WHITE
                         + " each second.", " ",
                         CC.WHITE + "Currently:",
@@ -172,7 +172,7 @@ public class CustomBotDifficultyMenu extends PracticeMenu {
                     premadeDifficulty = Difficulty.CUSTOM;
                 });
 
-        setSlot(6, ItemStacks.PING.name(CC.SECONDARY + CC.B + "Ping")
+        setSlot(16, ItemStacks.PING.name(CC.SECONDARY + CC.B + "Ping")
                 .lore(CC.WHITE + "Simulates the " + CC.SECONDARY + "amount of time", CC.WHITE
                         + "it takes for packets to be",
                         CC.SECONDARY + "transported" + CC.WHITE + ".", " ",
@@ -188,7 +188,7 @@ public class CustomBotDifficultyMenu extends PracticeMenu {
                     premadeDifficulty = Difficulty.CUSTOM;
                 });
 
-        setSlot(7, ItemStacks.PING_DEVIATION.name(CC.SECONDARY + CC.B + "Ping Deviation")
+        setSlot(19, ItemStacks.PING_DEVIATION.name(CC.SECONDARY + CC.B + "Ping Deviation")
                 .lore(CC.WHITE + "Simulates the " + CC.SECONDARY + "variation in time", CC.WHITE
                         + "it takes for packets to be",
                         CC.SECONDARY + "transported" + CC.WHITE + ".", " ",
@@ -204,9 +204,9 @@ public class CustomBotDifficultyMenu extends PracticeMenu {
                     premadeDifficulty = Difficulty.CUSTOM;
                 });
 
-        setSlot(29, ItemStacks.BACK, interaction -> interaction.getProfile().openMenu(menu));
+        setSlot(38, ItemStacks.BACK, interaction -> interaction.getProfile().openMenu(menu));
 
-        setSlot(31, ItemStacks.CLICK_TO_APPLY_CHANGES.name(CC.SECONDARY + CC.B + "Save Difficulty").build(),
+        setSlot(40, ItemStacks.CLICK_TO_APPLY_CHANGES.name(CC.SECONDARY + CC.B + "Save Difficulty").build(),
                 interaction -> {
                     val p = interaction.getProfile();
                     p.getQueueSettings()
@@ -215,7 +215,7 @@ public class CustomBotDifficultyMenu extends PracticeMenu {
                     p.openMenu(menu);
                 });
 
-        setSlot(33, ItemStacks.PREMADE_DIFFICULTY.lore(
+        setSlot(42, ItemStacks.PREMADE_DIFFICULTY.lore(
                 CC.WHITE + "Allows you to select a " + CC.SECONDARY + "premade difficulty"
                         + CC.WHITE
                         + ".",

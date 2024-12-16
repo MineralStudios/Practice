@@ -404,7 +404,7 @@ public class Profile extends ProfileData implements QueuedEntity {
 		setScoreboard(DefaultScoreboard.INSTANCE);
 		this.player.setGameMode(GameMode.SURVIVAL);
 		leaveKitEditor();
-		openMenu(new MechanicsMenu(kitCreator.getSubmitAction()));
+		openMenu(new MechanicsMenu(null,kitCreator.getSubmitAction()));
 		this.kitCreator = null;
 	}
 

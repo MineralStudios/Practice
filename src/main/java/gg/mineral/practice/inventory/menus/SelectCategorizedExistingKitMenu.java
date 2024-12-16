@@ -13,7 +13,7 @@ public class SelectCategorizedExistingKitMenu extends SelectExistingKitMenu {
 	private final Catagory catagory;
 
 	public SelectCategorizedExistingKitMenu(Catagory catagory, PracticeMenu menu, boolean simple) {
-		super(menu, simple);
+		super(menu, menu, simple);
 		this.catagory = catagory;
 	}
 

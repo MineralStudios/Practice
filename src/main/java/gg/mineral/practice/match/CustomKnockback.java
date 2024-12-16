@@ -3,7 +3,6 @@ package gg.mineral.practice.match;
 import gg.mineral.server.combat.KnockbackProfile;
 import lombok.Getter;
 import lombok.Setter;
-
 import net.minecraft.server.v1_8_R3.EntityLiving;
 
 @Getter
@@ -15,6 +14,16 @@ public class CustomKnockback extends KnockbackProfile {
 
     public CustomKnockback() {
         super("", "Custom");
+    }
+
+    public CustomKnockback(CustomKnockback knockback) {
+        super(knockback.getScriptFilePath(), knockback.getName());
+        this.friction = knockback.friction;
+        this.horizontal = knockback.horizontal;
+        this.vertical = knockback.vertical;
+        this.verticalLimit = knockback.verticalLimit;
+        this.horizontalExtra = knockback.horizontalExtra;
+        this.verticalExtra = knockback.verticalExtra;
     }
 
     @Override
