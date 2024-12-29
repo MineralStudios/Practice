@@ -2,6 +2,7 @@ plugins {
     id 'java'
     id 'maven-publish'
     //id 'pmd'
+    id 'org.hidetake.ssh' version '2.11.2'
 }
 
 group = 'gg.mineral'
@@ -70,6 +71,30 @@ afterEvaluate {project ->
                     username = project.findProperty("gpr.user") ?: System.getenv("USERNAME")
                     password = project.findProperty("gpr.token") ?: System.getenv("TOKEN")
                 }
+            }
+        }
+    }
+}
+
+ssh.settings {
+    knownHosts = allowAnyHosts // Allow connections to unknown hosts
+}
+
+remotes {
+    deployServer {
+        host = project.findProperty("deploy.ip") ?: System.getenv("DEPLOY_IP") // IP address
+        port = project.findProperty("deploy.port")?.toInteger() ?: System.getenv("DEPLOY_PORT")?.toInteger() ?: 22 // Default to port 22
+        user = project.findProperty("deploy.user") ?: System.getenv("DEPLOY_USER") // Username
+        identity = file(System.getProperty('user.home') + '/.ssh/id_rsa') // Path to private key
+    }
+}
+
+task deploy {
+    dependsOn jar
+    doLast {
+        ssh.run {
+            session(remotes.deployServer) {
+                put from: "$buildDir/libs/MineralPractice.jar", into: project.findProperty("deploy.path") ?: System.getenv("DEPLOY_PATH")
             }
         }
     }

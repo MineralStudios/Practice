@@ -1,7 +1,9 @@
 package gg.mineral.practice.listeners;
 
-import java.util.UUID;
-
+import gg.mineral.practice.entity.Profile;
+import gg.mineral.practice.managers.ProfileManager;
+import lombok.val;
+import net.minecraft.server.v1_8_R3.*;
 import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.craftbukkit.v1_8_R3.entity.CraftEntity;
@@ -19,35 +21,7 @@ import org.bukkit.event.player.PlayerPickupItemEvent;
 import org.bukkit.event.player.PlayerQuitEvent;
 import org.bukkit.util.Vector;
 
-import gg.mineral.practice.entity.Profile;
-import gg.mineral.practice.managers.ProfileManager;
-import lombok.val;
-import net.minecraft.server.v1_8_R3.EntityItem;
-import net.minecraft.server.v1_8_R3.MathHelper;
-import net.minecraft.server.v1_8_R3.PacketPlayInSteerVehicle;
-import net.minecraft.server.v1_8_R3.PacketPlayOutAnimation;
-import net.minecraft.server.v1_8_R3.PacketPlayOutAttachEntity;
-import net.minecraft.server.v1_8_R3.PacketPlayOutBed;
-import net.minecraft.server.v1_8_R3.PacketPlayOutBlockBreakAnimation;
-import net.minecraft.server.v1_8_R3.PacketPlayOutCollect;
-import net.minecraft.server.v1_8_R3.PacketPlayOutEntity;
-import net.minecraft.server.v1_8_R3.PacketPlayOutEntityDestroy;
-import net.minecraft.server.v1_8_R3.PacketPlayOutEntityEffect;
-import net.minecraft.server.v1_8_R3.PacketPlayOutEntityEquipment;
-import net.minecraft.server.v1_8_R3.PacketPlayOutEntityHeadRotation;
-import net.minecraft.server.v1_8_R3.PacketPlayOutEntityMetadata;
-import net.minecraft.server.v1_8_R3.PacketPlayOutEntityStatus;
-import net.minecraft.server.v1_8_R3.PacketPlayOutEntityTeleport;
-import net.minecraft.server.v1_8_R3.PacketPlayOutEntityVelocity;
-import net.minecraft.server.v1_8_R3.PacketPlayOutNamedEntitySpawn;
-import net.minecraft.server.v1_8_R3.PacketPlayOutNamedSoundEffect;
-import net.minecraft.server.v1_8_R3.PacketPlayOutPlayerInfo;
-import net.minecraft.server.v1_8_R3.PacketPlayOutRemoveEntityEffect;
-import net.minecraft.server.v1_8_R3.PacketPlayOutSpawnEntity;
-import net.minecraft.server.v1_8_R3.PacketPlayOutSpawnEntityExperienceOrb;
-import net.minecraft.server.v1_8_R3.PacketPlayOutSpawnEntityLiving;
-import net.minecraft.server.v1_8_R3.PacketPlayOutSpawnEntityPainting;
-import net.minecraft.server.v1_8_R3.PacketPlayOutWorldEvent;
+import java.util.UUID;
 
 public class PacketListener implements Listener {
 
@@ -70,8 +44,7 @@ public class PacketListener implements Listener {
         playerConnection.getIncomingPacketListeners().add(packet -> {
             try {
                 if (packet instanceof PacketPlayInSteerVehicle)
-                    if (profile.isInMatchCountdown())
-                        return true;
+                    return profile.isInMatchCountdown();
 
                 return false;
             } catch (Exception e) {
@@ -228,13 +201,12 @@ public class PacketListener implements Listener {
                         int projectileY = MathHelper.floor(y);
                         int projectileZ = MathHelper.floor(z);
 
-                        if (!(projectile.getShooter() instanceof Player))
+                        if (!(projectile.getShooter() instanceof Player shooter))
                             continue;
                         if (x != projectileX || y != projectileY || z != projectileZ)
                             continue;
 
                         isInMatch = true;
-                        val shooter = (Player) projectile.getShooter();
                         if (shooter.getUniqueId().equals(profile.getUuid())
                                 || profile.getVisiblePlayers().containsValue(shooter.getUniqueId())) {
                             isVisible = true;
@@ -310,13 +282,12 @@ public class PacketListener implements Listener {
                         int projectileY = MathHelper.floor(y);
                         int projectileZ = MathHelper.floor(z);
 
-                        if (!(projectile.getShooter() instanceof Player))
+                        if (!(projectile.getShooter() instanceof Player shooter))
                             continue;
                         if (x != projectileX || y != projectileY || z != projectileZ)
                             continue;
 
                         isInMatch = true;
-                        val shooter = (Player) projectile.getShooter();
                         if (shooter.getUniqueId().equals(profile.getUuid())
                                 || profile.getVisiblePlayers().containsValue(shooter.getUniqueId())) {
                             isVisible = true;
@@ -410,7 +381,7 @@ public class PacketListener implements Listener {
                     if (entity == null)
                         return false;
 
-                    if (!profile.getVisiblePlayers().containsValue(entity.getUniqueID()))
+                    if (entity instanceof EntityHuman && !profile.getVisiblePlayers().containsValue(entity.getUniqueID()))
                         return true;
                 }
 
@@ -423,7 +394,7 @@ public class PacketListener implements Listener {
                     if (entity == null)
                         return false;
 
-                    if (!profile.getVisiblePlayers().containsValue(entity.getUniqueID()))
+                    if (entity instanceof EntityPlayer && !profile.getVisiblePlayers().containsValue(entity.getUniqueID()))
                         return true;
                 }
 
@@ -529,8 +500,7 @@ public class PacketListener implements Listener {
                     if (entity == null)
                         return false;
 
-                    if (!profile.getVisiblePlayers().containsValue(entity.getUniqueID()))
-                        return true;
+                    return !profile.getVisiblePlayers().containsValue(entity.getUniqueID());
                 }
 
                 return false;
@@ -581,14 +551,12 @@ public class PacketListener implements Listener {
             return;
 
         val entity = ((CraftEntity) item).getHandle().getBukkitEntity();
-        if (!(entity instanceof Arrow))
+        if (!(entity instanceof Arrow arrow))
             return;
 
-        val arrow = (Arrow) entity;
-        if (!(arrow.getShooter() instanceof Player))
+        if (!(arrow.getShooter() instanceof Player shooter))
             return;
 
-        val shooter = (Player) arrow.getShooter();
         if (shooter.getUniqueId().equals(receiver.getUniqueId()))
             return;
         val receiverProfile = ProfileManager.getProfile(receiver);

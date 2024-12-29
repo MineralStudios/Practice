@@ -1,13 +1,5 @@
 package gg.mineral.practice.inventory;
 
-import java.util.concurrent.ConcurrentHashMap;
-import java.util.function.Predicate;
-
-import org.bukkit.Material;
-import org.bukkit.craftbukkit.v1_8_R3.inventory.CraftInventoryPlayer;
-import org.bukkit.inventory.ItemStack;
-import org.bukkit.scheduler.BukkitRunnable;
-
 import gg.mineral.practice.PracticePlugin;
 import gg.mineral.practice.entity.PlayerStatus;
 import gg.mineral.practice.entity.Profile;
@@ -15,22 +7,22 @@ import gg.mineral.practice.inventory.menus.QueueManagerMenu;
 import gg.mineral.practice.inventory.menus.SelectGametypeMenu;
 import gg.mineral.practice.inventory.menus.SelectModeMenu;
 import gg.mineral.practice.inventory.menus.SelectQueuetypeMenu;
-import gg.mineral.practice.managers.KitEditorManager;
-import gg.mineral.practice.managers.LeaderboardManager;
-import gg.mineral.practice.managers.PartyManager;
-import gg.mineral.practice.managers.PlayerSettingsManager;
-import gg.mineral.practice.managers.QueuetypeManager;
-import gg.mineral.practice.managers.SpectateManager;
-
+import gg.mineral.practice.managers.*;
 import gg.mineral.practice.util.items.ItemBuilder;
 import gg.mineral.practice.util.items.ItemStacks;
 import gg.mineral.practice.util.messages.CC;
 import gg.mineral.practice.util.messages.impl.ErrorMessages;
-
 import lombok.Getter;
 import lombok.Setter;
 import lombok.val;
 import net.minecraft.server.v1_8_R3.PlayerConnection;
+import org.bukkit.Material;
+import org.bukkit.craftbukkit.v1_8_R3.inventory.CraftInventoryPlayer;
+import org.bukkit.inventory.ItemStack;
+import org.bukkit.scheduler.BukkitRunnable;
+
+import java.util.concurrent.ConcurrentHashMap;
+import java.util.function.Predicate;
 
 public class PlayerInventory extends CraftInventoryPlayer {
     ConcurrentHashMap<Integer, Predicate<Profile>> dataMap = new ConcurrentHashMap<>();
@@ -168,19 +160,19 @@ public class PlayerInventory extends CraftInventoryPlayer {
     public void setInventoryToFollow() {
         setInventoryClickCancelled(true);
         clear();
-        setItem(0, ItemStacks.STOP_FOLLOWING, (Runnable) holder.getSpectateHandler()::stopFollowing);
+        setItem(0, ItemStacks.STOP_FOLLOWING, holder.getSpectateHandler()::stopFollowing);
     }
 
     public void setInventoryForTournament() {
         setInventoryClickCancelled(true);
         clear();
         setItem(0, ItemStacks.WAIT_TO_LEAVE,
-                (Runnable) () -> holder.message(ErrorMessages.CAN_NOT_LEAVE_YET));
+                () -> holder.message(ErrorMessages.CAN_NOT_LEAVE_YET));
 
         new BukkitRunnable() {
             @Override
             public void run() {
-                setItem(0, ItemStacks.LEAVE_TOURNAMENT, (Runnable) holder::removeFromTournament);
+                setItem(0, ItemStacks.LEAVE_TOURNAMENT, holder::removeFromTournament);
             }
         }.runTaskLater(PracticePlugin.INSTANCE, 20);
     }
@@ -189,12 +181,12 @@ public class PlayerInventory extends CraftInventoryPlayer {
         setInventoryClickCancelled(true);
         clear();
         setItem(0, ItemStacks.WAIT_TO_LEAVE,
-                (Runnable) () -> holder.message(ErrorMessages.CAN_NOT_LEAVE_YET));
+                () -> holder.message(ErrorMessages.CAN_NOT_LEAVE_YET));
 
         new BukkitRunnable() {
             @Override
             public void run() {
-                setItem(0, ItemStacks.LEAVE_EVENT, (Runnable) holder::removeFromEvent);
+                setItem(0, ItemStacks.LEAVE_EVENT, holder::removeFromEvent);
             }
         }.runTaskLater(PracticePlugin.INSTANCE, 20);
     }
@@ -202,7 +194,7 @@ public class PlayerInventory extends CraftInventoryPlayer {
     public void setInventoryForParty() {
         setInventoryClickCancelled(true);
         clear();
-        setItem(8, ItemStacks.WAIT_TO_LEAVE, (Runnable) () -> holder.message(ErrorMessages.CAN_NOT_LEAVE_YET));
+        setItem(8, ItemStacks.WAIT_TO_LEAVE, () -> holder.message(ErrorMessages.CAN_NOT_LEAVE_YET));
 
         new BukkitRunnable() {
             @Override
@@ -240,7 +232,7 @@ public class PlayerInventory extends CraftInventoryPlayer {
                             return true;
                         }
 
-                        p.openMenu(new SelectGametypeMenu(queuetype, SelectGametypeMenu.Type.UNRANKED));
+                        p.openMenu(new SelectGametypeMenu(queuetype, SelectGametypeMenu.Type.UNRANKED, null));
                         return true;
                     });
         }
@@ -256,11 +248,7 @@ public class PlayerInventory extends CraftInventoryPlayer {
         setInventoryClickCancelled(true);
         clear();
 
-        val iterator = QueuetypeManager.getQueuetypes().values().iterator();
-
-        while (iterator.hasNext()) {
-            val queuetype = iterator.next();
-
+        for (val queuetype : QueuetypeManager.getQueuetypes().values()) {
             val item = new ItemBuilder(queuetype.getDisplayItem())
                     .name(CC.SECONDARY + CC.B + queuetype.getDisplayName())
                     .lore(CC.ACCENT + "Right click to queue.").build();
@@ -274,7 +262,7 @@ public class PlayerInventory extends CraftInventoryPlayer {
 
                         p.openMenu(new SelectGametypeMenu(queuetype,
                                 queuetype.isUnranked() ? SelectGametypeMenu.Type.UNRANKED
-                                        : SelectGametypeMenu.Type.QUEUE));
+                                        : SelectGametypeMenu.Type.QUEUE, null));
                         return true;
                     });
         }
@@ -351,6 +339,6 @@ public class PlayerInventory extends CraftInventoryPlayer {
     public void setInventoryForSpectating() {
         setInventoryClickCancelled(true);
         clear();
-        setItem(0, ItemStacks.STOP_SPECTATING, (Runnable) holder.getSpectateHandler()::stopSpectating);
+        setItem(0, ItemStacks.STOP_SPECTATING, holder.getSpectateHandler()::stopSpectating);
     }
 }
