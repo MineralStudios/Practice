@@ -1,12 +1,8 @@
 package gg.mineral.practice.inventory.menus;
 
-import java.util.function.Consumer;
-
-import org.bukkit.event.inventory.ClickType;
-
 import gg.mineral.api.collection.GlueList;
 import gg.mineral.practice.bots.Difficulty;
-import gg.mineral.practice.catagory.Catagory;
+import gg.mineral.practice.category.Category;
 import gg.mineral.practice.entity.PlayerStatus;
 import gg.mineral.practice.gametype.Gametype;
 import gg.mineral.practice.inventory.ClickCancelled;
@@ -26,6 +22,9 @@ import it.unimi.dsi.fastutil.ints.Int2ObjectOpenHashMap;
 import it.unimi.dsi.fastutil.objects.Object2IntLinkedOpenHashMap;
 import lombok.NoArgsConstructor;
 import lombok.val;
+import org.bukkit.event.inventory.ClickType;
+
+import java.util.function.Consumer;
 
 @ClickCancelled(true)
 @NoArgsConstructor(access = lombok.AccessLevel.PROTECTED)
@@ -81,7 +80,7 @@ public class SelectGametypeMenu extends PracticeMenu {
         };
 
         val queueSettings = viewer.getQueueSettings();
-        val botQueue = !queuetype.isBotsEnabled() || type != Type.UNRANKED ? false : queueSettings.isBotQueue();
+        val botQueue = queuetype.isBotsEnabled() && type == Type.UNRANKED && queueSettings.isBotQueue();
         if (botQueue && !gametype.isBotsEnabled()) {
             viewer.message(ErrorMessages.COMING_SOON);
             return;
@@ -170,7 +169,7 @@ public class SelectGametypeMenu extends PracticeMenu {
 
         if (menu != null)
             if (menu instanceof SelectCategorizedGametypeMenu selectCategorizedGametypeMenu && botQueue
-                    && !selectCategorizedGametypeMenu.catagory.isBotsEnabled())
+                    && !selectCategorizedGametypeMenu.category.isBotsEnabled())
                 viewer.openMenu(new SelectGametypeMenu(selectCategorizedGametypeMenu.queuetype,
                         selectCategorizedGametypeMenu.type));
             else
@@ -200,10 +199,10 @@ public class SelectGametypeMenu extends PracticeMenu {
         val teamSize = queueSettings.getTeamSize();
         setSlot(botQueue ? 2 : 3,
                 ItemStacks.TEAMFIGHT.lore(
-                        CC.WHITE + "Allows you to queue in a " + CC.SECONDARY + "team" + CC.WHITE + " match.",
-                        " ", CC.WHITE + "Currently:", teamSizeColors.get(teamSize), " ", CC.BOARD_SEPARATOR,
-                        teamSize > teamSizeColors.size() ? CC.RED + "Maximum team size reached."
-                                : CC.ACCENT + "Click to change team size.")
+                                CC.WHITE + "Allows you to queue in a " + CC.SECONDARY + "team" + CC.WHITE + " match.",
+                                " ", CC.WHITE + "Currently:", teamSizeColors.get(teamSize), " ", CC.BOARD_SEPARATOR,
+                                teamSize > teamSizeColors.size() ? CC.RED + "Maximum team size reached."
+                                        : CC.ACCENT + "Click to change team size.")
                         .build(),
                 TEAM_SIZE_INTERACTION);
 
@@ -238,12 +237,12 @@ public class SelectGametypeMenu extends PracticeMenu {
             else
                 setSlot(4,
                         ItemStacks.BOT_SETTINGS.lore(
-                                CC.WHITE + "Allows you to configure the " + CC.SECONDARY + "difficulty" + CC.WHITE
-                                        + ".",
-                                " ",
-                                CC.WHITE + "Opponent Difficulty: ",
-                                Difficulty.values()[opponentDifficulty].getDisplay(), " ",
-                                CC.BOARD_SEPARATOR, " ", CC.GREEN + "Left Click to change opponent difficulty.")
+                                        CC.WHITE + "Allows you to configure the " + CC.SECONDARY + "difficulty" + CC.WHITE
+                                                + ".",
+                                        " ",
+                                        CC.WHITE + "Opponent Difficulty: ",
+                                        Difficulty.values()[opponentDifficulty].getDisplay(), " ",
+                                        CC.BOARD_SEPARATOR, " ", CC.GREEN + "Left Click to change opponent difficulty.")
                                 .build(),
                         DIFFICULTY_INTERACTION);
 
@@ -251,30 +250,30 @@ public class SelectGametypeMenu extends PracticeMenu {
                 switch (queueSettings.getBotTeamSetting()) {
                     case BOTH -> {
                         item = ItemStacks.BOT_QUEUE_ENABLED_TEAM.lore(
-                                CC.WHITE + "Allows you to queue in a " + CC.SECONDARY + "team bot" + CC.WHITE
-                                        + " match ",
-                                CC.WHITE + "with a bot teammate and bot opponents.",
-                                " ",
-                                CC.WHITE + "Currently:",
-                                CC.GREEN + "Enabled",
-                                " ", CC.WHITE + "Team Settings:", CC.PINK + "Bot Teammate and Opponents", " ",
-                                CC.BOARD_SEPARATOR,
-                                CC.GREEN + "Left click to toggle bots.",
-                                CC.RED + "Right click to change team settings.")
+                                        CC.WHITE + "Allows you to queue in a " + CC.SECONDARY + "team bot" + CC.WHITE
+                                                + " match ",
+                                        CC.WHITE + "with a bot teammate and bot opponents.",
+                                        " ",
+                                        CC.WHITE + "Currently:",
+                                        CC.GREEN + "Enabled",
+                                        " ", CC.WHITE + "Team Settings:", CC.PINK + "Bot Teammate and Opponents", " ",
+                                        CC.BOARD_SEPARATOR,
+                                        CC.GREEN + "Left click to toggle bots.",
+                                        CC.RED + "Right click to change team settings.")
                                 .build();
                     }
                     case OPPONENT -> {
                         item = ItemStacks.BOT_QUEUE_ENABLED_TEAM.lore(
-                                CC.WHITE + "Allows you to queue in a " + CC.SECONDARY + "team bot" + CC.WHITE
-                                        + " match ",
-                                CC.WHITE + "with a bots as your opponents.",
-                                " ",
-                                CC.WHITE + "Currently:",
-                                CC.GREEN + "Enabled",
-                                " ", CC.WHITE + "Team Settings:", CC.AQUA + "Bot Opponents", " ",
-                                CC.BOARD_SEPARATOR,
-                                CC.GREEN + "Left click to toggle bots.",
-                                CC.RED + "Right click to change team settings.")
+                                        CC.WHITE + "Allows you to queue in a " + CC.SECONDARY + "team bot" + CC.WHITE
+                                                + " match ",
+                                        CC.WHITE + "with a bots as your opponents.",
+                                        " ",
+                                        CC.WHITE + "Currently:",
+                                        CC.GREEN + "Enabled",
+                                        " ", CC.WHITE + "Team Settings:", CC.AQUA + "Bot Opponents", " ",
+                                        CC.BOARD_SEPARATOR,
+                                        CC.GREEN + "Left click to toggle bots.",
+                                        CC.RED + "Right click to change team settings.")
                                 .build();
                     }
                 }
@@ -305,7 +304,7 @@ public class SelectGametypeMenu extends PracticeMenu {
     }
 
     protected boolean shouldSkip(QueuetypeMenuEntry menuEntry) {
-        return menuEntry instanceof Gametype gametype && gametype.isInCatagory();
+        return menuEntry instanceof Gametype gametype && gametype.isInCategory();
     }
 
     @Override
@@ -313,7 +312,7 @@ public class SelectGametypeMenu extends PracticeMenu {
         clear();
         val queueSettings = viewer.getQueueSettings();
 
-        val botQueue = !queuetype.isBotsEnabled() || type != Type.UNRANKED ? false : queueSettings.isBotQueue();
+        val botQueue = queuetype.isBotsEnabled() && type == Type.UNRANKED && queueSettings.isBotQueue();
 
         addSurroundingButtons(queueSettings, botQueue);
 
@@ -365,7 +364,7 @@ public class SelectGametypeMenu extends PracticeMenu {
                         itemBuild.lore(
                                 CC.SECONDARY + "In Queue: " + CC.WHITE
                                         + QueueSystem.getCompatibleQueueCount(queueEntry.queuetype(),
-                                                queueEntry.gametype()),
+                                        queueEntry.gametype()),
                                 CC.SECONDARY + "In Game: " + CC.WHITE
                                         + MatchManager.getInGameCount(queuetype, gametype),
                                 CC.BOARD_SEPARATOR, CC.ACCENT + "Click to queue.");
@@ -392,24 +391,24 @@ public class SelectGametypeMenu extends PracticeMenu {
                 continue;
             }
 
-            if (menuEntry instanceof Catagory catagory) {
+            if (menuEntry instanceof Category category) {
                 val sb = new GlueList<String>();
                 sb.add(CC.SECONDARY + "Includes:");
 
-                for (val g : catagory.getGametypes()) {
+                for (val g : category.getGametypes()) {
                     boolean isQueued = QueueSystem.getQueueEntry(viewer, queuetype, g) != null;
                     sb.add(CC.WHITE + g.getDisplayName() + (isQueued ? " - " + CC.GREEN + "Queued" : ""));
                 }
 
                 sb.add(" ");
                 sb.add(CC.BOARD_SEPARATOR);
-                sb.add(CC.ACCENT + "Click to view catagory.");
+                sb.add(CC.ACCENT + "Click to view category.");
 
                 itemBuild.lore(sb.toArray(new String[0]));
                 val item = itemBuild.build();
                 setSlot(entry.getIntValue() + 18 - offset, item,
                         interaction -> interaction.getProfile()
-                                .openMenu(new SelectCategorizedGametypeMenu(queuetype, catagory, type)));
+                                .openMenu(new SelectCategorizedGametypeMenu(queuetype, category, type)));
             }
         }
     }

@@ -1,9 +1,5 @@
 package gg.mineral.practice.duel;
 
-import org.bukkit.inventory.ItemStack;
-import org.eclipse.jdt.annotation.NonNull;
-import org.eclipse.jdt.annotation.Nullable;
-
 import gg.mineral.api.knockback.Knockback;
 import gg.mineral.practice.gametype.Gametype;
 import gg.mineral.practice.kit.Kit;
@@ -17,6 +13,9 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 import lombok.val;
+import org.bukkit.inventory.ItemStack;
+import org.eclipse.jdt.annotation.NonNull;
+import org.eclipse.jdt.annotation.Nullable;
 
 @Getter
 @Setter
@@ -70,39 +69,39 @@ public class DuelSettings {
 
         val knockback = this.knockback == null
                 ? noDamageTicks < 10 ? KnockbackProfileList.getComboKnockbackProfile()
-                        : KnockbackProfileList.getDefaultKnockbackProfile()
+                : KnockbackProfileList.getDefaultKnockbackProfile()
                 : this.knockback;
 
         val kit = this.kit == null ? GametypeManager.getGametypes().get((byte) 0).getKit() : this.kit;
 
-        sb.append(CC.GREEN + "Kit: " + kit.getName());
+        sb.append(CC.GREEN).append("Kit: ").append(kit.getName());
         sb.append(newLine);
-        sb.append(CC.GREEN + "Arena: " + arena.getDisplayName());
+        sb.append(CC.GREEN).append("Arena: ").append(arena.getDisplayName());
         sb.append(newLine);
-        sb.append(CC.GREEN + "Knockback: " + knockback.getName());
+        sb.append(CC.GREEN).append("Knockback: ").append(knockback.getName());
         sb.append(newLine);
-        sb.append(CC.GREEN + "Hit Delay: " + noDamageTicks);
+        sb.append(CC.GREEN).append("Hit Delay: ").append(noDamageTicks);
         sb.append(newLine);
-        sb.append(CC.GREEN + "Hunger: " + hunger);
+        sb.append(CC.GREEN).append("Hunger: ").append(hunger);
         sb.append(newLine);
-        sb.append(CC.GREEN + "Build: " + build);
+        sb.append(CC.GREEN).append("Build: ").append(build);
         sb.append(newLine);
-        sb.append(CC.GREEN + "Damage: " + damage);
+        sb.append(CC.GREEN).append("Damage: ").append(damage);
         sb.append(newLine);
-        sb.append(CC.GREEN + "Griefing: " + griefing);
+        sb.append(CC.GREEN).append("Griefing: ").append(griefing);
         sb.append(newLine);
-        sb.append(CC.GREEN + "Deadly Water: " + deadlyWater);
+        sb.append(CC.GREEN).append("Deadly Water: ").append(deadlyWater);
         sb.append(newLine);
-        sb.append(CC.GREEN + "Regeneration: " + regeneration);
+        sb.append(CC.GREEN).append("Regeneration: ").append(regeneration);
         // TODO 2v2 with bots in /duel
         // sb.append(newLine);
         // sb.append(CC.GREEN + "2v2: " + team2v2);
         // sb.append(newLine);
         // sb.append(CC.GREEN + "Bots: " + bots);
         sb.append(newLine);
-        sb.append(CC.GREEN + "Boxing: " + boxing);
+        sb.append(CC.GREEN).append("Boxing: ").append(boxing);
         sb.append(newLine);
-        sb.append(CC.GREEN + "Pearl Cooldown: " + pearlCooldown + " seconds");
+        sb.append(CC.GREEN).append("Pearl Cooldown: ").append(pearlCooldown).append(" seconds");
         return sb.toString();
     }
 }

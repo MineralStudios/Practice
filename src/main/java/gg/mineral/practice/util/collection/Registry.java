@@ -1,17 +1,17 @@
 package gg.mineral.practice.util.collection;
 
+import it.unimi.dsi.fastutil.objects.Object2ObjectOpenHashMap;
+import lombok.RequiredArgsConstructor;
+
 import java.util.Collection;
 import java.util.Iterator;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.function.Function;
 
-import it.unimi.dsi.fastutil.objects.Object2ObjectOpenHashMap;
-import lombok.RequiredArgsConstructor;
-
 @RequiredArgsConstructor
 public class Registry<T, Q> {
-    private Map<Q, T> keyValueMap = new Object2ObjectOpenHashMap<>();
+    private final Map<Q, T> keyValueMap = new Object2ObjectOpenHashMap<>();
     private final Function<T, Q> function;
 
     public Collection<T> getRegisteredObjects() {
@@ -26,7 +26,7 @@ public class Registry<T, Q> {
         keyValueMap.clear();
     }
 
-    public T get(String key) {
+    public T get(Q key) {
         return keyValueMap.get(key);
     }
 

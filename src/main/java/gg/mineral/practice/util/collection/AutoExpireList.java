@@ -1,23 +1,21 @@
 package gg.mineral.practice.util.collection;
 
-import java.util.Iterator;
-
-import org.bukkit.Bukkit;
-
 import gg.mineral.practice.PracticePlugin;
 import it.unimi.dsi.fastutil.objects.Object2LongMap.Entry;
 import it.unimi.dsi.fastutil.objects.Object2LongOpenHashMap;
 import it.unimi.dsi.fastutil.objects.ObjectIterator;
+import org.bukkit.Bukkit;
+import org.jetbrains.annotations.NotNull;
+
+import java.util.Iterator;
 
 public class AutoExpireList<K> implements Iterable<K> {
 
     public AutoExpireList() {
-        Bukkit.getScheduler().scheduleSyncRepeatingTask(PracticePlugin.INSTANCE, () -> {
-            removeExpired();
-        }, 20, 20);
+        Bukkit.getScheduler().scheduleSyncRepeatingTask(PracticePlugin.INSTANCE, this::removeExpired, 20, 20);
     }
 
-    private Object2LongOpenHashMap<K> map = new Object2LongOpenHashMap<>();
+    private final Object2LongOpenHashMap<K> map = new Object2LongOpenHashMap<>();
 
     public void add(K e) {
         map.put(e, System.currentTimeMillis());
@@ -35,7 +33,7 @@ public class AutoExpireList<K> implements Iterable<K> {
         return map.object2LongEntrySet().iterator();
     }
 
-    public Iterator<K> iterator() {
+    public @NotNull Iterator<K> iterator() {
         return map.keySet().iterator();
     }
 

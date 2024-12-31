@@ -1,10 +1,5 @@
 package gg.mineral.practice.commands.config;
 
-import java.util.Locale;
-
-import org.bukkit.craftbukkit.v1_8_R3.entity.CraftPlayer;
-import org.bukkit.entity.Player;
-
 import gg.mineral.practice.arena.Arena;
 import gg.mineral.practice.commands.PlayerCommand;
 import gg.mineral.practice.managers.ArenaManager;
@@ -13,8 +8,11 @@ import gg.mineral.practice.util.messages.CC;
 import gg.mineral.practice.util.messages.impl.ChatMessages;
 import gg.mineral.practice.util.messages.impl.ErrorMessages;
 import gg.mineral.practice.util.messages.impl.UsageMessages;
-
 import lombok.val;
+import org.bukkit.craftbukkit.v1_8_R3.entity.CraftPlayer;
+import org.bukkit.entity.Player;
+
+import java.util.Locale;
 
 public class ArenaCommand extends PlayerCommand {
 
@@ -30,15 +28,6 @@ public class ArenaCommand extends PlayerCommand {
     @Override
     public void execute(final Player player, final String[] args) {
         switch (args.length > 0 ? args[0].toLowerCase(Locale.ROOT) : "") {
-            default -> {
-                ChatMessages.ARENA_COMMANDS.send(player);
-                ChatMessages.ARENA_CREATE.send(player);
-                ChatMessages.ARENA_SPAWN.send(player);
-                ChatMessages.ARENA_DISPLAY.send(player);
-                ChatMessages.ARENA_LIST.send(player);
-                ChatMessages.ARENA_TP.send(player);
-                ChatMessages.ARENA_DELETE.send(player);
-            }
             case CREATE -> {
                 if (args.length < CREATE_ARGS) {
                     UsageMessages.ARENA_CREATE.send(player);
@@ -73,8 +62,7 @@ public class ArenaCommand extends PlayerCommand {
                 }
 
                 switch (args[2].toLowerCase(Locale.ROOT)) {
-                    case "1" ->
-                        arena.setLocation1(player.getLocation());
+                    case "1" -> arena.setLocation1(player.getLocation());
                     case "2" -> arena.setLocation2(player.getLocation());
                     case "waiting" -> arena.setWaitingLocation(player.getLocation());
                     default -> {
@@ -113,13 +101,13 @@ public class ArenaCommand extends PlayerCommand {
 
                 while (iterator.hasNext()) {
                     val a = iterator.next();
-                    sb.append(CC.GREEN + a.getName());
+                    sb.append(CC.GREEN).append(a.getName());
 
                     if (iterator.hasNext())
-                        sb.append(CC.GRAY + ", ");
+                        sb.append(CC.GRAY).append(", ");
                 }
 
-                sb.append(CC.GRAY + "]");
+                sb.append(CC.GRAY).append("]");
 
                 player.sendMessage(sb.toString());
             }
@@ -137,7 +125,8 @@ public class ArenaCommand extends PlayerCommand {
                 }
 
                 try {
-                    PlayerUtil.teleport((CraftPlayer) player, arena.getLocation1());
+                    val world = arena.generate();
+                    PlayerUtil.teleport((CraftPlayer) player, arena.getLocation1().bukkit(world));
                 } catch (Exception e) {
                     ErrorMessages.CANNOT_TELEPORT_TO_ARENA.send(player);
                     e.printStackTrace();
@@ -161,6 +150,15 @@ public class ArenaCommand extends PlayerCommand {
                 val arenaName = args[1];
                 ChatMessages.ARENA_DELETED.clone()
                         .replace(PLACEHOLDER, arenaName).send(player);
+            }
+            default -> {
+                ChatMessages.ARENA_COMMANDS.send(player);
+                ChatMessages.ARENA_CREATE.send(player);
+                ChatMessages.ARENA_SPAWN.send(player);
+                ChatMessages.ARENA_DISPLAY.send(player);
+                ChatMessages.ARENA_LIST.send(player);
+                ChatMessages.ARENA_TP.send(player);
+                ChatMessages.ARENA_DELETE.send(player);
             }
         }
     }

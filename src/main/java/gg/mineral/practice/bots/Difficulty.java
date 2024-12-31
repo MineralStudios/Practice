@@ -1,13 +1,7 @@
 package gg.mineral.practice.bots;
 
-import java.util.Random;
-
-import org.bukkit.Location;
-import org.bukkit.World;
-
 import gg.mineral.bot.api.BotAPI;
 import gg.mineral.bot.api.configuration.BotConfiguration;
-
 import gg.mineral.bot.api.entity.living.player.skin.Skins;
 import gg.mineral.bot.api.instance.ClientInstance;
 import gg.mineral.bot.api.math.ServerLocation;
@@ -17,7 +11,12 @@ import gg.mineral.practice.util.messages.CC;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import lombok.val;
+import org.bukkit.Location;
+import org.bukkit.World;
 
+import java.util.Random;
+
+@Getter
 @RequiredArgsConstructor
 public enum Difficulty {
     NOOB(CC.GREEN + "Noob") {
@@ -213,7 +212,7 @@ public enum Difficulty {
                     .horizontalErraticness(r.nextFloat())
                     .verticalErraticness(r.nextFloat())
                     .averageCps(r.nextInt((20 - 5) + 1) + 5)
-                    .latency(latency).latencyDeviation(r.nextInt((int) ((latency / 30) + 1)))
+                    .latency(latency).latencyDeviation(r.nextInt((latency / 30) + 1))
                     .sprintResetAccuracy(0.25f + r.nextFloat() * (1.0f - 0.25f))
                     .hitSelectAccuracy(r.nextFloat()).build();
         }
@@ -224,7 +223,6 @@ public enum Difficulty {
         }
     };
 
-    @Getter
     private final String display;
 
     public static ClientInstance spawn(BotConfiguration config, Location location) {
@@ -270,11 +268,4 @@ public enum Difficulty {
 
     public abstract boolean configEquals(BotConfiguration botConfiguration);
 
-    public static Difficulty getDifficulty(BotConfiguration botConfiguration) {
-        for (val difficulty : values())
-            if (difficulty.configEquals(botConfiguration))
-                return difficulty;
-
-        return null;
-    }
 }

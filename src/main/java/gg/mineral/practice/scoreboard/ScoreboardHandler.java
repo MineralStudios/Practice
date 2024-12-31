@@ -23,6 +23,7 @@
  */
 package gg.mineral.practice.scoreboard;
 
+import lombok.Getter;
 import org.bukkit.ChatColor;
 import org.bukkit.entity.Player;
 
@@ -33,15 +34,7 @@ import java.lang.reflect.Array;
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Objects;
-import java.util.Optional;
+import java.util.*;
 import java.util.concurrent.ThreadLocalRandom;
 
 /**
@@ -174,12 +167,32 @@ public class ScoreboardHandler {
         }
     }
 
+    /**
+     * -- GETTER --
+     * Get the player who has the scoreboard.
+     */
+    @Getter
     private final Player player;
+    /**
+     * -- GETTER --
+     * Get the scoreboard id.
+     */
+    @Getter
     private final String id;
 
     private final List<String> lines = new ArrayList<>();
+    /**
+     * -- GETTER --
+     * Get the scoreboard title.
+     */
+    @Getter
     private String title = ChatColor.RESET.toString();
 
+    /**
+     * -- GETTER --
+     * Get if the scoreboard is deleted.
+     */
+    @Getter
     private boolean deleted = false;
 
     /**
@@ -197,15 +210,6 @@ public class ScoreboardHandler {
         } catch (Throwable t) {
             throw new RuntimeException("Unable to create scoreboard", t);
         }
-    }
-
-    /**
-     * Get the scoreboard title.
-     *
-     * @return the scoreboard title
-     */
-    public String getTitle() {
-        return this.title;
     }
 
     /**
@@ -377,33 +381,6 @@ public class ScoreboardHandler {
         } catch (Throwable t) {
             throw new RuntimeException("Unable to update scoreboard lines", t);
         }
-    }
-
-    /**
-     * Get the player who has the scoreboard.
-     *
-     * @return current player for this FastBoard
-     */
-    public Player getPlayer() {
-        return this.player;
-    }
-
-    /**
-     * Get the scoreboard id.
-     *
-     * @return the id
-     */
-    public String getId() {
-        return this.id;
-    }
-
-    /**
-     * Get if the scoreboard is deleted.
-     *
-     * @return true if the scoreboard is deleted
-     */
-    public boolean isDeleted() {
-        return this.deleted;
     }
 
     /**
@@ -586,7 +563,7 @@ public class ScoreboardHandler {
 
             if (mode == TeamMode.CREATE) {
                 setField(packet, Collection.class, Collections.singletonList(COLOR_CODES[score])); // Players in the
-                                                                                                   // team
+                // team
             }
         }
 

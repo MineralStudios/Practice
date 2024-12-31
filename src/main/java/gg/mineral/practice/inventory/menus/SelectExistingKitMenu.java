@@ -1,17 +1,15 @@
 package gg.mineral.practice.inventory.menus;
 
-import org.bukkit.inventory.ItemStack;
-
 import gg.mineral.api.collection.GlueList;
-
 import gg.mineral.practice.inventory.ClickCancelled;
 import gg.mineral.practice.inventory.PracticeMenu;
-import gg.mineral.practice.managers.CatagoryManager;
+import gg.mineral.practice.managers.CategoryManager;
 import gg.mineral.practice.managers.GametypeManager;
 import gg.mineral.practice.util.items.ItemBuilder;
 import gg.mineral.practice.util.messages.CC;
 import lombok.RequiredArgsConstructor;
 import lombok.val;
+import org.bukkit.inventory.ItemStack;
 
 @ClickCancelled(true)
 @RequiredArgsConstructor
@@ -25,7 +23,7 @@ public class SelectExistingKitMenu extends PracticeMenu {
         clear();
 
         for (val g : GametypeManager.getGametypes().values()) {
-            if (g.isInCatagory())
+            if (g.isInCategory())
                 continue;
             val item = new ItemBuilder(g.getDisplayItem())
                     .name(CC.SECONDARY + CC.B + g.getDisplayName()).lore(CC.ACCENT + "Click to select.").build();
@@ -40,7 +38,7 @@ public class SelectExistingKitMenu extends PracticeMenu {
             });
         }
 
-        for (val c : CatagoryManager.getCatagories()) {
+        for (val c : CategoryManager.getCategories()) {
             val itemBuild = new ItemBuilder(c.getDisplayItem())
                     .name(CC.SECONDARY + CC.B + c.getDisplayName());
 
@@ -52,7 +50,7 @@ public class SelectExistingKitMenu extends PracticeMenu {
 
             sb.add(" ");
             sb.add(CC.BOARD_SEPARATOR);
-            sb.add(CC.ACCENT + "Click to view catagory.");
+            sb.add(CC.ACCENT + "Click to view category.");
 
             itemBuild.lore(sb.toArray(new String[0]));
             ItemStack item = itemBuild.build();

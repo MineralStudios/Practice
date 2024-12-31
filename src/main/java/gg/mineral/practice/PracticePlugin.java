@@ -7,7 +7,7 @@ import org.bukkit.generator.ChunkGenerator;
 import org.bukkit.plugin.java.JavaPlugin;
 
 import gg.mineral.practice.commands.config.ArenaCommand;
-import gg.mineral.practice.commands.config.CatagoryCommand;
+import gg.mineral.practice.commands.config.CategoryCommand;
 import gg.mineral.practice.commands.config.GametypeCommand;
 import gg.mineral.practice.commands.config.KitEditorCommand;
 import gg.mineral.practice.commands.config.LeaderboardConfigCommand;
@@ -52,7 +52,7 @@ import gg.mineral.practice.listeners.MovementListener;
 import gg.mineral.practice.listeners.PacketListener;
 import gg.mineral.practice.listeners.ProjectileListener;
 import gg.mineral.practice.managers.ArenaManager;
-import gg.mineral.practice.managers.CatagoryManager;
+import gg.mineral.practice.managers.CategoryManager;
 import gg.mineral.practice.managers.GametypeManager;
 import gg.mineral.practice.managers.KitEditorManager;
 import gg.mineral.practice.managers.LeaderboardManager;
@@ -67,60 +67,60 @@ import net.minecraft.server.v1_8_R3.MinecraftServer;
 
 public class PracticePlugin extends JavaPlugin {
 
-	public static PracticePlugin INSTANCE;
+    public static PracticePlugin INSTANCE;
 
-	@Override
-	public void onEnable() {
+    @Override
+    public void onEnable() {
 
-		INSTANCE = this;
+        INSTANCE = this;
 
-		ProfileManager.load();
-		PlayerSettingsManager.load();
-		SpectateManager.load();
-		LeaderboardManager.load();
-		PartyManager.load();
-		ArenaManager.load();
-		QueuetypeManager.load();
-		KitEditorManager.load();
-		PartyManager.load();
-		PlayerSettingsManager.load();
-		CatagoryManager.load();
-		GametypeManager.load();
+        ProfileManager.load();
+        PlayerSettingsManager.load();
+        SpectateManager.load();
+        LeaderboardManager.load();
+        PartyManager.load();
+        ArenaManager.load();
+        QueuetypeManager.load();
+        KitEditorManager.load();
+        PartyManager.load();
+        PlayerSettingsManager.load();
+        CategoryManager.load();
+        GametypeManager.load();
 
-		registerCommands(new ListConfigCommands(), new ArenaCommand(), new QueuetypeCommand(), new GametypeCommand(),
-				new KitEditorCommand(), new LobbyCommand(), new PartiesCommand(),
-				new AcceptCommand(), new ViewInventoryCommand(), new DuelCommand(), new SpectateCommand(),
-				new PotsCommand(), new EloCommand(), new LeaderboardsCommand(), new PartyCommand(),
-				new SettingsConfigCommand(), new FollowCommand(), new TogglePlayerVisibilityCommand(),
-				new ToggleDuelRequestsCommand(), new TogglePartyRequestsCommand(), new CatagoryCommand(),
-				new SettingsCommand(),
-				new StopSpectatingCommand(), new TournamentCommand(), new JoinCommand(), new EventCommand(),
-				new LeaveCommand(), new SpectateConfigCommand(),
-				new LeaderboardConfigCommand(), new ToggleScoreboardCommand(), new BotTestingCommand(),
-				new DayCommand(), new NightCommand());
+        registerCommands(new ListConfigCommands(), new ArenaCommand(), new QueuetypeCommand(), new GametypeCommand(),
+                new KitEditorCommand(), new LobbyCommand(), new PartiesCommand(),
+                new AcceptCommand(), new ViewInventoryCommand(), new DuelCommand(), new SpectateCommand(),
+                new PotsCommand(), new EloCommand(), new LeaderboardsCommand(), new PartyCommand(),
+                new SettingsConfigCommand(), new FollowCommand(), new TogglePlayerVisibilityCommand(),
+                new ToggleDuelRequestsCommand(), new TogglePartyRequestsCommand(), new CategoryCommand(),
+                new SettingsCommand(),
+                new StopSpectatingCommand(), new TournamentCommand(), new JoinCommand(), new EventCommand(),
+                new LeaveCommand(), new SpectateConfigCommand(),
+                new LeaderboardConfigCommand(), new ToggleScoreboardCommand(), new BotTestingCommand(),
+                new DayCommand(), new NightCommand());
 
-		registerListeners(new BuildListener(), new InteractListener(), new ComsumeListener(), new InventoryListener(),
-				new DeathListener(), new DamageListener(), new EntryListener(), new HealthListener(),
-				new MovementListener(), new ProjectileListener(), new CommandListener(), new PacketListener());
-	}
+        registerListeners(new BuildListener(), new InteractListener(), new ComsumeListener(), new InventoryListener(),
+                new DeathListener(), new DamageListener(), new EntryListener(), new HealthListener(),
+                new MovementListener(), new ProjectileListener(), new CommandListener(), new PacketListener());
+    }
 
-	@Override
-	public void onDisable() {
-		Bukkit.getServer().getScheduler().cancelTasks(this);
-	}
+    @Override
+    public void onDisable() {
+        Bukkit.getServer().getScheduler().cancelTasks(this);
+    }
 
-	@Override
-	public ChunkGenerator getDefaultWorldGenerator(String worldName, String id) {
-		return new VoidWorldGenerator();
-	}
+    @Override
+    public ChunkGenerator getDefaultWorldGenerator(String worldName, String id) {
+        return new VoidWorldGenerator();
+    }
 
-	public void registerCommands(Command... cmds) {
-		for (val cmd : cmds)
-			MinecraftServer.getServer().server.getCommandMap().registerOverride(cmd.getName(), "Practice", cmd);
-	}
+    public void registerCommands(Command... cmds) {
+        for (val cmd : cmds)
+            MinecraftServer.getServer().server.getCommandMap().registerOverride(cmd.getName(), "Practice", cmd);
+    }
 
-	public void registerListeners(Listener... listeners) {
-		for (val listener : listeners)
-			Bukkit.getPluginManager().registerEvents(listener, this);
-	}
+    public void registerListeners(Listener... listeners) {
+        for (val listener : listeners)
+            Bukkit.getPluginManager().registerEvents(listener, this);
+    }
 }

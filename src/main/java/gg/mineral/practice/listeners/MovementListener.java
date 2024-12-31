@@ -1,28 +1,26 @@
 package gg.mineral.practice.listeners;
 
-import org.bukkit.Material;
-import org.bukkit.block.Block;
-import org.bukkit.block.BlockFace;
-import org.bukkit.craftbukkit.v1_8_R3.CraftWorld; // Import for NMS world access
-import org.bukkit.event.EventHandler;
-import org.bukkit.event.Listener;
-import org.bukkit.event.player.PlayerChangedWorldEvent;
-import org.bukkit.event.player.PlayerMoveEvent;
-import org.bukkit.event.player.PlayerTeleportEvent;
-import org.spigotmc.event.entity.EntityDismountEvent;
-
 import gg.mineral.practice.entity.PlayerStatus;
 import gg.mineral.practice.managers.ProfileManager;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.val;
 import net.minecraft.server.v1_8_R3.BlockPosition;
+import org.bukkit.Material;
+import org.bukkit.block.Block;
+import org.bukkit.block.BlockFace;
+import org.bukkit.craftbukkit.v1_8_R3.CraftWorld;
+import org.bukkit.event.EventHandler;
+import org.bukkit.event.Listener;
+import org.bukkit.event.player.PlayerMoveEvent;
+import org.bukkit.event.player.PlayerTeleportEvent;
+import org.spigotmc.event.entity.EntityDismountEvent;
 
 public class MovementListener implements Listener {
 
     @Data
     @AllArgsConstructor
-    private class BoundingBox {
+    private static class BoundingBox {
         private double minX, minY, minZ, maxX, maxY, maxZ;
 
         public double getCenterX() {
@@ -48,17 +46,6 @@ public class MovementListener implements Listener {
     }
 
     @EventHandler
-    public void onPlayerChangeWorld(PlayerChangedWorldEvent e) {
-        val profile = ProfileManager.getProfile(
-                e.getPlayer().getUniqueId());
-
-        if (profile == null)
-            return;
-
-        profile.getVisiblePlayers().clear();
-    }
-
-    @EventHandler
     public void onPearlTeleport(PlayerTeleportEvent event) {
 
         if (event.getCause() != PlayerTeleportEvent.TeleportCause.ENDER_PEARL) {
@@ -68,7 +55,7 @@ public class MovementListener implements Listener {
             if (profile == null)
                 return;
 
-            profile.updateVisiblity();
+            profile.updateVisibility();
             return;
         }
 

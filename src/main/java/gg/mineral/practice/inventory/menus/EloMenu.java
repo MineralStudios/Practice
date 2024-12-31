@@ -1,7 +1,7 @@
 package gg.mineral.practice.inventory.menus;
 
 import gg.mineral.api.collection.GlueList;
-import gg.mineral.practice.catagory.Catagory;
+import gg.mineral.practice.category.Category;
 import gg.mineral.practice.entity.ProfileData;
 import gg.mineral.practice.gametype.Gametype;
 import gg.mineral.practice.inventory.ClickCancelled;
@@ -34,16 +34,16 @@ public class EloMenu extends PracticeMenu {
     }
 
     protected boolean shouldSkip(QueuetypeMenuEntry menuEntry) {
-        return menuEntry instanceof Gametype gametype && gametype.isInCatagory();
+        return menuEntry instanceof Gametype gametype && gametype.isInCategory();
     }
 
     @Override
     public void update() {
         setSlot(4,
                 ItemStacks.GLOBAL_ELO.name(
-                        CC.SECONDARY + CC.B + arg.getName() + "'s Global Elo")
+                                CC.SECONDARY + CC.B + arg.getName() + "'s Global Elo")
                         .lore(CC.WHITE + "The " + CC.SECONDARY + "average elo" + CC.WHITE
-                                + " across all game types.",
+                                        + " across all game types.",
                                 " ",
                                 CC.WHITE + "Currently:",
                                 CC.GOLD + queuetype.getGlobalElo(arg))
@@ -66,7 +66,7 @@ public class EloMenu extends PracticeMenu {
                 continue;
             }
 
-            if (menuEntry instanceof Catagory c) {
+            if (menuEntry instanceof Category c) {
                 val itemBuild = new ItemBuilder(c.getDisplayItem())
                         .name(CC.SECONDARY + CC.B + c.getDisplayName());
 
@@ -78,13 +78,13 @@ public class EloMenu extends PracticeMenu {
 
                 sb.add(" ");
                 sb.add(CC.BOARD_SEPARATOR);
-                sb.add(CC.ACCENT + "Click to view catagory.");
+                sb.add(CC.ACCENT + "Click to view category.");
 
                 itemBuild.lore(sb.toArray(new String[0]));
                 val item = itemBuild.build();
 
                 setSlot(entry.getIntValue() + 18, item, interaction -> interaction.getProfile()
-                        .openMenu(new CatagorizedEloMenu(arg, queuetype, c)));
+                        .openMenu(new CategorizedEloMenu(arg, queuetype, c)));
             }
         }
     }

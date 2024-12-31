@@ -51,7 +51,7 @@ public class KitEditor {
                 continue;
             }
 
-            if (newItem != null && newItem.isSimilar(oldItem))
+            if (newItem.isSimilar(oldItem))
                 continue;
 
             config.set(path + f, newItem);
@@ -68,9 +68,6 @@ public class KitEditor {
         PlayerUtil.teleportNoGlitch(profile, KitEditorManager.getLocation());
         profile.getInventory().setInventoryClickCancelled(false);
         profile.getInventory().clear();
-
-        for (val player : profile.getPlayer().getWorld().getPlayers())
-            profile.removeFromView(player.getUniqueId());
 
         profile.getInventory().setContents(gametype.getKit().getContents());
     }

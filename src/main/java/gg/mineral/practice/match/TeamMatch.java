@@ -1,14 +1,5 @@
 package gg.mineral.practice.match;
 
-import java.util.Collection;
-import java.util.List;
-import java.util.Queue;
-import java.util.Set;
-import java.util.function.Consumer;
-
-import org.bukkit.Bukkit;
-import org.bukkit.entity.Player;
-
 import gg.mineral.api.collection.GlueList;
 import gg.mineral.api.nametag.NametagGroup;
 import gg.mineral.bot.api.BotAPI;
@@ -20,6 +11,7 @@ import gg.mineral.practice.managers.ArenaManager;
 import gg.mineral.practice.managers.MatchManager;
 import gg.mineral.practice.managers.ProfileManager;
 import gg.mineral.practice.match.data.MatchData;
+import gg.mineral.practice.match.data.MatchStatisticCollector;
 import gg.mineral.practice.party.Party;
 import gg.mineral.practice.scoreboard.impl.DefaultScoreboard;
 import gg.mineral.practice.scoreboard.impl.MatchEndScoreboard;
@@ -38,10 +30,18 @@ import net.md_5.bungee.api.chat.ClickEvent;
 import net.md_5.bungee.api.chat.ComponentBuilder;
 import net.md_5.bungee.api.chat.HoverEvent;
 import net.md_5.bungee.api.chat.TextComponent;
+import org.bukkit.Bukkit;
+import org.bukkit.entity.Player;
+
+import java.util.Collection;
+import java.util.List;
+import java.util.Queue;
+import java.util.Set;
+import java.util.function.Consumer;
 
 public class TeamMatch extends Match {
 
-    public class Team extends Object2BooleanLinkedOpenHashMap<Profile> {
+    public static class Team extends Object2BooleanLinkedOpenHashMap<Profile> {
         public ProfileList alive() {
             val list = new ProfileList();
             for (val e : object2BooleanEntrySet())
@@ -138,8 +138,8 @@ public class TeamMatch extends Match {
 
         MatchManager.registerMatch(this);
         val arena = ArenaManager.getArenas().get(getData().getArenaId());
-        val location1 = arena.getLocation1().clone();
-        val location2 = arena.getLocation2().clone();
+        val location1 = arena.getLocation1().bukkit(world);
+        val location2 = arena.getLocation2().bukkit(world);
         setupLocations(location1, location2);
 
         team1Players.alive(teamMember -> this.participants.add(teamMember));
@@ -205,7 +205,7 @@ public class TeamMatch extends Match {
 
         val victimsAlive = victimTeam.alive();
 
-        if (victimsAlive.size() > 0) {
+        if (!victimsAlive.isEmpty()) {
 
             participants.remove(victim);
             if (victim.getMatch().equals(this))
@@ -263,9 +263,9 @@ public class TeamMatch extends Match {
         MatchManager.remove(this);
 
         val winMessage = new TextComponent(
-                CC.GREEN + "Winner: " + CC.GRAY + attackerTeamLeader.getName() + "\'s team");
+                CC.GREEN + "Winner: " + CC.GRAY + attackerTeamLeader.getName() + "'s team");
         val loseMessage = new TextComponent(
-                CC.RED + "Loser: " + CC.GRAY + victimTeam.firstKey().getName() + "\'s team");
+                CC.RED + "Loser: " + CC.GRAY + victimTeam.firstKey().getName() + "'s team");
         loseMessage
                 .setHoverEvent(
                         new HoverEvent(HoverEvent.Action.SHOW_TEXT,
@@ -364,8 +364,8 @@ public class TeamMatch extends Match {
 
     @Override
     public boolean incrementTeamHitCount(Profile attacker, Profile victim) {
-        stat(attacker, collector -> collector.increaseHitCount());
-        stat(victim, collector -> collector.resetCombo());
+        stat(attacker, MatchStatisticCollector::increaseHitCount);
+        stat(victim, MatchStatisticCollector::resetCombo);
 
         boolean isTeam1 = team1Players.all().contains(attacker);
         int hitCount = isTeam1 ? ++team1HitCount : ++team2HitCount;
@@ -374,7 +374,7 @@ public class TeamMatch extends Match {
 
         if (hitCount >= requiredHitCount
                 && getData().isBoxing()) {
-            opponentTeam.alive(opponent -> end(opponent));
+            opponentTeam.alive(this::end);
             return true;
         }
 
@@ -403,6 +403,6 @@ public class TeamMatch extends Match {
         team2Players.alive(profile -> NametagAPI.setPrefix(opponentGroup, profile.getName(), CC.GREEN));
         team1Players.alive(profile -> NametagAPI.setPrefix(opponentGroup, profile.getName(), CC.RED));
 
-        return new NametagGroup[] { playerGroup, opponentGroup };
+        return new NametagGroup[]{playerGroup, opponentGroup};
     }
 }

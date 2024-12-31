@@ -1,11 +1,5 @@
 package gg.mineral.practice.match;
 
-import java.util.Collection;
-import java.util.List;
-import java.util.Queue;
-
-import org.bukkit.Bukkit;
-
 import gg.mineral.api.collection.GlueList;
 import gg.mineral.bot.ai.goal.DrinkPotionGoal;
 import gg.mineral.bot.ai.goal.EatGappleGoal;
@@ -21,6 +15,11 @@ import gg.mineral.practice.managers.ProfileManager;
 import gg.mineral.practice.match.data.MatchData;
 import gg.mineral.practice.util.PlayerUtil;
 import lombok.val;
+import org.bukkit.Bukkit;
+
+import java.util.Collection;
+import java.util.List;
+import java.util.Queue;
 
 public class BotTeamMatch extends TeamMatch {
 
@@ -28,7 +27,7 @@ public class BotTeamMatch extends TeamMatch {
     List<ClientInstance> team1BotInstances = new GlueList<>(), team2BotInstances = new GlueList<>();
 
     public BotTeamMatch(Queue<Profile> team1, Queue<Profile> team2, Collection<BotConfiguration> team1Bots,
-            Collection<BotConfiguration> team2Bots, MatchData matchData) {
+                        Collection<BotConfiguration> team2Bots, MatchData matchData) {
         super(team1, team2, matchData);
         this.team1Bots = team1Bots;
         this.team2Bots = team2Bots;
@@ -60,8 +59,8 @@ public class BotTeamMatch extends TeamMatch {
 
         MatchManager.registerMatch(this);
         val arena = ArenaManager.getArenas().get(getData().getArenaId());
-        val location1 = arena.getLocation1().clone();
-        val location2 = arena.getLocation2().clone();
+        val location1 = arena.getLocation1().bukkit(world);
+        val location2 = arena.getLocation2().bukkit(world);
         setupLocations(location1, location2);
 
         team1Players.alive(teamMember -> PlayerUtil.teleport(teamMember, location1));

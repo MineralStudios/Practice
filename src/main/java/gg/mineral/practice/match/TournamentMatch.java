@@ -1,7 +1,5 @@
 package gg.mineral.practice.match;
 
-import org.bukkit.Bukkit;
-
 import gg.mineral.practice.PracticePlugin;
 import gg.mineral.practice.entity.PlayerStatus;
 import gg.mineral.practice.entity.Profile;
@@ -14,6 +12,7 @@ import gg.mineral.practice.util.messages.CC;
 import gg.mineral.practice.util.messages.impl.Strings;
 import gg.mineral.practice.util.messages.impl.TextComponents;
 import lombok.val;
+import org.bukkit.Bukkit;
 
 public class TournamentMatch extends Match {
 
@@ -31,8 +30,8 @@ public class TournamentMatch extends Match {
 
         deathAnimation(attacker, victim);
 
-        stat(attacker, collector -> setInventoryStats(collector));
-        stat(victim, collector -> setInventoryStats(collector));
+        stat(attacker, this::setInventoryStats);
+        stat(victim, this::setInventoryStats);
 
         val winMessage = getWinMessage(attacker);
         val loseMessage = getLoseMessage(victim);
