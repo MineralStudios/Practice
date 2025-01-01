@@ -20,7 +20,7 @@ public class SelectEventMenu extends PracticeMenu {
 
             val item = new ItemBuilder(g.getDisplayItem())
                     .name(CC.SECONDARY + CC.B
-                            + (g.isInCatagory() ? g.getCatagoryName() + g.getDisplayName() : g.getDisplayName()))
+                            + (g.isInCategory() ? g.getCategoryName() + g.getDisplayName() : g.getDisplayName()))
                     .lore(CC.ACCENT + "Click to start event.")
                     .build();
 

@@ -1,15 +1,14 @@
 package gg.mineral.practice.util.items;
 
-import java.util.Arrays;
-import java.util.List;
-
+import lombok.val;
 import org.bukkit.Material;
 import org.bukkit.inventory.ItemStack;
 
-import lombok.val;
+import java.util.Arrays;
+import java.util.List;
 
 public class ItemBuilder {
-    private Material material;
+    private final Material material;
     private int durability, amount;
     private String name;
     private List<String> lore = null;

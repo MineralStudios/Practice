@@ -1,37 +1,28 @@
 package gg.mineral.practice.util.collection;
 
+import gg.mineral.api.collection.GlueList;
+import gg.mineral.practice.entity.Profile;
+import lombok.Getter;
+import lombok.val;
+
+import java.io.Serial;
 import java.util.Collection;
 import java.util.Iterator;
 import java.util.List;
 import java.util.UUID;
 import java.util.concurrent.ConcurrentLinkedQueue;
 
-import gg.mineral.api.collection.GlueList;
-import gg.mineral.practice.entity.Profile;
-import lombok.Getter;
-import lombok.val;
-
+@Getter
 public class ProfileList extends ConcurrentLinkedQueue<Profile> {
 
     /**
      *
      */
-    @Getter
-    String name;
+    @Serial
     private static final long serialVersionUID = 1L;
-
-    public ProfileList(String name) {
-        super();
-        this.name = name;
-    }
 
     public ProfileList() {
         super();
-    }
-
-    public ProfileList(Collection<? extends Profile> c, String name) {
-        super(c);
-        this.name = name;
     }
 
     public ProfileList(Collection<? extends Profile> c) {

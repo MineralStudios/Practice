@@ -1,50 +1,49 @@
 package gg.mineral.practice.inventory;
 
-import java.util.function.Consumer;
-
+import gg.mineral.practice.entity.Profile;
 import org.bukkit.Material;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
 
-import gg.mineral.practice.entity.Profile;
+import java.util.function.Consumer;
 
 public interface Menu {
 
-    public void setSlot(int slot, ItemStack item);
+    void setSlot(int slot, ItemStack item);
 
-    public void setSlot(int slot, ItemStack item, Consumer<Interaction> d);
+    void setSlot(int slot, ItemStack item, Consumer<Interaction> d);
 
-    public void add(ItemStack item);
+    void add(ItemStack item);
 
-    public void add(ItemStack item, Consumer<Interaction> d);
+    void add(ItemStack item, Consumer<Interaction> d);
 
-    public void update();
+    void update();
 
-    public boolean shouldUpdate();
+    boolean shouldUpdate();
 
-    public void onClose();
+    void onClose();
 
-    public ItemStack getItemBySlot(int slot);
+    ItemStack getItemBySlot(int slot);
 
-    public ItemStack getItemByType(Material m);
+    ItemStack getItemByType(Material m);
 
-    public boolean contains(ItemStack item);
+    boolean contains(ItemStack item);
 
-    public void open(Profile viewer);
+    void open(Profile viewer);
 
-    public void reload();
+    void reload();
 
-    public void setContents(ItemStack[] contents);
+    void setContents(ItemStack[] contents);
 
-    public Consumer<Interaction> getTask(int slot);
+    Consumer<Interaction> getTask(int slot);
 
-    public void clear();
+    void clear();
 
-    public boolean isClosed();
+    boolean isClosed();
 
-    public void setClosed(boolean b);
+    void setClosed(boolean b);
 
-    public boolean isClickCancelled();
+    boolean isClickCancelled();
 
-    public Inventory getInventory();
+    Inventory getInventory();
 }

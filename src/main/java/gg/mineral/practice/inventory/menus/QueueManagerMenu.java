@@ -21,17 +21,14 @@ public class QueueManagerMenu extends PracticeMenu {
         clear();
         val queueEntries = QueueSystem.getQueueEntries(viewer);
 
-        if (queueEntries == null)
-            return;
-
         for (val queueEntry : queueEntries) {
             val g = GametypeManager.getGametypes().get(queueEntry.gametype().getId());
             val q = QueuetypeManager.getQueuetypes().get(queueEntry.queuetype().getId());
 
-            val catagoryName = g.getCatagoryName() != null ? g.getCatagoryName() + " " : "";
+            val categoryName = g.getCategoryName() != null ? g.getCategoryName() + " " : "";
 
             val item = new ItemBuilder(g.getDisplayItem())
-                    .name(CC.SECONDARY + CC.B + q.getDisplayName() + " " + catagoryName + g.getDisplayName())
+                    .name(CC.SECONDARY + CC.B + q.getDisplayName() + " " + categoryName + g.getDisplayName())
                     .lore(CC.RED + "Click to leave queue.").build();
 
             add(item, interaction -> {

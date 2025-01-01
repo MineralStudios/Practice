@@ -1,8 +1,5 @@
 package gg.mineral.practice.match;
 
-import org.bukkit.Bukkit;
-import org.bukkit.Location;
-
 import gg.mineral.practice.PracticePlugin;
 import gg.mineral.practice.entity.PlayerStatus;
 import gg.mineral.practice.entity.Profile;
@@ -12,16 +9,17 @@ import gg.mineral.practice.managers.MatchManager;
 import gg.mineral.practice.match.data.MatchData;
 import gg.mineral.practice.scoreboard.impl.DefaultScoreboard;
 import gg.mineral.practice.scoreboard.impl.MatchEndScoreboard;
-import gg.mineral.practice.util.CoreConnector;
 import gg.mineral.practice.util.PlayerUtil;
 import gg.mineral.practice.util.messages.CC;
 import gg.mineral.practice.util.messages.impl.Strings;
 import gg.mineral.practice.util.messages.impl.TextComponents;
 import lombok.val;
+import org.bukkit.Bukkit;
+import org.bukkit.World;
 
 public class EventMatch extends Match {
 
-    Event event;
+    private final Event event;
 
     public EventMatch(Profile profile1, Profile profile2, MatchData matchData, Event event) {
         super(profile1, profile2, matchData);
@@ -29,8 +27,8 @@ public class EventMatch extends Match {
     }
 
     @Override
-    public void setupLocations(Location location1, Location location2) {
-        setWorldParameters(location1.getWorld());
+    public World generateWorld() {
+        return event.getWorld();
     }
 
     @Override
@@ -40,8 +38,8 @@ public class EventMatch extends Match {
 
         deathAnimation(attacker, victim);
 
-        stat(attacker, collector -> setInventoryStats(collector));
-        stat(victim, collector -> setInventoryStats(collector));
+        stat(attacker, this::setInventoryStats);
+        stat(victim, this::setInventoryStats);
 
         val winMessage = getWinMessage(attacker);
         val loseMessage = getLoseMessage(victim);
@@ -72,7 +70,7 @@ public class EventMatch extends Match {
             val eventArena = ArenaManager.getArenas().get(event.getEventArenaId());
 
             if (!event.isEnded()) {
-                PlayerUtil.teleport(attacker, eventArena.getWaitingLocation());
+                PlayerUtil.teleport(attacker, eventArena.getWaitingLocation().bukkit(this.world));
                 attacker.setPlayerStatus(PlayerStatus.IDLE);
                 attacker.getInventory().setInventoryForEvent();
             } else {
@@ -83,10 +81,10 @@ public class EventMatch extends Match {
             if (attacker.getMatch().equals(this))
                 attacker.removeFromMatch();
 
-            if (CoreConnector.connected()) {
-                // CoreConnector.INSTANCE.getNameTagAPI().giveTagAfterMatch(profile1.getPlayer(),
-                // profile2.getPlayer());
-            }
+            // if (CoreConnector.connected()) {
+            // CoreConnector.INSTANCE.getNameTagAPI().giveTagAfterMatch(profile1.getPlayer(),
+            // profile2.getPlayer());
+            // }
 
         }, getPostMatchTime());
 

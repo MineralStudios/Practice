@@ -1,8 +1,5 @@
 package gg.mineral.practice.tournaments;
 
-import org.bukkit.Bukkit;
-import org.bukkit.scheduler.BukkitRunnable;
-
 import gg.mineral.api.collection.GlueList;
 import gg.mineral.practice.PracticePlugin;
 import gg.mineral.practice.bukkit.events.PlayerTournamentInitializeEvent;
@@ -19,6 +16,8 @@ import gg.mineral.practice.util.messages.impl.ErrorMessages;
 import lombok.Getter;
 import lombok.val;
 import net.md_5.bungee.api.chat.ClickEvent;
+import org.bukkit.Bukkit;
+import org.bukkit.scheduler.BukkitRunnable;
 
 public class Tournament {
     GlueList<Match> matches = new GlueList<>();
@@ -58,7 +57,7 @@ public class Tournament {
         val leftMessage = ChatMessages.LEFT_TOURNAMENT.clone().replace("%player%", p.getName());
         ProfileManager.broadcast(players, leftMessage);
 
-        if (players.size() == 0) {
+        if (players.isEmpty()) {
             TournamentManager.remove(this);
             ended = true;
             return;
@@ -75,7 +74,6 @@ public class Tournament {
 
             ProfileManager.broadcast(wonMessage);
 
-            return;
         }
     }
 

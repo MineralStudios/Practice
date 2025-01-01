@@ -8,7 +8,6 @@ import org.bukkit.inventory.ItemStack;
 
 public class ItemStacks {
     // Item Stacks
-    @SuppressWarnings("deprecation")
     public static final ItemStack STOP_FOLLOWING = new ItemBuilder(new ItemStack(351, 1, (short) 1))
             .name(CC.SECONDARY + CC.B + "Stop Following").lore(CC.ACCENT + "Right click to stop following.")
             .build(),
@@ -111,7 +110,7 @@ public class ItemStacks {
                     DyeColor.BLACK.getData()))
             .name(null).build(),
             DEFAULT_ARENA_DISPLAY_ITEM = new ItemStack(Material.WOOL),
-            DEFAULT_CATAGORY_DISPLAY_ITEM = new ItemStack(Material.DIAMOND_SWORD),
+            DEFAULT_CATEGORY_DISPLAY_ITEM = new ItemStack(Material.DIAMOND_SWORD),
             DEFAULT_GAMETYPE_DISPLAY_ITEM = new ItemStack(Material.DIAMOND_SWORD),
             EMPTY_BOWL = new ItemStack(Material.BOWL),
             DEFAULT_KIT_EDITOR_DISPLAY_ITEM = new ItemStack(Material.BOOK),
@@ -268,5 +267,4 @@ public class ItemStacks {
     public static final ItemBuilder PREVIOUS_PAGE = new ItemBuilder(new ItemStack(Material.WOOL, 1, DyeColor.RED.getData()))
             .name(CC.SECONDARY + CC.B + "Previous Page");
     public static final ItemBuilder CHANGE_TIME = new ItemBuilder(Material.WATCH).name(CC.SECONDARY + CC.B + "Change Time");
-
 }

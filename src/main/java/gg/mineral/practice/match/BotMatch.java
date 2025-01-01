@@ -1,8 +1,5 @@
 package gg.mineral.practice.match;
 
-import org.bukkit.Bukkit;
-import org.bukkit.Location;
-
 import gg.mineral.bot.ai.goal.DrinkPotionGoal;
 import gg.mineral.bot.ai.goal.EatGappleGoal;
 import gg.mineral.bot.ai.goal.MeleeCombatGoal;
@@ -21,6 +18,8 @@ import gg.mineral.practice.match.data.MatchData;
 import gg.mineral.practice.util.PlayerUtil;
 import gg.mineral.practice.util.items.ItemStacks;
 import lombok.val;
+import org.bukkit.Bukkit;
+import org.bukkit.Location;
 
 public class BotMatch extends Match {
 
@@ -41,8 +40,8 @@ public class BotMatch extends Match {
 
         MatchManager.registerMatch(this);
         val arena = ArenaManager.getArenas().get(getData().getArenaId());
-        val location1 = arena.getLocation1().clone();
-        val location2 = arena.getLocation2().clone();
+        val location1 = arena.getLocation1().bukkit(world);
+        val location2 = arena.getLocation2().bukkit(world);
 
         setupLocations(location1, location2);
 

@@ -1,7 +1,5 @@
 package gg.mineral.practice.commands.testing;
 
-import java.util.LinkedList;
-
 import gg.mineral.api.collection.GlueList;
 import gg.mineral.bot.api.configuration.BotConfiguration;
 import gg.mineral.practice.commands.PlayerCommand;
@@ -11,6 +9,8 @@ import gg.mineral.practice.managers.QueuetypeManager;
 import gg.mineral.practice.match.BotTeamMatch;
 import gg.mineral.practice.match.data.MatchData;
 import lombok.val;
+
+import java.util.LinkedList;
 
 public class BotTestingCommand extends PlayerCommand {
 
@@ -25,7 +25,7 @@ public class BotTestingCommand extends PlayerCommand {
         if (args.length < 2)
             return;
 
-        val amount = Integer.valueOf(args[0]);
+        val amount = Integer.parseInt(args[0]);
 
         val queuetype = QueuetypeManager.getQueuetypeByName("Unranked");
         val gametype = GametypeManager.getGametypeByName(args[1]);
