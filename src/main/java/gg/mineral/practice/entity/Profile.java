@@ -250,34 +250,6 @@ public class Profile extends ProfileData implements QueuedEntity {
         }
     }
 
-    public boolean testVisibility(UUID uuid) {
-
-        if (playerStatus == PlayerStatus.KIT_CREATOR || playerStatus == PlayerStatus.KIT_EDITOR)
-            return uuid == this.getUuid();
-
-        val match = this.getMatch();
-        if (playerStatus == PlayerStatus.FIGHTING
-                && match != null && match.getParticipants().get(uuid) != null)
-            return true;
-
-        val spectatable = spectateHandler.getSpectatable();
-
-        if (spectatable != null)
-            if ((playerStatus == PlayerStatus.FOLLOWING || playerStatus == PlayerStatus.SPECTATING)
-                    && spectatable.getParticipants().get(uuid) != null)
-                return true;
-
-        val p = ProfileManager.getProfile(uuid);
-
-        if (this.isPlayersVisible() && p != null)
-            if ((playerStatus == PlayerStatus.QUEUEING || playerStatus == PlayerStatus.IDLE)
-                    && (p.getPlayerStatus() == PlayerStatus.QUEUEING || p.getPlayerStatus() == PlayerStatus.IDLE)
-                    && p.getPlayer().hasPermission("practice.visible"))
-                return true;
-
-        return uuid == this.getUuid();
-    }
-
     public boolean testTabVisibility(UUID uuid) {
 
         val isBot = BotAPI.INSTANCE.isFakePlayer(uuid);
@@ -321,88 +293,25 @@ public class Profile extends ProfileData implements QueuedEntity {
             else
                 getInventory().setInventoryForLobby();
         }
-  }
-  
-	public void teleportToLobby() {
-		if (playerStatus == PlayerStatus.FIGHTING && !getMatch().isEnded())
-			return;
+    }
 
-		this.getPlayer().getHandle().getBacktrackSystem().setEnabled(false);
-		PlayerUtil.teleport(this, ProfileManager.getSpawnLocation());
+    public void leaveKitEditor() {
+        setScoreboard(DefaultScoreboard.INSTANCE);
+        getInventory().setInventoryClickCancelled(true);
+        this.kitEditor = null;
+        teleportToLobby();
+        getInventory().setInventoryForLobby();
+    }
 
-		if (playerStatus != PlayerStatus.FOLLOWING && playerStatus != PlayerStatus.QUEUEING)
-			setPlayerStatus(PlayerStatus.IDLE);
-	}
+    public void leaveKitCreator() {
+        setScoreboard(DefaultScoreboard.INSTANCE);
+        this.player.setGameMode(GameMode.SURVIVAL);
+        leaveKitEditor();
+        openMenu(new MechanicsMenu(null, kitCreator.getSubmitAction()));
+        this.kitCreator = null;
+    }
 
-	public void leaveKitEditor() {
-		setScoreboard(DefaultScoreboard.INSTANCE);
-		getInventory().setInventoryClickCancelled(true);
-		this.kitEditor = null;
-		teleportToLobby();
-		getInventory().setInventoryForLobby();
-	}
-
-	public void leaveKitCreator() {
-		setScoreboard(DefaultScoreboard.INSTANCE);
-		this.player.setGameMode(GameMode.SURVIVAL);
-		leaveKitEditor();
-		openMenu(new MechanicsMenu(null,kitCreator.getSubmitAction()));
-		this.kitCreator = null;
-	}
-
-	public void sendToKitEditor(Queuetype queuetype, Gametype gametype) {
-
-		if (KitEditorManager.getLocation() == null) {
-			message(ErrorMessages.KIT_EDITOR_LOCATION_NOT_SET);
-			return;
-		}
-
-		message(ChatMessages.LEAVE_KIT_EDITOR);
-
-		this.kitEditor = new KitEditor(gametype, queuetype, this);
-		kitEditor.start();
-	}
-
-	public void sendToKitCreator(SubmitAction submitAction) {
-
-		if (KitEditorManager.getLocation() == null) {
-			message(ErrorMessages.KIT_EDITOR_LOCATION_NOT_SET);
-			return;
-		}
-
-		message(ChatMessages.LEAVE_KIT_CREATOR);
-
-		this.kitCreator = new KitCreator(this, submitAction);
-		kitCreator.start();
-	}
-
-	public boolean equals(Profile p) {
-		return p.getUuid().equals(player.getUniqueId());
-	}
-
-	public void setPlayerStatus(PlayerStatus newPlayerStatus) {
-		if (this.playerStatus == newPlayerStatus)
-			return;
-		val canFly = newPlayerStatus.getCanFly().apply(this);
-
-		this.getPlayer().setAllowFlight(canFly);
-		this.getPlayer().setFlying(canFly);
-
-		this.playerStatus = newPlayerStatus;
-
-		this.updateVisiblity();
-	}
-
-	public void setGameMode(GameMode gameMode) {
-		this.player.setGameMode(gameMode);
-
-		val canFly = this.playerStatus.getCanFly().apply(this);
-
-		this.getPlayer().setAllowFlight(canFly);
-		this.getPlayer().setFlying(canFly);
-	}
-  
-  public void addPlayerToQueue(Queuetype queuetype,
+    public void addPlayerToQueue(Queuetype queuetype,
                                  Gametype gametype) {
         assert queueSettings != null;
         assert queuetype != null;
@@ -454,22 +363,6 @@ public class Profile extends ProfileData implements QueuedEntity {
 
         if (playerStatus != PlayerStatus.FOLLOWING && playerStatus != PlayerStatus.QUEUEING)
             setPlayerStatus(PlayerStatus.IDLE);
-    }
-
-    public void leaveKitEditor() {
-        setScoreboard(DefaultScoreboard.INSTANCE);
-        getInventory().setInventoryClickCancelled(true);
-        this.kitEditor = null;
-        teleportToLobby();
-        getInventory().setInventoryForLobby();
-    }
-
-    public void leaveKitCreator() {
-        setScoreboard(DefaultScoreboard.INSTANCE);
-        this.player.setGameMode(GameMode.SURVIVAL);
-        leaveKitEditor();
-        openMenu(new MechanicsMenu(kitCreator.getSubmitAction()));
-        this.kitCreator = null;
     }
 
     public void sendToKitEditor(Queuetype queuetype, Gametype gametype) {
