@@ -46,6 +46,6 @@ public class SelectCategorizedGametypeMenu extends SelectGametypeMenu {
         if (viewer.getPlayerStatus() == PlayerStatus.FIGHTING || viewer.getOpenMenu() != null)
             return;
 
-        viewer.openMenu(new SelectGametypeMenu(queuetype, type));
+        viewer.openMenu(new SelectGametypeMenu(queuetype, type, null));
     }
 }

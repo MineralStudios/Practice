@@ -321,9 +321,88 @@ public class Profile extends ProfileData implements QueuedEntity {
             else
                 getInventory().setInventoryForLobby();
         }
-    }
+  }
+  
+	public void teleportToLobby() {
+		if (playerStatus == PlayerStatus.FIGHTING && !getMatch().isEnded())
+			return;
 
-    public void addPlayerToQueue(Queuetype queuetype,
+		this.getPlayer().getHandle().getBacktrackSystem().setEnabled(false);
+		PlayerUtil.teleport(this, ProfileManager.getSpawnLocation());
+
+		if (playerStatus != PlayerStatus.FOLLOWING && playerStatus != PlayerStatus.QUEUEING)
+			setPlayerStatus(PlayerStatus.IDLE);
+	}
+
+	public void leaveKitEditor() {
+		setScoreboard(DefaultScoreboard.INSTANCE);
+		getInventory().setInventoryClickCancelled(true);
+		this.kitEditor = null;
+		teleportToLobby();
+		getInventory().setInventoryForLobby();
+	}
+
+	public void leaveKitCreator() {
+		setScoreboard(DefaultScoreboard.INSTANCE);
+		this.player.setGameMode(GameMode.SURVIVAL);
+		leaveKitEditor();
+		openMenu(new MechanicsMenu(null,kitCreator.getSubmitAction()));
+		this.kitCreator = null;
+	}
+
+	public void sendToKitEditor(Queuetype queuetype, Gametype gametype) {
+
+		if (KitEditorManager.getLocation() == null) {
+			message(ErrorMessages.KIT_EDITOR_LOCATION_NOT_SET);
+			return;
+		}
+
+		message(ChatMessages.LEAVE_KIT_EDITOR);
+
+		this.kitEditor = new KitEditor(gametype, queuetype, this);
+		kitEditor.start();
+	}
+
+	public void sendToKitCreator(SubmitAction submitAction) {
+
+		if (KitEditorManager.getLocation() == null) {
+			message(ErrorMessages.KIT_EDITOR_LOCATION_NOT_SET);
+			return;
+		}
+
+		message(ChatMessages.LEAVE_KIT_CREATOR);
+
+		this.kitCreator = new KitCreator(this, submitAction);
+		kitCreator.start();
+	}
+
+	public boolean equals(Profile p) {
+		return p.getUuid().equals(player.getUniqueId());
+	}
+
+	public void setPlayerStatus(PlayerStatus newPlayerStatus) {
+		if (this.playerStatus == newPlayerStatus)
+			return;
+		val canFly = newPlayerStatus.getCanFly().apply(this);
+
+		this.getPlayer().setAllowFlight(canFly);
+		this.getPlayer().setFlying(canFly);
+
+		this.playerStatus = newPlayerStatus;
+
+		this.updateVisiblity();
+	}
+
+	public void setGameMode(GameMode gameMode) {
+		this.player.setGameMode(gameMode);
+
+		val canFly = this.playerStatus.getCanFly().apply(this);
+
+		this.getPlayer().setAllowFlight(canFly);
+		this.getPlayer().setFlying(canFly);
+	}
+  
+  public void addPlayerToQueue(Queuetype queuetype,
                                  Gametype gametype) {
         assert queueSettings != null;
         assert queuetype != null;

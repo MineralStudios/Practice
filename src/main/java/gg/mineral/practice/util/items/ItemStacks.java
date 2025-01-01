@@ -1,11 +1,10 @@
 package gg.mineral.practice.util.items;
 
+import gg.mineral.practice.util.messages.CC;
 import org.bukkit.DyeColor;
 import org.bukkit.Material;
 import org.bukkit.SkullType;
 import org.bukkit.inventory.ItemStack;
-
-import gg.mineral.practice.util.messages.CC;
 
 public class ItemStacks {
     // Item Stacks
@@ -78,13 +77,6 @@ public class ItemStacks {
                                     + CC.WHITE + ".",
                             " ",
                             CC.BOARD_SEPARATOR, CC.ACCENT + "Click to create kit.")
-                    .build(),
-            CHOOSE_EXISTING_KNOCKBACK = new ItemBuilder(Material.GOLD_SWORD)
-                    .name(CC.SECONDARY + CC.B + "Choose Existing Knockback")
-                    .lore(CC.WHITE + "Choose a " + CC.SECONDARY + "preconfigured knockback"
-                                    + CC.WHITE + ".",
-                            " ",
-                            CC.BOARD_SEPARATOR, CC.ACCENT + "Click to select knockback.")
                     .build(),
             CREATE_CUSTOM_KNOCKBACK = new ItemBuilder(Material.STONE_SWORD)
                     .name(CC.SECONDARY + CC.B + "Create Custom Knockback")
@@ -176,106 +168,103 @@ public class ItemStacks {
                     .build();
 
     // Item Builders
-    @SuppressWarnings("deprecation")
-    public static final ItemBuilder LOAD_KIT = new ItemBuilder(Material.ENCHANTED_BOOK),
-            TEAMFIGHT = new ItemBuilder(Material.ITEM_FRAME)
-                    .name(CC.SECONDARY + CC.B + "Team Fights"),
-            BOT_SETTINGS = new ItemBuilder(Material.GOLD_HELMET)
-                    .name(CC.SECONDARY + CC.B + "Bot Settings"),
-            PREMADE_DIFFICULTY = new ItemBuilder(Material.PAPER)
-                    .name(CC.SECONDARY + CC.B + "Premade Difficulty"),
-            CLICK_TO_APPLY_CHANGES = new ItemBuilder(Material.STONE_SWORD)
-                    .lore(CC.ACCENT + "Click To Apply Changes"),
-            INVENTORY_STATS = new ItemBuilder(Material.ENDER_CHEST),
-            SELECT_KIT = new ItemBuilder(Material.DIAMOND_CHESTPLATE)
-                    .name(CC.SECONDARY + CC.B + "Select Kit"),
-            CHANGE_KNOCKBACK = new ItemBuilder(Material.STICK)
-                    .name(CC.SECONDARY + CC.B + "Change Knockback"),
-            HIT_DELAY = new ItemBuilder(Material.WATCH)
-                    .name(CC.SECONDARY + CC.B + "Hit Delay"),
-            TOGGLE_HUNGER = new ItemBuilder(Material.COOKED_BEEF)
-                    .name(CC.SECONDARY + CC.B + "Toggle Hunger"),
-            DEADLY_WATER = new ItemBuilder(Material.BLAZE_ROD)
-                    .name(CC.SECONDARY + CC.B + "Deadly Water"),
-            TOGGLE_BUILD = new ItemBuilder(Material.BRICK)
-                    .name(CC.SECONDARY + CC.B + "Toggle Build"),
-            TOGGLE_DAMAGE = new ItemBuilder(Material.DIAMOND_AXE)
-                    .name(CC.SECONDARY + CC.B + "Toggle Damage"),
-            TOGGLE_GRIEFING = new ItemBuilder(Material.TNT)
-                    .name(CC.SECONDARY + CC.B + "Toggle Griefing"),
-            PEARL_COOLDOWN = new ItemBuilder(Material.ENDER_PEARL)
-                    .name(CC.SECONDARY + CC.B + "Pearl Cooldown"),
-            ARENA = new ItemBuilder(Material.WATER_LILY)
-                    .name(CC.SECONDARY + CC.B + "Arena Selection"),
-            OLD_COMBAT = new ItemBuilder(Material.STONE_SWORD)
-                    .name(CC.SECONDARY + CC.B + "Old Combat Mechanics"),
-            REGENERATION = new ItemBuilder(Material.GOLDEN_APPLE)
-                    .name(CC.SECONDARY + CC.B + "Regeneration"),
-            BOXING = new ItemBuilder(Material.IRON_CHESTPLATE)
-                    .name(CC.SECONDARY + CC.B + "Boxing"),
-            OTHER_PARTY = new ItemBuilder(Material.SKULL_ITEM).lore(CC.ACCENT + "Click to duel."),
-            KNOCKBACK = new ItemBuilder(Material.GOLD_SWORD),
-            HEALTH_POTIONS_LEFT = new ItemBuilder(new ItemStack(Material.POTION, 1, (short) 16421))
-                    .name(CC.SECONDARY + CC.B + "Health Potions Left"),
-            SOUP_LEFT = new ItemBuilder(Material.MUSHROOM_SOUP).name(CC.SECONDARY + CC.B + "Soup Left"),
-            BOT_QUEUE_ENABLED_TEAM = new ItemBuilder(
-                    new ItemStack(351, 1, DyeColor.LIGHT_BLUE.getDyeData()))
-                    .name(CC.SECONDARY + CC.B + "Team Bot Queue"),
-            HEALTH = new ItemBuilder(new ItemStack(Material.POTION, (short) 8193)),
-            HITS = new ItemBuilder(Material.BLAZE_ROD), CLICKS = new ItemBuilder(Material.GHAST_TEAR),
-            POTION_EFFECTS = new ItemBuilder(Material.BLAZE_POWDER)
-                    .name(CC.SECONDARY + CC.B + "Potion Effects"),
-            FRICTION = new ItemBuilder(Material.SOUL_SAND).lore("Click to change value."),
-            HORIZONTAL = new ItemBuilder(Material.DIODE).lore("Click to change value."),
-            EXTRA_HORIZONTAL = new ItemBuilder(Material.REDSTONE_COMPARATOR).lore("Click to change value."),
-            VERTICAL = new ItemBuilder(Material.ARROW).lore("Click to change value."),
-            EXTRA_VERTICAL = new ItemBuilder(Material.BLAZE_ROD).lore("Click to change value."),
-            VERTICAL_LIMIT = new ItemBuilder(Material.BEDROCK).lore("Click to change value."),
-            AIM_SPEED = new ItemBuilder(Material.ICE).lore("Click to change value."),
-            AIM_ACCURACY = new ItemBuilder(Material.ARROW).lore("Click to change value."),
-            AIM_ERRATICNESS = new ItemBuilder(Material.LEVER).lore("Click to change value."),
-            AIM_REACTION_TIME = new ItemBuilder(Material.EMERALD).lore("Click to change value."),
-            BOW_AIMING_RADIUS = new ItemBuilder(Material.MAP)
-                    .lore("Click to change value."),
-            REACH = new ItemBuilder(Material.DIAMOND_SWORD).lore("Click to change value."),
-            SPRINT_RESET_ACCURACY = new ItemBuilder(Material.DIAMOND_BOOTS).lore("Click to change value."),
-            HIT_SELECT_ACCURACY = new ItemBuilder(Material.IRON_SWORD).lore("Click to change value."),
-            DISTANCING_MINIMUM = new ItemBuilder(Material.GOLD_RECORD)
-                    .lore("Click to change value."),
-            DISTANCING_MAXIMUM = new ItemBuilder(Material.GREEN_RECORD).lore("Click to change value."),
-            CPS = new ItemBuilder(Material.SUGAR).lore("Click to change value."),
-            PING = new ItemBuilder(Material.REDSTONE).lore("Click to change value."),
-            PING_DEVIATION = new ItemBuilder(Material.GLOWSTONE_DUST).lore("Click to change value."),
-            ARENA_DISABLED = new ItemBuilder(new ItemStack(351, 1, (short) 1))
-                    .lore(CC.RED + "Click to enable arena."),
-            SUBTRACT_1 = new ItemBuilder(new ItemStack(Material.WOOL, 1, DyeColor.RED.getData()))
-                    .lore("Click to change value."),
-            ADD_1 = new ItemBuilder(new ItemStack(Material.WOOL, 1, DyeColor.GREEN.getData()))
-                    .lore("Click to change value."),
-            GLOBAL_ELO = new ItemBuilder(Material.ENDER_PORTAL_FRAME),
-            TOGGLE_PLAYER_VISIBILITY = new ItemBuilder(Material.GOLDEN_CARROT)
-                    .name(CC.SECONDARY + CC.B + "Toggle Player Visibility"),
-            TOGGLE_DUEL_REQUESTS = new ItemBuilder(Material.WOOD_SWORD)
-                    .name(CC.SECONDARY + CC.B + "Toggle Duel Requests"),
-            TOGGLE_PARTY_REQUESTS = new ItemBuilder(Material.NETHER_STAR)
-                    .name(CC.SECONDARY + CC.B + "Toggle Party Requests"),
-            TOGGLE_SCOREBOARD = new ItemBuilder(Material.ITEM_FRAME)
-                    .name(CC.SECONDARY + CC.B + "Toggle Scoreboard"),
-            TOGGLE_PRIVATE_MESSAGES = new ItemBuilder(Material.BOOK_AND_QUILL)
-                    .name(CC.SECONDARY + CC.B + "Toggle Private Messages"),
-            TOGGLE_PRIVATE_MESSAGES_SOUNDS = new ItemBuilder(Material.NOTE_BLOCK)
-                    .name(CC.SECONDARY + CC.B + "Toggle Private Message Sounds"),
-            TOGGLE_FRIENDS_SOUNDS = new ItemBuilder(Material.JUKEBOX)
-                    .name(CC.SECONDARY + CC.B + "Toggle Friend Sounds"),
-            TOGGLE_FRIEND_REQUESTS = new ItemBuilder(Material.CAKE)
-                    .name(CC.SECONDARY + CC.B + "Toggle Friend Requests"),
-            TOGGLE_GLOBAL_CHAT = new ItemBuilder(Material.FEATHER)
-                    .name(CC.SECONDARY + CC.B + "Toggle Global Chat"),
-            NEXT_PAGE = new ItemBuilder(new ItemStack(Material.WOOL, 1, DyeColor.LIME.getData()))
-                    .name(CC.SECONDARY + CC.B + "Next Page"),
-            PREVIOUS_PAGE = new ItemBuilder(new ItemStack(Material.WOOL, 1, DyeColor.RED.getData()))
-                    .name(CC.SECONDARY + CC.B + "Previous Page"),
-            CHANGE_TIME = new ItemBuilder(Material.WATCH)
-                    .name(CC.SECONDARY + CC.B + "Change Time");
-
+    public static final ItemBuilder LOAD_KIT = new ItemBuilder(Material.ENCHANTED_BOOK);
+    public static final ItemBuilder TEAMFIGHT = new ItemBuilder(Material.ITEM_FRAME)
+            .name(CC.SECONDARY + CC.B + "Team Fights");
+    public static final ItemBuilder BOT_SETTINGS = new ItemBuilder(Material.GOLD_HELMET)
+            .name(CC.SECONDARY + CC.B + "Bot Settings");
+    public static final ItemBuilder PREMADE_DIFFICULTY = new ItemBuilder(Material.PAPER)
+            .name(CC.SECONDARY + CC.B + "Premade Difficulty");
+    public static final ItemBuilder CLICK_TO_APPLY_CHANGES = new ItemBuilder(Material.STONE_SWORD)
+            .lore(CC.ACCENT + "Click To Apply Changes");
+    public static final ItemBuilder INVENTORY_STATS = new ItemBuilder(Material.ENDER_CHEST);
+    public static final ItemBuilder SELECT_KIT = new ItemBuilder(Material.DIAMOND_CHESTPLATE)
+            .name(CC.SECONDARY + CC.B + "Select Kit");
+    public static final ItemBuilder CHANGE_KNOCKBACK = new ItemBuilder(Material.STICK)
+            .name(CC.SECONDARY + CC.B + "Change Knockback");
+    public static final ItemBuilder HIT_DELAY = new ItemBuilder(Material.WATCH)
+            .name(CC.SECONDARY + CC.B + "Hit Delay");
+    public static final ItemBuilder TOGGLE_HUNGER = new ItemBuilder(Material.COOKED_BEEF)
+            .name(CC.SECONDARY + CC.B + "Toggle Hunger");
+    public static final ItemBuilder DEADLY_WATER = new ItemBuilder(Material.BLAZE_ROD)
+            .name(CC.SECONDARY + CC.B + "Deadly Water");
+    public static final ItemBuilder TOGGLE_BUILD = new ItemBuilder(Material.BRICK)
+            .name(CC.SECONDARY + CC.B + "Toggle Build");
+    public static final ItemBuilder TOGGLE_DAMAGE = new ItemBuilder(Material.DIAMOND_AXE)
+            .name(CC.SECONDARY + CC.B + "Toggle Damage");
+    public static final ItemBuilder TOGGLE_GRIEFING = new ItemBuilder(Material.TNT)
+            .name(CC.SECONDARY + CC.B + "Toggle Griefing");
+    public static final ItemBuilder PEARL_COOLDOWN = new ItemBuilder(Material.ENDER_PEARL)
+            .name(CC.SECONDARY + CC.B + "Pearl Cooldown");
+    public static final ItemBuilder ARENA = new ItemBuilder(Material.WATER_LILY)
+            .name(CC.SECONDARY + CC.B + "Arena Selection");
+    public static final ItemBuilder OLD_COMBAT = new ItemBuilder(Material.STONE_SWORD)
+            .name(CC.SECONDARY + CC.B + "Old Combat Mechanics");
+    public static final ItemBuilder REGENERATION = new ItemBuilder(Material.GOLDEN_APPLE)
+            .name(CC.SECONDARY + CC.B + "Regeneration");
+    public static final ItemBuilder BOXING = new ItemBuilder(Material.IRON_CHESTPLATE)
+            .name(CC.SECONDARY + CC.B + "Boxing");
+    public static final ItemBuilder OTHER_PARTY = new ItemBuilder(Material.SKULL_ITEM).lore(CC.ACCENT + "Click to duel.");
+    public static final ItemBuilder CHOOSE_EXISTING_KNOCKBACK = new ItemBuilder(Material.PAPER)
+            .name(CC.SECONDARY + CC.B + "Choose Existing Knockback");
+    public static final ItemBuilder HEALTH_POTIONS_LEFT = new ItemBuilder(new ItemStack(Material.POTION, 1, (short) 16421))
+            .name(CC.SECONDARY + CC.B + "Health Potions Left");
+    public static final ItemBuilder SOUP_LEFT = new ItemBuilder(Material.MUSHROOM_SOUP).name(CC.SECONDARY + CC.B + "Soup Left");
+    public static final ItemBuilder BOT_QUEUE_ENABLED_TEAM = new ItemBuilder(
+            new ItemStack(351, 1, DyeColor.LIGHT_BLUE.getDyeData()))
+            .name(CC.SECONDARY + CC.B + "Team Bot Queue");
+    public static final ItemBuilder HEALTH = new ItemBuilder(new ItemStack(Material.POTION, (short) 8193));
+    public static final ItemBuilder HITS = new ItemBuilder(Material.BLAZE_ROD);
+    public static final ItemBuilder CLICKS = new ItemBuilder(Material.GHAST_TEAR);
+    public static final ItemBuilder POTION_EFFECTS = new ItemBuilder(Material.BLAZE_POWDER)
+            .name(CC.SECONDARY + CC.B + "Potion Effects");
+    public static final ItemBuilder FRICTION = new ItemBuilder(Material.SOUL_SAND).lore("Click to change value.");
+    public static final ItemBuilder HORIZONTAL = new ItemBuilder(Material.DIODE).lore("Click to change value.");
+    public static final ItemBuilder EXTRA_HORIZONTAL = new ItemBuilder(Material.REDSTONE_COMPARATOR).lore("Click to change value.");
+    public static final ItemBuilder VERTICAL = new ItemBuilder(Material.ARROW).lore("Click to change value.");
+    public static final ItemBuilder EXTRA_VERTICAL = new ItemBuilder(Material.BLAZE_ROD).lore("Click to change value.");
+    public static final ItemBuilder VERTICAL_LIMIT = new ItemBuilder(Material.BEDROCK).lore("Click to change value.");
+    public static final ItemBuilder AIM_SPEED = new ItemBuilder(Material.ICE).lore("Click to change value.");
+    public static final ItemBuilder AIM_ACCURACY = new ItemBuilder(Material.ARROW).lore("Click to change value.");
+    public static final ItemBuilder AIM_ERRATICNESS = new ItemBuilder(Material.LEVER).lore("Click to change value.");
+    public static final ItemBuilder AIM_REACTION_TIME = new ItemBuilder(Material.EMERALD).lore("Click to change value.");
+    public static final ItemBuilder BOW_AIMING_RADIUS = new ItemBuilder(Material.MAP).lore("Click to change value.");
+    public static final ItemBuilder REACH = new ItemBuilder(Material.DIAMOND_SWORD).lore("Click to change value.");
+    public static final ItemBuilder SPRINT_RESET_ACCURACY = new ItemBuilder(Material.DIAMOND_BOOTS).lore("Click to change value.");
+    public static final ItemBuilder HIT_SELECT_ACCURACY = new ItemBuilder(Material.IRON_SWORD).lore("Click to change value.");
+    public static final ItemBuilder DISTANCING_MINIMUM = new ItemBuilder(Material.GOLD_RECORD).lore("Click to change value.");
+    public static final ItemBuilder DISTANCING_MAXIMUM = new ItemBuilder(Material.GREEN_RECORD).lore("Click to change value.");
+    public static final ItemBuilder CPS = new ItemBuilder(Material.SUGAR).lore("Click to change value.");
+    public static final ItemBuilder PING = new ItemBuilder(Material.REDSTONE).lore("Click to change value.");
+    public static final ItemBuilder PING_DEVIATION = new ItemBuilder(Material.GLOWSTONE_DUST).lore("Click to change value.");
+    public static final ItemBuilder ARENA_DISABLED = new ItemBuilder(new ItemStack(351, 1, (short) 1))
+            .lore(CC.RED + "Click to enable arena.");
+    public static final ItemBuilder SUBTRACT_1 = new ItemBuilder(new ItemStack(Material.WOOL, 1, DyeColor.RED.getData()))
+            .lore("Click to change value.");
+    public static final ItemBuilder ADD_1 = new ItemBuilder(new ItemStack(Material.WOOL, 1, DyeColor.GREEN.getData()))
+            .lore("Click to change value.");
+    public static final ItemBuilder GLOBAL_ELO = new ItemBuilder(Material.ENDER_PORTAL_FRAME);
+    public static final ItemBuilder TOGGLE_PLAYER_VISIBILITY = new ItemBuilder(Material.GOLDEN_CARROT)
+            .name(CC.SECONDARY + CC.B + "Toggle Player Visibility");
+    public static final ItemBuilder TOGGLE_DUEL_REQUESTS = new ItemBuilder(Material.WOOD_SWORD)
+            .name(CC.SECONDARY + CC.B + "Toggle Duel Requests");
+    public static final ItemBuilder TOGGLE_PARTY_REQUESTS = new ItemBuilder(Material.NETHER_STAR)
+            .name(CC.SECONDARY + CC.B + "Toggle Party Requests");
+    public static final ItemBuilder TOGGLE_SCOREBOARD = new ItemBuilder(Material.ITEM_FRAME)
+            .name(CC.SECONDARY + CC.B + "Toggle Scoreboard");
+    public static final ItemBuilder TOGGLE_PRIVATE_MESSAGES = new ItemBuilder(Material.BOOK_AND_QUILL)
+            .name(CC.SECONDARY + CC.B + "Toggle Private Messages");
+    public static final ItemBuilder TOGGLE_PRIVATE_MESSAGES_SOUNDS = new ItemBuilder(Material.NOTE_BLOCK)
+            .name(CC.SECONDARY + CC.B + "Toggle Private Message Sounds");
+    public static final ItemBuilder TOGGLE_FRIENDS_SOUNDS = new ItemBuilder(Material.JUKEBOX)
+            .name(CC.SECONDARY + CC.B + "Toggle Friend Sounds");
+    public static final ItemBuilder TOGGLE_FRIEND_REQUESTS = new ItemBuilder(Material.CAKE)
+            .name(CC.SECONDARY + CC.B + "Toggle Friend Requests");
+    public static final ItemBuilder TOGGLE_GLOBAL_CHAT = new ItemBuilder(Material.FEATHER)
+            .name(CC.SECONDARY + CC.B + "Toggle Global Chat");
+    public static final ItemBuilder NEXT_PAGE = new ItemBuilder(new ItemStack(Material.WOOL, 1, DyeColor.LIME.getData()))
+            .name(CC.SECONDARY + CC.B + "Next Page");
+    public static final ItemBuilder PREVIOUS_PAGE = new ItemBuilder(new ItemStack(Material.WOOL, 1, DyeColor.RED.getData()))
+            .name(CC.SECONDARY + CC.B + "Previous Page");
+    public static final ItemBuilder CHANGE_TIME = new ItemBuilder(Material.WATCH).name(CC.SECONDARY + CC.B + "Change Time");
 }

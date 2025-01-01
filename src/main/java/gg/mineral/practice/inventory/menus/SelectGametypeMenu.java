@@ -7,6 +7,7 @@ import gg.mineral.practice.entity.PlayerStatus;
 import gg.mineral.practice.gametype.Gametype;
 import gg.mineral.practice.inventory.ClickCancelled;
 import gg.mineral.practice.inventory.Interaction;
+import gg.mineral.practice.inventory.Menu;
 import gg.mineral.practice.inventory.PracticeMenu;
 import gg.mineral.practice.managers.MatchManager;
 import gg.mineral.practice.queue.QueueSettings;
@@ -30,7 +31,7 @@ import java.util.function.Consumer;
 @NoArgsConstructor(access = lombok.AccessLevel.PROTECTED)
 public class SelectGametypeMenu extends PracticeMenu {
 
-    protected final static Int2ObjectOpenHashMap<String> teamSizeColors = new Int2ObjectOpenHashMap<String>() {
+    protected final static Int2ObjectOpenHashMap<String> teamSizeColors = new Int2ObjectOpenHashMap<>() {
         {
             put(1, CC.RED + "1v1");
             put(2, CC.GREEN + "2v2");
@@ -43,55 +44,6 @@ public class SelectGametypeMenu extends PracticeMenu {
         }
     };
 
-    public enum Type {
-        QUEUE, KIT_EDITOR, UNRANKED
-    }
-
-    protected Queuetype queuetype;
-    protected Type type;
-    protected Object2IntLinkedOpenHashMap<QueuetypeMenuEntry> menuEntries;
-
-    public SelectGametypeMenu(Queuetype queuetype, Type type) {
-        this.queuetype = queuetype;
-        this.type = type;
-        this.menuEntries = setMenuEntries();
-    }
-
-    protected Object2IntLinkedOpenHashMap<QueuetypeMenuEntry> setMenuEntries() {
-        return queuetype.getMenuEntries();
-    }
-
-    public void queue(Gametype gametype, Interaction interact) {
-
-        val viewer = interact.getProfile();
-        val queueEntry = QueueSystem.getQueueEntry(viewer, queuetype, gametype);
-
-        if (queueEntry != null) {
-            viewer.removeFromQueue(queuetype, gametype);
-            return;
-        }
-
-        Consumer<Interaction> queueInteraction = interaction -> {
-            viewer.addPlayerToQueue(queuetype, gametype);
-
-            if (!(viewer.getOpenMenu() instanceof SelectGametypeMenu)
-                    && viewer.getPlayerStatus() == PlayerStatus.QUEUEING)
-                viewer.openMenu(new SelectGametypeMenu(queuetype, type));
-        };
-
-        val queueSettings = viewer.getQueueSettings();
-        val botQueue = queuetype.isBotsEnabled() && type == Type.UNRANKED && queueSettings.isBotQueue();
-        if (botQueue && !gametype.isBotsEnabled()) {
-            viewer.message(ErrorMessages.COMING_SOON);
-            return;
-        }
-
-        if (viewer.getQueueSettings().isArenaSelection())
-            viewer.openMenu(new QueueArenaEnableMenu(queuetype, gametype, queueInteraction));
-        else
-            queueInteraction.accept(interact);
-    }
-
     protected static final Consumer<Interaction> TEAM_SIZE_INTERACTION = interaction -> {
         val viewer = interaction.getProfile();
         val queueSettings = viewer.getQueueSettings();
@@ -102,7 +54,6 @@ public class SelectGametypeMenu extends PracticeMenu {
         if (menu != null)
             menu.reload();
     };
-
     protected static final Consumer<Interaction> DIFFICULTY_INTERACTION = interaction -> {
 
         val p = interaction.getProfile();
@@ -151,7 +102,6 @@ public class SelectGametypeMenu extends PracticeMenu {
         if (menu != null)
             menu.reload();
     };
-
     protected static final Consumer<Interaction> BOT_QUEUE_INTERACTION = interaction -> {
         val viewer = interaction.getProfile();
         val queueSettings = viewer.getQueueSettings();
@@ -171,11 +121,10 @@ public class SelectGametypeMenu extends PracticeMenu {
             if (menu instanceof SelectCategorizedGametypeMenu selectCategorizedGametypeMenu && botQueue
                     && !selectCategorizedGametypeMenu.category.isBotsEnabled())
                 viewer.openMenu(new SelectGametypeMenu(selectCategorizedGametypeMenu.queuetype,
-                        selectCategorizedGametypeMenu.type));
+                        selectCategorizedGametypeMenu.type, selectCategorizedGametypeMenu.prevMenu));
             else
                 menu.reload();
     };
-
     protected static final Consumer<Interaction> ARENA_INTERACTION = interaction -> {
         val viewer = interaction.getProfile();
         val queueSettings = viewer.getQueueSettings();
@@ -186,8 +135,72 @@ public class SelectGametypeMenu extends PracticeMenu {
         if (menu != null)
             menu.reload();
     };
+    protected Menu prevMenu;
+    protected Queuetype queuetype;
+    protected Type type;
+    protected Object2IntLinkedOpenHashMap<QueuetypeMenuEntry> menuEntries;
+
+    public SelectGametypeMenu(Queuetype queuetype, Type type, Menu prevMenu) {
+        this.queuetype = queuetype;
+        this.type = type;
+        this.menuEntries = setMenuEntries();
+        this.prevMenu = prevMenu;
+    }
+
+
+    protected Object2IntLinkedOpenHashMap<QueuetypeMenuEntry> setMenuEntries() {
+        return queuetype.getMenuEntries();
+    }
+
+    public void queue(Gametype gametype, Interaction interact) {
+
+        val viewer = interact.getProfile();
+        val queueEntry = QueueSystem.getQueueEntry(viewer, queuetype, gametype);
+
+        if (queueEntry != null) {
+            viewer.removeFromQueue(queuetype, gametype);
+            return;
+        }
+
+        Consumer<Interaction> queueInteraction = interaction -> {
+            viewer.addPlayerToQueue(queuetype, gametype);
+
+            if (!(viewer.getOpenMenu() instanceof SelectGametypeMenu)
+                    && viewer.getPlayerStatus() == PlayerStatus.QUEUEING)
+                viewer.openMenu(new SelectGametypeMenu(queuetype, type, this.prevMenu));
+        };
+
+        val queueSettings = viewer.getQueueSettings();
+        val botQueue = queuetype.isBotsEnabled() && type == Type.UNRANKED && queueSettings.isBotQueue();
+        if (botQueue && !gametype.isBotsEnabled()) {
+            viewer.message(ErrorMessages.COMING_SOON);
+            return;
+        }
+
+        if (viewer.getQueueSettings().isArenaSelection())
+            viewer.openMenu(new QueueArenaEnableMenu(queuetype, gametype, queueInteraction));
+        else
+            queueInteraction.accept(interact);
+    }
 
     protected void addSurroundingButtons(QueueSettings queueSettings, boolean botQueue) {
+        if (type != Type.UNRANKED && type != Type.QUEUE)
+            return;
+
+        boolean oldCombat = queueSettings.isOldCombat();
+
+        setSlot(type == Type.UNRANKED ? 49 : 40,
+                ItemStacks.OLD_COMBAT.name(CC.SECONDARY + CC.B + "Old Combat Mechanics").lore(
+                        CC.WHITE + "Play using " + CC.SECONDARY + "old combat" + CC.WHITE
+                                + " seen on servers from 2015-2017.",
+                        " ",
+                        CC.WHITE + "Currently:", oldCombat ? CC.GREEN + "Enabled" : CC.RED + "Disabled", " ",
+                        CC.BOARD_SEPARATOR, CC.ACCENT + "Click to toggle old combat.").build(),
+                interaction -> {
+                    interaction.getProfile().getQueueSettings().setOldCombat(!oldCombat);
+                    reload();
+                });
+
         if (type != Type.UNRANKED)
             return;
 
@@ -316,19 +329,9 @@ public class SelectGametypeMenu extends PracticeMenu {
 
         addSurroundingButtons(queueSettings, botQueue);
 
-        boolean oldCombat = queueSettings.isOldCombat();
-
-        setSlot(49,
-                ItemStacks.OLD_COMBAT.lore(
-                        CC.WHITE + "Play using " + CC.SECONDARY + "old combat" + CC.WHITE
-                                + " seen on servers from 2015-2017.",
-                        " ",
-                        CC.WHITE + "Currently:", oldCombat ? CC.GREEN + "Enabled" : CC.RED + "Disabled", " ",
-                        CC.BOARD_SEPARATOR, CC.ACCENT + "Click to toggle old combat.").build(),
-                interaction -> {
-                    interaction.getProfile().getQueueSettings().setOldCombat(!oldCombat);
-                    reload();
-                });
+        if (prevMenu != null)
+            setSlot(type == Type.UNRANKED ? 45 : 40,
+                    ItemStacks.BACK, interaction -> viewer.openMenu(prevMenu));
 
         int offset = 0;
 
@@ -373,7 +376,7 @@ public class SelectGametypeMenu extends PracticeMenu {
 
                 val item = itemBuild.build();
 
-                setSlot(entry.getIntValue() + 18 - offset, item,
+                setSlot(entry.getIntValue() + (type == Type.UNRANKED ? 18 : 9) - offset, item,
                         interaction -> {
 
                             if (type == Type.KIT_EDITOR) {
@@ -406,7 +409,7 @@ public class SelectGametypeMenu extends PracticeMenu {
 
                 itemBuild.lore(sb.toArray(new String[0]));
                 val item = itemBuild.build();
-                setSlot(entry.getIntValue() + 18 - offset, item,
+                setSlot(entry.getIntValue() + (type == Type.UNRANKED ? 18 : 9) - offset, item,
                         interaction -> interaction.getProfile()
                                 .openMenu(new SelectCategorizedGametypeMenu(queuetype, category, type)));
             }
@@ -421,5 +424,9 @@ public class SelectGametypeMenu extends PracticeMenu {
     @Override
     public boolean shouldUpdate() {
         return true;
+    }
+
+    public enum Type {
+        QUEUE, KIT_EDITOR, UNRANKED
     }
 }

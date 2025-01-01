@@ -11,28 +11,28 @@ import lombok.val;
 @ClickCancelled(true)
 @RequiredArgsConstructor
 public class SelectModeMenu extends PracticeMenu {
-	private final SubmitAction action;
+    private final SubmitAction action;
 
-	@Override
-	public void update() {
+    @Override
+    public void update() {
 
-		setSlot(2, ItemStacks.SIMPLE_MODE, interaction -> {
-			val p = interaction.getProfile();
-			p.resetQueueSettings();
-			p.openMenu(new SelectExistingKitMenu(new SelectArenaMenu(action), true));
-		});
+        setSlot(2, ItemStacks.SIMPLE_MODE, interaction -> {
+            val p = interaction.getProfile();
+            p.resetDuelSettings();
+            p.openMenu(new SelectExistingKitMenu(new SelectArenaMenu(this, this, action), this, true));
+        });
 
-		setSlot(6, ItemStacks.ADVANCED_MODE,
-				interaction -> interaction.getProfile().openMenu(new MechanicsMenu(action)));
-	}
+        setSlot(6, ItemStacks.ADVANCED_MODE,
+                interaction -> interaction.getProfile().openMenu(new MechanicsMenu(this, action)));
+    }
 
-	@Override
-	public String getTitle() {
-		return CC.BLUE + "Select Mode";
-	}
+    @Override
+    public String getTitle() {
+        return CC.BLUE + "Select Mode";
+    }
 
-	@Override
-	public boolean shouldUpdate() {
-		return true;
-	}
+    @Override
+    public boolean shouldUpdate() {
+        return true;
+    }
 }

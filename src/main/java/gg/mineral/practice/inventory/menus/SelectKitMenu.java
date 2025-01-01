@@ -14,14 +14,17 @@ public class SelectKitMenu extends PracticeMenu {
 
     @Override
     public void update() {
-        setSlot(2, ItemStacks.CHOOSE_EXISTING_KIT,
-                interaction -> interaction.getProfile().openMenu(new SelectExistingKitMenu(menu, false)));
+        setSlot(11, ItemStacks.CHOOSE_EXISTING_KIT,
+                interaction -> interaction.getProfile().openMenu(new SelectExistingKitMenu(menu,menu, false)));
 
-        setSlot(6, ItemStacks.CHOOSE_CUSTOM_KIT, interaction -> {
+        setSlot(15, ItemStacks.CHOOSE_CUSTOM_KIT, interaction -> {
             val viewer = interaction.getProfile();
             viewer.getPlayer().closeInventory();
             viewer.sendToKitCreator(menu.getSubmitAction());
         });
+
+        if (menu != null)
+            setSlot(31, ItemStacks.BACK, interaction -> interaction.getProfile().openMenu(menu));
     }
 
     @Override
