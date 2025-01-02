@@ -28,7 +28,7 @@ public class Tournament {
     MatchData matchData;
     int round = 1;
     @Getter
-    String host;
+    private final String host;
 
     public Tournament(Profile p) {
         this.matchData = new MatchData(p.getDuelSettings());

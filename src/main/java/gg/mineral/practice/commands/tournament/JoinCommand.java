@@ -46,7 +46,7 @@ public class JoinCommand extends PlayerCommand {
         if (event != null)
             event.addPlayer(profile);
 
-        val tournament = TournamentManager.getTournamentByName(args[0]);
+        val tournament = TournamentManager.getTournament(args[0]);
 
         if (tournament != null)
             tournament.addPlayer(profile);

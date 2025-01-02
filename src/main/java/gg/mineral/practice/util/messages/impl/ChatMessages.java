@@ -10,302 +10,288 @@ import net.md_5.bungee.api.chat.HoverEvent;
 public class ChatMessages {
     // Value Set
     public static final ChatMessage ARENA_CREATED = new ChatMessage("The %arena% arena has been created.", CC.YELLOW)
-            .highlightText(CC.GOLD, "%arena%"),
-            ARENA_SPAWN_SET = new ChatMessage(
-                    "The spawn location for the %arena% arena has been set to your location.", CC.YELLOW)
-                    .highlightText(CC.GOLD, "%arena%", "your location"),
-            ARENA_DISPLAY_SET = new ChatMessage(
-                    "The display item for the %arena% arena has been set to the item in your hand.", CC.YELLOW)
-                    .highlightText(CC.GOLD, "%arena%", "the item in your hand"),
-            ARENA_DELETED = new ChatMessage("The %arena% arena has been deleted.", CC.YELLOW)
-                    .highlightText(CC.GOLD, "%arena%"),
-            CATEGORY_CREATED = new ChatMessage("The %category% category has been created.",
-                    CC.YELLOW)
-                    .highlightText(CC.GOLD, "%category%"),
-            CATEGORY_DISPLAY_SET = new ChatMessage(
-                    "The display item for the %category% category has been set to the item in your hand.", CC.YELLOW)
-                    .highlightText(CC.GOLD, "%category%", "the item in your hand"),
-            CATEGORY_SLOT = new ChatMessage(
-                    "The slot in the queue for the %category% category has been set to %slot%.", CC.YELLOW)
-                    .highlightText(CC.GOLD, "%category%", "%slot%"),
-            CATEGORY_ADDED = new ChatMessage(
-                    "The %gametype% gametype has been added to the %category% category.", CC.YELLOW)
-                    .highlightText(CC.GOLD, "%category%", "%gametype%"),
-            CATEGORY_REMOVED = new ChatMessage(
-                    "The %gametype% gametype has been removed from the %category% category.", CC.YELLOW)
-                    .highlightText(CC.GOLD, "%category%", "%gametype%"),
-            CATEGORY_DELETED = new ChatMessage("The %category% category has been deleted.",
-                    CC.YELLOW)
-                    .highlightText(CC.GOLD, "%category%"),
-            GAMETYPE_CREATED = new ChatMessage("The %gametype% gametype has been created.",
-                    CC.YELLOW)
-                    .highlightText(CC.GOLD, "%gametype%"),
-            GAMETYPE_DISPLAY_SET = new ChatMessage(
-                    "The display item for the %gametype% gametype has been set to the item in your hand.", CC.YELLOW)
-                    .highlightText(CC.GOLD, "%gametype%", "the item in your hand"),
-            GAMETYPE_DAMAGE_TICKS_SET = new ChatMessage(
-                    "The hit delay for the %gametype% gametype has been set to the %delay%.", CC.YELLOW)
-                    .highlightText(CC.GOLD, "%gametype%", "%delay%"),
-            GAMETYPE_REGEN_SET = new ChatMessage(
-                    "Regeneration for the %gametype% gametype has been set to %toggled%.", CC.YELLOW)
-                    .highlightText(CC.GOLD, "%gametype%", "%toggled%"),
-            GAMETYPE_BOTS_SET = new ChatMessage(
-                    "Bots for the %gametype% gametype has been set to %toggled%.", CC.YELLOW)
-                    .highlightText(CC.GOLD, "%gametype%", "%toggled%"),
-            GAMETYPE_GRIEFING_SET = new ChatMessage(
-                    "Griefing for the %gametype% gametype has been set to %toggled%.", CC.YELLOW)
-                    .highlightText(CC.GOLD, "%gametype%", "%toggled%"),
-            GAMETYPE_BUILD_SET = new ChatMessage(
-                    "Build for the %gametype% gametype has been set to %toggled%.", CC.YELLOW)
-                    .highlightText(CC.GOLD, "%gametype%", "%toggled%"),
-            GAMETYPE_DEADLY_WATER_SET = new ChatMessage(
-                    "Deadly water for the %gametype% gametype has been set to %toggled%.", CC.YELLOW)
-                    .highlightText(CC.GOLD, "%gametype%", "%toggled%"),
-            GAMETYPE_LOOTING_SET = new ChatMessage(
-                    "Looting for the %gametype% gametype has been set to %toggled%.", CC.YELLOW)
-                    .highlightText(CC.GOLD, "%gametype%", "%toggled%"),
-            GAMETYPE_DAMAGE_SET = new ChatMessage(
-                    "Damage for the %gametype% gametype has been set to %toggled%.", CC.YELLOW)
-                    .highlightText(CC.GOLD, "%gametype%", "%toggled%"),
-            GAMETYPE_HUNGER_SET = new ChatMessage(
-                    "Hunger for the %gametype% gametype has been set to %toggled%.", CC.YELLOW)
-                    .highlightText(CC.GOLD, "%gametype%", "%toggled%"),
-            GAMETYPE_BOXING_SET = new ChatMessage(
-                    "Boxing for the %gametype% gametype has been set to %toggled%.", CC.YELLOW)
-                    .highlightText(CC.GOLD, "%gametype%", "%toggled%"),
-            GAMETYPE_EVENT_SET = new ChatMessage(
-                    "Event mode for the %gametype% gametype has been set to %toggled%.", CC.YELLOW)
-                    .highlightText(CC.GOLD, "%gametype%", "%toggled%"),
-            GAMETYPE_LOADED_KIT = new ChatMessage(
-                    "You have been given the kit for the %gametype% gametype.", CC.YELLOW)
-                    .highlightText(CC.GOLD, "%gametype%"),
-            GAMETYPE_KIT_SET = new ChatMessage(
-                    "The kit for the %gametype% gametype has been set to your inventory contents.", CC.YELLOW)
-                    .highlightText(CC.GOLD, "%gametype%", "your inventory contents"),
-            GAMETYPE_SLOT_SET = new ChatMessage(
-                    "The slot for the %gametype% gametype has been set to %slot% for the %queuetype% queue.", CC.YELLOW)
-                    .highlightText(CC.GOLD, "%gametype%", "%queuetype%", "%slot%"),
-            GAMETYPE_PEARL_COOLDOWN_SET = new ChatMessage(
-                    "The pearl cooldown for the %gametype% gametype has been set to %cooldown%.", CC.YELLOW)
-                    .highlightText(CC.GOLD, "%gametype%", "%cooldown%"),
-            GAMETYPE_ARENA_SET = new ChatMessage(
-                    "The %arena% arena has been set to %toggled% for the %gametype% gametype.", CC.YELLOW)
-                    .highlightText(CC.GOLD, "%gametype%", "%toggled%", "%arena%"),
-            GAMETYPE_EVENT_ARENA_SET = new ChatMessage(
-                    "The event arena for the %gametype% gametype has been set to the %arena% arena.", CC.YELLOW)
-                    .highlightText(CC.GOLD, "%gametype%", "%arena%"),
-            GAMETYPE_ARENA_FOR_ALL_SET = new ChatMessage(
-                    "The %arena% arena has been set to %toggled% for all gametypes.", CC.YELLOW)
-                    .highlightText(CC.GOLD, "%gametype%", "%toggled%"),
-            GAMETYPE_DELETED = new ChatMessage("The %gametype% gametype has been deleted.",
-                    CC.YELLOW)
-                    .highlightText(CC.GOLD, "%gametype%"),
-            KIT_EDITOR_ENABLED = new ChatMessage("The kit editor has been set to %toggled%.",
-                    CC.YELLOW)
-                    .highlightText(CC.GOLD, "%toggled%"),
-            KIT_EDITOR_DISPLAY_SET = new ChatMessage(
-                    "The kit editor display item has been set to the item in your hand.",
-                    CC.YELLOW)
-                    .highlightText(CC.GOLD, "the item in your hand"),
-            KIT_EDITOR_SLOT_SET = new ChatMessage(
-                    "The kit editor slot has been set to the %slot% slot.",
-                    CC.YELLOW)
-                    .highlightText(CC.GOLD, "%slot%"),
-            KIT_EDITOR_LOCATION_SET = new ChatMessage(
-                    "The kit editor location has been set to your location.",
-                    CC.YELLOW)
-                    .highlightText(CC.GOLD, "your location"),
-            SPAWN_SET = new ChatMessage(
-                    "The spawn location for the server has been set to your location.", CC.YELLOW)
-                    .highlightText(CC.GOLD, "the server", "your location"),
-            PARTIES_ENABLED = new ChatMessage("The parties feature has been set to %toggled%.",
-                    CC.YELLOW)
-                    .highlightText(CC.GOLD, "%toggled%"),
-            PARTIES_DISPLAY_SET = new ChatMessage(
-                    "The parties display item has been set to the item in your hand.",
-                    CC.YELLOW)
-                    .highlightText(CC.GOLD, "the item in your hand"),
-            PARTIES_SLOT_SET = new ChatMessage(
-                    "The parties slot has been set to the %slot% slot.",
-                    CC.YELLOW)
-                    .highlightText(CC.GOLD, "%slot%"),
-            QUEUETYPE_CREATED = new ChatMessage("The %queuetype% queuetype has been created.",
-                    CC.YELLOW)
-                    .highlightText(CC.GOLD, "%queuetype%"),
-            QUEUETYPE_DISPLAY_SET = new ChatMessage(
-                    "The display item for the %queuetype% queuetype has been set to the item in your hand.", CC.YELLOW)
-                    .highlightText(CC.GOLD, "%queuetype%", "the item in your hand"),
-            QUEUETYPE_RANKED_SET = new ChatMessage(
-                    "Ranked for the %queuetype% queuetype has been set to the %toggled%.", CC.YELLOW)
-                    .highlightText(CC.GOLD, "%queuetype%", "%toggled%"),
-            QUEUETYPE_COMMUNITY_SET = new ChatMessage(
-                    "Community for the %queuetype% queuetype has been set to the %toggled%.", CC.YELLOW)
-                    .highlightText(CC.GOLD, "%queuetype%", "%toggled%"),
-            QUEUETYPE_UNRANKED_SET = new ChatMessage(
-                    "Unranked for the %queuetype% queuetype has been set to the %toggled%.", CC.YELLOW)
-                    .highlightText(CC.GOLD, "%queuetype%", "%toggled%"),
-            QUEUETYPE_BOTS_SET = new ChatMessage(
-                    "Bots for the %queuetype% queuetype has been set to the %toggled%.", CC.YELLOW)
-                    .highlightText(CC.GOLD, "%queuetype%", "%toggled%"),
-            QUEUETYPE_SLOT_SET = new ChatMessage(
-                    "The slot for the %queuetype% queuetype has been set to the %slot% slot.",
-                    CC.YELLOW)
-                    .highlightText(CC.GOLD, "%queuetype%", "%slot%"),
-            QUEUETYPE_KB_SET = new ChatMessage(
-                    "The knockback for the %queuetype% queuetype has been set to the %knockback% profile", CC.YELLOW)
-                    .highlightText(CC.GOLD, "%queuetype%", "%knockback%"),
-            QUEUETYPE_ARENA_SET = new ChatMessage(
-                    "The %arena% arena has been set to %toggled% for the %queuetype% queuetype.", CC.YELLOW)
-                    .highlightText(CC.GOLD, "%queuetype%", "%toggled%", "%arena%"),
-            QUEUETYPE_DELETED = new ChatMessage("The %queuetype% queuetype has been deleted.",
-                    CC.YELLOW)
-                    .highlightText(CC.GOLD, "%queuetype%"),
-            SETTINGS_ENABLED = new ChatMessage("The settings has been set to %toggled%.",
-                    CC.YELLOW)
-                    .highlightText(CC.GOLD, "%toggled%"),
-            SETTINGS_DISPLAY_SET = new ChatMessage(
-                    "The settings display item has been set to the item in your hand.",
-                    CC.YELLOW)
-                    .highlightText(CC.GOLD, "the item in your hand"),
-            SETTINGS_SLOT_SET = new ChatMessage(
-                    "The settings slot has been set to the %slot% slot.",
-                    CC.YELLOW)
-                    .highlightText(CC.GOLD, "%slot%"),
-            SPECTATE_ENABLED = new ChatMessage("The spectator item has been set to %toggled%.",
-                    CC.YELLOW)
-                    .highlightText(CC.GOLD, "%toggled%"),
-            SPECTATE_DISPLAY_SET = new ChatMessage(
-                    "The spectate display item has been set to the item in your hand.",
-                    CC.YELLOW)
-                    .highlightText(CC.GOLD, "the item in your hand"),
-            SPECTATE_SLOT_SET = new ChatMessage(
-                    "The spectate slot has been set to the %slot% slot.",
-                    CC.YELLOW)
-                    .highlightText(CC.GOLD, "%slot%"),
-            LEADERBOARD_ENABLED = new ChatMessage("The leaderboard item has been set to %toggled%.",
-                    CC.YELLOW)
-                    .highlightText(CC.GOLD, "%toggled%"),
-            LEADERBOARD_DISPLAY_SET = new ChatMessage(
-                    "The leaderboard display item has been set to the item in your hand.",
-                    CC.YELLOW)
-                    .highlightText(CC.GOLD, "the item in your hand"),
-            LEADERBOARD_SLOT_SET = new ChatMessage(
-                    "The leaderboard slot has been set to the %slot% slot.",
-                    CC.YELLOW)
-                    .highlightText(CC.GOLD, "%slot%"),
-            PARTY_CREATED = new ChatMessage("You have created a new party.",
-                    CC.YELLOW)
-                    .highlightText(CC.GOLD, "party"),
-            PARTY_OPENED = new ChatMessage(
-                    "Your party has been %opened%.",
-                    CC.YELLOW)
-                    .highlightText(CC.GOLD, "%opened%"),
-            DUEL_REQUESTS_TOGGLED = new ChatMessage(
-                    "Your duel requests has now been %toggled%.",
-                    CC.YELLOW).highlightText(CC.GOLD, "%toggled%"),
-            PARTY_REQUESTS_TOGGLED = new ChatMessage(
-                    "Your party requests has now been %toggled%.",
-                    CC.YELLOW).highlightText(CC.GOLD, "%toggled%"),
-            SCOREBOARD_TOGGLED = new ChatMessage(
-                    "Your scoreboard has now been %toggled%.",
-                    CC.YELLOW).highlightText(CC.GOLD, "%toggled%"),
+            .highlightText(CC.GOLD, "%arena%");
+    public static final ChatMessage ARENA_SPAWN_SET = new ChatMessage(
+            "The spawn location for the %arena% arena has been set to your location.", CC.YELLOW)
+            .highlightText(CC.GOLD, "%arena%", "your location");
+    public static final ChatMessage ARENA_DISPLAY_SET = new ChatMessage(
+            "The display item for the %arena% arena has been set to the item in your hand.", CC.YELLOW)
+            .highlightText(CC.GOLD, "%arena%", "the item in your hand");
+    public static final ChatMessage ARENA_DELETED = new ChatMessage("The %arena% arena has been deleted.", CC.YELLOW)
+            .highlightText(CC.GOLD, "%arena%");
+    public static final ChatMessage CATEGORY_CREATED = new ChatMessage("The %category% category has been created.",
+            CC.YELLOW)
+            .highlightText(CC.GOLD, "%category%");
+    public static final ChatMessage CATEGORY_DISPLAY_SET = new ChatMessage(
+            "The display item for the %category% category has been set to the item in your hand.", CC.YELLOW)
+            .highlightText(CC.GOLD, "%category%", "the item in your hand");
+    public static final ChatMessage CATEGORY_SLOT = new ChatMessage(
+            "The slot in the queue for the %category% category has been set to %slot%.", CC.YELLOW)
+            .highlightText(CC.GOLD, "%category%", "%slot%");
+    public static final ChatMessage CATEGORY_ADDED = new ChatMessage(
+            "The %gametype% gametype has been added to the %category% category.", CC.YELLOW)
+            .highlightText(CC.GOLD, "%category%", "%gametype%");
+    public static final ChatMessage CATEGORY_REMOVED = new ChatMessage(
+            "The %gametype% gametype has been removed from the %category% category.", CC.YELLOW)
+            .highlightText(CC.GOLD, "%category%", "%gametype%");
+    public static final ChatMessage CATEGORY_DELETED = new ChatMessage("The %category% category has been deleted.",
+            CC.YELLOW)
+            .highlightText(CC.GOLD, "%category%");
+    public static final ChatMessage GAMETYPE_CREATED = new ChatMessage("The %gametype% gametype has been created.",
+            CC.YELLOW)
+            .highlightText(CC.GOLD, "%gametype%");
+    public static final ChatMessage GAMETYPE_DISPLAY_SET = new ChatMessage(
+            "The display item for the %gametype% gametype has been set to the item in your hand.", CC.YELLOW)
+            .highlightText(CC.GOLD, "%gametype%", "the item in your hand");
+    public static final ChatMessage GAMETYPE_DAMAGE_TICKS_SET = new ChatMessage(
+            "The hit delay for the %gametype% gametype has been set to the %delay%.", CC.YELLOW)
+            .highlightText(CC.GOLD, "%gametype%", "%delay%");
+    public static final ChatMessage GAMETYPE_BUILD_LIMIT_SET = new ChatMessage(
+            "The build limit for the %gametype% gametype has been set to the %limit%.", CC.YELLOW)
+            .highlightText(CC.GOLD, "%gametype%", "%limit%");
+    public static final ChatMessage GAMETYPE_REGEN_SET = new ChatMessage(
+            "Regeneration for the %gametype% gametype has been set to %toggled%.", CC.YELLOW)
+            .highlightText(CC.GOLD, "%gametype%", "%toggled%");
+    public static final ChatMessage GAMETYPE_BOTS_SET = new ChatMessage(
+            "Bots for the %gametype% gametype has been set to %toggled%.", CC.YELLOW)
+            .highlightText(CC.GOLD, "%gametype%", "%toggled%");
+    public static final ChatMessage GAMETYPE_GRIEFING_SET = new ChatMessage(
+            "Griefing for the %gametype% gametype has been set to %toggled%.", CC.YELLOW)
+            .highlightText(CC.GOLD, "%gametype%", "%toggled%");
+    public static final ChatMessage GAMETYPE_BUILD_SET = new ChatMessage(
+            "Build for the %gametype% gametype has been set to %toggled%.", CC.YELLOW)
+            .highlightText(CC.GOLD, "%gametype%", "%toggled%");
+    public static final ChatMessage GAMETYPE_DEADLY_WATER_SET = new ChatMessage(
+            "Deadly water for the %gametype% gametype has been set to %toggled%.", CC.YELLOW)
+            .highlightText(CC.GOLD, "%gametype%", "%toggled%");
+    public static final ChatMessage GAMETYPE_LOOTING_SET = new ChatMessage(
+            "Looting for the %gametype% gametype has been set to %toggled%.", CC.YELLOW)
+            .highlightText(CC.GOLD, "%gametype%", "%toggled%");
+    public static final ChatMessage GAMETYPE_DAMAGE_SET = new ChatMessage(
+            "Damage for the %gametype% gametype has been set to %toggled%.", CC.YELLOW)
+            .highlightText(CC.GOLD, "%gametype%", "%toggled%");
+    public static final ChatMessage GAMETYPE_HUNGER_SET = new ChatMessage(
+            "Hunger for the %gametype% gametype has been set to %toggled%.", CC.YELLOW)
+            .highlightText(CC.GOLD, "%gametype%", "%toggled%");
+    public static final ChatMessage GAMETYPE_BOXING_SET = new ChatMessage(
+            "Boxing for the %gametype% gametype has been set to %toggled%.", CC.YELLOW)
+            .highlightText(CC.GOLD, "%gametype%", "%toggled%");
+    public static final ChatMessage GAMETYPE_EVENT_SET = new ChatMessage(
+            "Event mode for the %gametype% gametype has been set to %toggled%.", CC.YELLOW)
+            .highlightText(CC.GOLD, "%gametype%", "%toggled%");
+    public static final ChatMessage GAMETYPE_LOADED_KIT = new ChatMessage(
+            "You have been given the kit for the %gametype% gametype.", CC.YELLOW)
+            .highlightText(CC.GOLD, "%gametype%");
+    public static final ChatMessage GAMETYPE_KIT_SET = new ChatMessage(
+            "The kit for the %gametype% gametype has been set to your inventory contents.", CC.YELLOW)
+            .highlightText(CC.GOLD, "%gametype%", "your inventory contents");
+    public static final ChatMessage GAMETYPE_SLOT_SET = new ChatMessage(
+            "The slot for the %gametype% gametype has been set to %slot% for the %queuetype% queue.", CC.YELLOW)
+            .highlightText(CC.GOLD, "%gametype%", "%queuetype%", "%slot%");
+    public static final ChatMessage GAMETYPE_PEARL_COOLDOWN_SET = new ChatMessage(
+            "The pearl cooldown for the %gametype% gametype has been set to %cooldown%.", CC.YELLOW)
+            .highlightText(CC.GOLD, "%gametype%", "%cooldown%");
+    public static final ChatMessage GAMETYPE_ARENA_SET = new ChatMessage(
+            "The %arena% arena has been set to %toggled% for the %gametype% gametype.", CC.YELLOW)
+            .highlightText(CC.GOLD, "%gametype%", "%toggled%", "%arena%");
+    public static final ChatMessage GAMETYPE_EVENT_ARENA_SET = new ChatMessage(
+            "The event arena for the %gametype% gametype has been set to the %arena% arena.", CC.YELLOW)
+            .highlightText(CC.GOLD, "%gametype%", "%arena%");
+    public static final ChatMessage GAMETYPE_ARENA_FOR_ALL_SET = new ChatMessage(
+            "The %arena% arena has been set to %toggled% for all gametypes.", CC.YELLOW)
+            .highlightText(CC.GOLD, "%gametype%", "%toggled%");
+    public static final ChatMessage GAMETYPE_DELETED = new ChatMessage("The %gametype% gametype has been deleted.",
+            CC.YELLOW)
+            .highlightText(CC.GOLD, "%gametype%");
+    public static final ChatMessage KIT_EDITOR_ENABLED = new ChatMessage("The kit editor has been set to %toggled%.",
+            CC.YELLOW)
+            .highlightText(CC.GOLD, "%toggled%");
+    public static final ChatMessage KIT_EDITOR_DISPLAY_SET = new ChatMessage(
+            "The kit editor display item has been set to the item in your hand.",
+            CC.YELLOW)
+            .highlightText(CC.GOLD, "the item in your hand");
+    public static final ChatMessage KIT_EDITOR_SLOT_SET = new ChatMessage(
+            "The kit editor slot has been set to the %slot% slot.",
+            CC.YELLOW)
+            .highlightText(CC.GOLD, "%slot%");
+    public static final ChatMessage KIT_EDITOR_LOCATION_SET = new ChatMessage(
+            "The kit editor location has been set to your location.",
+            CC.YELLOW)
+            .highlightText(CC.GOLD, "your location");
+    public static final ChatMessage SPAWN_SET = new ChatMessage(
+            "The spawn location for the server has been set to your location.", CC.YELLOW)
+            .highlightText(CC.GOLD, "the server", "your location");
+    public static final ChatMessage PARTIES_ENABLED = new ChatMessage("The parties feature has been set to %toggled%.",
+            CC.YELLOW)
+            .highlightText(CC.GOLD, "%toggled%");
+    public static final ChatMessage PARTIES_DISPLAY_SET = new ChatMessage(
+            "The parties display item has been set to the item in your hand.",
+            CC.YELLOW)
+            .highlightText(CC.GOLD, "the item in your hand");
+    public static final ChatMessage PARTIES_SLOT_SET = new ChatMessage(
+            "The parties slot has been set to the %slot% slot.",
+            CC.YELLOW)
+            .highlightText(CC.GOLD, "%slot%");
+    public static final ChatMessage QUEUETYPE_CREATED = new ChatMessage("The %queuetype% queuetype has been created.",
+            CC.YELLOW)
+            .highlightText(CC.GOLD, "%queuetype%");
+    public static final ChatMessage QUEUETYPE_DISPLAY_SET = new ChatMessage(
+            "The display item for the %queuetype% queuetype has been set to the item in your hand.", CC.YELLOW)
+            .highlightText(CC.GOLD, "%queuetype%", "the item in your hand");
+    public static final ChatMessage QUEUETYPE_RANKED_SET = new ChatMessage(
+            "Ranked for the %queuetype% queuetype has been set to the %toggled%.", CC.YELLOW)
+            .highlightText(CC.GOLD, "%queuetype%", "%toggled%");
+    public static final ChatMessage QUEUETYPE_COMMUNITY_SET = new ChatMessage(
+            "Community for the %queuetype% queuetype has been set to the %toggled%.", CC.YELLOW)
+            .highlightText(CC.GOLD, "%queuetype%", "%toggled%");
+    public static final ChatMessage QUEUETYPE_UNRANKED_SET = new ChatMessage(
+            "Unranked for the %queuetype% queuetype has been set to the %toggled%.", CC.YELLOW)
+            .highlightText(CC.GOLD, "%queuetype%", "%toggled%");
+    public static final ChatMessage QUEUETYPE_BOTS_SET = new ChatMessage(
+            "Bots for the %queuetype% queuetype has been set to the %toggled%.", CC.YELLOW)
+            .highlightText(CC.GOLD, "%queuetype%", "%toggled%");
+    public static final ChatMessage QUEUETYPE_SLOT_SET = new ChatMessage(
+            "The slot for the %queuetype% queuetype has been set to the %slot% slot.",
+            CC.YELLOW)
+            .highlightText(CC.GOLD, "%queuetype%", "%slot%");
+    public static final ChatMessage QUEUETYPE_KB_SET = new ChatMessage(
+            "The knockback for the %queuetype% queuetype has been set to the %knockback% profile", CC.YELLOW)
+            .highlightText(CC.GOLD, "%queuetype%", "%knockback%");
+    public static final ChatMessage QUEUETYPE_ARENA_SET = new ChatMessage(
+            "The %arena% arena has been set to %toggled% for the %queuetype% queuetype.", CC.YELLOW)
+            .highlightText(CC.GOLD, "%queuetype%", "%toggled%", "%arena%");
+    public static final ChatMessage QUEUETYPE_DELETED = new ChatMessage("The %queuetype% queuetype has been deleted.",
+            CC.YELLOW)
+            .highlightText(CC.GOLD, "%queuetype%");
+    public static final ChatMessage SETTINGS_ENABLED = new ChatMessage("The settings has been set to %toggled%.",
+            CC.YELLOW)
+            .highlightText(CC.GOLD, "%toggled%");
+    public static final ChatMessage SETTINGS_DISPLAY_SET = new ChatMessage(
+            "The settings display item has been set to the item in your hand.",
+            CC.YELLOW)
+            .highlightText(CC.GOLD, "the item in your hand");
+    public static final ChatMessage SETTINGS_SLOT_SET = new ChatMessage(
+            "The settings slot has been set to the %slot% slot.",
+            CC.YELLOW)
+            .highlightText(CC.GOLD, "%slot%");
+    public static final ChatMessage SPECTATE_ENABLED = new ChatMessage("The spectator item has been set to %toggled%.",
+            CC.YELLOW)
+            .highlightText(CC.GOLD, "%toggled%");
+    public static final ChatMessage SPECTATE_DISPLAY_SET = new ChatMessage(
+            "The spectate display item has been set to the item in your hand.",
+            CC.YELLOW)
+            .highlightText(CC.GOLD, "the item in your hand");
+    public static final ChatMessage SPECTATE_SLOT_SET = new ChatMessage(
+            "The spectate slot has been set to the %slot% slot.",
+            CC.YELLOW)
+            .highlightText(CC.GOLD, "%slot%");
+    public static final ChatMessage LEADERBOARD_ENABLED = new ChatMessage("The leaderboard item has been set to %toggled%.",
+            CC.YELLOW)
+            .highlightText(CC.GOLD, "%toggled%");
+    public static final ChatMessage LEADERBOARD_DISPLAY_SET = new ChatMessage(
+            "The leaderboard display item has been set to the item in your hand.",
+            CC.YELLOW)
+            .highlightText(CC.GOLD, "the item in your hand");
+    public static final ChatMessage LEADERBOARD_SLOT_SET = new ChatMessage(
+            "The leaderboard slot has been set to the %slot% slot.",
+            CC.YELLOW)
+            .highlightText(CC.GOLD, "%slot%");
+    public static final ChatMessage PARTY_CREATED = new ChatMessage("You have created a new party.",
+            CC.YELLOW)
+            .highlightText(CC.GOLD, "party");
+    public static final ChatMessage PARTY_OPENED = new ChatMessage(
+            "Your party has been %opened%.",
+            CC.YELLOW)
+            .highlightText(CC.GOLD, "%opened%");
+    public static final ChatMessage DUEL_REQUESTS_TOGGLED = new ChatMessage(
+            "Your duel requests has now been %toggled%.",
+            CC.YELLOW).highlightText(CC.GOLD, "%toggled%");
+    public static final ChatMessage PARTY_REQUESTS_TOGGLED = new ChatMessage(
+            "Your party requests has now been %toggled%.",
+            CC.YELLOW).highlightText(CC.GOLD, "%toggled%");
+    public static final ChatMessage SCOREBOARD_TOGGLED = new ChatMessage(
+            "Your scoreboard has now been %toggled%.",
+            CC.YELLOW).highlightText(CC.GOLD, "%toggled%");
 
-    FRIENDS_TOGGLED = new ChatMessage(
-            "Your friend requests has now been %toggled%.",
-            CC.YELLOW).highlightText(CC.GOLD, "%toggled%"),
-            FRIEND_SOUND_TOGGLED = new ChatMessage(
-                    "Your friend request sounds has now been %toggled%.",
-                    CC.YELLOW).highlightText(CC.GOLD, "%toggled%"),
-            PRIVATE_MESSAGES_TOGGLED = new ChatMessage(
-                    "Your private messages has now been %toggled%.",
-                    CC.YELLOW).highlightText(CC.GOLD, "%toggled%"),
-            PRIVATE_MESSAGE_SOUNDS_TOGGLED = new ChatMessage(
-                    "Your private message sounds has now been %toggled%.",
-                    CC.YELLOW).highlightText(CC.GOLD, "%toggled%"),
-            GLOBAL_CHAT_TOGGLED = new ChatMessage(
-                    "Your global chat has now been %toggled%.",
-                    CC.YELLOW).highlightText(CC.GOLD, "%toggled%"),
-            VISIBILITY_TOGGLED = new ChatMessage(
-                    "Your player visibility has now been %toggled%.",
-                    CC.YELLOW).highlightText(CC.GOLD, "%toggled%"),
-            KIT_SAVED = new ChatMessage(
-                    "Your kit has been saved.",
-                    CC.YELLOW),
-            KIT_DELETED = new ChatMessage(
-                    "Your kit has been deleted.",
-                    CC.YELLOW);
+    public static final ChatMessage VISIBILITY_TOGGLED = new ChatMessage(
+            "Your player visibility has now been %toggled%.",
+            CC.YELLOW).highlightText(CC.GOLD, "%toggled%");
+    public static final ChatMessage KIT_SAVED = new ChatMessage(
+            "Your kit has been saved.",
+            CC.YELLOW);
+    public static final ChatMessage KIT_DELETED = new ChatMessage(
+            "Your kit has been deleted.",
+            CC.YELLOW);
 
     // Info
     public static final ChatMessage PEARL = new ChatMessage(
             "You can use the ender pearl again in %time% second(s).",
             CC.AQUA)
-            .highlightText(CC.D_AQUA, "%time%"),
-            JOINED_QUEUE = new ChatMessage(
-                    "You are now queued for %queue%%category% %gametype%.",
-                    CC.AQUA)
-                    .highlightText(CC.D_AQUA, "%queue%", "%category%", "%gametype%"),
-            STOP_SPECTATING = new ChatMessage(
-                    "Please type /stopspectating to stop spectating.",
-                    CC.YELLOW).highlightText(CC.GOLD, "/stopspectating"),
-            LEAVE_KIT_EDITOR = new ChatMessage(
-                    "Please type /leave to leave the kit editor.",
-                    CC.YELLOW).highlightText(CC.GOLD, "/leave"),
-            LEAVE_KIT_CREATOR = new ChatMessage(
-                    "Please type /leave to leave the kit creator.",
-                    CC.YELLOW).highlightText(CC.GOLD, "/leave"),
-            LEFT_QUEUE = new ChatMessage("You are no longer queued.", CC.AQUA).highlightText(CC.D_AQUA, "%queue%",
-                    "%gametype%"),
-            HEALTH = new ChatMessage("%player% now has %health% health remaining.", CC.AQUA).highlightText(CC.D_AQUA,
-                    "%health%", "%player%"),
-            NO_OPPONENT = new ChatMessage(
-                    "There was no opponent available for this round. You will play in the next round instead.",
-                    CC.AQUA),
-            SPECTATING_YOUR_MATCH = new ChatMessage("%player% is now spectating your match.", CC.AQUA)
-                    .highlightText(CC.D_AQUA, "%player%"),
-            SPECTATING_TOURNAMENT = new ChatMessage("You are now spectating the tournament.", CC.AQUA)
-                    .highlightText(CC.D_AQUA, "the tournament"),
-            WON_TOURNAMENT = new ChatMessage("%player% has won the tournament.", CC.AQUA).highlightText(CC.D_AQUA,
-                    "%player%"),
-            SPECTATING_EVENT = new ChatMessage("You are now spectating the event.", CC.AQUA).highlightText(CC.D_AQUA,
-                    "the event"),
-            WON_EVENT = new ChatMessage("%player% has won the event.", CC.AQUA).highlightText(CC.D_AQUA, "%player%"),
-            ROUND_OVER = new ChatMessage("Round %round% his over. The next round will start in 5 seconds.", CC.AQUA)
-                    .highlightText(CC.D_AQUA, "%round%"),
-            BEGINS_IN = new ChatMessage("The match will begin in %time% second(s).", CC.WHITE)
-                    .highlightText(CC.SECONDARY, "match", "%time% second(s)"),
-            MATCH_STARTED = new ChatMessage("The match has started.", CC.SECONDARY, true),
-            FOLLOWING = new ChatMessage("You are now following %player%.", CC.AQUA).highlightText(CC.D_AQUA,
-                    "%player%"),
-            POTS = new ChatMessage("You have %pots% health potions in your inventory.", CC.AQUA)
-                    .highlightText(CC.D_AQUA, "%pots%"),
-            KILLED_BY_PLAYER = new ChatMessage("%victim% has been killed by %attacker%.", CC.AQUA)
-                    .highlightText(CC.D_AQUA, "%victim%", "%attacker%"),
-            DIED = new ChatMessage("%victim% has died", CC.AQUA)
-                    .highlightText(CC.D_AQUA, "%victim%"),
-            DUEL_REQUEST_SENT = new ChatMessage(
-                    "You have send a duel request to %player%. They have 30 seconds to accept.", CC.AQUA)
-                    .highlightText(CC.D_AQUA, "%player%"),
-            SPECTATING = new ChatMessage("You are now spectating %player%.", CC.AQUA).highlightText(CC.D_AQUA,
-                    "%player%"),
-            CAN_NOT_BROADCAST = new ChatMessage(
-                    "The message to join the party can only be broadcasted once every 20 seconds.", CC.AQUA),
-            JOINED_PARTY = new ChatMessage("%player% has joined the party.", CC.GREEN).highlightText(CC.D_GREEN,
-                    "%player%"),
-            LEFT_PARTY = new ChatMessage("%player% has left the party.", CC.RED).highlightText(CC.D_RED, "%player%"),
-            JOINED_TOURNAMENT = new ChatMessage("%player% has joined the tourmament.", CC.GREEN)
-                    .highlightText(CC.D_GREEN, "%player%"),
-            LEFT_TOURNAMENT = new ChatMessage("%player% has left the tournament.", CC.RED).highlightText(CC.D_RED,
-                    "%player%"),
-            JOINED_EVENT = new ChatMessage("%player% has joined the event.", CC.GREEN).highlightText(CC.D_GREEN,
-                    "%player%"),
-            LEFT_EVENT = new ChatMessage("%player% has left the event.", CC.RED).highlightText(CC.D_RED, "%player%"),
-            PARTY_REQUEST_SENT = new ChatMessage(
-                    "You have send a party invite to %player%. They have 30 seconds to accept.", CC.AQUA)
-                    .highlightText(CC.D_AQUA, "%player%"),
-            TIME_SET_DAY = new ChatMessage("Your time has been set to day.", CC.YELLOW)
-                    .highlightText(CC.GOLD, "day"),
-            TIME_SET_NIGHT = new ChatMessage("Your time has been set to night.", CC.YELLOW)
-                    .highlightText(CC.GOLD, "night");
+            .highlightText(CC.D_AQUA, "%time%");
+    public static final ChatMessage JOINED_QUEUE = new ChatMessage(
+            "You are now queued for %queue%%category% %gametype%.",
+            CC.AQUA)
+            .highlightText(CC.D_AQUA, "%queue%", "%category%", "%gametype%");
+    public static final ChatMessage STOP_SPECTATING = new ChatMessage(
+            "Please type /stopspectating to stop spectating.",
+            CC.YELLOW).highlightText(CC.GOLD, "/stopspectating");
+    public static final ChatMessage LEAVE_KIT_EDITOR = new ChatMessage(
+            "Please type /leave to leave the kit editor.",
+            CC.YELLOW).highlightText(CC.GOLD, "/leave");
+    public static final ChatMessage LEAVE_KIT_CREATOR = new ChatMessage(
+            "Please type /leave to leave the kit creator.",
+            CC.YELLOW).highlightText(CC.GOLD, "/leave");
+    public static final ChatMessage LEFT_QUEUE = new ChatMessage("You are no longer queued.", CC.AQUA).highlightText(CC.D_AQUA, "%queue%",
+            "%gametype%");
+    public static final ChatMessage HEALTH = new ChatMessage("%player% now has %health% health remaining.", CC.AQUA).highlightText(CC.D_AQUA,
+            "%health%", "%player%");
+    public static final ChatMessage NO_OPPONENT = new ChatMessage(
+            "There was no opponent available for this round. You will play in the next round instead.",
+            CC.AQUA);
+    public static final ChatMessage SPECTATING_YOUR_MATCH = new ChatMessage("%player% is now spectating your match.", CC.AQUA)
+            .highlightText(CC.D_AQUA, "%player%");
+    public static final ChatMessage WON_TOURNAMENT = new ChatMessage("%player% has won the tournament.", CC.AQUA).highlightText(CC.D_AQUA,
+            "%player%");
+    public static final ChatMessage SPECTATING_EVENT = new ChatMessage("You are now spectating the event.", CC.AQUA).highlightText(CC.D_AQUA,
+            "the event");
+    public static final ChatMessage WON_EVENT = new ChatMessage("%player% has won the event.", CC.AQUA).highlightText(CC.D_AQUA, "%player%");
+    public static final ChatMessage ROUND_OVER = new ChatMessage("Round %round% his over. The next round will start in 5 seconds.", CC.AQUA)
+            .highlightText(CC.D_AQUA, "%round%");
+    public static final ChatMessage BEGINS_IN = new ChatMessage("The match will begin in %time% second(s).", CC.WHITE)
+            .highlightText(CC.SECONDARY, "match", "%time% second(s)");
+    public static final ChatMessage MATCH_STARTED = new ChatMessage("The match has started.", CC.SECONDARY, true);
+    public static final ChatMessage FOLLOWING = new ChatMessage("You are now following %player%.", CC.AQUA).highlightText(CC.D_AQUA,
+            "%player%");
+    public static final ChatMessage POTS = new ChatMessage("You have %pots% health potions in your inventory.", CC.AQUA)
+            .highlightText(CC.D_AQUA, "%pots%");
+    public static final ChatMessage KILLED_BY_PLAYER = new ChatMessage("%victim% has been killed by %attacker%.", CC.AQUA)
+            .highlightText(CC.D_AQUA, "%victim%", "%attacker%");
+    public static final ChatMessage DIED = new ChatMessage("%victim% has died", CC.AQUA)
+            .highlightText(CC.D_AQUA, "%victim%");
+    public static final ChatMessage DUEL_REQUEST_SENT = new ChatMessage(
+            "You have send a duel request to %player%. They have 30 seconds to accept.", CC.AQUA)
+            .highlightText(CC.D_AQUA, "%player%");
+    public static final ChatMessage SPECTATING = new ChatMessage("You are now spectating %player%.", CC.AQUA).highlightText(CC.D_AQUA,
+            "%player%");
+    public static final ChatMessage CAN_NOT_BROADCAST = new ChatMessage(
+            "The message to join the party can only be broadcasted once every 20 seconds.", CC.AQUA);
+    public static final ChatMessage JOINED_PARTY = new ChatMessage("%player% has joined the party.", CC.GREEN).highlightText(CC.D_GREEN,
+            "%player%");
+    public static final ChatMessage LEFT_PARTY = new ChatMessage("%player% has left the party.", CC.RED).highlightText(CC.D_RED, "%player%");
+    public static final ChatMessage JOINED_TOURNAMENT = new ChatMessage("%player% has joined the tourmament.", CC.GREEN)
+            .highlightText(CC.D_GREEN, "%player%");
+    public static final ChatMessage LEFT_TOURNAMENT = new ChatMessage("%player% has left the tournament.", CC.RED).highlightText(CC.D_RED,
+            "%player%");
+    public static final ChatMessage JOINED_EVENT = new ChatMessage("%player% has joined the event.", CC.GREEN).highlightText(CC.D_GREEN,
+            "%player%");
+    public static final ChatMessage LEFT_EVENT = new ChatMessage("%player% has left the event.", CC.RED).highlightText(CC.D_RED, "%player%");
+    public static final ChatMessage PARTY_REQUEST_SENT = new ChatMessage(
+            "You have send a party invite to %player%. They have 30 seconds to accept.", CC.AQUA)
+            .highlightText(CC.D_AQUA, "%player%");
+    public static final ChatMessage TIME_SET_DAY = new ChatMessage("Your time has been set to day.", CC.YELLOW)
+            .highlightText(CC.GOLD, "day");
+    public static final ChatMessage TIME_SET_NIGHT = new ChatMessage("Your time has been set to night.", CC.YELLOW)
+            .highlightText(CC.GOLD, "night");
 
     public static final ClickableChatMessage DUEL_REQUEST_RECIEVED = new ClickableChatMessage(
             "You have recieved a duel request from %player%. [Click To Accept]",
@@ -329,42 +315,38 @@ public class ChatMessages {
                     .highlightText(CC.D_AQUA, "%player%").highlightText(CC.GREEN, "[Click To Join]");
     // Title
     public static final ChatMessage CONFIG_COMMANDS = new ChatMessage("Config Commands", CC.PRIMARY,
-            false),
-            ARENA_COMMANDS = new ChatMessage("Arena Commands", CC.PRIMARY,
-                    false),
-            CATEGORY_COMMANDS = new ChatMessage("Category Commands", CC.PRIMARY,
-                    false),
-            GAMETYPE_COMMANDS = new ChatMessage("Gametype Commands", CC.PRIMARY,
-                    false),
-            QUEUETYPE_COMMANDS = new ChatMessage("Queuetype Commands", CC.PRIMARY,
-                    false),
-            KIT_EDITOR_COMMANDS = new ChatMessage("Kit Editor Commands", CC.PRIMARY,
-                    false),
-            PARTIES_COMMANDS = new ChatMessage("Parties Commands", CC.PRIMARY,
-                    false),
-            SETTINGS_COMMANDS = new ChatMessage("Settings Config Commands", CC.PRIMARY,
-                    false),
-            SPECTATE_COMMANDS = new ChatMessage("Spectate Config Commands", CC.PRIMARY,
-                    false),
-            LEADERBOARD_COMMANDS = new ChatMessage("Leaderboard Config Commands", CC.PRIMARY,
-                    false),
-            PARTY_COMMANDS = new ChatMessage("Party Commands", CC.PRIMARY,
-                    false);
+            false);
+    public static final ChatMessage ARENA_COMMANDS = new ChatMessage("Arena Commands", CC.PRIMARY,
+            false);
+    public static final ChatMessage CATEGORY_COMMANDS = new ChatMessage("Category Commands", CC.PRIMARY,
+            false);
+    public static final ChatMessage GAMETYPE_COMMANDS = new ChatMessage("Gametype Commands", CC.PRIMARY,
+            false);
+    public static final ChatMessage QUEUETYPE_COMMANDS = new ChatMessage("Queuetype Commands", CC.PRIMARY,
+            false);
+    public static final ChatMessage KIT_EDITOR_COMMANDS = new ChatMessage("Kit Editor Commands", CC.PRIMARY,
+            false);
+    public static final ChatMessage PARTIES_COMMANDS = new ChatMessage("Parties Commands", CC.PRIMARY,
+            false);
+    public static final ChatMessage SETTINGS_COMMANDS = new ChatMessage("Settings Config Commands", CC.PRIMARY,
+            false);
+    public static final ChatMessage SPECTATE_COMMANDS = new ChatMessage("Spectate Config Commands", CC.PRIMARY,
+            false);
+    public static final ChatMessage LEADERBOARD_COMMANDS = new ChatMessage("Leaderboard Config Commands", CC.PRIMARY,
+            false);
     // Arena Command
     public static final ChatMessage ARENA_CREATE = new ListElementMessage("/arena create <Name>",
-            CC.SECONDARY),
-            ARENA_SPAWN = new ListElementMessage("/arena spawn <Arena> <1/2/Waiting>",
-                    CC.SECONDARY),
-            ARENA_DISPLAY = new ListElementMessage("/arena setdisplay <Arena> <&{Colour}>",
-                    CC.SECONDARY),
-            ARENA_LIST = new ListElementMessage("/arena list",
-                    CC.SECONDARY),
-            ARENA_TP = new ListElementMessage("/arena tp <Arena>",
-                    CC.SECONDARY),
-            ARENA_WAITING_LOC = new ListElementMessage("/arena waitinglocation <Arena>",
-                    CC.SECONDARY),
-            ARENA_DELETE = new ListElementMessage("/arena delete <Name>",
-                    CC.SECONDARY);
+            CC.SECONDARY);
+    public static final ChatMessage ARENA_SPAWN = new ListElementMessage("/arena spawn <Arena> <1/2/Waiting>",
+            CC.SECONDARY);
+    public static final ChatMessage ARENA_DISPLAY = new ListElementMessage("/arena setdisplay <Arena> <&{Colour}>",
+            CC.SECONDARY);
+    public static final ChatMessage ARENA_LIST = new ListElementMessage("/arena list",
+            CC.SECONDARY);
+    public static final ChatMessage ARENA_TP = new ListElementMessage("/arena tp <Arena>",
+            CC.SECONDARY);
+    public static final ChatMessage ARENA_DELETE = new ListElementMessage("/arena delete <Name>",
+            CC.SECONDARY);
     // Category Command
     public static final ChatMessage CATEGORY_CREATE = new ListElementMessage("/category create <Name>",
             CC.SECONDARY),
@@ -394,6 +376,9 @@ public class ChatMessages {
                     CC.SECONDARY),
             GAMETYPE_DAMAGE_TICKS = new ListElementMessage(
                     "/gametype nodamageticks <Gametype> <Ticks>",
+                    CC.SECONDARY),
+            GAMETYPE_BUILD_LIMIT = new ListElementMessage(
+                    "/gametype buildlimit <Gametype> <Height>",
                     CC.SECONDARY),
             GAMETYPE_REGEN = new ListElementMessage("/gametype regen <Gametype> <True/False>",
                     CC.SECONDARY),

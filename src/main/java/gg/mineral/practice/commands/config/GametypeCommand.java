@@ -1,10 +1,7 @@
 package gg.mineral.practice.commands.config;
 
-import org.bukkit.entity.Player;
-
 import gg.mineral.practice.arena.Arena;
 import gg.mineral.practice.commands.PlayerCommand;
-
 import gg.mineral.practice.gametype.Gametype;
 import gg.mineral.practice.inventory.menus.GametypeArenaEnableMenu;
 import gg.mineral.practice.kit.Kit;
@@ -12,670 +9,698 @@ import gg.mineral.practice.managers.ArenaManager;
 import gg.mineral.practice.managers.GametypeManager;
 import gg.mineral.practice.managers.ProfileManager;
 import gg.mineral.practice.managers.QueuetypeManager;
-
 import gg.mineral.practice.util.messages.CC;
 import gg.mineral.practice.util.messages.impl.ChatMessages;
 import gg.mineral.practice.util.messages.impl.ErrorMessages;
 import gg.mineral.practice.util.messages.impl.UsageMessages;
-
 import lombok.val;
+import org.bukkit.entity.Player;
 
 public class GametypeCommand extends PlayerCommand {
 
-	public GametypeCommand() {
-		super("gametype", "practice.config");
-	}
-
-	@Override
-	public void execute(Player player, String[] args) {
-
-		val arg = args.length > 0 ? args[0] : "";
-
-		Gametype gametype;
-		Arena arena;
-		String gametypeName, toggled, arenaName;
-		StringBuilder sb;
-
-		switch (arg.toLowerCase()) {
-			default:
-				ChatMessages.GAMETYPE_COMMANDS.send(player);
-				ChatMessages.GAMETYPE_CREATE.send(player);
-				ChatMessages.GAMETYPE_KIT.send(player);
-				ChatMessages.GAMETYPE_LOAD_KIT.send(player);
-				ChatMessages.GAMETYPE_DAMAGE_TICKS.send(player);
-				ChatMessages.GAMETYPE_GRIEFING.send(player);
-				ChatMessages.GAMETYPE_BUILD.send(player);
-				ChatMessages.GAMETYPE_LOOTING.send(player);
-				ChatMessages.GAMETYPE_DAMAGE.send(player);
-				ChatMessages.GAMETYPE_HUNGER.send(player);
-				ChatMessages.GAMETYPE_BOXING.send(player);
-				ChatMessages.GAMETYPE_BOTS.send(player);
-				ChatMessages.GAMETYPE_REGEN.send(player);
-				ChatMessages.GAMETYPE_EPEARL.send(player);
-				ChatMessages.GAMETYPE_ARENA_FOR_ALL.send(player);
-				ChatMessages.GAMETYPE_DISPLAY.send(player);
-				ChatMessages.GAMETYPE_QUEUE.send(player);
-				ChatMessages.GAMETYPE_LIST.send(player);
-				ChatMessages.GAMETYPE_ARENA.send(player);
-				ChatMessages.GAMETYPE_EVENT_ARENA.send(player);
-				ChatMessages.GAMETYPE_EVENT.send(player);
-				ChatMessages.GAMETYPE_DEADLY_WATER.send(player);
-				ChatMessages.GAMETYPE_DELETE.send(player);
-				return;
-			case "create":
-				if (args.length < 2) {
-					UsageMessages.GAMETYPE_CREATE.send(player);
-					return;
-				}
-
-				gametypeName = args[1];
-
-				if (GametypeManager.getGametypeByName(gametypeName) != null) {
-					ErrorMessages.GAMETYPE_ALREADY_EXISTS.send(player);
-					return;
-				}
-
-				gametype = new Gametype(gametypeName, GametypeManager.CURRENT_ID++);
-				gametype.setDefaults();
-				GametypeManager.registerGametype(gametype);
-				ChatMessages.GAMETYPE_CREATED.clone().replace("%gametype%", gametypeName).send(player);
-				return;
-			case "loadkit":
-				if (args.length < 2) {
-					UsageMessages.GAMETYPE_LOAD_KIT.send(player);
-					return;
-				}
-
-				gametypeName = args[1];
-				gametype = GametypeManager.getGametypeByName(gametypeName);
-
-				if (gametype == null) {
-					ErrorMessages.GAMETYPE_DOES_NOT_EXIST.send(player);
-					return;
-				}
-
-				player.getInventory().setContents(gametype.getKit().getContents());
-				player.getInventory().setArmorContents(gametype.getKit().getArmourContents());
-				ChatMessages.GAMETYPE_LOADED_KIT.clone().replace("%gametype%", gametypeName).send(player);
-
-				return;
-			case "kit":
-				if (args.length < 2) {
-					UsageMessages.GAMETYPE_KIT.send(player);
-					return;
-				}
-
-				gametypeName = args[1];
-				gametype = GametypeManager.getGametypeByName(gametypeName);
-
-				if (gametype == null) {
-					ErrorMessages.GAMETYPE_DOES_NOT_EXIST.send(player);
-					return;
-				}
-
-				val contents = player.getInventory().getContents();
-				val armourContents = player.getInventory().getArmorContents();
-
-				gametype.setKit(new Kit(gametype.getName(), contents, armourContents));
-				ChatMessages.GAMETYPE_KIT_SET.clone().replace("%gametype%", gametypeName).send(player);
-
-				return;
-			case "setdisplay":
-				if (args.length < 2) {
-					UsageMessages.GAMETYPE_DISPLAY.send(player);
-					return;
-				}
-
-				gametypeName = args[1];
-				gametype = GametypeManager.getGametypeByName(gametypeName);
-
-				if (gametype == null) {
-					ErrorMessages.GAMETYPE_DOES_NOT_EXIST.send(player);
-					return;
-				}
-
-				gametype.setDisplayItem(player.getItemInHand());
-
-				if (args.length > 2)
-					gametype.setDisplayName(args[2].replace("&", "§"));
-
-				ChatMessages.GAMETYPE_DISPLAY_SET.clone().replace("%gametype%", gametypeName).send(player);
-				return;
-			case "hitdelay":
-			case "nodamageticks":
-				if (args.length < 3) {
-					UsageMessages.GAMETYPE_DAMAGE_TICKS.send(player);
-					return;
-				}
-
-				gametypeName = args[1];
-				gametype = GametypeManager.getGametypeByName(gametypeName);
-
-				if (gametype == null) {
-					ErrorMessages.GAMETYPE_DOES_NOT_EXIST.send(player);
-					return;
-				}
-
-				val noDamageTicksStr = args[2];
-
-				int ndt;
-
-				try {
-					ndt = Integer.parseInt(noDamageTicksStr);
-				} catch (Exception e) {
-					ErrorMessages.INVALID_NUMBER.send(player);
-					return;
-				}
-
-				gametype.setNoDamageTicks(ndt);
-				ChatMessages.GAMETYPE_DAMAGE_TICKS_SET.clone().replace("%gametype%", gametypeName).replace("%delay%",
-						noDamageTicksStr).send(player);
-				return;
-			case "bots":
-				if (args.length < 3) {
-					UsageMessages.GAMETYPE_BOTS.send(player);
-					return;
-				}
-
-				gametypeName = args[1];
-				gametype = GametypeManager.getGametypeByName(gametypeName);
-
-				if (gametype == null) {
-					ErrorMessages.GAMETYPE_DOES_NOT_EXIST.send(player);
-					return;
-				}
-
-				toggled = args[2].toLowerCase();
-
-				switch (toggled) {
-					case "false":
-						gametype.setBotsEnabled(false);
-						break;
-					case "true":
-						gametype.setBotsEnabled(true);
-						break;
-					default:
-						UsageMessages.GAMETYPE_BOTS.send(player);
-						return;
-				}
-
-				ChatMessages.GAMETYPE_BOTS_SET.clone().replace("%gametype%", gametypeName)
-						.replace("%toggled%", toggled).send(player);
-				return;
-			case "regen":
-				if (args.length < 3) {
-					UsageMessages.GAMETYPE_REGEN.send(player);
-					return;
-				}
-
-				gametypeName = args[1];
-				gametype = GametypeManager.getGametypeByName(gametypeName);
-
-				if (gametype == null) {
-					ErrorMessages.GAMETYPE_DOES_NOT_EXIST.send(player);
-					return;
-				}
-
-				toggled = args[2].toLowerCase();
-
-				switch (toggled) {
-					case "false":
-						gametype.setRegeneration(false);
-						break;
-					case "true":
-						gametype.setRegeneration(true);
-						break;
-					default:
-						UsageMessages.GAMETYPE_REGEN.send(player);
-						return;
-				}
-
-				ChatMessages.GAMETYPE_REGEN_SET.clone().replace("%gametype%", gametypeName)
-						.replace("%toggled%", toggled).send(player);
-				return;
-			case "griefing":
-				if (args.length < 3) {
-					UsageMessages.GAMETYPE_GRIEFING.send(player);
-					return;
-				}
-
-				gametypeName = args[1];
-				gametype = GametypeManager.getGametypeByName(gametypeName);
-
-				if (gametype == null) {
-					ErrorMessages.GAMETYPE_DOES_NOT_EXIST.send(player);
-					return;
-				}
-
-				toggled = args[2].toLowerCase();
-
-				switch (toggled) {
-					case "false":
-						gametype.setGriefing(false);
-						break;
-					case "true":
-						gametype.setGriefing(true);
-						break;
-					default:
-						UsageMessages.GAMETYPE_GRIEFING.send(player);
-						return;
-				}
-
-				ChatMessages.GAMETYPE_GRIEFING_SET.clone().replace("%gametype%", gametypeName)
-						.replace("%toggled%", toggled).send(player);
-
-				return;
-			case "queue":
-				if (args.length < 4) {
-					UsageMessages.GAMETYPE_QUEUE.send(player);
-					return;
-				}
-
-				gametypeName = args[1];
-				gametype = GametypeManager.getGametypeByName(gametypeName);
-
-				if (gametype == null) {
-					ErrorMessages.GAMETYPE_DOES_NOT_EXIST.send(player);
-					return;
-				}
-
-				val queuetypeName = args[2];
-				val queuetype = QueuetypeManager.getQueuetypeByName(queuetypeName);
-
-				if (queuetype == null) {
-					ErrorMessages.QUEUETYPE_DOES_NOT_EXIST.send(player);
-					return;
-				}
-
-				val slotName = args[3];
-
-				if (slotName.equalsIgnoreCase("false")) {
-					gametype.removeFromQueuetype(queuetype);
-				} else {
-					int slot;
-
-					try {
-						slot = Integer.parseInt(slotName);
-					} catch (Exception e) {
-						ErrorMessages.INVALID_SLOT.send(player);
-						return;
-					}
-
-					gametype.addToQueuetype(queuetype, slot);
-				}
-
-				ChatMessages.GAMETYPE_SLOT_SET.clone().replace("%gametype%", gametypeName)
-						.replace("%queuetype%", queuetypeName).replace("%slot%", slotName).send(player);
-				return;
-			case "build":
-				if (args.length < 3) {
-					UsageMessages.GAMETYPE_BUILD.send(player);
-					return;
-				}
-
-				gametypeName = args[1];
-				gametype = GametypeManager.getGametypeByName(gametypeName);
-
-				if (gametype == null) {
-					ErrorMessages.GAMETYPE_DOES_NOT_EXIST.send(player);
-					return;
-				}
-
-				toggled = args[2].toLowerCase();
-
-				switch (toggled) {
-					case "false":
-						gametype.setBuild(false);
-						break;
-					case "true":
-						gametype.setBuild(true);
-						break;
-					default:
-						UsageMessages.GAMETYPE_BUILD.send(player);
-						return;
-				}
-
-				ChatMessages.GAMETYPE_BUILD_SET.clone().replace("%gametype%", gametypeName)
-						.replace("%toggled%", toggled).send(player);
-
-				return;
-			case "deadlywater":
-				if (args.length < 3) {
-					UsageMessages.GAMETYPE_DEADLY_WATER.send(player);
-					return;
-				}
-
-				gametypeName = args[1];
-				gametype = GametypeManager.getGametypeByName(gametypeName);
-
-				if (gametype == null) {
-					ErrorMessages.GAMETYPE_DOES_NOT_EXIST.send(player);
-					return;
-				}
-
-				toggled = args[2].toLowerCase();
-
-				switch (toggled) {
-					case "false":
-						gametype.setDeadlyWater(false);
-						break;
-					case "true":
-						gametype.setDeadlyWater(true);
-						break;
-					default:
-						UsageMessages.GAMETYPE_DEADLY_WATER.send(player);
-						return;
-				}
-
-				ChatMessages.GAMETYPE_DEADLY_WATER_SET.clone().replace("%gametype%", gametypeName)
-						.replace("%toggled%", toggled).send(player);
-
-				return;
-			case "looting":
-				if (args.length < 3) {
-					UsageMessages.GAMETYPE_LOOTING.send(player);
-					return;
-				}
-
-				gametypeName = args[1];
-				gametype = GametypeManager.getGametypeByName(gametypeName);
-
-				if (gametype == null) {
-					ErrorMessages.GAMETYPE_DOES_NOT_EXIST.send(player);
-					return;
-				}
-
-				toggled = args[2].toLowerCase();
-
-				switch (toggled) {
-					case "false":
-						gametype.setLooting(false);
-						break;
-					case "true":
-						gametype.setLooting(true);
-						break;
-					default:
-						UsageMessages.GAMETYPE_LOOTING.send(player);
-						return;
-				}
-
-				ChatMessages.GAMETYPE_LOOTING_SET.clone().replace("%gametype%", gametypeName)
-						.replace("%toggled%", toggled).send(player);
-
-				return;
-			case "damage":
-				if (args.length < 3) {
-					UsageMessages.GAMETYPE_DAMAGE.send(player);
-					return;
-				}
-
-				gametypeName = args[1];
-				gametype = GametypeManager.getGametypeByName(gametypeName);
-
-				if (gametype == null) {
-					ErrorMessages.GAMETYPE_DOES_NOT_EXIST.send(player);
-					return;
-				}
-
-				toggled = args[2].toLowerCase();
-
-				switch (toggled) {
-					case "false":
-						gametype.setDamage(false);
-						break;
-					case "true":
-						gametype.setDamage(true);
-						break;
-					default:
-						UsageMessages.GAMETYPE_DAMAGE.send(player);
-						return;
-				}
-
-				ChatMessages.GAMETYPE_DAMAGE_SET.clone().replace("%gametype%", gametypeName)
-						.replace("%toggled%", toggled).send(player);
-
-				return;
-			case "hunger":
-				if (args.length < 3) {
-					UsageMessages.GAMETYPE_HUNGER.send(player);
-					return;
-				}
-
-				gametypeName = args[1];
-				gametype = GametypeManager.getGametypeByName(gametypeName);
-
-				if (gametype == null) {
-					ErrorMessages.GAMETYPE_DOES_NOT_EXIST.send(player);
-					return;
-				}
-
-				toggled = args[2].toLowerCase();
-
-				switch (toggled) {
-					case "false":
-						gametype.setHunger(false);
-						break;
-					case "true":
-						gametype.setHunger(true);
-						break;
-					default:
-						UsageMessages.GAMETYPE_HUNGER.send(player);
-						return;
-				}
-
-				ChatMessages.GAMETYPE_HUNGER_SET.clone().replace("%gametype%", gametypeName)
-						.replace("%toggled%", toggled).send(player);
-
-				return;
-			case "boxing":
-				if (args.length < 3) {
-					UsageMessages.GAMETYPE_BOXING.send(player);
-					return;
-				}
-
-				gametypeName = args[1];
-				gametype = GametypeManager.getGametypeByName(gametypeName);
-
-				if (gametype == null) {
-					ErrorMessages.GAMETYPE_DOES_NOT_EXIST.send(player);
-					return;
-				}
-
-				toggled = args[2].toLowerCase();
-
-				switch (toggled) {
-					case "false":
-						gametype.setBoxing(false);
-						break;
-					case "true":
-						gametype.setBoxing(true);
-						break;
-					default:
-						UsageMessages.GAMETYPE_BOXING.send(player);
-						return;
-				}
-
-				ChatMessages.GAMETYPE_BOXING_SET.clone().replace("%gametype%", gametypeName)
-						.replace("%toggled%", toggled).send(player);
-
-				return;
-			case "epearl":
-				if (args.length < 3) {
-					UsageMessages.GAMETYPE_EPEARL.send(player);
-					return;
-				}
-
-				gametypeName = args[1];
-				gametype = GametypeManager.getGametypeByName(gametypeName);
-
-				if (gametype == null) {
-					ErrorMessages.GAMETYPE_DOES_NOT_EXIST.send(player);
-					return;
-				}
-
-				val cooldownStr = args[2];
-
-				int number;
-
-				try {
-					number = Integer.parseInt(cooldownStr);
-				} catch (Exception e) {
-					ErrorMessages.INVALID_NUMBER.send(player);
-					return;
-				}
-
-				gametype.setPearlCooldown(number);
-				ChatMessages.GAMETYPE_PEARL_COOLDOWN_SET.clone().replace("%gametype%", gametypeName)
-						.replace("%cooldown%", cooldownStr).send(player);
-				return;
-			case "list":
-				sb = new StringBuilder(CC.GRAY + "[");
-
-				val iterator = GametypeManager.getGametypes().values().iterator();
-
-				while (iterator.hasNext()) {
-					gametype = iterator.next();
-					sb.append(CC.GREEN + gametype.getName());
-
-					if (iterator.hasNext())
-						sb.append(CC.GRAY + ", ");
-				}
-
-				sb.append(CC.GRAY + "]");
-
-				player.sendMessage(sb.toString());
-				return;
-			case "arena":
-				if (args.length < 2) {
-					UsageMessages.GAMETYPE_ARENA.send(player);
-					return;
-				}
-
-				gametypeName = args[1];
-				gametype = GametypeManager.getGametypeByName(gametypeName);
-
-				if (gametype == null) {
-					ErrorMessages.GAMETYPE_DOES_NOT_EXIST.send(player);
-					return;
-				}
-
-				val profile = ProfileManager.getOrCreateProfile(player);
-
-				profile.openMenu(new GametypeArenaEnableMenu(gametype));
-
-				return;
-			case "event":
-				if (args.length < 3) {
-					UsageMessages.GAMETYPE_EVENT.send(player);
-					return;
-				}
-
-				gametypeName = args[1];
-				gametype = GametypeManager.getGametypeByName(gametypeName);
-
-				if (gametype == null) {
-					ErrorMessages.GAMETYPE_DOES_NOT_EXIST.send(player);
-					return;
-				}
-
-				toggled = args[2].toLowerCase();
-
-				switch (toggled) {
-					case "false":
-						gametype.setEvent(false);
-						break;
-					case "true":
-						gametype.setEvent(true);
-						break;
-					default:
-						UsageMessages.GAMETYPE_EVENT.send(player);
-						return;
-				}
-
-				ChatMessages.GAMETYPE_EVENT_SET.clone().replace("%gametype%", gametypeName)
-						.replace("%toggled%", toggled).send(player);
-
-				return;
-			case "seteventarena":
-				if (args.length < 3) {
-					UsageMessages.GAMETYPE_EVENT_ARENA.send(player);
-					return;
-				}
-
-				gametypeName = args[1];
-				gametype = GametypeManager.getGametypeByName(gametypeName);
-
-				if (gametype == null) {
-					ErrorMessages.GAMETYPE_DOES_NOT_EXIST.send(player);
-					return;
-				}
-
-				arenaName = args[2];
-				arena = ArenaManager.getArenaByName(arenaName);
-
-				if (arena == null) {
-					ErrorMessages.ARENA_DOES_NOT_EXIST.send(player);
-					return;
-				}
-
-				gametype.setEventArena(arena.getId());
-				ChatMessages.GAMETYPE_EVENT_ARENA_SET.clone().replace("%gametype%", gametypeName)
-						.replace("%arena%", arenaName).send(player);
-				return;
-
-			case "enablearenaforall":
-				if (args.length < 3) {
-					UsageMessages.GAMETYPE_ARENA_FOR_ALL.send(player);
-					return;
-				}
-
-				arenaName = args[1];
-				arena = ArenaManager.getArenaByName(arenaName);
-
-				if (arena == null) {
-					ErrorMessages.ARENA_DOES_NOT_EXIST.send(player);
-					return;
-				}
-
-				toggled = args[2].toLowerCase();
-
-				switch (toggled) {
-					case "false":
-						for (Gametype g : GametypeManager.getGametypes().values())
-							g.enableArena(arena, false);
-
-						break;
-					case "true":
-						for (Gametype g : GametypeManager.getGametypes().values())
-							g.enableArena(arena, true);
-
-						break;
-					default:
-						UsageMessages.GAMETYPE_ARENA_FOR_ALL.send(player);
-						return;
-				}
-
-				ChatMessages.GAMETYPE_ARENA_FOR_ALL_SET.clone().replace("%arena%", arenaName)
-						.replace("%toggled%", toggled).send(player);
-				return;
-			case "delete":
-				if (args.length < 2) {
-					UsageMessages.GAMETYPE_DELETE.send(player);
-					return;
-				}
-
-				gametypeName = args[1];
-				gametype = GametypeManager.getGametypeByName(gametypeName);
-
-				if (gametype == null) {
-					ErrorMessages.GAMETYPE_DOES_NOT_EXIST.send(player);
-					return;
-				}
-
-				GametypeManager.remove(gametype);
-				ChatMessages.GAMETYPE_DELETED.clone().replace("%gametype%", gametypeName).send(player);
-
-				return;
-		}
-	}
+    public GametypeCommand() {
+        super("gametype", "practice.config");
+    }
+
+    @Override
+    public void execute(Player player, String[] args) {
+
+        val arg = args.length > 0 ? args[0] : "";
+
+        Gametype gametype;
+        Arena arena;
+        String gametypeName, toggled, arenaName;
+        StringBuilder sb;
+
+        switch (arg.toLowerCase()) {
+            default:
+                ChatMessages.GAMETYPE_COMMANDS.send(player);
+                ChatMessages.GAMETYPE_CREATE.send(player);
+                ChatMessages.GAMETYPE_KIT.send(player);
+                ChatMessages.GAMETYPE_LOAD_KIT.send(player);
+                ChatMessages.GAMETYPE_DAMAGE_TICKS.send(player);
+                ChatMessages.GAMETYPE_BUILD_LIMIT.send(player);
+                ChatMessages.GAMETYPE_GRIEFING.send(player);
+                ChatMessages.GAMETYPE_BUILD.send(player);
+                ChatMessages.GAMETYPE_LOOTING.send(player);
+                ChatMessages.GAMETYPE_DAMAGE.send(player);
+                ChatMessages.GAMETYPE_HUNGER.send(player);
+                ChatMessages.GAMETYPE_BOXING.send(player);
+                ChatMessages.GAMETYPE_BOTS.send(player);
+                ChatMessages.GAMETYPE_REGEN.send(player);
+                ChatMessages.GAMETYPE_EPEARL.send(player);
+                ChatMessages.GAMETYPE_ARENA_FOR_ALL.send(player);
+                ChatMessages.GAMETYPE_DISPLAY.send(player);
+                ChatMessages.GAMETYPE_QUEUE.send(player);
+                ChatMessages.GAMETYPE_LIST.send(player);
+                ChatMessages.GAMETYPE_ARENA.send(player);
+                ChatMessages.GAMETYPE_EVENT_ARENA.send(player);
+                ChatMessages.GAMETYPE_EVENT.send(player);
+                ChatMessages.GAMETYPE_DEADLY_WATER.send(player);
+                ChatMessages.GAMETYPE_DELETE.send(player);
+                return;
+            case "create":
+                if (args.length < 2) {
+                    UsageMessages.GAMETYPE_CREATE.send(player);
+                    return;
+                }
+
+                gametypeName = args[1];
+
+                if (GametypeManager.getGametypeByName(gametypeName) != null) {
+                    ErrorMessages.GAMETYPE_ALREADY_EXISTS.send(player);
+                    return;
+                }
+
+                gametype = new Gametype(gametypeName, GametypeManager.CURRENT_ID++);
+                gametype.setDefaults();
+                GametypeManager.registerGametype(gametype);
+                ChatMessages.GAMETYPE_CREATED.clone().replace("%gametype%", gametypeName).send(player);
+                return;
+            case "loadkit":
+                if (args.length < 2) {
+                    UsageMessages.GAMETYPE_LOAD_KIT.send(player);
+                    return;
+                }
+
+                gametypeName = args[1];
+                gametype = GametypeManager.getGametypeByName(gametypeName);
+
+                if (gametype == null) {
+                    ErrorMessages.GAMETYPE_DOES_NOT_EXIST.send(player);
+                    return;
+                }
+
+                player.getInventory().setContents(gametype.getKit().getContents());
+                player.getInventory().setArmorContents(gametype.getKit().getArmourContents());
+                ChatMessages.GAMETYPE_LOADED_KIT.clone().replace("%gametype%", gametypeName).send(player);
+
+                return;
+            case "kit":
+                if (args.length < 2) {
+                    UsageMessages.GAMETYPE_KIT.send(player);
+                    return;
+                }
+
+                gametypeName = args[1];
+                gametype = GametypeManager.getGametypeByName(gametypeName);
+
+                if (gametype == null) {
+                    ErrorMessages.GAMETYPE_DOES_NOT_EXIST.send(player);
+                    return;
+                }
+
+                val contents = player.getInventory().getContents();
+                val armourContents = player.getInventory().getArmorContents();
+
+                gametype.setKit(new Kit(gametype.getName(), contents, armourContents));
+                ChatMessages.GAMETYPE_KIT_SET.clone().replace("%gametype%", gametypeName).send(player);
+
+                return;
+            case "setdisplay":
+                if (args.length < 2) {
+                    UsageMessages.GAMETYPE_DISPLAY.send(player);
+                    return;
+                }
+
+                gametypeName = args[1];
+                gametype = GametypeManager.getGametypeByName(gametypeName);
+
+                if (gametype == null) {
+                    ErrorMessages.GAMETYPE_DOES_NOT_EXIST.send(player);
+                    return;
+                }
+
+                gametype.setDisplayItem(player.getItemInHand());
+
+                if (args.length > 2)
+                    gametype.setDisplayName(args[2].replace("&", "§"));
+
+                ChatMessages.GAMETYPE_DISPLAY_SET.clone().replace("%gametype%", gametypeName).send(player);
+                return;
+            case "hitdelay":
+            case "nodamageticks":
+                if (args.length < 3) {
+                    UsageMessages.GAMETYPE_DAMAGE_TICKS.send(player);
+                    return;
+                }
+
+                gametypeName = args[1];
+                gametype = GametypeManager.getGametypeByName(gametypeName);
+
+                if (gametype == null) {
+                    ErrorMessages.GAMETYPE_DOES_NOT_EXIST.send(player);
+                    return;
+                }
+
+                val noDamageTicksStr = args[2];
+
+                int ndt;
+
+                try {
+                    ndt = Integer.parseInt(noDamageTicksStr);
+                } catch (Exception e) {
+                    ErrorMessages.INVALID_NUMBER.send(player);
+                    return;
+                }
+
+                gametype.setNoDamageTicks(ndt);
+                ChatMessages.GAMETYPE_DAMAGE_TICKS_SET.clone().replace("%gametype%", gametypeName).replace("%delay%",
+                        noDamageTicksStr).send(player);
+                return;
+            case "buildlimit":
+                if (args.length < 3) {
+                    UsageMessages.GAMETYPE_BUILD_LIMIT.send(player);
+                    return;
+                }
+
+                gametypeName = args[1];
+                gametype = GametypeManager.getGametypeByName(gametypeName);
+
+                if (gametype == null) {
+                    ErrorMessages.GAMETYPE_DOES_NOT_EXIST.send(player);
+                    return;
+                }
+
+                val buildLimitStr = args[2];
+
+                int bl;
+
+                try {
+                    bl = Integer.parseInt(buildLimitStr);
+                } catch (Exception e) {
+                    ErrorMessages.INVALID_NUMBER.send(player);
+                    return;
+                }
+
+                gametype.setBuildLimit(bl);
+                ChatMessages.GAMETYPE_BUILD_LIMIT_SET.clone().replace("%gametype%", gametypeName).replace("%limit%",
+                        buildLimitStr).send(player);
+                return;
+            case "bots":
+                if (args.length < 3) {
+                    UsageMessages.GAMETYPE_BOTS.send(player);
+                    return;
+                }
+
+                gametypeName = args[1];
+                gametype = GametypeManager.getGametypeByName(gametypeName);
+
+                if (gametype == null) {
+                    ErrorMessages.GAMETYPE_DOES_NOT_EXIST.send(player);
+                    return;
+                }
+
+                toggled = args[2].toLowerCase();
+
+                switch (toggled) {
+                    case "false":
+                        gametype.setBotsEnabled(false);
+                        break;
+                    case "true":
+                        gametype.setBotsEnabled(true);
+                        break;
+                    default:
+                        UsageMessages.GAMETYPE_BOTS.send(player);
+                        return;
+                }
+
+                ChatMessages.GAMETYPE_BOTS_SET.clone().replace("%gametype%", gametypeName)
+                        .replace("%toggled%", toggled).send(player);
+                return;
+            case "regen":
+                if (args.length < 3) {
+                    UsageMessages.GAMETYPE_REGEN.send(player);
+                    return;
+                }
+
+                gametypeName = args[1];
+                gametype = GametypeManager.getGametypeByName(gametypeName);
+
+                if (gametype == null) {
+                    ErrorMessages.GAMETYPE_DOES_NOT_EXIST.send(player);
+                    return;
+                }
+
+                toggled = args[2].toLowerCase();
+
+                switch (toggled) {
+                    case "false":
+                        gametype.setRegeneration(false);
+                        break;
+                    case "true":
+                        gametype.setRegeneration(true);
+                        break;
+                    default:
+                        UsageMessages.GAMETYPE_REGEN.send(player);
+                        return;
+                }
+
+                ChatMessages.GAMETYPE_REGEN_SET.clone().replace("%gametype%", gametypeName)
+                        .replace("%toggled%", toggled).send(player);
+                return;
+            case "griefing":
+                if (args.length < 3) {
+                    UsageMessages.GAMETYPE_GRIEFING.send(player);
+                    return;
+                }
+
+                gametypeName = args[1];
+                gametype = GametypeManager.getGametypeByName(gametypeName);
+
+                if (gametype == null) {
+                    ErrorMessages.GAMETYPE_DOES_NOT_EXIST.send(player);
+                    return;
+                }
+
+                toggled = args[2].toLowerCase();
+
+                switch (toggled) {
+                    case "false":
+                        gametype.setGriefing(false);
+                        break;
+                    case "true":
+                        gametype.setGriefing(true);
+                        break;
+                    default:
+                        UsageMessages.GAMETYPE_GRIEFING.send(player);
+                        return;
+                }
+
+                ChatMessages.GAMETYPE_GRIEFING_SET.clone().replace("%gametype%", gametypeName)
+                        .replace("%toggled%", toggled).send(player);
+
+                return;
+            case "queue":
+                if (args.length < 4) {
+                    UsageMessages.GAMETYPE_QUEUE.send(player);
+                    return;
+                }
+
+                gametypeName = args[1];
+                gametype = GametypeManager.getGametypeByName(gametypeName);
+
+                if (gametype == null) {
+                    ErrorMessages.GAMETYPE_DOES_NOT_EXIST.send(player);
+                    return;
+                }
+
+                val queuetypeName = args[2];
+                val queuetype = QueuetypeManager.getQueuetypeByName(queuetypeName);
+
+                if (queuetype == null) {
+                    ErrorMessages.QUEUETYPE_DOES_NOT_EXIST.send(player);
+                    return;
+                }
+
+                val slotName = args[3];
+
+                if (slotName.equalsIgnoreCase("false")) {
+                    gametype.removeFromQueuetype(queuetype);
+                } else {
+                    int slot;
+
+                    try {
+                        slot = Integer.parseInt(slotName);
+                    } catch (Exception e) {
+                        ErrorMessages.INVALID_SLOT.send(player);
+                        return;
+                    }
+
+                    gametype.addToQueuetype(queuetype, slot);
+                }
+
+                ChatMessages.GAMETYPE_SLOT_SET.clone().replace("%gametype%", gametypeName)
+                        .replace("%queuetype%", queuetypeName).replace("%slot%", slotName).send(player);
+                return;
+            case "build":
+                if (args.length < 3) {
+                    UsageMessages.GAMETYPE_BUILD.send(player);
+                    return;
+                }
+
+                gametypeName = args[1];
+                gametype = GametypeManager.getGametypeByName(gametypeName);
+
+                if (gametype == null) {
+                    ErrorMessages.GAMETYPE_DOES_NOT_EXIST.send(player);
+                    return;
+                }
+
+                toggled = args[2].toLowerCase();
+
+                switch (toggled) {
+                    case "false":
+                        gametype.setBuild(false);
+                        break;
+                    case "true":
+                        gametype.setBuild(true);
+                        break;
+                    default:
+                        UsageMessages.GAMETYPE_BUILD.send(player);
+                        return;
+                }
+
+                ChatMessages.GAMETYPE_BUILD_SET.clone().replace("%gametype%", gametypeName)
+                        .replace("%toggled%", toggled).send(player);
+
+                return;
+            case "deadlywater":
+                if (args.length < 3) {
+                    UsageMessages.GAMETYPE_DEADLY_WATER.send(player);
+                    return;
+                }
+
+                gametypeName = args[1];
+                gametype = GametypeManager.getGametypeByName(gametypeName);
+
+                if (gametype == null) {
+                    ErrorMessages.GAMETYPE_DOES_NOT_EXIST.send(player);
+                    return;
+                }
+
+                toggled = args[2].toLowerCase();
+
+                switch (toggled) {
+                    case "false":
+                        gametype.setDeadlyWater(false);
+                        break;
+                    case "true":
+                        gametype.setDeadlyWater(true);
+                        break;
+                    default:
+                        UsageMessages.GAMETYPE_DEADLY_WATER.send(player);
+                        return;
+                }
+
+                ChatMessages.GAMETYPE_DEADLY_WATER_SET.clone().replace("%gametype%", gametypeName)
+                        .replace("%toggled%", toggled).send(player);
+
+                return;
+            case "looting":
+                if (args.length < 3) {
+                    UsageMessages.GAMETYPE_LOOTING.send(player);
+                    return;
+                }
+
+                gametypeName = args[1];
+                gametype = GametypeManager.getGametypeByName(gametypeName);
+
+                if (gametype == null) {
+                    ErrorMessages.GAMETYPE_DOES_NOT_EXIST.send(player);
+                    return;
+                }
+
+                toggled = args[2].toLowerCase();
+
+                switch (toggled) {
+                    case "false":
+                        gametype.setLooting(false);
+                        break;
+                    case "true":
+                        gametype.setLooting(true);
+                        break;
+                    default:
+                        UsageMessages.GAMETYPE_LOOTING.send(player);
+                        return;
+                }
+
+                ChatMessages.GAMETYPE_LOOTING_SET.clone().replace("%gametype%", gametypeName)
+                        .replace("%toggled%", toggled).send(player);
+
+                return;
+            case "damage":
+                if (args.length < 3) {
+                    UsageMessages.GAMETYPE_DAMAGE.send(player);
+                    return;
+                }
+
+                gametypeName = args[1];
+                gametype = GametypeManager.getGametypeByName(gametypeName);
+
+                if (gametype == null) {
+                    ErrorMessages.GAMETYPE_DOES_NOT_EXIST.send(player);
+                    return;
+                }
+
+                toggled = args[2].toLowerCase();
+
+                switch (toggled) {
+                    case "false":
+                        gametype.setDamage(false);
+                        break;
+                    case "true":
+                        gametype.setDamage(true);
+                        break;
+                    default:
+                        UsageMessages.GAMETYPE_DAMAGE.send(player);
+                        return;
+                }
+
+                ChatMessages.GAMETYPE_DAMAGE_SET.clone().replace("%gametype%", gametypeName)
+                        .replace("%toggled%", toggled).send(player);
+
+                return;
+            case "hunger":
+                if (args.length < 3) {
+                    UsageMessages.GAMETYPE_HUNGER.send(player);
+                    return;
+                }
+
+                gametypeName = args[1];
+                gametype = GametypeManager.getGametypeByName(gametypeName);
+
+                if (gametype == null) {
+                    ErrorMessages.GAMETYPE_DOES_NOT_EXIST.send(player);
+                    return;
+                }
+
+                toggled = args[2].toLowerCase();
+
+                switch (toggled) {
+                    case "false":
+                        gametype.setHunger(false);
+                        break;
+                    case "true":
+                        gametype.setHunger(true);
+                        break;
+                    default:
+                        UsageMessages.GAMETYPE_HUNGER.send(player);
+                        return;
+                }
+
+                ChatMessages.GAMETYPE_HUNGER_SET.clone().replace("%gametype%", gametypeName)
+                        .replace("%toggled%", toggled).send(player);
+
+                return;
+            case "boxing":
+                if (args.length < 3) {
+                    UsageMessages.GAMETYPE_BOXING.send(player);
+                    return;
+                }
+
+                gametypeName = args[1];
+                gametype = GametypeManager.getGametypeByName(gametypeName);
+
+                if (gametype == null) {
+                    ErrorMessages.GAMETYPE_DOES_NOT_EXIST.send(player);
+                    return;
+                }
+
+                toggled = args[2].toLowerCase();
+
+                switch (toggled) {
+                    case "false":
+                        gametype.setBoxing(false);
+                        break;
+                    case "true":
+                        gametype.setBoxing(true);
+                        break;
+                    default:
+                        UsageMessages.GAMETYPE_BOXING.send(player);
+                        return;
+                }
+
+                ChatMessages.GAMETYPE_BOXING_SET.clone().replace("%gametype%", gametypeName)
+                        .replace("%toggled%", toggled).send(player);
+
+                return;
+            case "epearl":
+                if (args.length < 3) {
+                    UsageMessages.GAMETYPE_EPEARL.send(player);
+                    return;
+                }
+
+                gametypeName = args[1];
+                gametype = GametypeManager.getGametypeByName(gametypeName);
+
+                if (gametype == null) {
+                    ErrorMessages.GAMETYPE_DOES_NOT_EXIST.send(player);
+                    return;
+                }
+
+                val cooldownStr = args[2];
+
+                int number;
+
+                try {
+                    number = Integer.parseInt(cooldownStr);
+                } catch (Exception e) {
+                    ErrorMessages.INVALID_NUMBER.send(player);
+                    return;
+                }
+
+                gametype.setPearlCooldown(number);
+                ChatMessages.GAMETYPE_PEARL_COOLDOWN_SET.clone().replace("%gametype%", gametypeName)
+                        .replace("%cooldown%", cooldownStr).send(player);
+                return;
+            case "list":
+                sb = new StringBuilder(CC.GRAY + "[");
+
+                val iterator = GametypeManager.getGametypes().values().iterator();
+
+                while (iterator.hasNext()) {
+                    gametype = iterator.next();
+                    sb.append(CC.GREEN).append(gametype.getName());
+
+                    if (iterator.hasNext())
+                        sb.append(CC.GRAY).append(", ");
+                }
+
+                sb.append(CC.GRAY).append("]");
+
+                player.sendMessage(sb.toString());
+                return;
+            case "arena":
+                if (args.length < 2) {
+                    UsageMessages.GAMETYPE_ARENA.send(player);
+                    return;
+                }
+
+                gametypeName = args[1];
+                gametype = GametypeManager.getGametypeByName(gametypeName);
+
+                if (gametype == null) {
+                    ErrorMessages.GAMETYPE_DOES_NOT_EXIST.send(player);
+                    return;
+                }
+
+                val profile = ProfileManager.getOrCreateProfile(player);
+
+                profile.openMenu(new GametypeArenaEnableMenu(gametype));
+
+                return;
+            case "event":
+                if (args.length < 3) {
+                    UsageMessages.GAMETYPE_EVENT.send(player);
+                    return;
+                }
+
+                gametypeName = args[1];
+                gametype = GametypeManager.getGametypeByName(gametypeName);
+
+                if (gametype == null) {
+                    ErrorMessages.GAMETYPE_DOES_NOT_EXIST.send(player);
+                    return;
+                }
+
+                toggled = args[2].toLowerCase();
+
+                switch (toggled) {
+                    case "false":
+                        gametype.setEvent(false);
+                        break;
+                    case "true":
+                        gametype.setEvent(true);
+                        break;
+                    default:
+                        UsageMessages.GAMETYPE_EVENT.send(player);
+                        return;
+                }
+
+                ChatMessages.GAMETYPE_EVENT_SET.clone().replace("%gametype%", gametypeName)
+                        .replace("%toggled%", toggled).send(player);
+
+                return;
+            case "seteventarena":
+                if (args.length < 3) {
+                    UsageMessages.GAMETYPE_EVENT_ARENA.send(player);
+                    return;
+                }
+
+                gametypeName = args[1];
+                gametype = GametypeManager.getGametypeByName(gametypeName);
+
+                if (gametype == null) {
+                    ErrorMessages.GAMETYPE_DOES_NOT_EXIST.send(player);
+                    return;
+                }
+
+                arenaName = args[2];
+                arena = ArenaManager.getArenaByName(arenaName);
+
+                if (arena == null) {
+                    ErrorMessages.ARENA_DOES_NOT_EXIST.send(player);
+                    return;
+                }
+
+                gametype.setEventArena(arena.getId());
+                ChatMessages.GAMETYPE_EVENT_ARENA_SET.clone().replace("%gametype%", gametypeName)
+                        .replace("%arena%", arenaName).send(player);
+                return;
+
+            case "enablearenaforall":
+                if (args.length < 3) {
+                    UsageMessages.GAMETYPE_ARENA_FOR_ALL.send(player);
+                    return;
+                }
+
+                arenaName = args[1];
+                arena = ArenaManager.getArenaByName(arenaName);
+
+                if (arena == null) {
+                    ErrorMessages.ARENA_DOES_NOT_EXIST.send(player);
+                    return;
+                }
+
+                toggled = args[2].toLowerCase();
+
+                switch (toggled) {
+                    case "false":
+                        for (Gametype g : GametypeManager.getGametypes().values())
+                            g.enableArena(arena, false);
+
+                        break;
+                    case "true":
+                        for (Gametype g : GametypeManager.getGametypes().values())
+                            g.enableArena(arena, true);
+
+                        break;
+                    default:
+                        UsageMessages.GAMETYPE_ARENA_FOR_ALL.send(player);
+                        return;
+                }
+
+                ChatMessages.GAMETYPE_ARENA_FOR_ALL_SET.clone().replace("%arena%", arenaName)
+                        .replace("%toggled%", toggled).send(player);
+                return;
+            case "delete":
+                if (args.length < 2) {
+                    UsageMessages.GAMETYPE_DELETE.send(player);
+                    return;
+                }
+
+                gametypeName = args[1];
+                gametype = GametypeManager.getGametypeByName(gametypeName);
+
+                if (gametype == null) {
+                    ErrorMessages.GAMETYPE_DOES_NOT_EXIST.send(player);
+                    return;
+                }
+
+                GametypeManager.remove(gametype);
+                ChatMessages.GAMETYPE_DELETED.clone().replace("%gametype%", gametypeName).send(player);
+
+        }
+    }
 }

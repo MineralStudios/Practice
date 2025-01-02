@@ -1,13 +1,5 @@
 package gg.mineral.practice.gametype;
 
-import java.util.List;
-import java.util.Map;
-
-import java.util.UUID;
-import java.util.concurrent.CompletableFuture;
-
-import org.bukkit.inventory.ItemStack;
-
 import gg.mineral.api.collection.GlueList;
 import gg.mineral.api.config.FileConfiguration;
 import gg.mineral.practice.arena.Arena;
@@ -15,11 +7,7 @@ import gg.mineral.practice.category.Category;
 import gg.mineral.practice.entity.Profile;
 import gg.mineral.practice.entity.ProfileData;
 import gg.mineral.practice.kit.Kit;
-import gg.mineral.practice.managers.ArenaManager;
-import gg.mineral.practice.managers.CategoryManager;
-import gg.mineral.practice.managers.EloManager;
-import gg.mineral.practice.managers.GametypeManager;
-import gg.mineral.practice.managers.QueuetypeManager;
+import gg.mineral.practice.managers.*;
 import gg.mineral.practice.queue.QueuetypeMenuEntry;
 import gg.mineral.practice.util.SaveableData;
 import gg.mineral.practice.util.collection.LeaderboardMap;
@@ -32,6 +20,12 @@ import it.unimi.dsi.fastutil.objects.Object2ObjectOpenHashMap;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.val;
+import org.bukkit.inventory.ItemStack;
+
+import java.util.List;
+import java.util.Map;
+import java.util.UUID;
+import java.util.concurrent.CompletableFuture;
 
 public class Gametype implements SaveableData, QueuetypeMenuEntry {
     final FileConfiguration config = GametypeManager.getConfig();
@@ -48,7 +42,7 @@ public class Gametype implements SaveableData, QueuetypeMenuEntry {
     @Getter
     final String name;
     @Getter
-    int noDamageTicks, pearlCooldown;
+    int noDamageTicks, pearlCooldown, buildLimit;
     @Getter
     ByteSet arenas = new ByteOpenHashSet();
     @Getter
@@ -110,15 +104,6 @@ public class Gametype implements SaveableData, QueuetypeMenuEntry {
 
             return map;
         });
-    }
-
-    public void saveElo(ProfileData profile) {
-        int elo = eloMap.getInt(profile);
-
-        if (elo == 0)
-            return;
-
-        EloManager.update(profile, getName(), elo);
     }
 
     public Object2IntOpenHashMap<ProfileData> getEloCache() {
@@ -204,6 +189,11 @@ public class Gametype implements SaveableData, QueuetypeMenuEntry {
         save();
     }
 
+    public void setBuildLimit(int buildLimit) {
+        this.buildLimit = buildLimit;
+        save();
+    }
+
     public void setPearlCooldown(int pearlCooldown) {
         this.pearlCooldown = pearlCooldown;
         save();
@@ -276,6 +266,7 @@ public class Gametype implements SaveableData, QueuetypeMenuEntry {
         config.set(path + "Griefing", griefing);
         config.set(path + "DeadlyWater", deadlyWater);
         config.set(path + "NoDamageTicks", noDamageTicks);
+        config.set(path + "BuildLimit", buildLimit);
         config.set(path + "DisplayName", displayName);
         config.set(path + "DisplayItem", displayItem);
         config.set(path + "InCategory", inCategory);
@@ -334,6 +325,7 @@ public class Gametype implements SaveableData, QueuetypeMenuEntry {
         this.displayItem = config.getItemstack(path + "DisplayItem", ItemStacks.DEFAULT_GAMETYPE_DISPLAY_ITEM);
         this.displayName = config.getString(path + "DisplayName", getName());
         this.noDamageTicks = config.getInt(path + "NoDamageTicks", 20);
+        this.buildLimit = config.getInt(path + "BuildLimit", 16);
         this.deadlyWater = config.getBoolean(path + "DeadlyWater", false);
         this.griefing = config.getBoolean(path + "Griefing", false);
         this.build = config.getBoolean(path + "Build", false);
@@ -408,6 +400,7 @@ public class Gametype implements SaveableData, QueuetypeMenuEntry {
         this.displayItem = ItemStacks.DEFAULT_GAMETYPE_DISPLAY_ITEM;
         this.displayName = getName();
         this.noDamageTicks = 20;
+        this.buildLimit = 16;
         this.deadlyWater = false;
         this.griefing = false;
         this.build = false;

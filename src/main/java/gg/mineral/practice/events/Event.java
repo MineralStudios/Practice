@@ -35,7 +35,7 @@ public class Event implements Spectatable {
     MatchData matchData;
     int round = 1;
     @Getter
-    String host;
+    private final String host;
     @Getter
     boolean started = false, ended = false;
     @Getter

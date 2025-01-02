@@ -1,27 +1,17 @@
 package gg.mineral.practice.util.messages;
 
-import org.bukkit.entity.Player;
-
 import lombok.val;
 import net.md_5.bungee.api.chat.ClickEvent;
 import net.md_5.bungee.api.chat.HoverEvent;
 import net.md_5.bungee.api.chat.TextComponent;
+import org.bukkit.entity.Player;
 
 public class ClickableChatMessage extends ChatMessage {
+    private ClickEvent clickEvent;
+    private HoverEvent hoverEvent;
 
-    ClickEvent clickEvent;
-    HoverEvent hoverEvent;
-
-    ClickableChatMessage(String s) {
-        super(s);
-    }
-
-    public ClickableChatMessage(String s, String c, boolean bold) {
-        super(s, c, bold);
-    }
-
-    public ClickableChatMessage(String s, String c) {
-        super(s, c);
+    public ClickableChatMessage(String string, String colorPrefix) {
+        super(string, colorPrefix);
     }
 
     public ClickableChatMessage setTextEvent(ClickEvent clickEvent, HoverEvent hoverEvent) {
@@ -31,8 +21,20 @@ public class ClickableChatMessage extends ChatMessage {
     }
 
     @Override
+    public ClickableChatMessage replace(String target, String replacement) {
+        super.replace(target, replacement);
+        return this;
+    }
+
+    @Override
+    public ClickableChatMessage highlightText(String c, String... highlighted) {
+        super.highlightText(c, highlighted);
+        return this;
+    }
+
+    @Override
     public void send(Player p) {
-        TextComponent component = new TextComponent(message);
+        val component = new TextComponent(toString());
 
         if (clickEvent != null)
             component.setClickEvent(clickEvent);
@@ -43,20 +45,8 @@ public class ClickableChatMessage extends ChatMessage {
         p.spigot().sendMessage(component);
     }
 
-    public ClickableChatMessage highlightText(String c, String... highlighted) {
-
-        for (val s : highlighted)
-            message = message.replace(s, c + s + this.addition);
-
-        return this;
-    }
-
+    @Override
     public ClickableChatMessage clone() {
-        return new ClickableChatMessage(message).setTextEvent(clickEvent, hoverEvent);
-    }
-
-    public ClickableChatMessage replace(String message, String replacement) {
-        this.message = this.message.replace(message, replacement);
-        return this;
+        return ((ClickableChatMessage) super.clone()).setTextEvent(clickEvent, hoverEvent);
     }
 }

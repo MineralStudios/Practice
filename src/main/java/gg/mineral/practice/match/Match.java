@@ -56,7 +56,7 @@ import java.util.function.Function;
 public class Match implements Spectatable {
 
     @Getter
-    ConcurrentLinkedDeque<Profile> spectators = new ConcurrentLinkedDeque<Profile>();
+    ConcurrentLinkedDeque<Profile> spectators = new ConcurrentLinkedDeque<>();
     @Getter
     ProfileList participants = new ProfileList();
     @Getter
@@ -90,6 +90,17 @@ public class Match implements Spectatable {
     public Match(MatchData matchData) {
         this.data = matchData;
         this.world = this.generateWorld();
+    }
+
+    public int getBuildLimit() {
+        val arena = ArenaManager.getArenas().get(data.getArenaId());
+
+        if (arena == null)
+            return 0;
+
+        int maxSpawnY = (int) Math.max(arena.getLocation1().getY(), arena.getLocation2().getY());
+
+        return maxSpawnY + data.getGametype().getBuildLimit();
     }
 
     public World generateWorld() {

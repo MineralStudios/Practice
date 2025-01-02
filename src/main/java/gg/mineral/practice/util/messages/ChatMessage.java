@@ -1,51 +1,53 @@
 package gg.mineral.practice.util.messages;
 
-import org.bukkit.entity.Player;
-
 import lombok.val;
 
 public class ChatMessage extends Message {
-	String addition;
+    protected String prefix;
 
-	ChatMessage(String s) {
-		message = s;
-	}
+    public ChatMessage(String string) {
+        this(string, "", false);
+    }
 
-	public ChatMessage(String s, String c, boolean bold) {
-		message = s;
-		formatMessage(c, bold);
-	}
+    public ChatMessage(String string, String colorPrefix, boolean bold) {
+        super(string);
+        formatMessage(colorPrefix, bold);
+    }
 
-	public ChatMessage(String s, String c) {
-		message = s;
-		formatMessage(c, false);
-	}
+    public ChatMessage(String string, String colorPrefix) {
+        this(string, colorPrefix, false);
+    }
 
-	protected void formatMessage(String c, boolean bold) {
-		this.addition = bold ? c + CC.B : c;
-		message = addition + message;
-	}
+    protected void formatMessage(String c, boolean bold) {
+        this.prefix = bold ? c + CC.B : c;
+        this.messageBuilder.insert(0, prefix);
+    }
 
-	public ChatMessage highlightText(String c, String... highlighted) {
+    public ChatMessage highlightText(String c, String... highlighted) {
+        for (val s : highlighted) {
+            int index = messageBuilder.indexOf(s);
+            while (index != -1) {
+                messageBuilder.replace(index, index + s.length(), c + s + this.prefix);
+                index = messageBuilder.indexOf(s, index + (c + s + this.prefix).length());
+            }
+        }
+        return this;
+    }
 
-		for (val s : highlighted)
-			message = message.replace(s, c + s + this.addition);
+    public ChatMessage replace(String target, String replacement) {
+        int index = messageBuilder.indexOf(target);
+        if (index == -1) {
+            throw new AssertionError("Target string not found in the message.");
+        }
+        while (index != -1) {
+            messageBuilder.replace(index, index + target.length(), replacement);
+            index = messageBuilder.indexOf(target, index + replacement.length());
+        }
+        return this;
+    }
 
-		return this;
-	}
-
-	public ChatMessage replace(String message, String replacement) {
-		this.message = this.message.replace(message, replacement);
-		return this;
-	}
-
-	public ChatMessage clone() {
-		return new ChatMessage(message);
-	}
-
-	@Override
-	public void send(Player p) {
-		p.sendMessage(message);
-		return;
-	}
+    @Override
+    public ChatMessage clone() {
+        return new ChatMessage(this.messageBuilder.toString(), this.prefix);
+    }
 }

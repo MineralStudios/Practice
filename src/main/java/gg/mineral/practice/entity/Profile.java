@@ -63,7 +63,7 @@ public class Profile extends ProfileData implements QueuedEntity {
     private ScoreboardHandler scoreboardHandler;
     private final int scoreboardTaskId;
     private final int fakeBlockTaskId;
-    private QueueSettings queueSettings;
+    private final QueueSettings queueSettings;
     private DuelSettings duelSettings;
     private final SpectateHandler spectateHandler = new SpectateHandler(this);
     private final RequestHandler requestHandler = new RequestHandler(this);
@@ -472,10 +472,6 @@ public class Profile extends ProfileData implements QueuedEntity {
             }
         });
 
-    }
-
-    public void resetQueueSettings() {
-        queueSettings = new QueueSettings();
     }
 
     public void resetDuelSettings() {

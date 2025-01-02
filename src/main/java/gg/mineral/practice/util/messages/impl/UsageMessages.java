@@ -8,7 +8,6 @@ public class UsageMessages {
     public static final UsageMessage ARENA_SPAWN = new UsageMessage("/arena spawn <Arena> <1/2/Waiting>");
     public static final UsageMessage ARENA_DISPLAY = new UsageMessage("/arena setdisplay <Arena> <DisplayName>");
     public static final UsageMessage ARENA_TP = new UsageMessage("/arena tp <Arena>");
-    public static final UsageMessage ARENA_WAITING_LOC = new UsageMessage("/arena waitinglocation <Arena>");
     public static final UsageMessage ARENA_DELETE = new UsageMessage("/arena delete <Arena>");
     // Category Command
     public static final UsageMessage CATEGORY_CREATE = new UsageMessage("/category create <Name>");
@@ -27,6 +26,8 @@ public class UsageMessages {
             "/gametype setdisplay <Gametype> <DisplayName>");
     public static final UsageMessage GAMETYPE_DAMAGE_TICKS = new UsageMessage(
             "/gametype nodamageticks <Gametype> <Ticks>");
+    public static final UsageMessage GAMETYPE_BUILD_LIMIT = new UsageMessage(
+            "/gametype buildlimit <Gametype> <Height>");
     public static final UsageMessage GAMETYPE_REGEN = new UsageMessage("/gametype regen <Gametype> <True/False>");
     public static final UsageMessage GAMETYPE_BOTS = new UsageMessage("/gametype bots <Gametype> <True/False>");
     public static final UsageMessage GAMETYPE_GRIEFING = new UsageMessage(
@@ -58,10 +59,6 @@ public class UsageMessages {
     public static final UsageMessage PARTIES_ENABLE = new UsageMessage("/parties enable <True/False>");
     public static final UsageMessage PARTIES_DISPLAY = new UsageMessage("/parties setdisplay <DisplayName>");
     public static final UsageMessage PARTIES_SLOT = new UsageMessage("/parties slot <Slot>");
-    // PvP Bots Command
-    public static final UsageMessage PVP_BOTS_ENABLE = new UsageMessage("/pvpbots enable <True/False>");
-    public static final UsageMessage PVP_BOTS_DISPLAY = new UsageMessage("/pvpbots setdisplay <DisplayName>");
-    public static final UsageMessage PVP_BOTS_SLOT = new UsageMessage("/pvpbots slot <Slot>");
     // Queuetype Command
     public static final UsageMessage QUEUETYPE_CREATE = new UsageMessage("/queuetype create <Name>");
     public static final UsageMessage QUEUETYPE_DISPLAY = new UsageMessage(

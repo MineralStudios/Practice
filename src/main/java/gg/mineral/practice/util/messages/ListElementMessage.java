@@ -8,7 +8,8 @@ public class ListElementMessage extends ChatMessage {
 
     @Override
     protected void formatMessage(String c, boolean bold) {
-        this.addition = CC.ACCENT + "✱ " + c;
-        message = addition + message + CC.SECONDARY;
+        this.prefix = CC.ACCENT + "✱ " + c;
+        this.messageBuilder.insert(0, prefix);
+        this.messageBuilder.append(CC.SECONDARY);
     }
 }
