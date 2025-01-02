@@ -47,6 +47,6 @@ public class ClickableChatMessage extends ChatMessage {
 
     @Override
     public ClickableChatMessage clone() {
-        return ((ClickableChatMessage) super.clone()).setTextEvent(clickEvent, hoverEvent);
+        return new ClickableChatMessage(this.messageBuilder.toString(), this.prefix).setTextEvent(clickEvent, hoverEvent);
     }
 }

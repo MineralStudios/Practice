@@ -5,13 +5,14 @@ import gg.mineral.practice.match.TeamMatch;
 import gg.mineral.practice.scoreboard.Scoreboard;
 import gg.mineral.practice.scoreboard.ScoreboardHandler;
 import gg.mineral.practice.util.messages.CC;
+import org.jetbrains.annotations.NotNull;
 
 public class TeamBoxingScoreboard
         implements Scoreboard {
     public static final Scoreboard INSTANCE = new TeamBoxingScoreboard();
 
     @Override
-    public void updateBoard(ScoreboardHandler board, Profile profile) {
+    public void updateBoard(ScoreboardHandler board, @NotNull Profile profile) {
         board.updateTitle(CC.PRIMARY + CC.B + "Mineral");
         if (profile.getMatch() instanceof TeamMatch match) {
             boolean isTeam1 = match.getTeam1Players().all().contains(profile);

@@ -104,7 +104,7 @@ public class Profile extends ProfileData implements QueuedEntity {
         this.scoreboardHandler = new ScoreboardHandler(player);
 
         scoreboardTaskId = Bukkit.getServer().getScheduler().scheduleSyncRepeatingTask(PracticePlugin.INSTANCE, () -> {
-            if (getScoreboard() != null && scoreboardHandler != null)
+            if (getScoreboard() != null && scoreboardHandler != null && !scoreboardHandler.isDeleted())
                 getScoreboard().updateBoard(scoreboardHandler, this);
         }, 0, 10);
 
