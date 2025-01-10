@@ -1,6 +1,7 @@
 package gg.mineral.practice.listeners;
 
 import gg.mineral.bot.api.BotAPI;
+import gg.mineral.practice.entity.PlayerStatus;
 import gg.mineral.practice.managers.EloManager;
 import gg.mineral.practice.managers.ProfileManager;
 import gg.mineral.practice.scoreboard.impl.DefaultScoreboard;
@@ -28,14 +29,8 @@ public class EntryListener implements Listener {
         EloManager.updateName(profile);
         profile.getInventory().setInventoryForLobby();
         profile.removePotionEffects();
-        profile.updateVisibility();
-
+        profile.setPlayerStatus(PlayerStatus.IDLE);
         profile.setScoreboard(DefaultScoreboard.INSTANCE);
-
-        boolean canFly = profile.getPlayerStatus().getCanFly().apply(profile);
-
-        profile.getPlayer().setAllowFlight(canFly);
-        profile.getPlayer().setFlying(canFly);
     }
 
     @EventHandler

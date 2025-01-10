@@ -1,6 +1,5 @@
 package gg.mineral.practice.entity;
 
-import com.google.common.collect.Sets;
 import gg.mineral.bot.api.BotAPI;
 import gg.mineral.practice.PracticePlugin;
 import gg.mineral.practice.duel.DuelSettings;
@@ -49,7 +48,10 @@ import org.bukkit.inventory.ItemStack;
 import org.eclipse.jdt.annotation.NonNull;
 import org.eclipse.jdt.annotation.Nullable;
 
-import java.util.*;
+import java.util.Collections;
+import java.util.LinkedList;
+import java.util.Queue;
+import java.util.UUID;
 
 @Getter
 public class Profile extends ProfileData implements QueuedEntity {
@@ -91,9 +93,6 @@ public class Profile extends ProfileData implements QueuedEntity {
 
     @Getter
     private final ObjectOpenHashSet<UUID> visiblePlayersOnTab = new ObjectOpenHashSet<>();
-
-    @Getter
-    private final Set<UUID> setVisiblePlayersOnTab = Sets.newConcurrentHashSet();
 
     public Profile(org.bukkit.entity.Player player) {
         super(player.getUniqueId(), player.getName());
@@ -251,25 +250,7 @@ public class Profile extends ProfileData implements QueuedEntity {
     }
 
     public boolean testTabVisibility(UUID uuid) {
-
-        val isBot = BotAPI.INSTANCE.isFakePlayer(uuid);
-
-        if (!isBot)
-            return true;
-
-        val match = this.getMatch();
-        if (playerStatus == PlayerStatus.FIGHTING
-                && match != null && match.getParticipants().get(uuid) != null)
-            return true;
-
-        val spectatable = spectateHandler.getSpectatable();
-
-        if (spectatable != null)
-            if ((playerStatus == PlayerStatus.FOLLOWING || playerStatus == PlayerStatus.SPECTATING)
-                    && spectatable.getParticipants().get(uuid) != null)
-                return true;
-
-        return uuid == this.getUuid();
+        return !BotAPI.INSTANCE.isFakePlayer(uuid) || player.getWorld().getPlayers().stream().anyMatch(p -> p.getUniqueId().equals(uuid));
     }
 
     public void message(Message m) {
@@ -396,9 +377,7 @@ public class Profile extends ProfileData implements QueuedEntity {
     }
 
     public void setPlayerStatus(PlayerStatus newPlayerStatus) {
-        if (this.playerStatus == newPlayerStatus)
-            return;
-        val canFly = newPlayerStatus.getCanFly().apply(this);
+        val canFly = newPlayerStatus.canFly(this);
 
         this.getPlayer().setAllowFlight(canFly);
         this.getPlayer().setFlying(canFly);
@@ -411,14 +390,13 @@ public class Profile extends ProfileData implements QueuedEntity {
     public void setGameMode(GameMode gameMode) {
         this.player.setGameMode(gameMode);
 
-        val canFly = this.playerStatus.getCanFly().apply(this);
+        val canFly = this.playerStatus.canFly(this);
 
         this.getPlayer().setAllowFlight(canFly);
         this.getPlayer().setFlying(canFly);
     }
 
     public void removeFromTab(UUID uuid) {
-        setVisiblePlayersOnTab.remove(uuid);
         if (!visiblePlayersOnTab.contains(uuid))
             return;
 
@@ -431,7 +409,6 @@ public class Profile extends ProfileData implements QueuedEntity {
     }
 
     public void showOnTab(UUID uuid) {
-        setVisiblePlayersOnTab.add(uuid);
         if (visiblePlayersOnTab.contains(uuid))
             return;
 
@@ -442,11 +419,35 @@ public class Profile extends ProfileData implements QueuedEntity {
                     new PacketPlayOutPlayerInfo(EnumPlayerInfoAction.ADD_PLAYER, craftPlayer.getHandle()));
     }
 
+    public boolean testVisibility(UUID uuid) {
+
+        if (playerStatus == PlayerStatus.KIT_CREATOR || playerStatus == PlayerStatus.KIT_EDITOR)
+            return false;
+
+        boolean inLobby = playerStatus == PlayerStatus.IDLE || playerStatus == PlayerStatus.QUEUEING;
+
+        if (inLobby) {
+            if (!this.isPlayersVisible())
+                return false;
+
+            val p = ProfileManager.getProfile(uuid);
+            return p == null || p.getPlayer().hasPermission("practice.visible");
+        }
+
+        return true;
+    }
+
     public void updateVisibility() {
 
+        for (val uuid : getPlayer().getHiddenPlayers()) {
+            val player = Bukkit.getPlayer(uuid);
+            if (player == null)
+                continue;
+            this.getPlayer().showPlayer(player);
+        }
+
         Bukkit.getScheduler().scheduleSyncDelayedTask(PracticePlugin.INSTANCE, () -> {
-            getPlayer().getHiddenPlayers().clear();
-            for (val uuid : getSetVisiblePlayersOnTab())
+            for (val uuid : getVisiblePlayersOnTab())
                 if (!testTabVisibility(uuid))
                     removeFromTab(uuid);
 
@@ -464,6 +465,16 @@ public class Profile extends ProfileData implements QueuedEntity {
 
                 if (profile == null)
                     continue;
+
+                if (testVisibility(uuid))
+                    this.getPlayer().showPlayer(profile.getPlayer());
+                else
+                    this.getPlayer().hidePlayer(profile.getPlayer(), false);
+
+                if (profile.testVisibility(this.uuid))
+                    profile.getPlayer().showPlayer(player);
+                else
+                    profile.getPlayer().hidePlayer(player, false);
 
                 if (profile.testTabVisibility(this.uuid))
                     profile.showOnTab(this.uuid);

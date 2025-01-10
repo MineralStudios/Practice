@@ -38,40 +38,23 @@ public class PlayerInventory extends CraftInventoryPlayer {
         playerConnection = holder.getPlayer().getHandle().playerConnection;
     }
 
-    public void clearHotbar() {
-        for (int it = 0; it < 9; it++)
-            setItem(it, null);
-    }
-
     @Override
     public void setItem(int slot, ItemStack i) {
-        try {
-            dataMap.remove(slot);
-            super.setItem(slot, i);
-        } catch (Exception e) {
-
-        }
+        dataMap.remove(slot);
+        super.setItem(slot, i);
     }
 
     public void setItem(int slot, ItemStack i, Predicate<Profile> d) {
-        try {
-            dataMap.put(slot, d);
-            super.setItem(slot, i);
-        } catch (Exception e) {
-
-        }
+        dataMap.put(slot, d);
+        super.setItem(slot, i);
     }
 
     public void setItem(int slot, ItemStack i, Runnable d) {
-        try {
-            dataMap.put(slot, p -> {
-                d.run();
-                return true;
-            });
-            super.setItem(slot, i);
-        } catch (Exception e) {
-
-        }
+        dataMap.put(slot, p -> {
+            d.run();
+            return true;
+        });
+        super.setItem(slot, i);
     }
 
     public Predicate<Profile> getTask(int i) {

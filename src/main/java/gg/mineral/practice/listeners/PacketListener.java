@@ -55,7 +55,7 @@ public class PacketListener implements Listener {
                             continue;
                         val uuid = playerInfoData.a().getId();
 
-                        if (!uuid.equals(profile.getUuid()) && !profile.getSetVisiblePlayersOnTab().contains(uuid)
+                        if (!uuid.equals(profile.getUuid()) && !profile.testTabVisibility(uuid)
                                 && action != PacketPlayOutPlayerInfo.EnumPlayerInfoAction.REMOVE_PLAYER) {
                             data.remove();
                             continue;
