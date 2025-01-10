@@ -1,11 +1,11 @@
 package gg.mineral.practice.util;
 
 public interface SaveableData {
-    public void save();
+    void save();
 
-    public void load();
+    void load();
 
-    public void delete();
+    void delete();
 
-    public void setDefaults();
+    void setDefaults();
 }

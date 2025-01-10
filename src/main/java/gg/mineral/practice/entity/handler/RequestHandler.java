@@ -42,7 +42,7 @@ public class RequestHandler {
         }
 
         for (val request : receiver.getRequestHandler().getRecievedDuelRequests()) {
-            if (request.getSender().equals(profile)) {
+            if (request.sender().equals(profile)) {
                 profile.message(ErrorMessages.DUEL_REQUEST_ALREADY_SENT);
                 return;
             }

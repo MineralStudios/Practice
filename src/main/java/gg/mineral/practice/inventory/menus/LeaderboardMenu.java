@@ -1,7 +1,7 @@
 package gg.mineral.practice.inventory.menus;
 
 import gg.mineral.api.collection.GlueList;
-import gg.mineral.practice.catagory.Catagory;
+import gg.mineral.practice.category.Category;
 import gg.mineral.practice.gametype.Gametype;
 import gg.mineral.practice.inventory.ClickCancelled;
 import gg.mineral.practice.inventory.PracticeMenu;
@@ -63,29 +63,29 @@ public class LeaderboardMenu extends PracticeMenu {
                 continue;
             }
 
-            if (menuEntry instanceof Catagory catagory) {
+            if (menuEntry instanceof Category category) {
                 val sb = new GlueList<String>();
                 sb.add(CC.SECONDARY + "Includes:");
 
-                for (val g : catagory.getGametypes())
+                for (val g : category.getGametypes())
                     sb.add(CC.WHITE + g.getDisplayName());
 
                 sb.add(" ");
                 sb.add(CC.BOARD_SEPARATOR);
-                sb.add(CC.ACCENT + "Click to view catagory.");
+                sb.add(CC.ACCENT + "Click to view category.");
 
                 itemBuild.lore(sb.toArray(new String[0]));
                 val item = itemBuild.build();
 
                 setSlot(entry.getIntValue() + 18, item, interaction -> interaction.getProfile()
-                        .openMenu(new CatagorizedLeaderboardMenu(queuetype, catagory)));
+                        .openMenu(new CategorizedLeaderboardMenu(queuetype, category)));
             }
         }
 
     }
 
     protected boolean shouldSkip(QueuetypeMenuEntry menuEntry) {
-        return menuEntry instanceof Gametype gametype && gametype.isInCatagory();
+        return menuEntry instanceof Gametype gametype && gametype.isInCategory();
     }
 
     @Override

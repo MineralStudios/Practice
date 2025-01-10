@@ -1,16 +1,27 @@
 package gg.mineral.practice.util.messages;
 
-public abstract class Message {
-    String message;
+import org.bukkit.entity.Player;
 
-    public void add(Message m) {
-        message = message + m.toString();
+public abstract class Message {
+    protected final StringBuilder messageBuilder;
+
+    public Message(String string) {
+        this.messageBuilder = new StringBuilder(string);
     }
 
-    public abstract void send(org.bukkit.entity.Player p);
+    public void add(Message message) {
+        messageBuilder.append(message.toString());
+    }
+
+    public void send(Player player) {
+        player.sendMessage(toString());
+    }
 
     @Override
     public String toString() {
-        return message;
+        return messageBuilder.toString();
     }
+
+    @Override
+    public abstract Message clone();
 }

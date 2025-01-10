@@ -1,8 +1,5 @@
 package gg.mineral.practice.entity.handler;
 
-import org.bukkit.Bukkit;
-import org.bukkit.GameMode;
-
 import gg.mineral.practice.entity.PlayerStatus;
 import gg.mineral.practice.entity.Profile;
 import gg.mineral.practice.events.Event;
@@ -21,6 +18,8 @@ import gg.mineral.practice.util.messages.impl.ErrorMessages;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import lombok.val;
+import org.bukkit.Bukkit;
+import org.bukkit.GameMode;
 
 @RequiredArgsConstructor
 public class SpectateHandler {
@@ -146,7 +145,7 @@ public class SpectateHandler {
                 : spectatable instanceof Match match ? match.getData().getArenaId() : 0);
 
         PlayerUtil.teleport(profile,
-                toBeSpectated.isInEvent() ? arena.getWaitingLocation()
+                toBeSpectated.isInEvent() ? arena.getWaitingLocation().bukkit(spectatable.getWorld())
                         : toBeSpectated.getPlayer().getLocation());
 
         if (toBeSpectated.isInEvent())
@@ -170,7 +169,7 @@ public class SpectateHandler {
                 }
             }
 
-            if (groups != null && !alreadyInGroup) {
+            if (!alreadyInGroup) {
                 val group = groups[0];
 
                 if (group != null)

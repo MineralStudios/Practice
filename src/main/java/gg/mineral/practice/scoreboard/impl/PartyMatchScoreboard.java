@@ -6,6 +6,7 @@ import gg.mineral.practice.scoreboard.ScoreboardHandler;
 import gg.mineral.practice.util.collection.ProfileList;
 import gg.mineral.practice.util.messages.CC;
 import lombok.val;
+import org.jetbrains.annotations.NotNull;
 
 public class PartyMatchScoreboard
         implements Scoreboard {
@@ -13,7 +14,7 @@ public class PartyMatchScoreboard
     public static final Scoreboard INSTANCE = new PartyMatchScoreboard();
 
     @Override
-    public void updateBoard(ScoreboardHandler board, Profile profile) {
+    public void updateBoard(ScoreboardHandler board, @NotNull Profile profile) {
         board.updateTitle(CC.PRIMARY + CC.B + "Mineral");
         val match = profile.getMatch();
 

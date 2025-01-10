@@ -1,7 +1,5 @@
 package gg.mineral.practice.kit;
 
-import org.bukkit.GameMode;
-
 import gg.mineral.practice.entity.PlayerStatus;
 import gg.mineral.practice.entity.Profile;
 import gg.mineral.practice.inventory.SubmitAction;
@@ -11,7 +9,7 @@ import gg.mineral.practice.util.PlayerUtil;
 import gg.mineral.practice.util.messages.impl.ChatMessages;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
-import lombok.val;
+import org.bukkit.GameMode;
 
 @AllArgsConstructor
 public class KitCreator {
@@ -32,9 +30,6 @@ public class KitCreator {
         PlayerUtil.teleportNoGlitch(profile, KitEditorManager.getLocation());
         profile.getInventory().setInventoryClickCancelled(false);
         profile.getInventory().clear();
-
-        for (val player : profile.getPlayer().getWorld().getPlayers())
-            profile.removeFromView(player.getUniqueId());
 
         profile.setGameMode(GameMode.CREATIVE);
     }

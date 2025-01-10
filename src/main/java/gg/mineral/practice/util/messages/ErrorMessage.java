@@ -1,22 +1,21 @@
 package gg.mineral.practice.util.messages;
 
-import org.bukkit.entity.Player;
+import lombok.val;
 
 public class ErrorMessage extends Message {
-	public String addition;
 
-	public ErrorMessage(String s) {
-		message = s;
-		formatMessage();
-	}
+    public ErrorMessage(String s) {
+        super(s);
+        formatMessage();
+    }
 
-	private void formatMessage() {
-		this.addition = CC.D_RED + "✖ Error ✖ " + CC.RED;
-		message = addition + message;
-	}
+    @Override
+    public Message clone() {
+        return new ErrorMessage(this.messageBuilder.toString());
+    }
 
-	@Override
-	public void send(Player p) {
-		p.sendMessage(message);
-	}
+    private void formatMessage() {
+        val prefix = CC.D_RED + "✖ Error ✖ " + CC.RED;
+        this.messageBuilder.insert(0, prefix);
+    }
 }

@@ -1,17 +1,9 @@
 package gg.mineral.practice.events;
 
-import java.util.concurrent.ConcurrentLinkedDeque;
-
-import org.bukkit.Bukkit;
-
-import org.bukkit.scheduler.BukkitRunnable;
-
 import gg.mineral.api.collection.GlueList;
 import gg.mineral.practice.PracticePlugin;
-
 import gg.mineral.practice.bukkit.events.PlayerEventInitializeEvent;
 import gg.mineral.practice.bukkit.events.PlayerEventStartEvent;
-
 import gg.mineral.practice.entity.Profile;
 import gg.mineral.practice.managers.ArenaManager;
 import gg.mineral.practice.managers.EventManager;
@@ -22,23 +14,28 @@ import gg.mineral.practice.match.data.MatchData;
 import gg.mineral.practice.traits.Spectatable;
 import gg.mineral.practice.util.PlayerUtil;
 import gg.mineral.practice.util.collection.ProfileList;
-
 import gg.mineral.practice.util.messages.impl.ChatMessages;
 import gg.mineral.practice.util.messages.impl.ErrorMessages;
 import lombok.Getter;
 import lombok.val;
 import net.md_5.bungee.api.chat.ClickEvent;
+import org.bukkit.Bukkit;
+import org.bukkit.World;
+import org.bukkit.scheduler.BukkitRunnable;
+
+import java.util.concurrent.ConcurrentLinkedDeque;
 
 public class Event implements Spectatable {
 
     GlueList<Match> matches = new GlueList<>();
     @Getter
     ConcurrentLinkedDeque<Profile> spectators = new ConcurrentLinkedDeque<>();
-
+    @Getter
+    private final World world;
     MatchData matchData;
     int round = 1;
     @Getter
-    String host;
+    private final String host;
     @Getter
     boolean started = false, ended = false;
     @Getter
@@ -52,6 +49,8 @@ public class Event implements Spectatable {
         this.matchData = new MatchData(duelSettings);
         this.host = p.getName();
         this.eventArenaId = eventArenaId;
+        val arena = ArenaManager.getArenas().get(eventArenaId);
+        this.world = arena.generate();
         addPlayer(p);
     }
 
@@ -69,7 +68,7 @@ public class Event implements Spectatable {
 
         val eventArena = ArenaManager.getArenas().get(eventArenaId);
 
-        PlayerUtil.teleport(p, eventArena.getWaitingLocation());
+        PlayerUtil.teleport(p, eventArena.getWaitingLocation().bukkit(this.world));
         p.setEvent(this);
         participants.add(p);
 
@@ -114,7 +113,7 @@ public class Event implements Spectatable {
         val leftMessage = ChatMessages.LEFT_EVENT.clone().replace("%player%", p.getName());
         ProfileManager.broadcast(participants, leftMessage);
 
-        if (participants.size() == 0) {
+        if (participants.isEmpty()) {
             EventManager.remove(this);
             ended = true;
             return;
@@ -134,7 +133,6 @@ public class Event implements Spectatable {
 
             ProfileManager.broadcast(wonMessage);
 
-            return;
         }
     }
 

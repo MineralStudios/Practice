@@ -1,23 +1,22 @@
 package gg.mineral.practice.util.messages;
 
-import org.bukkit.entity.Player;
-
 import lombok.val;
 
 public class UsageMessage extends Message {
 
-	public UsageMessage(String s) {
-		message = s;
-		formatMessage();
-	}
+    public UsageMessage(String s) {
+        super(s);
+        formatMessage();
+    }
 
-	private void formatMessage() {
-		val addition = CC.D_RED + "Usage: " + CC.RED;
-		message = addition + message + ".";
-	}
+    private void formatMessage() {
+        val prefix = CC.D_RED + "Usage: " + CC.RED;
+        this.messageBuilder.insert(0, prefix);
+        this.messageBuilder.append(".");
+    }
 
-	@Override
-	public void send(Player p) {
-		p.sendMessage(message);
-	}
+    @Override
+    public Message clone() {
+        return new UsageMessage(this.messageBuilder.toString());
+    }
 }

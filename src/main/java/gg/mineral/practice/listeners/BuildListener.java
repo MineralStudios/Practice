@@ -1,5 +1,9 @@
 package gg.mineral.practice.listeners;
 
+import gg.mineral.practice.entity.PlayerStatus;
+import gg.mineral.practice.managers.ProfileManager;
+import gg.mineral.practice.util.messages.impl.ErrorMessages;
+import lombok.val;
 import org.bukkit.GameMode;
 import org.bukkit.Material;
 import org.bukkit.event.EventHandler;
@@ -12,98 +16,92 @@ import org.bukkit.event.block.BlockPlaceEvent;
 import org.bukkit.event.hanging.HangingPlaceEvent;
 import org.bukkit.event.player.PlayerBucketEmptyEvent;
 
-import gg.mineral.practice.entity.PlayerStatus;
-import gg.mineral.practice.managers.ProfileManager;
-import gg.mineral.practice.util.messages.impl.ErrorMessages;
-import lombok.val;
-
 public class BuildListener implements Listener {
 
-	@EventHandler
-	public void onBlockBreak(BlockBreakEvent e) {
+    @EventHandler
+    public void onBlockBreak(BlockBreakEvent e) {
 
-		val profile = ProfileManager
-				.getProfile(e.getPlayer().getUniqueId(),
-						p -> p.getPlayerStatus() == PlayerStatus.FIGHTING);
+        val profile = ProfileManager
+                .getProfile(e.getPlayer().getUniqueId(),
+                        p -> p.getPlayerStatus() == PlayerStatus.FIGHTING);
 
-		if (profile == null) {
-			e.setCancelled(!(e.getPlayer().isOp() && e.getPlayer().getGameMode().equals(GameMode.CREATIVE)));
-			return;
-		}
+        if (profile == null) {
+            e.setCancelled(!(e.getPlayer().isOp() && e.getPlayer().getGameMode().equals(GameMode.CREATIVE)));
+            return;
+        }
 
-		val match = profile.getMatch();
+        val match = profile.getMatch();
 
-		val location = e.getBlock().getLocation();
+        val location = e.getBlock().getLocation();
 
-		if (match.getBuildLog().contains(location)) {
-			e.setCancelled(!match.getData().isBuild());
-			return;
-		}
+        if (match.getBuildLog().contains(location))
+            e.setCancelled(!match.getData().isBuild());
+        else
+            e.setCancelled(!match.getData().isGriefing());
 
-		boolean canBreak = !match.getData().isGriefing();
+        if (e.getBlock().getType() == Material.TNT && !e.isCancelled())
+            match.decreasePlacedTnt();
+    }
 
-		e.setCancelled(canBreak);
+    @EventHandler
+    public void onBlockBurn(BlockBurnEvent e) {
+        e.setCancelled(true);
+    }
 
-		if (e.getBlock().getType() == Material.TNT && !canBreak)
-			match.decreasePlacedTnt();
-	}
+    @EventHandler
+    public void onFramePlace(HangingPlaceEvent e) {
+        e.setCancelled(true);
+    }
 
-	@EventHandler
-	public void onBlockBurn(BlockBurnEvent e) {
-		e.setCancelled(true);
-	}
+    @EventHandler
+    public void onBlockPlace(BlockPlaceEvent e) {
+        val profile = ProfileManager
+                .getProfile(e.getPlayer().getUniqueId(),
+                        p -> p.getPlayerStatus() == PlayerStatus.FIGHTING);
+        boolean canPlace = e.getPlayer().isOp() && e.getPlayer().getGameMode().equals(GameMode.CREATIVE);
 
-	@EventHandler
-	public void onFramePlace(HangingPlaceEvent e) {
-		e.setCancelled(true);
-	}
+        if (profile == null) {
+            e.setCancelled(!canPlace);
+            return;
+        }
 
-	@EventHandler
-	public void onBlockPlace(BlockPlaceEvent e) {
-		val profile = ProfileManager
-				.getProfile(e.getPlayer().getUniqueId(),
-						p -> p.getPlayerStatus() == PlayerStatus.FIGHTING);
-		boolean canPlace = e.getPlayer().isOp() && e.getPlayer().getGameMode().equals(GameMode.CREATIVE);
+        val match = profile.getMatch();
+        e.setCancelled(!match.getData().isBuild() || e.getBlockPlaced().getY() > match.getBuildLimit());
 
-		if (profile == null) {
-			e.setCancelled(!canPlace);
-			return;
-		}
+        if (e.isCancelled())
+            return;
 
-		val match = profile.getMatch();
-		e.setCancelled(!match.getData().isBuild());
+        if (e.getBlockPlaced().getType() == Material.TNT) {
 
-		if (e.getBlockPlaced().getType() == Material.TNT) {
+            if (match.getPlacedTnt() > 128) {
+                profile.message(ErrorMessages.MAX_TNT);
+                e.setCancelled(true);
+                return;
+            }
 
-			if (match.getPlacedTnt() > 128) {
-				profile.message(ErrorMessages.MAX_TNT);
-				e.setCancelled(true);
-				return;
-			}
+            match.increasePlacedTnt();
+        }
 
-			match.increasePlacedTnt();
-		}
+        match.getBuildLog().add(e.getBlockPlaced().getLocation());
+    }
 
-		match.getBuildLog().add(e.getBlockPlaced().getLocation());
-	}
+    @EventHandler
+    public void onPlayerBucketEmpty(PlayerBucketEmptyEvent e) {
+        val profile = ProfileManager
+                .getProfile(e.getPlayer().getUniqueId(),
+                        p -> p.getPlayerStatus() == PlayerStatus.FIGHTING);
+        boolean canPlace = e.getPlayer().isOp() && e.getPlayer().getGameMode().equals(GameMode.CREATIVE);
 
-	@EventHandler
-	public void onPlayerBucketEmpty(PlayerBucketEmptyEvent e) {
-		val profile = ProfileManager
-				.getProfile(e.getPlayer().getUniqueId(),
-						p -> p.getPlayerStatus() == PlayerStatus.FIGHTING);
-		boolean canPlace = e.getPlayer().isOp() && e.getPlayer().getGameMode().equals(GameMode.CREATIVE);
+        if (profile == null) {
+            e.setCancelled(!canPlace);
+            return;
+        }
 
-		if (profile == null) {
-			e.setCancelled(!canPlace);
-			return;
-		}
+        e.setCancelled(!profile.getMatch().getData().isBuild());
+    }
 
-		e.setCancelled(!profile.getMatch().getData().isBuild());
-	}
-
-	@EventHandler
-	public void onBlockIgnite(BlockIgniteEvent event) {
-		event.setCancelled(event.getCause() != IgniteCause.FLINT_AND_STEEL);
-	}
+    @EventHandler
+    public void onBlockIgnite(BlockIgniteEvent event) {
+        event.setCancelled(event.getCause() != IgniteCause.FLINT_AND_STEEL);
+    }
 }
