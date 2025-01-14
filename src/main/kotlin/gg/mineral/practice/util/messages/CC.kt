@@ -1,33 +1,47 @@
-package gg.mineral.practice.util.messages;
+package gg.mineral.practice.util.messages
 
-import org.bukkit.ChatColor;
+import org.bukkit.ChatColor
 
-public class CC {
-    public static final String WHITE = ChatColor.WHITE.toString();
-    public static final String GREEN = ChatColor.GREEN.toString();
-    public static final String D_GREEN = ChatColor.DARK_GREEN.toString();
-    public static final String RED = ChatColor.RED.toString();
-    public static final String D_RED = ChatColor.DARK_RED.toString();
-    public static final String GRAY = ChatColor.GRAY.toString();
-    public static final String D_GRAY = ChatColor.DARK_GRAY.toString();
-    public static final String YELLOW = ChatColor.YELLOW.toString();
-    public static final String GOLD = ChatColor.GOLD.toString();
-    public static final String AQUA = ChatColor.AQUA.toString();
-    public static final String D_AQUA = ChatColor.DARK_AQUA.toString();
-    public static final String BLUE = ChatColor.BLUE.toString();
-    public static final String D_BLUE = ChatColor.DARK_BLUE.toString();
-    public static final String PINK = ChatColor.LIGHT_PURPLE.toString();
-    public static final String PURPLE = ChatColor.DARK_PURPLE.toString();
-    public static final String B = ChatColor.BOLD.toString();
-    public static final String I = ChatColor.ITALIC.toString();
-    public static final String U = ChatColor.UNDERLINE.toString();
-    public static final String S = ChatColor.STRIKETHROUGH.toString();
-    public static final String R = ChatColor.RESET.toString();
-    public static final String PRIMARY = D_BLUE;
-    public static final String SECONDARY = BLUE;
-    public static final String ACCENT = GRAY;
-    public static final String SPLITTER = GRAY + "┃";
-    public static final String BOARD_SEPARATOR = GRAY + S + "--------------------";
-    public static final String SEPARATOR = GRAY + S + "-------------------------------------";
-    public static final String SPACER = "";
+object CC {
+
+    val WHITE: String = ChatColor.WHITE.toString()
+
+    val GREEN: String = ChatColor.GREEN.toString()
+
+    val D_GREEN: String = ChatColor.DARK_GREEN.toString()
+
+    val RED: String = ChatColor.RED.toString()
+
+    val D_RED: String = ChatColor.DARK_RED.toString()
+    val GRAY: String = ChatColor.GRAY.toString()
+
+    val D_GRAY: String = ChatColor.DARK_GRAY.toString()
+
+    val YELLOW: String = ChatColor.YELLOW.toString()
+
+    val GOLD: String = ChatColor.GOLD.toString()
+
+    val AQUA: String = ChatColor.AQUA.toString()
+
+    val D_AQUA: String = ChatColor.DARK_AQUA.toString()
+    val BLUE: String = ChatColor.BLUE.toString()
+    val D_BLUE: String = ChatColor.DARK_BLUE.toString()
+    val PINK: String = ChatColor.LIGHT_PURPLE.toString()
+    val PURPLE: String = ChatColor.DARK_PURPLE.toString()
+
+    val B: String = ChatColor.BOLD.toString()
+    val I: String = ChatColor.ITALIC.toString()
+    val U: String = ChatColor.UNDERLINE.toString()
+    val S: String = ChatColor.STRIKETHROUGH.toString()
+    val R: String = ChatColor.RESET.toString()
+
+    val PRIMARY: String = D_BLUE
+
+    val SECONDARY: String = BLUE
+
+    val ACCENT: String = GRAY
+    val SPLITTER: String = "$GRAY┃"
+    val BOARD_SEPARATOR: String = "$GRAY$S--------------------"
+    val SEPARATOR: String = "$GRAY$S-------------------------------------"
+    const val SPACER: String = ""
 }

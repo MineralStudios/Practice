@@ -1,8 +1,8 @@
-package gg.mineral.practice.util.messages.impl;
+package gg.mineral.practice.util.messages.impl
 
-import gg.mineral.practice.util.messages.CC;
-import net.md_5.bungee.api.chat.TextComponent;
+import gg.mineral.practice.util.messages.CC
+import net.md_5.bungee.api.chat.TextComponent
 
-public class TextComponents {
-    public static final TextComponent SPLITTER = new TextComponent(CC.D_GRAY + " - ");
+object TextComponents {
+    val SPLITTER: TextComponent = TextComponent(CC.D_GRAY + " - ")
 }

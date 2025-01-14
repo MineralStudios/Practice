@@ -1,27 +1,15 @@
-package gg.mineral.practice.util.messages;
+package gg.mineral.practice.util.messages
 
-import org.bukkit.entity.Player;
+import org.bukkit.command.CommandSender
 
-public abstract class Message {
-    protected final StringBuilder messageBuilder;
+abstract class Message(string: String) {
+    protected val messageBuilder: StringBuilder = StringBuilder(string)
 
-    public Message(String string) {
-        this.messageBuilder = new StringBuilder(string);
-    }
+    fun add(message: Message): StringBuilder = messageBuilder.append(message.toString())
 
-    public void add(Message message) {
-        messageBuilder.append(message.toString());
-    }
+    open fun send(sender: CommandSender) = sender.sendMessage(toString())
 
-    public void send(Player player) {
-        player.sendMessage(toString());
-    }
+    override fun toString() = messageBuilder.toString()
 
-    @Override
-    public String toString() {
-        return messageBuilder.toString();
-    }
-
-    @Override
-    public abstract Message clone();
+    abstract fun clone(): Message
 }

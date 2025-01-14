@@ -1,53 +1,38 @@
-package gg.mineral.practice.util.messages;
+package gg.mineral.practice.util.messages
 
-import lombok.val;
+open class ChatMessage(
+    string: String,
+    val colorPrefix: String = "",
+    private val bold: Boolean = false
+) :
+    Message(string) {
+    open val prefix: String
+        get() {
+            val string = if (bold) colorPrefix + CC.B else colorPrefix
+            messageBuilder.insert(0, string)
+            return string
+        }
 
-public class ChatMessage extends Message {
-    protected String prefix;
-
-    public ChatMessage(String string) {
-        this(string, "", false);
-    }
-
-    public ChatMessage(String string, String colorPrefix, boolean bold) {
-        super(string);
-        formatMessage(colorPrefix, bold);
-    }
-
-    public ChatMessage(String string, String colorPrefix) {
-        this(string, colorPrefix, false);
-    }
-
-    protected void formatMessage(String c, boolean bold) {
-        this.prefix = bold ? c + CC.B : c;
-        this.messageBuilder.insert(0, prefix);
-    }
-
-    public ChatMessage highlightText(String c, String... highlighted) {
-        for (val s : highlighted) {
-            int index = messageBuilder.indexOf(s);
+    open fun highlightText(c: String, vararg highlighted: String): ChatMessage {
+        for (s in highlighted) {
+            var index = messageBuilder.indexOf(s)
             while (index != -1) {
-                messageBuilder.replace(index, index + s.length(), c + s + this.prefix);
-                index = messageBuilder.indexOf(s, index + (c + s + this.prefix).length());
+                messageBuilder.replace(index, index + s.length, c + s + this.prefix)
+                index = messageBuilder.indexOf(s, index + (c + s + this.prefix).length)
             }
         }
-        return this;
+        return this
     }
 
-    public ChatMessage replace(String target, String replacement) {
-        int index = messageBuilder.indexOf(target);
-        if (index == -1) {
-            throw new AssertionError("Target string not found in the message.");
-        }
+    open fun replace(target: String, replacement: String): ChatMessage {
+        var index = messageBuilder.indexOf(target)
+        if (index == -1) throw AssertionError("Target string not found in the message.")
         while (index != -1) {
-            messageBuilder.replace(index, index + target.length(), replacement);
-            index = messageBuilder.indexOf(target, index + replacement.length());
+            messageBuilder.replace(index, index + target.length, replacement)
+            index = messageBuilder.indexOf(target, index + replacement.length)
         }
-        return this;
+        return this
     }
 
-    @Override
-    public ChatMessage clone() {
-        return new ChatMessage(this.messageBuilder.toString(), this.prefix);
-    }
+    override fun clone() = ChatMessage(messageBuilder.toString(), this.prefix)
 }

@@ -1,58 +1,54 @@
-package gg.mineral.practice.util.items;
+package gg.mineral.practice.util.items
 
-import lombok.val;
-import org.bukkit.Material;
-import org.bukkit.inventory.ItemStack;
+import org.bukkit.Material
+import org.bukkit.inventory.ItemStack
 
-import java.util.Arrays;
-import java.util.List;
+class ItemBuilder(item: ItemStack) {
+    private val material: Material = item.type
+    private var durability: Int
+    private var amount: Int
+    private var name: String? = null
+    private var lore: List<String>? = null
 
-public class ItemBuilder {
-    private final Material material;
-    private int durability, amount;
-    private String name;
-    private List<String> lore = null;
-
-    public ItemBuilder(ItemStack item) {
-        this.material = item.getType();
-        this.durability = item.getDurability();
-        this.amount = item.getAmount();
+    init {
+        this.durability = item.durability.toInt()
+        this.amount = item.amount
     }
 
-    public ItemBuilder(Material material) {
-        this(new ItemStack(material));
+    constructor(material: Material) : this(ItemStack(material))
+
+    fun amount(amount: Int): ItemBuilder {
+        this.amount = amount
+        return this
     }
 
-    public static ItemBuilder from(ItemStack item) {
-        return new ItemBuilder(item);
+    fun durability(durability: Int): ItemBuilder {
+        this.durability = durability
+        return this
     }
 
-    public ItemBuilder amount(int amount) {
-        this.amount = amount;
-        return this;
+    fun name(name: String?): ItemBuilder {
+        this.name = name
+        return this
     }
 
-    public ItemBuilder durability(int durability) {
-        this.durability = durability;
-        return this;
+    fun lore(vararg lore: String): ItemBuilder {
+        this.lore = listOf(*lore)
+        return this
     }
 
-    public ItemBuilder name(String name) {
-        this.name = name;
-        return this;
+    fun build(): ItemStack {
+        val newItemStack = ItemStack(material, amount, durability.toShort())
+        val meta = newItemStack.itemMeta
+        meta.displayName = name
+        meta.lore = lore
+        newItemStack.setItemMeta(meta)
+        return newItemStack
     }
 
-    public ItemBuilder lore(String... lore) {
-        this.lore = Arrays.asList(lore);
-        return this;
-    }
-
-    public ItemStack build() {
-        val newItemStack = new ItemStack(material, amount, (short) durability);
-        val meta = newItemStack.getItemMeta();
-        meta.setDisplayName(name);
-        meta.setLore(lore);
-        newItemStack.setItemMeta(meta);
-        return newItemStack;
+    companion object {
+        fun from(item: ItemStack): ItemBuilder {
+            return ItemBuilder(item)
+        }
     }
 }

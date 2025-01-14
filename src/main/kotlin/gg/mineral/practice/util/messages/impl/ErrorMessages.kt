@@ -1,93 +1,120 @@
-package gg.mineral.practice.util.messages.impl;
+package gg.mineral.practice.util.messages.impl
 
-import gg.mineral.practice.util.messages.ErrorMessage;
-import gg.mineral.practice.util.messages.Message;
+import gg.mineral.practice.util.messages.ErrorMessage
+import gg.mineral.practice.util.messages.Message
 
-public class ErrorMessages {
+object ErrorMessages {
     // Arena
-    public static final Message ARENA_ALREADY_EXISTS = new ErrorMessage("That arena already exists."),
-            ARENA_DOES_NOT_EXIST = new ErrorMessage("That arena does not exist."),
-            CANNOT_TELEPORT_TO_ARENA = new ErrorMessage(
-                    "There was a problem teleporting to that arena."),
-            MAX_TNT = new ErrorMessage("You have reached the maximum tnt limit."),
-            ARENA_NOT_FOUND = new ErrorMessage("An arena could not be found.");
-    // Category
-    public static final Message CATEGORY_ALREADY_EXISTS = new ErrorMessage("That category already exists."),
-            CATEGORY_DOES_NOT_EXIST = new ErrorMessage("That category does not exist.");
-    // Queuetype
-    public static final Message QUEUETYPE_ALREADY_EXISTS = new ErrorMessage("That queuetype already exists."),
-            QUEUETYPE_DOES_NOT_EXIST = new ErrorMessage("That queuetype does not exist.");
-    // Gametype
-    public static final Message GAMETYPE_ALREADY_EXISTS = new ErrorMessage("That gametype already exists."),
-            GAMETYPE_DOES_NOT_EXIST = new ErrorMessage("That gametype does not exist.");
-    // Knockback
-    public static final Message KNOCKBACK_DOES_NOT_EXIST = new ErrorMessage("That knockback does not exist.");
-    // Player
-    public static final Message YOU_ARE_NOT_IN_LOBBY = new ErrorMessage("You are not in the lobby."),
-            PLAYER_NOT_ONLINE = new ErrorMessage("That player is not online."),
-            PLAYER_NOT_IN_LOBBY = new ErrorMessage("That player is not in the lobby."),
-            CAN_NOT_LEAVE_YET = new ErrorMessage("You can not leave yet.");
-    // Duel
-    public static final Message DUEL_SENDER_NOT_ONLINE = new ErrorMessage("The duel sender is not online."),
-            DUEL_SENDER_NOT_IN_LOBBY = new ErrorMessage("The duel sender is not in the lobby."),
-            YOU_CAN_NOT_DUEL_YOURSELF = new ErrorMessage("You can not duel yourself."),
-            DUEL_REQUESTS_DISABLED = new ErrorMessage(
-                    "That player has duel requests disabled."),
-            DUEL_REQUEST_ALREADY_SENT = new ErrorMessage(
-                    "You have already sent that player a duel request."),
-            WAIT_TO_REQUEST = new ErrorMessage(
-                    "You need to wait before sending another duel request.");
-    // Party
-    public static final Message PLAYER_NOT_IN_PARTY_OR_PARTY_LEADER = new ErrorMessage(
-            "That player is in a party or not a party leader."),
-            YOU_ARE_ALREADY_IN_PARTY = new ErrorMessage("You are already in a party."),
-            YOU_ARE_NOT_IN_PARTY = new ErrorMessage("You are not in a party."),
-            PLAYER_IN_PARTY = new ErrorMessage("That player is in a party."),
-            YOU_ARE_NOT_PARTY_LEADER = new ErrorMessage("You are not the party leader."),
-            PARTY_DOES_NOT_EXIST = new ErrorMessage("That party does not exist."),
-            PARTY_NOT_BIG_ENOUGH = new ErrorMessage(
-                    "You need to be in a party with at least 2 people."),
-            PARTY_NOT_OPEN = new ErrorMessage("That party is not open."), PARTY_REQUESTS_DISABLED = new ErrorMessage(
-            "That player has party requests disabled."),
-            YOU_CAN_NOT_INVITE_YOURSELF = new ErrorMessage("You can not invite yourself."),
-            REQUEST_SENDER_NOT_ONLINE = new ErrorMessage("The request sender is not online."),
-            REQUEST_EXPIRED = new ErrorMessage("That party request has expired."),
-            WAIT_TO_INVITE = new ErrorMessage("You need to wait before sending another invite.");
-    // Spectate/Follow
-    public static final Message NOT_FOLLOW_SELF = new ErrorMessage("You can not follow yourself."),
-            NOT_SPEC_SELF = new ErrorMessage("You can not spectate yourself."),
-            NOT_FOLLOWING = new ErrorMessage("You are not following anyone."),
-            NOT_SPEC = new ErrorMessage("You are not spectating anyone.");
-    // Match
-    public static final Message PLAYER_NOT_IN_MATCH = new ErrorMessage("That player is not in a match."),
-            PLAYER_NOT_IN_MATCH_OR_EVENT = new ErrorMessage(
-                    "That player is not in a match or event."),
-            NOT_IN_MATCH = new ErrorMessage("You are not in a match.");
-    // Inventory
-    public static final Message PLAYER_INVENTORY_NOT_FOUND = new ErrorMessage(
-            "That player's inventory was not found"),
-            TEAM_INVENTORY_NOT_FOUND = new ErrorMessage(
-                    "That team's inventory was not found");
-    // Tournament
-    public static final Message ALREADY_IN_TOURNAMENT = new ErrorMessage("You are already in a tournament."),
-            TOURNAMENT_STARTED = new ErrorMessage("That tournament has already started."),
-            TOURNAMENT_NOT_ENOUGH_PLAYERS = new ErrorMessage(
-                    "There was not enough players to start the tournament."),
-            ALREADY_IN_EVENT = new ErrorMessage("You are already in an event."),
-            EVENT_TOURNAMENT_NOT_EXIST = new ErrorMessage("That event/tournament no longer exists."),
-            EVENT_STARTED = new ErrorMessage("That event has already started."),
-            EVENT_NOT_ENOUGH_PLAYERS = new ErrorMessage(
-                    "There was not enough players to start the event.");
-    // Kit Editor
-    public static final Message KIT_EDITOR_LOCATION_NOT_SET = new ErrorMessage(
-            "A kit editor location has not been set, use /kiteditor setlocation to set the location."),
-            NOT_IN_KIT_EDITOR_OR_CREATOR = new ErrorMessage(
-                    "You are not in the kit editor of kit creator."),
-            ITEM_LIMIT = new ErrorMessage("The limit for this item has been reached.");
-    // Other
-    public static final Message INVALID_SLOT = new ErrorMessage("You did not input a valid slot."),
-            INVALID_NUMBER = new ErrorMessage("You did not input a valid number."),
-            COMING_SOON = new ErrorMessage("This feature is not yet released, it will be completed soon."),
-            RANK_REQUIRED = new ErrorMessage("A rank is required to access this feature.");
+    val ARENA_ALREADY_EXISTS: Message = ErrorMessage("That arena already exists.")
+    val ARENA_DOES_NOT_EXIST: Message = ErrorMessage("That arena does not exist.")
+    val CANNOT_TELEPORT_TO_ARENA: Message = ErrorMessage(
+        "There was a problem teleporting to that arena."
+    )
+    val MAX_TNT: Message = ErrorMessage("You have reached the maximum tnt limit.")
+    val ARENA_NOT_FOUND: Message = ErrorMessage("An arena could not be found.")
 
+    // Category
+    val CATEGORY_ALREADY_EXISTS: Message = ErrorMessage("That category already exists.")
+    val CATEGORY_DOES_NOT_EXIST: Message = ErrorMessage("That category does not exist.")
+
+    // Queuetype
+    val QUEUETYPE_ALREADY_EXISTS: Message = ErrorMessage("That queuetype already exists.")
+    val QUEUETYPE_DOES_NOT_EXIST: Message = ErrorMessage("That queuetype does not exist.")
+
+    // Gametype
+    val GAMETYPE_ALREADY_EXISTS: Message = ErrorMessage("That gametype already exists.")
+    val GAMETYPE_DOES_NOT_EXIST: Message = ErrorMessage("That gametype does not exist.")
+
+    // Knockback
+    val KNOCKBACK_DOES_NOT_EXIST: Message = ErrorMessage("That knockback does not exist.")
+
+    // Player
+    val YOU_ARE_NOT_IN_LOBBY: Message = ErrorMessage("You are not in the lobby.")
+    val PLAYER_NOT_ONLINE: Message = ErrorMessage("That player is not online.")
+    val PLAYER_NOT_IN_LOBBY: Message = ErrorMessage("That player is not in the lobby.")
+    val CAN_NOT_LEAVE_YET: Message = ErrorMessage("You can not leave yet.")
+
+    // Duel
+    val DUEL_SENDER_NOT_ONLINE: Message = ErrorMessage("The duel sender is not online.")
+    val DUEL_SENDER_NOT_IN_LOBBY: Message = ErrorMessage("The duel sender is not in the lobby.")
+    val YOU_CAN_NOT_DUEL_YOURSELF: Message = ErrorMessage("You can not duel yourself.")
+    val DUEL_REQUESTS_DISABLED: Message = ErrorMessage(
+        "That player has duel requests disabled."
+    )
+    val DUEL_REQUEST_ALREADY_SENT: Message = ErrorMessage(
+        "You have already sent that player a duel request."
+    )
+    val WAIT_TO_REQUEST: Message = ErrorMessage(
+        "You need to wait before sending another duel request."
+    )
+
+    // Party
+    val PLAYER_NOT_IN_PARTY_OR_PARTY_LEADER: Message = ErrorMessage(
+        "That player is in a party or not a party leader."
+    )
+    val YOU_ARE_ALREADY_IN_PARTY: Message = ErrorMessage("You are already in a party.")
+    val YOU_ARE_NOT_IN_PARTY: Message = ErrorMessage("You are not in a party.")
+    val PLAYER_IN_PARTY: Message = ErrorMessage("That player is in a party.")
+    val YOU_ARE_NOT_PARTY_LEADER: Message = ErrorMessage("You are not the party leader.")
+    val PARTY_DOES_NOT_EXIST: Message = ErrorMessage("That party does not exist.")
+    val PARTY_NOT_BIG_ENOUGH: Message = ErrorMessage(
+        "You need to be in a party with at least 2 people."
+    )
+    val PARTY_NOT_OPEN: Message = ErrorMessage("That party is not open.")
+    val PARTY_REQUESTS_DISABLED: Message = ErrorMessage(
+        "That player has party requests disabled."
+    )
+    val YOU_CAN_NOT_INVITE_YOURSELF: Message = ErrorMessage("You can not invite yourself.")
+    val REQUEST_SENDER_NOT_ONLINE: Message = ErrorMessage("The request sender is not online.")
+    val REQUEST_EXPIRED: Message = ErrorMessage("That party request has expired.")
+    val WAIT_TO_INVITE: Message = ErrorMessage("You need to wait before sending another invite.")
+
+    // Spectate/Follow
+    val NOT_FOLLOW_SELF: Message = ErrorMessage("You can not follow yourself.")
+    val NOT_SPEC_SELF: Message = ErrorMessage("You can not spectate yourself.")
+    val NOT_FOLLOWING: Message = ErrorMessage("You are not following anyone.")
+    val NOT_SPEC: Message = ErrorMessage("You are not spectating anyone.")
+
+    // Match
+    val PLAYER_NOT_IN_MATCH: Message = ErrorMessage("That player is not in a match.")
+    val PLAYER_NOT_IN_MATCH_OR_EVENT: Message = ErrorMessage(
+        "That player is not in a match or event."
+    )
+    val NOT_IN_MATCH: Message = ErrorMessage("You are not in a match.")
+
+    // Inventory
+    val PLAYER_INVENTORY_NOT_FOUND: Message = ErrorMessage(
+        "That player's inventory was not found"
+    )
+    val TEAM_INVENTORY_NOT_FOUND: Message = ErrorMessage(
+        "That team's inventory was not found"
+    )
+
+    // Tournament
+    val ALREADY_IN_TOURNAMENT: Message = ErrorMessage("You are already in a tournament.")
+    val TOURNAMENT_STARTED: Message = ErrorMessage("That tournament has already started.")
+    val TOURNAMENT_NOT_ENOUGH_PLAYERS: Message = ErrorMessage(
+        "There was not enough players to start the tournament."
+    )
+    val ALREADY_IN_EVENT: Message = ErrorMessage("You are already in an event.")
+    val EVENT_TOURNAMENT_NOT_EXIST: Message = ErrorMessage("That event/tournament no longer exists.")
+    val EVENT_STARTED: Message = ErrorMessage("That event has already started.")
+    val EVENT_NOT_ENOUGH_PLAYERS: Message = ErrorMessage(
+        "There was not enough players to start the event."
+    )
+
+    // Kit Editor
+    val KIT_EDITOR_LOCATION_NOT_SET: Message = ErrorMessage(
+        "A kit editor location has not been set, use /kiteditor setlocation to set the location."
+    )
+    val NOT_IN_KIT_EDITOR_OR_CREATOR: Message = ErrorMessage(
+        "You are not in the kit editor of kit creator."
+    )
+    val ITEM_LIMIT: Message = ErrorMessage("The limit for this item has been reached.")
+
+    // Other
+    val INVALID_SLOT: Message = ErrorMessage("You did not input a valid slot.")
+    val INVALID_NUMBER: Message = ErrorMessage("You did not input a valid number.")
+    val COMING_SOON: Message = ErrorMessage("This feature is not yet released, it will be completed soon.")
+    val RANK_REQUIRED: Message = ErrorMessage("A rank is required to access this feature.")
 }

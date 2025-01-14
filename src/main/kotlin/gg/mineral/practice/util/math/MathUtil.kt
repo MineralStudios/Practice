@@ -1,67 +1,73 @@
-package gg.mineral.practice.util.math;
+package gg.mineral.practice.util.math
 
-public class MathUtil {
-	private static final int DEFAULT_K_FACTOR = 25, WIN = 1, LOSS = 0;
+import kotlin.math.pow
 
-	public static int getNewRating(int rating, int opponentRating, boolean won) {
-		return MathUtil.getNewRating(rating, opponentRating, won ? MathUtil.WIN : MathUtil.LOSS);
-	}
+object MathUtil {
+    private const val DEFAULT_K_FACTOR = 25
+    private const val WIN = 1
+    private const val LOSS = 0
 
-	public static int getNewRating(int rating, int opponentRating, int score) {
-		double kFactor = MathUtil.getKFactor(rating);
-		double expectedScore = MathUtil.getExpectedScore(rating, opponentRating);
-		int newRating = MathUtil.calculateNewRating(rating, score, expectedScore, kFactor);
+    fun getNewRating(rating: Int, opponentRating: Int, won: Boolean): Int {
+        return getNewRating(rating, opponentRating, if (won) WIN else LOSS)
+    }
 
-		return score == 1 && newRating == rating ? newRating++ : newRating;
-	}
+    fun getNewRating(rating: Int, opponentRating: Int, score: Int): Int {
+        val kFactor = getKFactor().toDouble()
+        val expectedScore = getExpectedScore(rating, opponentRating)
+        var newRating = calculateNewRating(rating, score, expectedScore, kFactor)
 
-	private static int calculateNewRating(int oldRating, int score, double expectedScore, double kFactor) {
-		return oldRating + (int) (kFactor * (score - expectedScore));
-	}
+        return if (score == 1 && newRating == rating) ++newRating else newRating
+    }
 
-	private static float getKFactor(int rating) {
-		return DEFAULT_K_FACTOR;
-	}
+    private fun calculateNewRating(oldRating: Int, score: Int, expectedScore: Double, kFactor: Double): Int {
+        return oldRating + (kFactor * (score - expectedScore)).toInt()
+    }
 
-	private static double getExpectedScore(int rating, int opponentRating) {
-		return 1 / (1 + Math.pow(10, ((double) (opponentRating - rating) / 400)));
-	}
+    private fun getKFactor(): Float {
+        return DEFAULT_K_FACTOR.toFloat()
+    }
 
-	public static int roundUp(int val, int multiple) {
-		int mod = val % multiple;
-		return mod == 0 ? val : val + multiple - mod;
-	}
+    private fun getExpectedScore(rating: Int, opponentRating: Int): Double {
+        return 1 / (1 + 10.0.pow(((opponentRating - rating).toDouble() / 400)))
+    }
 
-	public static int roundUpToNearestWholeNumber(double val) {
-		int intVal = (int) val;
-		return val - intVal == 0 ? intVal : intVal + 1;
-	}
+    fun roundUp(`val`: Int, multiple: Int): Int {
+        val mod = `val` % multiple
+        return if (mod == 0) `val` else `val` + multiple - mod
+    }
 
-	public static String convertTicksToMinutes(final int ticks) {
-		final long minute = ticks / 1200L;
-		final long second = ticks / 20L - minute * 60L;
-		String secondString = Math.round(second) + "";
-		if (second < 10L) {
-			secondString = 0 + secondString;
-		}
-		String minuteString = Math.round(minute) + "";
-		if (minute == 0L) {
-			minuteString = "0";
-		}
-		return minuteString + ":" + secondString;
-	}
+    fun roundUpToNearestWholeNumber(`val`: Double): Int {
+        val intVal = `val`.toInt()
+        return if (`val` - intVal == 0.0) intVal else intVal + 1
+    }
 
-	public static String convertToRomanNumeral(final int number) {
-		switch (number) {
-			case 1: {
-				return "I";
-			}
-			case 2: {
-				return "II";
-			}
-			default: {
-				return null;
-			}
-		}
-	}
+    fun convertTicksToMinutes(ticks: Int): String {
+        val minute = ticks / 1200L
+        val second = ticks / 20L - minute * 60L
+        var secondString = Math.round(second.toFloat()).toString() + ""
+        if (second < 10L) {
+            secondString = "0$secondString"
+        }
+        var minuteString = Math.round(minute.toFloat()).toString() + ""
+        if (minute == 0L) {
+            minuteString = "0"
+        }
+        return "$minuteString:$secondString"
+    }
+
+    fun convertToRomanNumeral(number: Int): String? {
+        return when (number) {
+            1 -> {
+                "I"
+            }
+
+            2 -> {
+                "II"
+            }
+
+            else -> {
+                null
+            }
+        }
+    }
 }

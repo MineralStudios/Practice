@@ -1,327 +1,290 @@
-package gg.mineral.practice.queue;
+package gg.mineral.practice.queue
 
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Random;
+import gg.mineral.api.collection.GlueList
+import gg.mineral.bot.api.configuration.BotConfiguration
+import gg.mineral.practice.bots.Difficulty
+import gg.mineral.practice.entity.Profile
+import gg.mineral.practice.gametype.Gametype
+import gg.mineral.practice.managers.ArenaManager.arenas
+import gg.mineral.practice.match.BotMatch
+import gg.mineral.practice.match.BotTeamMatch
+import gg.mineral.practice.match.Match
+import gg.mineral.practice.match.TeamMatch
+import gg.mineral.practice.match.data.MatchData
+import gg.mineral.practice.queue.QueueSettings.BotTeamSetting
+import gg.mineral.practice.queue.QueueSettings.QueueEntry
+import it.unimi.dsi.fastutil.bytes.ByteOpenHashSet
+import it.unimi.dsi.fastutil.objects.ObjectOpenHashSet
+import it.unimi.dsi.fastutil.shorts.Short2ObjectFunction
+import it.unimi.dsi.fastutil.shorts.Short2ObjectOpenHashMap
+import java.util.*
 
-import org.eclipse.jdt.annotation.Nullable;
+object QueueSystem {
+    private val random = Random()
+    private val queueMap = Short2ObjectOpenHashMap<RecordSet>()
 
-import gg.mineral.api.collection.GlueList;
-import gg.mineral.bot.api.configuration.BotConfiguration;
-import gg.mineral.practice.bots.Difficulty;
-import gg.mineral.practice.entity.Profile;
-import gg.mineral.practice.gametype.Gametype;
-import gg.mineral.practice.managers.ArenaManager;
-import gg.mineral.practice.match.BotMatch;
-import gg.mineral.practice.match.BotTeamMatch;
-import gg.mineral.practice.match.Match;
-import gg.mineral.practice.match.TeamMatch;
-import gg.mineral.practice.match.data.MatchData;
-import gg.mineral.practice.queue.QueueSettings.QueueEntry;
-import it.unimi.dsi.fastutil.bytes.ByteOpenHashSet;
-import it.unimi.dsi.fastutil.objects.ObjectOpenHashSet;
-import it.unimi.dsi.fastutil.shorts.Short2ObjectOpenHashMap;
-import lombok.val;
+    fun addPlayerToQueue(queueEntity: QueuedEntity, queueEntry: QueueEntry): Boolean {
+        val queueAndGametypeHash = (queueEntry.queuetype.id.toInt() shl 8 or queueEntry.gametype.id.toInt()).toShort()
+        val queueRecord = QueueRecord(queueEntity, queueEntry)
 
-public class QueueSystem {
+        val matchFound = findMatch(queueAndGametypeHash, queueRecord)
 
-    private static final Random random = new Random();
-    private static final Short2ObjectOpenHashMap<RecordSet> queueMap = new Short2ObjectOpenHashMap<>();
+        if (!matchFound) queueMap.computeIfAbsent(
+            queueAndGametypeHash,
+            Short2ObjectFunction { RecordSet() })
+            .add(queueRecord)
 
-    private static class RecordSet extends ObjectOpenHashSet<QueueRecord> {
-        private static final long serialVersionUID = 1L;
-
-        public int playerCount() {
-            int count = 0;
-            for (val queueRecord : this)
-                count += queueRecord.entity().getProfiles().size();
-
-            return count;
-        }
+        return matchFound
     }
 
-    private static record QueueRecord(QueuedEntity entity, QueueEntry queueEntry) {
-        @Override
-        public int hashCode() {
-            return entity.hashCode();
+    private fun findMatch(queueAndGametypeHash: Short, queueRecord: QueueRecord): Boolean {
+        val bots = queueRecord.queueEntry.botsEnabled
+        val teamSize = queueRecord.queueEntry.teamSize
+
+        if (bots && teamSize == 1 && queueRecord.entity is Profile) {
+            val profile = queueRecord.entity
+            val entry = queueRecord.queueEntry
+            val data = MatchData(queueRecord.queueEntry, profile.queueSettings)
+            val arenaId = entry.queuetype.nextArenaId(data, entry.gametype)
+            data.arenaId = arenaId
+            val queueSettings: QueueSettings = profile.queueSettings
+            val botDifficulty = queueSettings.opponentBotDifficulty
+            val botConfiguration = botDifficulty.getConfiguration(queueSettings)
+            BotMatch(profile, botConfiguration, data).start()
+            return true
         }
 
-        @Override
-        public boolean equals(Object obj) {
-            if (this == obj)
-                return true;
-            if (obj == null || getClass() != obj.getClass())
-                return false;
-            val other = (QueueRecord) obj;
-            return entity.equals(other.entity);
-        }
+        check(!(bots && teamSize == 1)) { "Bot 1v1s are not supported for non-profile entities" }
 
-        public boolean isCompatible(QueueRecord other) {
-            return !equals(other) && queueEntry.isCompatible(other.queueEntry());
-        }
-    }
-
-    public static boolean addPlayerToQueue(QueuedEntity queueEntity, QueueEntry queueEntry) {
-        short queueAndGametypeHash = (short) (queueEntry.queuetype().getId() << 8 | queueEntry.gametype().getId());
-        val queueRecord = new QueueRecord(queueEntity, queueEntry);
-
-        boolean matchFound = findMatch(queueAndGametypeHash, queueRecord);
-
-        if (!matchFound)
-            queueMap.computeIfAbsent(queueAndGametypeHash, k -> new RecordSet())
-                    .add(queueRecord);
-
-        return matchFound;
-    }
-
-    private static boolean findMatch(short queueAndGametypeHash, QueueRecord queueRecord) {
-
-        val bots = queueRecord.queueEntry.botsEnabled();
-        val teamSize = queueRecord.queueEntry().teamSize();
-
-        if (bots && teamSize == 1 && queueRecord.entity() instanceof Profile profile) {
-            val entry = queueRecord.queueEntry();
-            val data = new MatchData(queueRecord.queueEntry(), profile.getQueueSettings());
-            val arenaId = entry.queuetype().nextArenaId(data, entry.gametype());
-            data.setArenaId(arenaId);
-            val queueSettings = profile.getQueueSettings();
-            val botDifficulty = queueSettings.getOpponentBotDifficulty();
-            val botConfiguration = botDifficulty.getConfiguration(queueSettings);
-            new BotMatch(profile, botConfiguration, data).start();
-            return true;
-        }
-
-        if (bots && teamSize == 1)
-            throw new IllegalStateException("Bot 1v1s are not supported for non-profile entities");
-
-        val botTeamSetting = queueRecord.queueEntry().botTeamSetting();
+        val botTeamSetting = queueRecord.queueEntry.botTeamSetting
         if (bots
-                && botTeamSetting == QueueSettings.BotTeamSetting.BOTH) {
+            && botTeamSetting == BotTeamSetting.BOTH
+        ) {
             // TODO: make configurable team sizes for parties
-            val entity = queueRecord.entity();
-            val entry = queueRecord.queueEntry();
-            val data = new MatchData(entry, entity.getQueueSettings());
-            val arenaId = entry.queuetype().nextArenaId(data, entry.gametype());
-            data.setArenaId(arenaId);
-            val queueSettings = entity.getQueueSettings();
-            val teamBotDifficulty = queueSettings.getTeammateBotDifficulty();
-            val opponentBotDifficulty = queueSettings.getOpponentBotDifficulty();
-            val teamBotsNeeded = teamSize - entity.getProfiles().size();
-            val teamBots = new GlueList<BotConfiguration>(teamBotsNeeded);
-            val opponentBots = new GlueList<BotConfiguration>(teamSize);
-            for (int i = 0; i < teamBotsNeeded; i++)
-                teamBots.add(teamBotDifficulty.getConfiguration(queueSettings));
+            val entity = queueRecord.entity
+            val entry = queueRecord.queueEntry
+            val data = MatchData(entry, entity.queueSettings)
+            val arenaId = entry.queuetype.nextArenaId(data, entry.gametype)
+            data.arenaId = arenaId
+            val queueSettings = entity.queueSettings
+            val teamBotDifficulty = queueSettings.teammateBotDifficulty
+            val opponentBotDifficulty = queueSettings.opponentBotDifficulty
+            val teamBotsNeeded = teamSize - entity.profiles.size
+            val teamBots: GlueList<BotConfiguration> = GlueList<BotConfiguration>(teamBotsNeeded)
+            val opponentBots = GlueList<BotConfiguration>(teamSize)
+            for (i in 0..<teamBotsNeeded) teamBots.add(teamBotDifficulty.getConfiguration(queueSettings))
 
-            for (int i = 0; i < teamSize; i++)
-                opponentBots.add(opponentBotDifficulty.getConfiguration(queueSettings));
+            for (i in 0..<teamSize) opponentBots.add(opponentBotDifficulty.getConfiguration(queueSettings))
 
-            new BotTeamMatch(entity.getProfiles(), new LinkedList<>(), teamBots, opponentBots, data).start();
-            return true;
+            BotTeamMatch(entity.profiles, LinkedList(), teamBots, opponentBots, data).start()
+            return true
         }
 
-        if (teamSize > 1 && bots && botTeamSetting == QueueSettings.BotTeamSetting.BOTH)
-            throw new IllegalStateException("An unknown error occurred while trying to find a match");
+        check(!(teamSize > 1 && bots && botTeamSetting == BotTeamSetting.BOTH)) { "An unknown error occurred while trying to find a match" }
 
-        val queueRecords = queueMap.get(queueAndGametypeHash);
+        val queueRecords = queueMap[queueAndGametypeHash] ?: return false
 
-        if (queueRecords == null)
-            return false;
+        val compatibleQueueRecords = RecordSet()
 
-        val compatibleQueueRecords = new RecordSet();
+        for (record in queueRecords) if (queueRecord.isCompatible(record)) compatibleQueueRecords.add(record)
 
-        for (val record : queueRecords)
-            if (queueRecord.isCompatible(record))
-                compatibleQueueRecords.add(record);
+        if (compatibleQueueRecords.isEmpty()) return false
 
-        if (compatibleQueueRecords.isEmpty())
-            return false;
+        compatibleQueueRecords.add(queueRecord)
 
-        compatibleQueueRecords.add(queueRecord);
+        val requiredPlayers = teamSize * (if (bots) 1 else 2)
+        val records = RecordSet()
 
-        val requiredPlayers = teamSize * (bots ? 1 : 2);
-        val records = new RecordSet();
-
-        val iter = compatibleQueueRecords.iterator();
+        val iter = compatibleQueueRecords.iterator()
 
         while (iter.hasNext()) {
-            val record = iter.next();
-            val profiles = record.entity().getProfiles();
-            if (records.playerCount() + profiles.size() <= requiredPlayers)
-                records.add(record);
+            val record = iter.next()
+            val profiles = record.entity.profiles
+            if (records.playerCount() + profiles.size <= requiredPlayers) records.add(record)
         }
 
-        if (records.playerCount() < requiredPlayers)
-            return false;
+        if (records.playerCount() < requiredPlayers) return false
 
-        startMatch(queueRecord, records, teamSize, bots);
-        return true;
+        startMatch(queueRecord, records, teamSize)
+        return true
     }
 
-    @Nullable
-    public static QueueEntry getQueueEntry(Profile profile, Queuetype queuetype, Gametype gametype) {
-        return getQueueEntry(profile.isInParty() ? profile.getParty() : profile, queuetype, gametype);
+    fun getQueueEntry(profile: Profile, queuetype: Queuetype, gametype: Gametype) =
+        getQueueEntry(profile.party ?: profile, queuetype, gametype)
+
+    fun getQueueEntry(entity: QueuedEntity, queuetype: Queuetype, gametype: Gametype): QueueEntry? {
+        val queueAndGametypeHash = (queuetype.id.toInt() shl 8 or gametype.id.toInt()).toShort()
+
+        val queueRecords = queueMap[queueAndGametypeHash]
+
+        if (queueRecords != null) for ((entity1, queueEntry) in queueRecords) if (entity1 == entity) return queueEntry
+
+        return null
     }
 
-    @Nullable
-    public static QueueEntry getQueueEntry(QueuedEntity entity, Queuetype queuetype, Gametype gametype) {
-        short queueAndGametypeHash = (short) (queuetype.getId() << 8 | gametype.getId());
+    fun getQueueEntries(profile: Profile) = getQueueEntries(profile.party ?: profile)
 
-        val queueRecords = queueMap.get(queueAndGametypeHash);
+    fun getQueueEntries(entity: QueuedEntity): List<QueueEntry> {
+        val queueEntries = GlueList<QueueEntry>()
 
-        if (queueRecords != null)
-            for (val record : queueRecords)
-                if (record.entity().equals(entity))
-                    return record.queueEntry();
+        for (recordSet in queueMap.values)
+            for (record in recordSet)
+                if (record.entity == entity)
+                    queueEntries.add(record.queueEntry)
 
-        return null;
+        return queueEntries
     }
 
-    public static List<QueueEntry> getQueueEntries(Profile profile) {
-        return getQueueEntries(profile.isInParty() ? profile.getParty() : profile);
+
+    fun removePlayerFromQueue(profile: Profile, queuetype: Queuetype, gametype: Gametype) =
+        removePlayerFromQueue(profile.party ?: profile, queuetype, gametype)
+
+    fun removePlayerFromQueue(entity: QueuedEntity?, queuetype: Queuetype, gametype: Gametype): Boolean {
+        val queueAndGametypeHash = (queuetype.id.toInt() shl 8 or gametype.id.toInt()).toShort()
+
+        val queueRecords = queueMap[queueAndGametypeHash]
+
+        queueRecords.removeIf { record: QueueRecord -> record.entity == entity }
+        return queueMap.values.stream()
+            .anyMatch { set: RecordSet -> set.stream().anyMatch { record: QueueRecord -> record.entity == entity } }
     }
 
-    public static List<QueueEntry> getQueueEntries(QueuedEntity entity) {
-        val queueEntries = new GlueList<QueueEntry>();
+    fun removePlayerFromQueue(profile: Profile) = removePlayerFromQueue(profile.party ?: profile)
 
-        for (val recordSet : queueMap.values())
-            for (val record : recordSet)
-                if (record.entity().equals(entity))
-                    queueEntries.add(record.queueEntry());
-
-        return queueEntries;
+    fun removePlayerFromQueue(player: QueuedEntity) {
+        for (queueRecords in queueMap.values) queueRecords.removeIf { record: QueueRecord -> record.entity == player }
     }
 
-    public static boolean removePlayerFromQueue(Profile profile, Queuetype queuetype, Gametype gametype) {
-        return removePlayerFromQueue(profile.isInParty() ? profile.getParty() : profile, queuetype, gametype);
-    }
-
-    public static boolean removePlayerFromQueue(QueuedEntity entity, Queuetype queuetype, Gametype gametype) {
-        short queueAndGametypeHash = (short) (queuetype.getId() << 8 | gametype.getId());
-
-        val queueRecords = queueMap.get(queueAndGametypeHash);
-
-        queueRecords.removeIf(record -> record.entity().equals(entity));
-        return queueMap.values().stream()
-                .anyMatch(set -> set.stream().anyMatch(record -> record.entity().equals(entity)));
-    }
-
-    public static void removePlayerFromQueue(Profile profile) {
-        removePlayerFromQueue(profile.isInParty() ? profile.getParty() : profile);
-    }
-
-    public static void removePlayerFromQueue(QueuedEntity player) {
-        for (val queueRecords : queueMap.values())
-            queueRecords.removeIf(record -> record.entity().equals(player));
-    }
-
-    private static void startMatch(QueueRecord sampleRecord, RecordSet records, int teamSize,
-            boolean opponentBot) {
+    private fun startMatch(
+        sampleRecord: QueueRecord, records: RecordSet, teamSize: Int
+    ) {
         // Get all arenas compatible with the gametype
-        val allCompatibleArenas = new ByteOpenHashSet(sampleRecord.queueEntry().queuetype()
-                .filterArenasByGametype(sampleRecord.queueEntry().gametype()));
+        val allCompatibleArenas = ByteOpenHashSet(
+            sampleRecord.queueEntry.queuetype
+                .filterArenasByGametype(sampleRecord.queueEntry.gametype)
+        )
 
         if (allCompatibleArenas.isEmpty()) {
             // No arenas are compatible with the gametype; cannot start match
             // Optionally notify players
-            return;
+            return
         }
 
         // Initialize commonArenaIds with all compatible arenas
-        val commonArenaIds = new ByteOpenHashSet(allCompatibleArenas);
+        val commonArenaIds = ByteOpenHashSet(allCompatibleArenas)
 
-        for (val record : records) {
-            val arenas = new ByteOpenHashSet();
+        for ((_, queueEntry) in records) {
+            val arenas = ByteOpenHashSet()
 
-            val enabledArenas = record.queueEntry().enabledArenas();
-            val disabledArenas = new ByteOpenHashSet();
+            val enabledArenas = queueEntry.enabledArenas
+            val disabledArenas = ByteOpenHashSet()
 
             // Collect explicitly enabled and disabled arenas
-            for (val e : enabledArenas.byte2BooleanEntrySet()) {
-                if (e.getBooleanValue()) {
-                    arenas.add(e.getByteKey());
+            for (e in enabledArenas.byte2BooleanEntrySet()) {
+                if (e.booleanValue) {
+                    arenas.add(e.byteKey)
                 } else {
-                    disabledArenas.add(e.getByteKey());
+                    disabledArenas.add(e.byteKey)
                 }
             }
 
             if (arenas.isEmpty()) {
                 // Player accepts all compatible arenas except explicitly disabled ones
-                arenas.addAll(allCompatibleArenas);
-                arenas.removeAll(disabledArenas);
+                arenas.addAll(allCompatibleArenas)
+                arenas.removeAll(disabledArenas)
             } else {
                 // Remove explicitly disabled arenas from the enabled ones
-                arenas.removeAll(disabledArenas);
+                arenas.removeAll(disabledArenas)
             }
 
             if (arenas.isEmpty()) {
                 // Player has no acceptable arenas; cannot start match
                 // Optionally notify players
-                return;
+                return
             }
 
             // Intersect with commonArenaIds
-            commonArenaIds.retainAll(arenas);
+            commonArenaIds.retainAll(arenas)
 
             if (commonArenaIds.isEmpty()) {
                 // No common arenas, cannot start match
                 // Optionally notify players
-                return;
+                return
             }
         }
 
         // Select a random arena from the common arenas using primitive arrays
-        byte selectedArenaId;
-        if (commonArenaIds.size() == 1) {
+        val selectedArenaId: Byte
+        if (commonArenaIds.size == 1) {
             // Only one arena available, select it
-            selectedArenaId = commonArenaIds.iterator().nextByte();
+            selectedArenaId = commonArenaIds.iterator().nextByte()
         } else {
             // Convert the ByteOpenHashSet to a primitive byte array
-            val arenasArray = commonArenaIds.toByteArray();
-            int index = random.nextInt(arenasArray.length);
-            selectedArenaId = arenasArray[index];
+            val arenasArray = commonArenaIds.toByteArray()
+            val index = random.nextInt(arenasArray.size)
+            selectedArenaId = arenasArray[index]
         }
         // Get the Arena object from the arena ID
-        val selectedArena = ArenaManager.getArenas().get(selectedArenaId);
-        if (selectedArena == null)
-            throw new IllegalStateException("Arena not found for ID: " + selectedArenaId);
+        val selectedArena = arenas[selectedArenaId]
+        checkNotNull(selectedArena) { "Arena not found for ID: $selectedArenaId" }
 
-        val teamA = new LinkedList<Profile>();
-        val teamB = new LinkedList<Profile>();
+        val teamA = LinkedList<Profile>()
+        val teamB = LinkedList<Profile>()
 
-        val recordIter = records.iterator();
+        val recordIter = records.iterator()
 
         while (recordIter.hasNext()) {
-            val record = recordIter.next();
-            val profiles = record.entity().getProfiles();
-            if (teamA.size() + profiles.size() <= teamSize)
-                teamA.addAll(profiles);
-            else
-                teamB.addAll(profiles);
+            val record = recordIter.next()
+            val profiles = record!!.entity.profiles
+            if (teamA.size + profiles.size <= teamSize) teamA.addAll(profiles)
+            else teamB.addAll(profiles)
         }
 
-        val bots = sampleRecord.queueEntry().botsEnabled();
-        val matchData = new MatchData(sampleRecord.queueEntry());
-        matchData.setArenaId(selectedArenaId);
+        val bots = sampleRecord.queueEntry.botsEnabled
+        val matchData = MatchData(sampleRecord.queueEntry)
+        matchData.arenaId = selectedArenaId
 
-        val difficulty = Difficulty.values()[sampleRecord.queueEntry().opponentDifficulty()];
+        val difficulty = Difficulty.entries[sampleRecord.queueEntry.opponentDifficulty.toInt()]
 
         if (bots) {
-            teamA.addAll(teamB);
-            val teamBBots = new GlueList<BotConfiguration>();
-            for (int i = 0; i < teamSize; i++)
-                teamBBots.add(difficulty.getConfiguration(null));
-            new BotTeamMatch(teamA, new LinkedList<>(), new GlueList<>(), teamBBots, matchData).start();
-            return;
+            teamA.addAll(teamB)
+            val teamBBots = GlueList<BotConfiguration>()
+            for (i in 0..<teamSize) teamBBots.add(difficulty.getConfiguration())
+            BotTeamMatch(teamA, LinkedList(), GlueList(), teamBBots, matchData).start()
+            return
         }
 
-        if (teamSize == 1)
-            new Match(teamA.get(0), teamB.get(0), matchData).start();
-        else
-            new TeamMatch(teamA, teamB, matchData).start();
+        if (teamSize == 1) Match(matchData, teamA[0], teamB[0]).start()
+        else TeamMatch(teamA, teamB, matchData).start()
     }
 
-    public static int getCompatibleQueueCount(Queuetype queuetype, Gametype gametype) {
-        short queueAndGametypeHash = (short) (queuetype.getId() << 8 | gametype.getId());
-        return queueMap.computeIfAbsent(queueAndGametypeHash, k -> new RecordSet()).size();
+    fun getCompatibleQueueCount(queuetype: Queuetype, gametype: Gametype): Int {
+        val queueAndGametypeHash = (queuetype.id.toInt() shl 8 or gametype.id.toInt()).toShort()
+        return queueMap.computeIfAbsent(queueAndGametypeHash, Short2ObjectFunction { k: Short -> RecordSet() }).size
+    }
+
+    private class RecordSet : ObjectOpenHashSet<QueueRecord>() {
+        fun playerCount(): Int {
+            var count = 0
+            for ((entity) in this) count += entity.profiles.size
+
+            return count
+        }
+
+        companion object {
+            private const val serialVersionUID = 1L
+        }
+    }
+
+    private data class QueueRecord(val entity: QueuedEntity, val queueEntry: QueueEntry) {
+        override fun hashCode() = entity.hashCode()
+
+        override fun equals(other: Any?): Boolean {
+            if (other !is QueueRecord) return false
+            if (javaClass != other.javaClass) return false
+            return entity == other.entity
+        }
+
+        fun isCompatible(other: QueueRecord) = !equals(other) && queueEntry.isCompatible(other.queueEntry)
     }
 }

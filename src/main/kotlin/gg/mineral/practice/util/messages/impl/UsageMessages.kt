@@ -1,109 +1,145 @@
-package gg.mineral.practice.util.messages.impl;
+package gg.mineral.practice.util.messages.impl
 
-import gg.mineral.practice.util.messages.UsageMessage;
+import gg.mineral.practice.util.messages.UsageMessage
 
-public class UsageMessages {
+object UsageMessages {
     // Arena Command
-    public static final UsageMessage ARENA_CREATE = new UsageMessage("/arena create <Name>");
-    public static final UsageMessage ARENA_SPAWN = new UsageMessage("/arena spawn <Arena> <1/2/Waiting>");
-    public static final UsageMessage ARENA_DISPLAY = new UsageMessage("/arena setdisplay <Arena> <DisplayName>");
-    public static final UsageMessage ARENA_TP = new UsageMessage("/arena tp <Arena>");
-    public static final UsageMessage ARENA_DELETE = new UsageMessage("/arena delete <Arena>");
+    val ARENA_CREATE: UsageMessage = UsageMessage("/arena create <Name>")
+    val ARENA_SPAWN: UsageMessage = UsageMessage("/arena spawn <Arena> <1/2/Waiting>")
+    val ARENA_DISPLAY: UsageMessage = UsageMessage("/arena setdisplay <Arena> <DisplayName>")
+    val ARENA_TP: UsageMessage = UsageMessage("/arena tp <Arena>")
+    val ARENA_DELETE: UsageMessage = UsageMessage("/arena delete <Arena>")
+
     // Category Command
-    public static final UsageMessage CATEGORY_CREATE = new UsageMessage("/category create <Name>");
-    public static final UsageMessage CATEGORY_DISPLAY = new UsageMessage(
-            "/category setdisplay <Category> <DisplayName>");
-    public static final UsageMessage CATEGORY_QUEUE = new UsageMessage(
-            "/category queue <Category> <Queuetype> <Slot/False>");
-    public static final UsageMessage CATEGORY_ADD = new UsageMessage("/category add <Category> <Gametype>");
-    public static final UsageMessage CATEGORY_REMOVE = new UsageMessage("/category remove <Category> <Gametype>");
-    public static final UsageMessage CATEGORY_DELETE = new UsageMessage("/category delete <Category>");
+    val CATEGORY_CREATE: UsageMessage = UsageMessage("/category create <Name>")
+    val CATEGORY_DISPLAY: UsageMessage = UsageMessage(
+        "/category setdisplay <Category> <DisplayName>"
+    )
+    val CATEGORY_QUEUE: UsageMessage = UsageMessage(
+        "/category queue <Category> <Queuetype> <Slot/False>"
+    )
+    val CATEGORY_ADD: UsageMessage = UsageMessage("/category add <Category> <Gametype>")
+    val CATEGORY_REMOVE: UsageMessage = UsageMessage("/category remove <Category> <Gametype>")
+    val CATEGORY_DELETE: UsageMessage = UsageMessage("/category delete <Category>")
+
     // Gametype Command
-    public static final UsageMessage GAMETYPE_CREATE = new UsageMessage("/gametype create <Name>");
-    public static final UsageMessage GAMETYPE_LOAD_KIT = new UsageMessage("/gametype loadkit <Name>");
-    public static final UsageMessage GAMETYPE_KIT = new UsageMessage("/gametype kit <Gametype>");
-    public static final UsageMessage GAMETYPE_DISPLAY = new UsageMessage(
-            "/gametype setdisplay <Gametype> <DisplayName>");
-    public static final UsageMessage GAMETYPE_DAMAGE_TICKS = new UsageMessage(
-            "/gametype nodamageticks <Gametype> <Ticks>");
-    public static final UsageMessage GAMETYPE_BUILD_LIMIT = new UsageMessage(
-            "/gametype buildlimit <Gametype> <Height>");
-    public static final UsageMessage GAMETYPE_REGEN = new UsageMessage("/gametype regen <Gametype> <True/False>");
-    public static final UsageMessage GAMETYPE_BOTS = new UsageMessage("/gametype bots <Gametype> <True/False>");
-    public static final UsageMessage GAMETYPE_GRIEFING = new UsageMessage(
-            "/gametype griefing <Gametype> <True/False>");
-    public static final UsageMessage GAMETYPE_QUEUE = new UsageMessage(
-            "/gametype queue <Gametype> <Queuetype> <Slot/False>");
-    public static final UsageMessage GAMETYPE_BUILD = new UsageMessage("/gametype build <Gametype> <True/False>");
-    public static final UsageMessage GAMETYPE_DEADLY_WATER = new UsageMessage(
-            "/gametype deadlywater <Gametype> <True/False>");
-    public static final UsageMessage GAMETYPE_LOOTING = new UsageMessage(
-            "/gametype looting <Gametype> <True/False>");
-    public static final UsageMessage GAMETYPE_DAMAGE = new UsageMessage("/gametype damage <Gametype> <True/False>");
-    public static final UsageMessage GAMETYPE_HUNGER = new UsageMessage("/gametype hunger <Gametype> <True/False>");
-    public static final UsageMessage GAMETYPE_BOXING = new UsageMessage("/gametype boxing <Gametype> <True/False>");
-    public static final UsageMessage GAMETYPE_EPEARL = new UsageMessage("/gametype epearl <Gametype> <Time(s)>");
-    public static final UsageMessage GAMETYPE_ARENA = new UsageMessage(
-            "/gametype arena <Gametype> <Arena> <True/False>");
-    public static final UsageMessage GAMETYPE_EVENT = new UsageMessage("/gametype event <Gametype> <True/False>");
-    public static final UsageMessage GAMETYPE_EVENT_ARENA = new UsageMessage(
-            "/gametype seteventarena <Gametype> <Arena>");
-    public static final UsageMessage GAMETYPE_ARENA_FOR_ALL = new UsageMessage(
-            "/gametype enablearenaforall <Arena> <True/False>");
-    public static final UsageMessage GAMETYPE_DELETE = new UsageMessage("/gametype delete <Gametype>");
+    val GAMETYPE_CREATE: UsageMessage = UsageMessage("/gametype create <Name>")
+    val GAMETYPE_LOAD_KIT: UsageMessage = UsageMessage("/gametype loadkit <Name>")
+    val GAMETYPE_KIT: UsageMessage = UsageMessage("/gametype kit <Gametype>")
+    val GAMETYPE_DISPLAY: UsageMessage = UsageMessage(
+        "/gametype setdisplay <Gametype> <DisplayName>"
+    )
+    val GAMETYPE_DAMAGE_TICKS: UsageMessage = UsageMessage(
+        "/gametype nodamageticks <Gametype> <Ticks>"
+    )
+    val GAMETYPE_BUILD_LIMIT: UsageMessage = UsageMessage(
+        "/gametype buildlimit <Gametype> <Height>"
+    )
+    val GAMETYPE_REGEN: UsageMessage = UsageMessage("/gametype regen <Gametype> <True/False>")
+    val GAMETYPE_BOTS: UsageMessage = UsageMessage("/gametype bots <Gametype> <True/False>")
+    val GAMETYPE_GRIEFING: UsageMessage = UsageMessage(
+        "/gametype griefing <Gametype> <True/False>"
+    )
+    val GAMETYPE_QUEUE: UsageMessage = UsageMessage(
+        "/gametype queue <Gametype> <Queuetype> <Slot/False>"
+    )
+    val GAMETYPE_BUILD: UsageMessage = UsageMessage("/gametype build <Gametype> <True/False>")
+    val GAMETYPE_DEADLY_WATER: UsageMessage = UsageMessage(
+        "/gametype deadlywater <Gametype> <True/False>"
+    )
+    val GAMETYPE_LOOTING: UsageMessage = UsageMessage(
+        "/gametype looting <Gametype> <True/False>"
+    )
+    val GAMETYPE_DAMAGE: UsageMessage = UsageMessage("/gametype damage <Gametype> <True/False>")
+    val GAMETYPE_HUNGER: UsageMessage = UsageMessage("/gametype hunger <Gametype> <True/False>")
+    val GAMETYPE_BOXING: UsageMessage = UsageMessage("/gametype boxing <Gametype> <True/False>")
+    val GAMETYPE_EPEARL: UsageMessage = UsageMessage("/gametype epearl <Gametype> <Time(s)>")
+    val GAMETYPE_ARENA: UsageMessage = UsageMessage(
+        "/gametype arena <Gametype> <Arena> <True/False>"
+    )
+    val GAMETYPE_EVENT: UsageMessage = UsageMessage("/gametype event <Gametype> <True/False>")
+    val GAMETYPE_EVENT_ARENA: UsageMessage = UsageMessage(
+        "/gametype seteventarena <Gametype> <Arena>"
+    )
+    val GAMETYPE_ARENA_FOR_ALL: UsageMessage = UsageMessage(
+        "/gametype enablearenaforall <Arena> <True/False>"
+    )
+    val GAMETYPE_DELETE: UsageMessage = UsageMessage("/gametype delete <Gametype>")
+
     // Kit Editor Command
-    public static final UsageMessage KIT_EDITOR_ENABLE = new UsageMessage("/kiteditor enable <True/False>");
-    public static final UsageMessage KIT_EDITOR_DISPLAY = new UsageMessage("/kiteditor setdisplay <DisplayName>");
-    public static final UsageMessage KIT_EDITOR_SLOT = new UsageMessage("/kiteditor slot <Slot>");
+    val KIT_EDITOR_ENABLE: UsageMessage = UsageMessage("/kiteditor enable <True/False>")
+    val KIT_EDITOR_DISPLAY: UsageMessage = UsageMessage("/kiteditor setdisplay <DisplayName>")
+    val KIT_EDITOR_SLOT: UsageMessage = UsageMessage("/kiteditor slot <Slot>")
+
     // Parties Command
-    public static final UsageMessage PARTIES_ENABLE = new UsageMessage("/parties enable <True/False>");
-    public static final UsageMessage PARTIES_DISPLAY = new UsageMessage("/parties setdisplay <DisplayName>");
-    public static final UsageMessage PARTIES_SLOT = new UsageMessage("/parties slot <Slot>");
+    val PARTIES_ENABLE: UsageMessage = UsageMessage("/parties enable <True/False>")
+    val PARTIES_DISPLAY: UsageMessage = UsageMessage("/parties setdisplay <DisplayName>")
+    val PARTIES_SLOT: UsageMessage = UsageMessage("/parties slot <Slot>")
+
     // Queuetype Command
-    public static final UsageMessage QUEUETYPE_CREATE = new UsageMessage("/queuetype create <Name>");
-    public static final UsageMessage QUEUETYPE_DISPLAY = new UsageMessage(
-            "/queuetype setdisplay <Queuetype> <DisplayName>");
-    public static final UsageMessage QUEUETYPE_RANKED = new UsageMessage(
-            "/queuetype ranked <Queuetype> <True/False>");
-    public static final UsageMessage QUEUETYPE_COMMUNITY = new UsageMessage(
-            "/queuetype community <Queuetype> <True/False>");
-    public static final UsageMessage QUEUETYPE_UNRANKED = new UsageMessage(
-            "/queuetype unranked <Queuetype> <True/False>");
-    public static final UsageMessage QUEUETYPE_SLOT = new UsageMessage("/queuetype slot <Queuetype> <Slot>");
-    public static final UsageMessage QUEUETYPE_KB = new UsageMessage(
-            "/queuetype kb <Queuetype> <KnockbackProfile>");
-    public static final UsageMessage QUEUETYPE_BOTS = new UsageMessage(
-            "/queuetype bots <Queuetype> <True/False>");
-    public static final UsageMessage QUEUETYPE_ARENA = new UsageMessage(
-            "/queuetype arena <Queuetype>");
-    public static final UsageMessage QUEUETYPE_DELETE = new UsageMessage("/queuetype delete <Queuetype>");
+    val QUEUETYPE_CREATE: UsageMessage = UsageMessage("/queuetype create <Name>")
+    val QUEUETYPE_DISPLAY: UsageMessage = UsageMessage(
+        "/queuetype setdisplay <Queuetype> <DisplayName>"
+    )
+    val QUEUETYPE_RANKED: UsageMessage = UsageMessage(
+        "/queuetype ranked <Queuetype> <True/False>"
+    )
+    val QUEUETYPE_COMMUNITY: UsageMessage = UsageMessage(
+        "/queuetype community <Queuetype> <True/False>"
+    )
+    val QUEUETYPE_UNRANKED: UsageMessage = UsageMessage(
+        "/queuetype unranked <Queuetype> <True/False>"
+    )
+    val QUEUETYPE_SLOT: UsageMessage = UsageMessage("/queuetype slot <Queuetype> <Slot>")
+    val QUEUETYPE_KB: UsageMessage = UsageMessage(
+        "/queuetype kb <Queuetype> <KnockbackProfile>"
+    )
+    val QUEUETYPE_BOTS: UsageMessage = UsageMessage(
+        "/queuetype bots <Queuetype> <True/False>"
+    )
+    val QUEUETYPE_ARENA: UsageMessage = UsageMessage(
+        "/queuetype arena <Queuetype>"
+    )
+    val QUEUETYPE_DELETE: UsageMessage = UsageMessage("/queuetype delete <Queuetype>")
+
     // Settings Config Command
-    public static final UsageMessage SETTINGS_ENABLE = new UsageMessage("/settingsconfig enable <True/False>");
-    public static final UsageMessage SETTINGS_DISPLAY = new UsageMessage(
-            "/settingsconfig setdisplay <DisplayName>");
-    public static final UsageMessage SETTINGS_SLOT = new UsageMessage("/settingsconfig slot <Slot>");
+    val SETTINGS_ENABLE: UsageMessage = UsageMessage("/settingsconfig enable <True/False>")
+    val SETTINGS_DISPLAY: UsageMessage = UsageMessage(
+        "/settingsconfig setdisplay <DisplayName>"
+    )
+    val SETTINGS_SLOT: UsageMessage = UsageMessage("/settingsconfig slot <Slot>")
+
     // Spectate Config Command
-    public static final UsageMessage SPECTATE_ENABLE = new UsageMessage("/spectateconfig enable <True/False>");
-    public static final UsageMessage SPECTATE_DISPLAY = new UsageMessage(
-            "/spectateconfig setdisplay <DisplayName>");
-    public static final UsageMessage SPECTATE_SLOT = new UsageMessage("/spectateconfig slot <Slot>");
+    val SPECTATE_ENABLE: UsageMessage = UsageMessage("/spectateconfig enable <True/False>")
+    val SPECTATE_DISPLAY: UsageMessage = UsageMessage(
+        "/spectateconfig setdisplay <DisplayName>"
+    )
+    val SPECTATE_SLOT: UsageMessage = UsageMessage("/spectateconfig slot <Slot>")
+
     // Leaderboard Config Command
-    public static final UsageMessage LEADERBOARD_ENABLE = new UsageMessage("/leaderboardconfig enable <True/False>");
-    public static final UsageMessage LEADERBOARD_DISPLAY = new UsageMessage(
-            "/leaderboardconfig setdisplay <DisplayName>");
-    public static final UsageMessage LEADERBOARD_SLOT = new UsageMessage("/leaderboardconfig slot <Slot>");
+    val LEADERBOARD_ENABLE: UsageMessage = UsageMessage("/leaderboardconfig enable <True/False>")
+    val LEADERBOARD_DISPLAY: UsageMessage = UsageMessage(
+        "/leaderboardconfig setdisplay <DisplayName>"
+    )
+    val LEADERBOARD_SLOT: UsageMessage = UsageMessage("/leaderboardconfig slot <Slot>")
+
     // Accept Command
-    public static final UsageMessage ACCEPT = new UsageMessage("/accept <Player>");
+    val ACCEPT: UsageMessage = UsageMessage("/accept <Player>")
+
     // Duel Command
-    public static final UsageMessage DUEL = new UsageMessage("/duel <Player>");
+    val DUEL: UsageMessage = UsageMessage("/duel <Player>")
+
     // Party Command
-    public static final UsageMessage PARTY_INVITE = new UsageMessage("/party invite <Name>");
-    public static final UsageMessage PARTY_JOIN = new UsageMessage("/party join <Name>");
-    public static final UsageMessage PARTY_ACCEPT = new UsageMessage("/party accept <Name>");
+    val PARTY_INVITE: UsageMessage = UsageMessage("/party invite <Name>")
+    val PARTY_JOIN: UsageMessage = UsageMessage("/party join <Name>")
+    val PARTY_ACCEPT: UsageMessage = UsageMessage("/party accept <Name>")
+
     // Follow Command
-    public static final UsageMessage FOLLOW = new UsageMessage("/follow <Player>");
+    val FOLLOW: UsageMessage = UsageMessage("/follow <Player>")
+
     // View Inventory Command
-    public static final UsageMessage VIEW_INV = new UsageMessage("/viewinventory <Player>");
+    val VIEW_INV: UsageMessage = UsageMessage("/viewinventory <Player>")
+
     // Join Command
-    public static final UsageMessage JOIN = new UsageMessage("/join <Name>");
+    val JOIN: UsageMessage = UsageMessage("/join <Name>")
 }

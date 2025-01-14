@@ -1,30 +1,19 @@
-package gg.mineral.practice.util.world;
+package gg.mineral.practice.util.world
 
-import java.util.List;
-import java.util.Random;
+import gg.mineral.api.collection.GlueList
+import org.bukkit.Location
+import org.bukkit.World
+import org.bukkit.generator.BlockPopulator
+import org.bukkit.generator.ChunkGenerator
+import java.util.*
 
-import org.bukkit.Location;
-import org.bukkit.World;
-import org.bukkit.generator.BlockPopulator;
-import org.bukkit.generator.ChunkGenerator;
+class VoidWorldGenerator : ChunkGenerator() {
+    override fun getDefaultPopulators(world: World): List<BlockPopulator> = GlueList()
 
-import gg.mineral.api.collection.GlueList;
+    override fun canSpawn(world: World, x: Int, z: Int) = true
 
-public class VoidWorldGenerator extends ChunkGenerator {
+    @Deprecated("Deprecated in Java", ReplaceWith("ByteArray(32768)"))
+    override fun generate(world: World, rand: Random, chunkx: Int, chunkz: Int) = ByteArray(32768)
 
-    public List<BlockPopulator> getDefaultPopulators(World world) {
-        return new GlueList<>();
-    }
-
-    public boolean canSpawn(World world, int x, int z) {
-        return true;
-    }
-
-    public byte[] generate(World world, Random rand, int chunkx, int chunkz) {
-        return new byte[32768];
-    }
-
-    public Location getFixedSpawnLocation(World world, Random random) {
-        return new Location(world, 0.0D, 128.0D, 0.0D);
-    }
+    override fun getFixedSpawnLocation(world: World, random: Random) = Location(world, 0.0, 128.0, 0.0)
 }

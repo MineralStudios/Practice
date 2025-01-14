@@ -1,106 +1,82 @@
-package gg.mineral.practice.util.collection;
+package gg.mineral.practice.util.collection
 
-import gg.mineral.api.collection.GlueList;
-import lombok.AllArgsConstructor;
-import lombok.Data;
-import lombok.Getter;
-import lombok.RequiredArgsConstructor;
-import lombok.val;
+import gg.mineral.api.collection.GlueList
 
-@RequiredArgsConstructor
-public class LeaderboardMap {
-    final int size;
+class LeaderboardMap(val size: Int = 10) {
 
-    public LeaderboardMap() {
-        this(10);
-    }
+    data class Entry(val key: String, var value: Int)
 
-    @AllArgsConstructor
-    @Data
-    public static class Entry {
-        String key;
-        int value;
-    }
+    var entries: GlueList<Entry> = GlueList()
 
-    @Getter
-    GlueList<Entry> entries = new GlueList<>();
-
-    private int binarySearch(int value) {
-        int lastIndex = entries.size();
-        int firstIndex = 0;
-        int midIndex = lastIndex / 2;
+    private fun binarySearch(value: Int): Int {
+        var lastIndex = entries.size
+        var firstIndex = 0
+        var midIndex = lastIndex / 2
 
         while (firstIndex != lastIndex) {
-            int midValue = get(midIndex).getValue();
+            val midValue: Int = get(midIndex).value
 
             if (midValue > value) {
                 // below on leaderboard
-                firstIndex = midIndex + 1;
+                firstIndex = midIndex + 1
             } else if (midValue < value) {
                 // above on leaderboard
-                lastIndex = midIndex;
+                lastIndex = midIndex
             } else {
-
-                return midIndex;
+                return midIndex
             }
 
-            midIndex = (firstIndex + lastIndex) / 2;
+            midIndex = (firstIndex + lastIndex) / 2
         }
 
-        return firstIndex;
+        return firstIndex
     }
 
-    private int findPosition(int elo) {
-        return entries.isEmpty() ? 0
-                : elo <= get(entries.size() - 1).getValue() ? entries.size() : binarySearch(elo);
+    private fun findPosition(elo: Int): Int {
+        return if (entries.isEmpty())
+            0
+        else
+            if (elo <= get(entries.size - 1).value) entries.size else binarySearch(elo)
     }
 
-    private int findPositionOfEntry(int elo) {
-        int lastIndex = entries.size() - 1;
-        return entries.isEmpty() ? 0
-                : elo == get(lastIndex).getValue() ? lastIndex : binarySearch(elo);
+    private fun findPositionOfEntry(elo: Int): Int {
+        val lastIndex = entries.size - 1
+        return if (entries.isEmpty())
+            0
+        else
+            if (elo == get(lastIndex).value) lastIndex else binarySearch(elo)
     }
 
-    public Entry get(int index) {
-        return entries.get(index);
+    fun get(index: Int): Entry = entries[index]
+
+    fun put(key: String, value: Int) {
+        entries.add(findPosition(value), Entry(key, value))
+        if (entries.size > size) entries.removeAt(entries.size - 1)
     }
 
-    public void put(String key, int value) {
-        entries.add(findPosition(value), new Entry(key, value));
+    fun putNoDuplicate(key: String, value: Int) {
+        for (entry in entries) if (entry.key == key) return
 
-        if (entries.size() > size)
-            entries.remove(entries.size() - 1);
+        put(key, value)
     }
 
-    public void putNoDuplicate(String key, int value) {
-        for (val entry : entries)
-            if (entry.getKey().equals(key))
-                return;
+    fun putOrReplace(key: String, value: Int, oldValue: Int) {
+        val oldPosition = findPositionOfEntry(oldValue)
+        val oldEntry = if (entries.size - 1 < oldPosition) null else entries[oldPosition]
 
-        put(key, value);
+        if (oldEntry != null && oldEntry.key.equals(key, ignoreCase = true)) entries.removeAt(oldPosition)
+
+        entries.add(findPosition(value), Entry(key, value))
+
+        if (entries.size > size) entries.removeAt(entries.size - 1)
     }
 
-    public void putOrReplace(String key, int value, int oldValue) {
-        int oldPosition = findPositionOfEntry(oldValue);
-        val oldEntry = entries.size() - 1 < oldPosition ? null : entries.get(oldPosition);
+    fun replace(value: Int, oldValue: Int) {
+        val oldEntry = entries.removeAt(findPositionOfEntry(oldValue))
+        oldEntry.value = value
 
-        if (oldEntry != null && oldEntry.getKey().equalsIgnoreCase(key))
-            entries.remove(oldPosition);
+        entries.add(findPosition(value), oldEntry)
 
-        entries.add(findPosition(value), new Entry(key, value));
-
-        if (entries.size() > size)
-            entries.remove(entries.size() - 1);
-    }
-
-    public void replace(String key, int value, int oldValue) {
-
-        val oldEntry = entries.remove(findPositionOfEntry(oldValue));
-        oldEntry.setValue(value);
-
-        entries.add(findPosition(value), oldEntry);
-
-        if (entries.size() > size)
-            entries.remove(entries.size() - 1);
+        if (entries.size > size) entries.removeAt(entries.size - 1)
     }
 }

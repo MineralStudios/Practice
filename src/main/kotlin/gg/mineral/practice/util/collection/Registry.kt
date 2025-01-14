@@ -1,40 +1,25 @@
-package gg.mineral.practice.util.collection;
+package gg.mineral.practice.util.collection
 
-import it.unimi.dsi.fastutil.objects.Object2ObjectOpenHashMap;
-import lombok.RequiredArgsConstructor;
+import it.unimi.dsi.fastutil.objects.Object2ObjectOpenHashMap
+import java.util.function.Function
 
-import java.util.Collection;
-import java.util.Iterator;
-import java.util.Map;
-import java.util.Map.Entry;
-import java.util.function.Function;
+class Registry<T, Q>(private val function: Function<T, Q>) {
+    private val keyValueMap: MutableMap<Q, T> = Object2ObjectOpenHashMap()
 
-@RequiredArgsConstructor
-public class Registry<T, Q> {
-    private final Map<Q, T> keyValueMap = new Object2ObjectOpenHashMap<>();
-    private final Function<T, Q> function;
+    val registeredObjects: Collection<T>
+        get() = keyValueMap.values
 
-    public Collection<T> getRegisteredObjects() {
-        return keyValueMap.values();
+    fun iterator(): Iterator<Map.Entry<Q, T>> = keyValueMap.entries.iterator()
+
+    fun clear() = keyValueMap.clear()
+
+    fun get(key: Q) = keyValueMap[key]
+
+    fun put(value: T) {
+        keyValueMap[function.apply(value)] = value
     }
 
-    public Iterator<Entry<Q, T>> iterator() {
-        return keyValueMap.entrySet().iterator();
-    }
-
-    public void clear() {
-        keyValueMap.clear();
-    }
-
-    public T get(Q key) {
-        return keyValueMap.get(key);
-    }
-
-    public void put(T value) {
-        keyValueMap.put(function.apply(value), value);
-    }
-
-    public void unregister(T value) {
-        keyValueMap.remove(function.apply(value));
+    fun unregister(value: T) {
+        keyValueMap.remove(function.apply(value))
     }
 }

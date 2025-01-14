@@ -1,26 +1,24 @@
-package gg.mineral.practice.util.messages;
+package gg.mineral.practice.util.messages
 
-import org.bukkit.ChatColor;
+import org.bukkit.ChatColor
+import java.util.*
 
-import lombok.val;
-
-public class StringUtil {
-    public static String toNiceString(String string) {
-        string = ChatColor.stripColor(string).replace('_', ' ').toLowerCase();
-        val sb = new StringBuilder();
-        for (int i = 0; i < string.toCharArray().length; ++i) {
-            char c = string.toCharArray()[i];
+object StringUtil {
+    fun toNiceString(string: String): String {
+        val newString = ChatColor.stripColor(string).replace('_', ' ').lowercase(Locale.getDefault())
+        val sb = StringBuilder()
+        for (i in newString.toCharArray().indices) {
+            var c = newString.toCharArray()[i]
             if (i > 0) {
-                final char prev = string.toCharArray()[i - 1];
-                if ((prev == ' ' || prev == '[' || prev == '(') && (i == string.toCharArray().length - 1 || c != 'x'
-                        || !Character.isDigit(string.toCharArray()[i + 1])))
-                    c = Character.toUpperCase(c);
+                val prev = newString.toCharArray()[i - 1]
+                if ((prev == ' ' || prev == '[' || prev == '(') && (i == newString.toCharArray().size - 1 || c != 'x' || !Character.isDigit(
+                        newString.toCharArray()[i + 1]
+                    ))
+                ) c = c.uppercaseChar()
+            } else if (c != 'x' || !Character.isDigit(newString.toCharArray()[i + 1])) c = c.uppercaseChar()
 
-            } else if (c != 'x' || !Character.isDigit(string.toCharArray()[i + 1]))
-                c = Character.toUpperCase(c);
-
-            sb.append(c);
+            sb.append(c)
         }
-        return sb.toString();
+        return sb.toString()
     }
 }

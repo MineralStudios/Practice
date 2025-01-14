@@ -1,34 +1,35 @@
-package gg.mineral.practice.util;
+package gg.mineral.practice.util
 
-import gg.mineral.practice.entity.Profile;
-import org.bukkit.Location;
-import org.bukkit.craftbukkit.v1_8_R3.entity.CraftPlayer;
-import org.bukkit.entity.Player;
+import gg.mineral.practice.entity.Profile
+import org.bukkit.Location
+import org.bukkit.craftbukkit.v1_8_R3.entity.CraftPlayer
+import org.bukkit.entity.Player
+import kotlin.math.ceil
 
-public class PlayerUtil {
-    public static void teleport(CraftPlayer from, Location to) {
-        from.getHandle().playerConnection.checkMovement = false;
-        double newY = Math.ceil(to.getY());
-        to.setY(newY);
-        from.teleport(to);
+object PlayerUtil {
+    fun teleport(from: CraftPlayer, to: Location) {
+        from.handle.playerConnection.checkMovement = false
+        val newY = ceil(to.y)
+        to.y = newY
+        from.teleport(to)
     }
 
-    public static void teleportNoGlitch(CraftPlayer from, Location to) {
-        from.getHandle().playerConnection.checkMovement = false;
-        double newY = Math.ceil(to.getY());
-        to.setY(newY + 0.5);
-        from.teleport(to);
+    private fun teleportNoGlitch(from: CraftPlayer, to: Location) {
+        from.handle.playerConnection.checkMovement = false
+        val newY = ceil(to.y)
+        to.y = newY + 0.5
+        from.teleport(to)
     }
 
-    public static void teleport(Profile from, Location to) {
-        teleport(from.getPlayer(), to);
+    fun teleport(from: Profile, to: Location) {
+        teleport(from.player, to)
     }
 
-    public static void teleportNoGlitch(Profile from, Location to) {
-        teleportNoGlitch(from.getPlayer(), to);
+    fun teleportNoGlitch(from: Profile, to: Location) {
+        teleportNoGlitch(from.player, to)
     }
 
-    public static void teleport(CraftPlayer from, Player to) {
-        teleport(from, to.getLocation());
+    fun teleport(from: CraftPlayer, to: Player) {
+        teleport(from, to.location)
     }
 }

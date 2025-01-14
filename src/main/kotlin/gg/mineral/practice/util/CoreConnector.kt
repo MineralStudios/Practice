@@ -1,26 +1,23 @@
-package gg.mineral.practice.util;
+package gg.mineral.practice.util
 
-import org.bukkit.Bukkit;
+import gg.mineral.practice.PracticePlugin
+import org.bukkit.Bukkit
 
-import gg.mineral.practice.PracticePlugin;
+object CoreConnector {
+    var INSTANCE: CoreLoader? = null
 
-public class CoreConnector {
-    public static CoreLoader INSTANCE;
-
-    public static boolean connected() {
-        return INSTANCE != null;
+    fun connected(): Boolean {
+        return INSTANCE != null
     }
 
-    static {
+    init {
         if (Bukkit.getPluginManager().isPluginEnabled("JeezyCore")) {
-            INSTANCE = new CoreLoader();
-
+            INSTANCE = CoreLoader()
         } else {
-
-            INSTANCE = null;
-            PracticePlugin.INSTANCE.getLogger().warning(
-                    "The core plugin has failed to link with the practice plugin. Please ensure the core plugin is installed.");
+            INSTANCE = null
+            PracticePlugin.INSTANCE.logger.warning(
+                "The core plugin has failed to link with the practice plugin. Please ensure the core plugin is installed."
+            )
         }
     }
-
 }

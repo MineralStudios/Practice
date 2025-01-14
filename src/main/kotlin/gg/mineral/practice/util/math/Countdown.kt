@@ -1,55 +1,50 @@
-package gg.mineral.practice.util.math;
+package gg.mineral.practice.util.math
 
-import org.bukkit.Bukkit;
+import gg.mineral.practice.PracticePlugin
+import gg.mineral.practice.managers.ProfileManager.broadcast
+import gg.mineral.practice.match.Match
+import gg.mineral.practice.util.messages.impl.ChatMessages
+import org.bukkit.Bukkit
 
-import gg.mineral.practice.PracticePlugin;
-import gg.mineral.practice.managers.ProfileManager;
-import gg.mineral.practice.match.Match;
-import gg.mineral.practice.util.messages.impl.ChatMessages;
-import lombok.RequiredArgsConstructor;
-import lombok.val;
+class Countdown(private val match: Match) {
+    private var time: Int = 0
+    private var taskID: Int = 0
 
-@RequiredArgsConstructor
-public class Countdown {
-	int time, taskID;
-	private final Match match;
+    constructor(seconds: Int, match: Match) : this(match) {
+        this.time = seconds
+    }
 
-	public Countdown(int seconds, Match match) {
-		this(match);
-		this.time = seconds;
-	}
+    fun start() {
+        val scheduler = Bukkit.getServer().scheduler
+        for (profile in match.participants) profile.inMatchCountdown = true
 
-	public void start() {
-		val scheduler = Bukkit.getServer().getScheduler();
-		for (val profile : match.getParticipants())
-			profile.setInMatchCountdown(true);
+        scheduler.scheduleSyncDelayedTask(PracticePlugin.INSTANCE, {
+            for (profile in match.participants) match.onCountdownStart(
+                profile!!
+            )
+        }, 2L)
+        taskID = scheduler.scheduleSyncRepeatingTask(PracticePlugin.INSTANCE, {
+            if (time == 0) {
+                cancel()
+                return@scheduleSyncRepeatingTask
+            }
+            broadcast(
+                match.participants,
+                ChatMessages.BEGINS_IN.clone().replace("%time%", "" + time)
+            )
+            --time
+        }, 0L, 20L)
+    }
 
-		scheduler.scheduleSyncDelayedTask(PracticePlugin.INSTANCE, () -> {
-			for (val profile : match.getParticipants())
-				match.onCountdownStart(profile);
-		}, 2L);
-		taskID = scheduler.scheduleSyncRepeatingTask(PracticePlugin.INSTANCE, () -> {
-			if (time == 0) {
-				cancel();
-				return;
-			}
+    private fun cancel() {
+        match.onMatchStart()
 
-			ProfileManager.broadcast(match.getParticipants(),
-					ChatMessages.BEGINS_IN.clone().replace("%time%", "" + time));
-			--time;
-		}, 0L, 20L);
-	}
+        for (profile in match.participants) {
+            match.onMatchStart(profile)
+            profile.inMatchCountdown = false
+            profile.message(ChatMessages.MATCH_STARTED)
+        }
 
-	public void cancel() {
-
-		match.onMatchStart();
-
-		for (val profile : match.getParticipants()) {
-			match.onMatchStart(profile);
-			profile.setInMatchCountdown(false);
-			profile.message(ChatMessages.MATCH_STARTED);
-		}
-
-		Bukkit.getScheduler().cancelTask(taskID);
-	}
+        Bukkit.getScheduler().cancelTask(taskID)
+    }
 }
