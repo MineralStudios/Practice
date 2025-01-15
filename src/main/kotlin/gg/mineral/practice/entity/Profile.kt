@@ -47,7 +47,6 @@ import net.md_5.bungee.api.chat.ClickEvent
 import net.md_5.bungee.api.chat.ComponentBuilder
 import net.md_5.bungee.api.chat.HoverEvent
 import org.bukkit.Bukkit
-import org.bukkit.GameMode
 import org.bukkit.configuration.ConfigurationSection
 import org.bukkit.craftbukkit.v1_8_R3.entity.CraftPlayer
 import org.bukkit.entity.Player
@@ -86,6 +85,7 @@ class Profile(player: Player) : ExtendedProfileData(player.name, player.uniqueId
     var openMenu: Menu? = null
     var playerStatus = PlayerStatus.IDLE
         set(value) {
+            player.gameMode = value.gameMode
             val canFly = value.canFly(this)
 
             this.player.allowFlight = canFly
@@ -117,7 +117,6 @@ class Profile(player: Player) : ExtendedProfileData(player.name, player.uniqueId
             if (field == value) return
             if (value == null) {
                 scoreboard = DefaultScoreboard.INSTANCE
-                player.gameMode = GameMode.SURVIVAL
                 inventory.inventoryClickCancelled = true
                 teleportToLobby()
                 inventory.setInventoryForLobby()
@@ -161,31 +160,12 @@ class Profile(player: Player) : ExtendedProfileData(player.name, player.uniqueId
                 if (groups != null) {
                     for (nametagGroup in groups) {
                         nametagGroup.remove(player)
-                        if (value == null) TeamMatch.refreshBukkitScoreboard(player)
+                        TeamMatch.refreshBukkitScoreboard(player)
                     }
                 }
             }
 
             field?.spectators?.remove(this)
-            if (value?.ended == true) return
-            value?.spectators?.add(this)
-
-            if (value is TeamMatch) {
-                val groups = value.nametagGroups
-
-                var alreadyInGroup = false
-
-                if (groups != null) {
-                    for (group in groups) {
-                        if (group.players.contains(player)) {
-                            alreadyInGroup = true
-                            break
-                        }
-                    }
-                }
-
-                if (!alreadyInGroup) groups?.get(0)?.add(player)
-            }
 
             value?.let {
                 if (playerStatus !== PlayerStatus.IDLE
@@ -195,12 +175,27 @@ class Profile(player: Player) : ExtendedProfileData(player.name, player.uniqueId
                     return
                 }
 
-                if (it !is Event) {
-                    if (playerStatus !== PlayerStatus.FIGHTING) {
-                        message(ErrorMessages.PLAYER_NOT_IN_MATCH)
-                        return
+                if (it.ended) return
+                it.spectators.add(this)
+
+                if (value is TeamMatch) {
+                    val groups = value.nametagGroups
+
+                    var alreadyInGroup = false
+
+                    if (groups != null) {
+                        for (group in groups) {
+                            if (group.players.contains(player)) {
+                                alreadyInGroup = true
+                                break
+                            }
+                        }
                     }
 
+                    if (!alreadyInGroup) groups?.get(0)?.add(player)
+                }
+
+                if (it !is Event) {
                     broadcast(
                         it.participants, ChatMessages.SPECTATING_YOUR_MATCH.clone().replace(
                             "%player%",
@@ -208,11 +203,14 @@ class Profile(player: Player) : ExtendedProfileData(player.name, player.uniqueId
                         )
                     )
                 }
-                player.gameMode = GameMode.SPECTATOR
+                scoreboard = SpectatorScoreboard.INSTANCE
+                if (playerStatus !== PlayerStatus.FOLLOWING) {
+                    inventory.setInventoryForSpectating()
+                    playerStatus = PlayerStatus.SPECTATING
+                }
             } ?: run {
                 teleportToLobby()
 
-                player.gameMode = GameMode.SURVIVAL
                 if (playerStatus !== PlayerStatus.FOLLOWING) {
                     if (party != null) inventory.setInventoryForParty()
                     else inventory.setInventoryForLobby()
@@ -226,12 +224,6 @@ class Profile(player: Player) : ExtendedProfileData(player.name, player.uniqueId
             }
 
             field = value
-
-            scoreboard = SpectatorScoreboard.INSTANCE
-            if (playerStatus === PlayerStatus.FOLLOWING) return
-
-            inventory.setInventoryForSpectating()
-            playerStatus = PlayerStatus.SPECTATING
         }
     var following: Profile? = null
         set(value) {
@@ -556,23 +548,20 @@ class Profile(player: Player) : ExtendedProfileData(player.name, player.uniqueId
 
         this.spectatable = toBeSpectated.event ?: toBeSpectated.match
 
-        if (spectatable == null) {
-            message(ErrorMessages.PLAYER_NOT_IN_MATCH_OR_EVENT)
-            return
-        }
+        spectatable?.let {
+            PlayerUtil.teleport(
+                this,
+                if (it is Event)
+                    arenas[it.eventArenaId].waitingLocation.bukkit(it.world)
+                else
+                    toBeSpectated.player.location
+            )
 
-        PlayerUtil.teleport(
-            this,
-            if (spectatable is Event)
-                arenas[(spectatable as? Event)?.eventArenaId ?: 0].waitingLocation.bukkit(spectatable!!.world)
-            else
-                toBeSpectated.player.location
-        )
+            if (it is Event) message(ChatMessages.SPECTATING_EVENT)
+            else message(ChatMessages.SPECTATING.clone().replace("%player%", toBeSpectated.name))
 
-        if (spectatable is Event) message(ChatMessages.SPECTATING_EVENT)
-        else message(ChatMessages.SPECTATING.clone().replace("%player%", toBeSpectated.name))
-
-        message(ChatMessages.STOP_SPECTATING)
+            message(ChatMessages.STOP_SPECTATING)
+        } ?: message(ErrorMessages.PLAYER_NOT_IN_MATCH_OR_EVENT)
     }
 
     fun sendDuelRequest(receiver: Profile) {

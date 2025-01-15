@@ -56,6 +56,7 @@ class PracticePlugin : JavaPlugin() {
         CategoryManager.load()
         GametypeManager.load()
 
+        // TODO: change invalid command messages
         this.liteCommands = LiteBukkitFactory.builder("Practice", this)
             .commands(
                 PracticeCommand(),

@@ -7,7 +7,6 @@ import gg.mineral.practice.managers.KitEditorManager.location
 import gg.mineral.practice.scoreboard.impl.KitCreatorScoreboard
 import gg.mineral.practice.util.PlayerUtil
 import gg.mineral.practice.util.messages.impl.ChatMessages
-import org.bukkit.GameMode
 
 class KitCreator(val profile: Profile, val submitAction: SubmitAction) {
     fun save() {
@@ -23,6 +22,5 @@ class KitCreator(val profile: Profile, val submitAction: SubmitAction) {
         PlayerUtil.teleportNoGlitch(profile, location)
         profile.inventory.inventoryClickCancelled = false
         profile.inventory.clear()
-        profile.player.gameMode = GameMode.CREATIVE
     }
 }

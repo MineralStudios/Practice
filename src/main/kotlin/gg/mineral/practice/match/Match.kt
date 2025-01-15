@@ -149,7 +149,7 @@ open class Match(
     }
 
     private fun setAttributes(p: Profile) {
-        stat(p) { obj: MatchStatisticCollector -> obj.clearHitCount() }
+        stat(p) { it.clearHitCount() }
         p.dead = false
         p.player.maximumNoDamageTicks = data.noDamageTicks
         p.player.setKnockback(data.knockback)
@@ -226,7 +226,7 @@ open class Match(
 
         profile.inventory.clear()
 
-        if (map == null || map.isEmpty()) return
+        if (map.isNullOrEmpty()) return
 
         if (map.size == 1) {
             profile.giveKit(getKit(map.values.iterator().next()))
@@ -301,24 +301,18 @@ open class Match(
         return arenaNull
     }
 
-    fun setupLocations(location1: Location, location2: Location?) {
-        setWorldParameters(location1.world)
-    }
+    fun setupLocations(location1: Location, location2: Location?) = setWorldParameters(location1.world)
 
     open fun teleportPlayers(location1: Location, location2: Location) {
         profile1?.let { PlayerUtil.teleport(it, location1) }
         profile2?.let { PlayerUtil.teleport(it, location2) }
     }
 
-    fun startCountdown() {
-        val countdown = Countdown(5, this)
-        countdown.start()
-    }
+    fun startCountdown() = Countdown(5, this).start()
 
     open fun start() {
         if (noArenas()) return
-
-        registerMatch(this)
+        if (!registerMatch(this)) return
         val arena = arenas[data.arenaId]
         val location1 = arena.location1.bukkit(world)
         val location2 = arena.location2.bukkit(world)
@@ -345,11 +339,7 @@ open class Match(
     open fun incrementTeamHitCount(attacker: Profile, victim: Profile): Boolean {
         stat(attacker) { obj: MatchStatisticCollector -> obj.increaseHitCount() }
         stat(victim) { obj: MatchStatisticCollector -> obj.resetCombo() }
-
-        stat(attacker) { collector: MatchStatisticCollector ->
-            if (collector.hitCount >= 100 && data.boxing) end(victim)
-        }
-
+        stat(attacker) { if (it.hitCount >= 100 && data.boxing) end(victim) }
         return ended
     }
 
@@ -377,8 +367,8 @@ open class Match(
     }
 
     open fun end(attacker: Profile, victim: Profile) {
-        stat(attacker) { collector: MatchStatisticCollector -> collector.end(true) }
-        stat(victim) { collector: MatchStatisticCollector -> collector.end(false) }
+        stat(attacker) { it.end(true) }
+        stat(victim) { it.end(false) }
 
         deathAnimation(attacker, victim)
 

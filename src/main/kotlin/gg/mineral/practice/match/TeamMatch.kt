@@ -137,7 +137,7 @@ open class TeamMatch : Match, MatchAppender {
 
         victim.dead = true
 
-        stat(victim) { collector: MatchStatisticCollector -> collector.end(false) }
+        stat(victim) { it.end(false) }
 
         val isTeam1 = team1Players.all().contains(victim)
         val attackerTeam = if (isTeam1) team2Players else team1Players
@@ -153,10 +153,10 @@ open class TeamMatch : Match, MatchAppender {
         val attackerTeamHits = if (isTeam1) team2HitCount else team1HitCount
         val victimTeamHits = if (isTeam1) team1HitCount else team2HitCount
 
-        stat(victim) { collector: MatchStatisticCollector? ->
+        stat(victim) {
             victimInventoryStatsMenus.add(
                 setInventoryStats(
-                    collector!!
+                    it
                 )
             )
         }
@@ -404,10 +404,15 @@ open class TeamMatch : Match, MatchAppender {
             val scoreboard = player.scoreboard
             val manager = Bukkit.getScoreboardManager()
             val blankScoreboard = manager.newScoreboard
-            player.scoreboard = blankScoreboard
             Bukkit.getScheduler().runTaskLater(
                 PracticePlugin.INSTANCE,
-                { player.scoreboard = scoreboard }, 1L
+                {
+                    player.scoreboard = blankScoreboard
+                    Bukkit.getScheduler().runTaskLater(
+                        PracticePlugin.INSTANCE,
+                        { player.scoreboard = scoreboard }, 1L
+                    )
+                }, 1L
             )
         }
     }

@@ -112,7 +112,7 @@ object QueueSystem {
     fun getQueueEntry(profile: Profile, queuetype: Queuetype, gametype: Gametype) =
         getQueueEntry(profile.party ?: profile, queuetype, gametype)
 
-    fun getQueueEntry(entity: QueuedEntity, queuetype: Queuetype, gametype: Gametype): QueueEntry? {
+    private fun getQueueEntry(entity: QueuedEntity, queuetype: Queuetype, gametype: Gametype): QueueEntry? {
         val queueAndGametypeHash = (queuetype.id.toInt() shl 8 or gametype.id.toInt()).toShort()
 
         val queueRecords = queueMap[queueAndGametypeHash]
@@ -124,7 +124,7 @@ object QueueSystem {
 
     fun getQueueEntries(profile: Profile) = getQueueEntries(profile.party ?: profile)
 
-    fun getQueueEntries(entity: QueuedEntity): List<QueueEntry> {
+    private fun getQueueEntries(entity: QueuedEntity): List<QueueEntry> {
         val queueEntries = GlueList<QueueEntry>()
 
         for (recordSet in queueMap.values)
@@ -139,20 +139,19 @@ object QueueSystem {
     fun removePlayerFromQueue(profile: Profile, queuetype: Queuetype, gametype: Gametype) =
         removePlayerFromQueue(profile.party ?: profile, queuetype, gametype)
 
-    fun removePlayerFromQueue(entity: QueuedEntity?, queuetype: Queuetype, gametype: Gametype): Boolean {
+    private fun removePlayerFromQueue(entity: QueuedEntity?, queuetype: Queuetype, gametype: Gametype): Boolean {
         val queueAndGametypeHash = (queuetype.id.toInt() shl 8 or gametype.id.toInt()).toShort()
 
         val queueRecords = queueMap[queueAndGametypeHash]
 
-        queueRecords.removeIf { record: QueueRecord -> record.entity == entity }
-        return queueMap.values.stream()
-            .anyMatch { set: RecordSet -> set.stream().anyMatch { record: QueueRecord -> record.entity == entity } }
+        queueRecords.removeIf { it.entity == entity }
+        return queueMap.values.any { set: RecordSet -> set.any { it.entity == entity } }
     }
 
     fun removePlayerFromQueue(profile: Profile) = removePlayerFromQueue(profile.party ?: profile)
 
-    fun removePlayerFromQueue(player: QueuedEntity) {
-        for (queueRecords in queueMap.values) queueRecords.removeIf { record: QueueRecord -> record.entity == player }
+    private fun removePlayerFromQueue(player: QueuedEntity) {
+        for (queueRecords in queueMap.values) queueRecords.removeIf { it.entity == player }
     }
 
     private fun startMatch(

@@ -38,7 +38,7 @@ class TournamentMatch(profile1: Profile?, profile2: Profile?, matchData: MatchDa
         resetPearlCooldown(attacker, victim)
         attacker.scoreboard = MatchEndScoreboard.INSTANCE
         victim.scoreboard = DefaultScoreboard.INSTANCE
-        remove(this)
+        if (!remove(this)) return
 
         victim.player.heal()
         victim.player.removePotionEffects()
