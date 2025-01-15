@@ -97,11 +97,9 @@ class Profile(player: Player) : ExtendedProfileData(player.name, player.uniqueId
         }
     var party: Party? = null
         set(value) {
-            field?.remove(this)
-            value?.add(this)
+            if (value?.add(this) == true) inventory.setInventoryForParty()
+            else if (field?.remove(this) == true && playerStatus == PlayerStatus.IDLE) inventory.setInventoryForLobby()
             field = value
-            if (value != null) inventory.setInventoryForParty()
-            else if (playerStatus == PlayerStatus.IDLE) inventory.setInventoryForLobby()
         }
     var kitEditor: KitEditor? = null
         set(value) {

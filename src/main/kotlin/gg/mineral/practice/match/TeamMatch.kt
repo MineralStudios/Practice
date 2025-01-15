@@ -31,7 +31,6 @@ import net.md_5.bungee.api.chat.HoverEvent
 import net.md_5.bungee.api.chat.TextComponent
 import org.bukkit.Bukkit
 import org.bukkit.entity.Player
-import java.util.*
 
 open class TeamMatch : Match, MatchAppender {
 
@@ -47,7 +46,7 @@ open class TeamMatch : Match, MatchAppender {
     var team1RequiredHitCount: Int = 0
     var team2RequiredHitCount: Int = 0
 
-    constructor(team1: Queue<Profile>, team2: Queue<Profile>, matchData: MatchData) : super(matchData) {
+    constructor(team1: Collection<Profile>, team2: Collection<Profile>, matchData: MatchData) : super(matchData) {
         fun Object2BooleanLinkedOpenHashMap<Profile>.add(profile: Profile) = put(profile, true)
         for (profile in team1) team1Players.add(profile)
         for (profile in team2) team2Players.add(profile)
@@ -85,8 +84,8 @@ open class TeamMatch : Match, MatchAppender {
 
     override fun start() {
         if (noArenas()) return
+        if (!registerMatch(this)) return
 
-        registerMatch(this)
         val arena = arenas[data.arenaId]
         val location1 = arena.location1.bukkit(world)
         val location2 = arena.location2.bukkit(world)
@@ -232,7 +231,7 @@ open class TeamMatch : Match, MatchAppender {
             setInventoryStats(profile, victimInventoryStatsMenus)
         }
 
-        remove(this)
+        if (!remove(this)) return
 
         val winMessage = TextComponent(
             CC.GREEN + "Winner: " + CC.GRAY + attackerTeamLeader.name + "'s team"

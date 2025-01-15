@@ -6,13 +6,13 @@ import gg.mineral.practice.managers.PartyManager.remove
 import gg.mineral.practice.queue.QueueSettings
 import gg.mineral.practice.queue.QueuedEntity
 import gg.mineral.practice.util.messages.impl.ChatMessages
+import it.unimi.dsi.fastutil.objects.ObjectOpenHashSet
 import java.util.*
-import java.util.concurrent.ConcurrentLinkedQueue
 
 
 class Party(val partyLeader: Profile) : QueuedEntity {
     var open = false
-    val partyMembers = ConcurrentLinkedQueue<Profile>()
+    val partyMembers = ObjectOpenHashSet<Profile>()
 
     init {
         registerParty(this)
@@ -23,17 +23,11 @@ class Party(val partyLeader: Profile) : QueuedEntity {
         return other.partyLeader == partyLeader
     }
 
-    fun add(p: Profile) {
-        partyMembers.add(p)
-    }
+    fun add(p: Profile) = partyMembers.add(p)
 
-    fun remove(p: Profile) {
-        partyMembers.remove(p)
-    }
+    fun remove(p: Profile) = partyMembers.remove(p)
 
-    fun contains(p: Profile): Boolean {
-        return partyMembers.contains(p)
-    }
+    fun contains(p: Profile) = partyMembers.contains(p)
 
     fun leave(profile: Profile) {
         val leftMessage = ChatMessages.LEFT_PARTY.clone().replace("%player%", profile.name)
