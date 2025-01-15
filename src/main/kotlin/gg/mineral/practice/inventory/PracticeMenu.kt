@@ -143,8 +143,8 @@ abstract class PracticeMenu(menu: PracticeMenu? = null) : Menu {
         viewer.let { openPage?.let { openPage -> open(it, openPage.pageNumber) } }
     }
 
-    override fun setContents(contents: Array<ItemStack>) {
-        for (i in contents.indices) setSlot(i, contents[i])
+    override fun setContents(contents: Array<ItemStack?>) {
+        for (i in contents.indices) contents[i]?.let { setSlot(i, it) }
     }
 
     override fun getTask(slot: Int) = openPage?.getTask(slot)
@@ -165,7 +165,7 @@ abstract class PracticeMenu(menu: PracticeMenu? = null) : Menu {
             this.size = page?.size ?: 9
         }
 
-        fun getTask(slot: Int): Consumer<Interaction> = dataMap[slot]
+        fun getTask(slot: Int): Consumer<Interaction>? = dataMap[slot]
 
         fun clear() {
             dataMap.clear()

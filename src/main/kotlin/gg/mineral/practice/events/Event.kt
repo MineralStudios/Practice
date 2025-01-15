@@ -89,7 +89,7 @@ class Event(hostProfile: Profile, val eventArenaId: Byte) : Spectatable {
     }
 
     fun removePlayer(profile: Profile) {
-        participants.remove(profile)
+        if (!participants.remove(profile)) return
         profile.event = null
 
         ProfileManager.broadcast(participants, ChatMessages.LEFT_EVENT.clone().replace("%player%", profile.name))

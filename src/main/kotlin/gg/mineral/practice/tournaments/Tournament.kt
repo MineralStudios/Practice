@@ -42,7 +42,7 @@ class Tournament(p: Profile) {
     }
 
     fun removePlayer(p: Profile) {
-        players.remove(p)
+        if (!players.remove(p)) return
         p.tournament = null
 
         val leftMessage = ChatMessages.LEFT_TOURNAMENT.clone().replace("%player%", p.name)

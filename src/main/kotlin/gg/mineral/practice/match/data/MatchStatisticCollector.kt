@@ -27,7 +27,7 @@ class MatchStatisticCollector(val profile: Profile) {
     var remainingHealth: Int = 0
     private var clicks: Int = 0
     private var clickCounterStart: Long = 0
-    lateinit var inventoryContents: Array<ItemStack>
+    lateinit var inventoryContents: Array<ItemStack?>
     var helmet: ItemStack? = null
     var chestplate: ItemStack? = null
     var leggings: ItemStack? = null

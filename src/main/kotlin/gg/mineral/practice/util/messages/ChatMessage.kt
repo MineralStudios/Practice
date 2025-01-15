@@ -3,15 +3,10 @@ package gg.mineral.practice.util.messages
 open class ChatMessage(
     string: String,
     val colorPrefix: String = "",
-    private val bold: Boolean = false
+    val bold: Boolean = false
 ) :
     Message(string) {
-    open val prefix: String
-        get() {
-            val string = if (bold) colorPrefix + CC.B else colorPrefix
-            messageBuilder.insert(0, string)
-            return string
-        }
+    open val prefix by lazy { if (bold) colorPrefix + CC.B else colorPrefix }
 
     open fun highlightText(c: String, vararg highlighted: String): ChatMessage {
         for (s in highlighted) {
@@ -34,5 +29,7 @@ open class ChatMessage(
         return this
     }
 
-    override fun clone() = ChatMessage(messageBuilder.toString(), this.prefix)
+    override fun prepend(builder: StringBuilder): StringBuilder = builder.insert(0, this.prefix)
+
+    override fun clone() = ChatMessage(messageBuilder.toString(), this.colorPrefix, bold)
 }

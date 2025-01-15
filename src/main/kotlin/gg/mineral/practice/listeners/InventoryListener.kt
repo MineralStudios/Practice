@@ -20,7 +20,7 @@ import org.bukkit.event.player.PlayerPickupItemEvent
 class InventoryListener : Listener {
     @EventHandler
     fun onInventoryClick(e: InventoryClickEvent) {
-        val profile = getOrCreateProfile(e.whoClicked as Player)
+        val profile = getProfile(e.whoClicked.uniqueId) ?: return
         val menu = profile.openMenu
 
         val canClick = profile.player.isOp && profile.player.gameMode == GameMode.CREATIVE

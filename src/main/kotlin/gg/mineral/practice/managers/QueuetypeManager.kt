@@ -10,9 +10,7 @@ object QueuetypeManager {
     var queuetypes: Byte2ObjectOpenHashMap<Queuetype> = Byte2ObjectOpenHashMap()
     var CURRENT_ID: Byte = 0
 
-    fun registerQueuetype(queuetype: Queuetype) {
-        queuetypes.put(queuetype.id, queuetype)
-    }
+    fun registerQueuetype(queuetype: Queuetype): Queuetype? = queuetypes.put(queuetype.id, queuetype)
 
     fun remove(queuetype: Queuetype) {
         queuetypes.remove(queuetype.id)

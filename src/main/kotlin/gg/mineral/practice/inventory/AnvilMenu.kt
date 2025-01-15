@@ -153,8 +153,8 @@ abstract class AnvilMenu : Menu {
         viewer?.let { open(it) }
     }
 
-    override fun setContents(contents: Array<ItemStack>) {
-        for (i in contents.indices) setSlot(i, contents[i])
+    override fun setContents(contents: Array<ItemStack?>) {
+        for (i in contents.indices) contents[i]?.let { setSlot(i, it) }
     }
 
     override fun getTask(slot: Int): Consumer<Interaction> = dataMap[slot]

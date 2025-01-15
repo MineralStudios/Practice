@@ -15,13 +15,10 @@ import gg.mineral.practice.util.messages.CC
 import gg.mineral.practice.util.messages.impl.Strings
 import gg.mineral.practice.util.messages.impl.TextComponents
 import org.bukkit.Bukkit
-import org.bukkit.World
 
 class EventMatch(profile1: Profile?, profile2: Profile?, matchData: MatchData, private val event: Event) :
     Match(matchData, profile1, profile2) {
-    override fun generateWorld(): World {
-        return event.world
-    }
+    override fun generateWorld() = event.world
 
     override fun end(attacker: Profile, victim: Profile) {
         stat(attacker) { collector: MatchStatisticCollector -> collector.end(true) }
@@ -61,12 +58,12 @@ class EventMatch(profile1: Profile?, profile2: Profile?, matchData: MatchData, p
 
         victim.player.heal()
         victim.player.removePotionEffects()
+        victim.event = null
         sendBackToLobby(victim)
 
         Bukkit.getServer().scheduler.runTaskLater(PracticePlugin.INSTANCE, {
             if (attacker.match?.ended == false) return@runTaskLater
             attacker.scoreboard = DefaultScoreboard.INSTANCE
-            event.removePlayer(victim)
             event.removeMatch(this@EventMatch)
 
             val eventArena = arenas[event.eventArenaId]

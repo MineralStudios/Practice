@@ -10,7 +10,7 @@ object ArenaManager {
     val arenas: Byte2ObjectOpenHashMap<Arena> = Byte2ObjectOpenHashMap()
     var CURRENT_ID: Byte = 0
 
-    fun registerArena(arena: Arena): Arena = arenas.put(arena.id, arena)
+    fun registerArena(arena: Arena): Arena? = arenas.put(arena.id, arena)
 
     fun remove(arena: Arena) {
         arenas.remove(arena.id)

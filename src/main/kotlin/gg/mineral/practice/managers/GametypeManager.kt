@@ -10,7 +10,7 @@ object GametypeManager {
     val gametypes: Byte2ObjectOpenHashMap<Gametype> = Byte2ObjectOpenHashMap()
     var CURRENT_ID: Byte = 0
 
-    fun registerGametype(gametype: Gametype): Gametype = gametypes.put(gametype.id, gametype)
+    fun registerGametype(gametype: Gametype): Gametype? = gametypes.put(gametype.id, gametype)
 
     fun remove(gametype: Gametype) {
         gametypes.remove(gametype.id)

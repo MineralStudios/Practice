@@ -11,7 +11,7 @@ object CategoryManager {
     val categories: Byte2ObjectOpenHashMap<Category> = Byte2ObjectOpenHashMap()
     var CURRENT_ID: Byte = 0
 
-    fun registerCategory(category: Category): Category = categories.put(category.id, category)
+    fun registerCategory(category: Category): Category? = categories.put(category.id, category)
 
     fun remove(category: Category) {
         categories.remove(category.id)

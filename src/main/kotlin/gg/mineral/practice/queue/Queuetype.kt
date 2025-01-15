@@ -6,11 +6,8 @@ import gg.mineral.practice.arena.Arena
 import gg.mineral.practice.category.Category
 import gg.mineral.practice.entity.ProfileData
 import gg.mineral.practice.gametype.Gametype
-import gg.mineral.practice.managers.ArenaManager
+import gg.mineral.practice.managers.*
 import gg.mineral.practice.managers.ArenaManager.getArenaByName
-import gg.mineral.practice.managers.EloManager
-import gg.mineral.practice.managers.GametypeManager
-import gg.mineral.practice.managers.QueuetypeManager
 import gg.mineral.practice.match.data.MatchData
 import gg.mineral.practice.util.config.BoolProp
 import gg.mineral.practice.util.config.IntProp
@@ -94,6 +91,15 @@ class Queuetype(val name: String, val id: Byte) {
             if (!gametypeConfig.getBoolean("Gametype.${gametype.name}.$name.Enabled", false)) continue
             map[gametype] = gametypeConfig.getInt("Gametype.${gametype.name}.$name.Slot", 0)
         }
+
+        // TODO: move to queuetype.yml
+        val categoryConfig = CategoryManager.config
+
+        for (category in CategoryManager.categories.values) {
+            if (!categoryConfig.getBoolean("Category.${category.name}.$name.Enabled", false)) continue
+            map[category] = categoryConfig.getInt("Category.${category.name}.$name.Slot", 0)
+        }
+
         map
     }
 

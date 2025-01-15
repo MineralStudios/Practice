@@ -43,10 +43,10 @@ class TournamentMatch(profile1: Profile?, profile2: Profile?, matchData: MatchDa
         victim.player.heal()
         victim.player.removePotionEffects()
         sendBackToLobby(victim)
+        victim.tournament = null
 
         Bukkit.getServer().scheduler.runTaskLater(PracticePlugin.INSTANCE, {
             attacker.scoreboard = DefaultScoreboard.INSTANCE
-            tournament.removePlayer(victim)
             tournament.removeMatch(this@TournamentMatch)
 
             attacker.teleportToLobby()

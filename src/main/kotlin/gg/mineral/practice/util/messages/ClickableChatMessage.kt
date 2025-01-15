@@ -6,8 +6,8 @@ import net.md_5.bungee.api.chat.TextComponent
 import org.bukkit.command.CommandSender
 import org.bukkit.entity.Player
 
-class ClickableChatMessage(string: String, colorPrefix: String) :
-    ChatMessage(string, colorPrefix) {
+class ClickableChatMessage(string: String, colorPrefix: String, bold: Boolean = false) :
+    ChatMessage(string, colorPrefix, bold) {
     private var clickEvent: ClickEvent? = null
     private var hoverEvent: HoverEvent? = null
 
@@ -38,5 +38,8 @@ class ClickableChatMessage(string: String, colorPrefix: String) :
     }
 
     override fun clone() =
-        ClickableChatMessage(messageBuilder.toString(), this.prefix).setTextEvent(clickEvent, hoverEvent)
+        ClickableChatMessage(messageBuilder.toString(), this.colorPrefix, this.bold).setTextEvent(
+            clickEvent,
+            hoverEvent
+        )
 }

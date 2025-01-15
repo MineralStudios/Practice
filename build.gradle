@@ -1,5 +1,6 @@
 plugins {
     id 'maven-publish'
+    id 'com.gradleup.shadow' version '8.3.5'
     //id 'pmd'
     id 'org.hidetake.ssh' version '2.11.2'
     id 'org.jetbrains.kotlin.jvm'
@@ -34,19 +35,22 @@ dependencies {
     compileOnly 'de.jeezycore:jeezy-core:20241117-09.57.15'
     compileOnly 'gg.mineral:bot-intelligence:20241204-03.39.22'
     implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk8"
-    implementation("dev.rollczi:litecommands-bukkit:3.9.7")
+    implementation "dev.rollczi:litecommands-bukkit:3.9.7"
 }
 
-jar {
+shadowJar {
     archiveFileName = 'MineralPractice.jar'
-    from {
-        configurations.runtimeClasspath.collect { it.isDirectory() ? it : zipTree(it) }.collect {
-            it.filter { file ->
-                !file.name.startsWith('META-INF')
-            }
-        }
+    from(sourceSets.main.resources.srcDirs) {
+        into('/')
     }
     duplicatesStrategy = DuplicatesStrategy.EXCLUDE
+    archiveClassifier.set('')
+    mergeServiceFiles()
+}
+
+tasks.build {
+    dependsOn shadowJar
+    tasks.jar.enabled = false
 }
 
 afterEvaluate { project ->
@@ -73,6 +77,10 @@ afterEvaluate { project ->
 
 ssh.settings {
     knownHosts = allowAnyHosts // Allow connections to unknown hosts
+}
+
+kotlin {
+    jvmToolchain(21)
 }
 
 remotes {

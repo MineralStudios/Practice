@@ -31,7 +31,7 @@ interface Menu {
 
     fun reload()
 
-    fun setContents(contents: Array<ItemStack>)
+    fun setContents(contents: Array<ItemStack?>)
 
     fun getTask(slot: Int): Consumer<Interaction>?
 

@@ -113,6 +113,7 @@ open class PlayerDamageEvent(private val entityDamageEvent: EntityDamageEvent) :
     override fun getHandlers() = handlerList
 
     companion object {
+        @JvmStatic
         val handlerList: HandlerList = HandlerList()
     }
 }
