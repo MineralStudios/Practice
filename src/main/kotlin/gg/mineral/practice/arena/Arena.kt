@@ -6,9 +6,9 @@ import gg.mineral.practice.util.config.ItemStackProp
 import gg.mineral.practice.util.config.SpawnLocationProp
 import gg.mineral.practice.util.config.StringProp
 import gg.mineral.practice.util.items.ItemStacks
+import gg.mineral.practice.util.world.Schematic
+import gg.mineral.practice.util.world.SchematicFile
 import gg.mineral.practice.util.world.SpawnLocation
-import gg.mineral.server.world.Schematic
-import gg.mineral.server.world.SchematicFile
 import org.bukkit.World
 import java.io.File
 
@@ -16,15 +16,7 @@ class Arena(var name: String, val id: Byte) {
     val config: FileConfiguration = ArenaManager.config
     private val path: String = "Arena.$name."
     var displayName by StringProp(config, path + "DisplayName", name)
-    private val schematicFile by lazy {
-        Schematic.get(this.name) ?: SchematicFile(
-            File("", this.name + ".schematic"),
-            0.toShort(),
-            0.toShort(),
-            0.toShort(),
-            emptyList()
-        )
-    }
+    private val schematicFile by lazy { Schematic.get(this.name) ?: SchematicFile(File("", this.name + ".schematic")) }
 
     var location1 by SpawnLocationProp(config, path + "Spawn.1", SpawnLocation(0, 70, 0))
     var location2 by SpawnLocationProp(config, path + "Spawn.2", SpawnLocation(0, 70, 0))

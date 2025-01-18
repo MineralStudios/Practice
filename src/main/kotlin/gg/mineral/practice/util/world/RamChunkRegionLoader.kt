@@ -1,0 +1,159 @@
+package gg.mineral.practice.util.world
+
+import it.unimi.dsi.fastutil.longs.Long2ObjectOpenHashMap
+import net.minecraft.server.v1_8_R3.*
+import java.io.File
+import net.minecraft.server.v1_8_R3.ChunkCoordIntPair.a as longHash
+
+class RamChunkRegionLoader(private val chunkMap: Long2ObjectOpenHashMap<ChunkSnapshot?> = Long2ObjectOpenHashMap()) :
+    ChunkRegionLoader(File("")) {
+
+    override fun chunkExists(world: World?, i: Int, j: Int) = chunkMap.containsKey(ChunkCoordIntPair.a(i, j))
+
+    override fun a(world: World, chunkX: Int, chunkZ: Int): Chunk? {
+        val data = loadChunk(world, chunkX, chunkZ) ?: return null
+        val chunk = data[0] as Chunk?
+        val compound = data[1] as NBTTagCompound?
+        if (chunk != null && compound != null)
+            loadEntities(chunk, compound.getCompound("Level"), world)
+        return chunk
+    }
+
+    override fun loadChunk(world: World, i: Int, j: Int): Array<Any>? {
+        val snapshot: ChunkSnapshot = chunkMap[longHash(i, j)] ?: return null
+        return arrayOf(chunkFromSnapshot(world, snapshot), NBTTagCompound())
+    }
+
+    override fun a(world: World, chunk: Chunk) {}
+
+    override fun c(): Boolean {
+        throw UnsupportedOperationException()
+    }
+
+    override fun b(world: World?, chunk: Chunk?) {}
+
+    override fun a() {}
+
+    override fun b() {}
+
+    private fun Chunk.setHeightMap(intArray: IntArray) = this.a(intArray)
+
+    private fun Chunk.setTerrainPopulated(populated: Boolean) = this.d(populated)
+
+    private fun Chunk.setLightPopulated(populated: Boolean) = this.e(populated)
+
+    private fun Chunk.setInhabitedTime(time: Long) = this.c(time)
+
+    private fun Chunk.setBiomes(biomes: ByteArray) = this.a(biomes)
+
+    private fun Chunk.setSections(sections: Array<ChunkSection?>) = this.a(sections)
+
+    data class ChunkSnapshot(
+        val xPos: Int,
+        val zPos: Int,
+        val sections: Array<ChunkSection?> = arrayOfNulls(16),
+        val heightMap: IntArray = IntArray(256),
+        val terrainPopulated: Boolean = true,
+        val lightPopulated: Boolean = true,
+        val timeInhabited: Long = 0,
+        val biomes: ByteArray = ByteArray(256)
+    ) {
+
+        fun setTypeAndData(x: Int, y: Int, z: Int, type: Int, data: Byte) {
+            if (y >= 0 && y shr 4 < sections.size) {
+                val chunksection = sections[y shr 4] ?: ChunkSection(y shr 4, true)
+                chunksection.setType(x and 15, y and 15, z and 15, Block.getById(type).fromLegacyData(data.toInt()))
+                sections[y shr 4] = chunksection
+            }
+        }
+
+        override fun equals(other: Any?): Boolean {
+            if (this === other) return true
+            if (javaClass != other?.javaClass) return false
+            return other is ChunkSnapshot && xPos == other.xPos && zPos == other.zPos
+        }
+
+        override fun hashCode(): Int {
+            var result = xPos
+            result = 31 * result + zPos
+            return result
+        }
+    }
+
+    private fun chunkFromSnapshot(world: World, snapshot: ChunkSnapshot): Chunk {
+        val chunk = Chunk(world, snapshot.xPos, snapshot.zPos)
+
+        chunk.setHeightMap(snapshot.heightMap)
+        chunk.setTerrainPopulated(snapshot.terrainPopulated)
+        chunk.setLightPopulated(snapshot.lightPopulated)
+        chunk.setInhabitedTime(snapshot.timeInhabited)
+        chunk.setSections(snapshot.sections)
+        chunk.setBiomes(snapshot.biomes)
+
+        return chunk
+    }
+
+    override fun loadEntities(chunk: Chunk, nbttagcompound: NBTTagCompound, world: World) {
+        nbttagcompound.getList("Entities", 10)?.let {
+            for (i2 in 0..<it.size()) {
+                val nbttagcompound2: NBTTagCompound = it.get(i2)
+                val entity: Entity? = EntityTypes.a(nbttagcompound2, world)
+
+                chunk.g(true)
+                if (entity != null) {
+                    chunk.a(entity)
+                    var entity1: Entity? = entity
+
+                    var nbttagcompound3: NBTTagCompound = nbttagcompound2
+                    while (nbttagcompound3.hasKeyOfType(
+                            "Riding",
+                            10
+                        )
+                    ) {
+                        val entity2: Entity? = EntityTypes.a(nbttagcompound3.getCompound("Riding"), world)
+
+                        if (entity2 != null) {
+                            chunk.a(entity2)
+                            entity1?.mount(entity2)
+                        }
+
+                        entity1 = entity2
+                        nbttagcompound3 = nbttagcompound3.getCompound("Riding")
+                    }
+                }
+            }
+        }
+
+        nbttagcompound.getList("TileEntities", 10)?.let {
+            for (j2 in 0..<it.size()) {
+                val nbttagcompound4: NBTTagCompound = it.get(j2)
+                val tileentity: TileEntity? = TileEntity.c(nbttagcompound4)
+
+                if (tileentity != null)
+                    chunk.a(tileentity)
+            }
+        }
+
+        if (nbttagcompound.hasKeyOfType("TileTicks", 9)) {
+            nbttagcompound.getList("TileTicks", 10)?.let {
+                for (k2 in 0..<it.size()) {
+                    val nbttagcompound5: NBTTagCompound = it.get(k2)
+
+                    val block: Block = if (nbttagcompound5.hasKeyOfType("i", 8)) {
+                        Block.getByName(nbttagcompound5.getString("i"))
+                    } else {
+                        Block.getById(nbttagcompound5.getInt("i"))
+                    }
+
+                    world.b(
+                        BlockPosition(
+                            nbttagcompound5.getInt("x"), nbttagcompound5.getInt("y"),
+                            nbttagcompound5.getInt("z")
+                        ), block, nbttagcompound5.getInt("t"),
+                        nbttagcompound5.getInt("p")
+                    )
+                }
+            }
+        }
+    }
+}
