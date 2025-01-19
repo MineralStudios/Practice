@@ -7,7 +7,7 @@ import gg.mineral.practice.entity.PlayerStatus
 import gg.mineral.practice.entity.Profile
 import gg.mineral.practice.entity.appender.CommandSenderAppender
 import gg.mineral.practice.managers.ProfileManager.getProfile
-import gg.mineral.practice.managers.ProfileManager.spawnLocation
+import gg.mineral.practice.managers.ProfileManager.lobbyLocation
 import gg.mineral.practice.match.TeamMatch
 import gg.mineral.practice.util.messages.impl.ChatMessages
 import org.bukkit.Bukkit
@@ -53,7 +53,7 @@ class DamageListener : Listener, CommandSenderAppender {
         ) { p: Profile -> p.playerStatus === PlayerStatus.FIGHTING }
 
         if (victim == null) {
-            if (e.cause == DamageCause.VOID) player.teleport(spawnLocation)
+            if (e.cause == DamageCause.VOID) player.teleport(lobbyLocation)
 
             e.isCancelled = true
             return

@@ -3,7 +3,7 @@ package gg.mineral.practice.kit
 import gg.mineral.practice.entity.PlayerStatus
 import gg.mineral.practice.entity.Profile
 import gg.mineral.practice.gametype.Gametype
-import gg.mineral.practice.managers.KitEditorManager.location
+import gg.mineral.practice.managers.KitEditorManager.bukkitLocation
 import gg.mineral.practice.managers.ProfileManager.playerConfig
 import gg.mineral.practice.queue.Queuetype
 import gg.mineral.practice.scoreboard.impl.KitEditorScoreboard
@@ -56,7 +56,7 @@ class KitEditor(val gametype: Gametype, val queuetype: Queuetype, val profile: P
     fun start() {
         profile.playerStatus = PlayerStatus.KIT_EDITOR
         profile.scoreboard = KitEditorScoreboard.INSTANCE
-        PlayerUtil.teleportNoGlitch(profile, location)
+        PlayerUtil.teleportNoGlitch(profile, bukkitLocation)
         profile.inventory.inventoryClickCancelled = false
         profile.inventory.clear()
 

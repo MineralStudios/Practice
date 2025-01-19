@@ -5,9 +5,9 @@ import gg.mineral.practice.entity.PlayerStatus
 import gg.mineral.practice.entity.appender.PlayerAppender
 import gg.mineral.practice.managers.EloManager.updateName
 import gg.mineral.practice.managers.ProfileManager.getOrCreateProfile
+import gg.mineral.practice.managers.ProfileManager.lobbyLocation
 import gg.mineral.practice.managers.ProfileManager.remove
 import gg.mineral.practice.managers.ProfileManager.removeIfExists
-import gg.mineral.practice.managers.ProfileManager.spawnLocation
 import gg.mineral.practice.scoreboard.impl.DefaultScoreboard
 import org.bukkit.Bukkit
 import org.bukkit.GameMode
@@ -61,6 +61,6 @@ class EntryListener : Listener, PlayerAppender {
     @EventHandler
     fun onPlayerInitialSpawn(e: PlayerInitialSpawnEvent) {
         if (BotAPI.INSTANCE.isFakePlayer(e.player.uniqueId)) return
-        e.spawnLocation = spawnLocation
+        e.spawnLocation = lobbyLocation
     }
 }

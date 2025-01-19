@@ -43,7 +43,7 @@ class InteractListener : Listener {
 
         val predicate = profile.inventory.getTask(profile.inventory.heldItemSlot)
 
-        if (predicate != null && predicate.test(profile)) return
+        if (predicate?.test(profile) == true) return
 
         if (profile.inMatchCountdown) {
             e.isCancelled = true
@@ -69,7 +69,7 @@ class InteractListener : Listener {
                 return
             }
 
-            if (e.clickedBlock.type == Material.WOODEN_DOOR) {
+            if (e.clickedBlock.type == Material.WOODEN_DOOR || e.clickedBlock.type == Material.IRON_DOOR || e.clickedBlock.type == Material.SPRUCE_DOOR || e.clickedBlock.type == Material.BIRCH_DOOR || e.clickedBlock.type == Material.JUNGLE_DOOR || e.clickedBlock.type == Material.ACACIA_DOOR || e.clickedBlock.type == Material.DARK_OAK_DOOR) {
                 profile.kitCreator = null
                 profile.kitEditor = null
                 return

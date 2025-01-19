@@ -3,8 +3,11 @@ package gg.mineral.practice.managers
 import gg.mineral.api.config.FileConfiguration
 import gg.mineral.practice.util.config.*
 import gg.mineral.practice.util.items.ItemStacks
-import org.bukkit.Bukkit
+import gg.mineral.practice.util.world.Schematic
+import gg.mineral.practice.util.world.SchematicFile
+import gg.mineral.practice.util.world.SpawnLocation
 import org.bukkit.Location
+import java.io.File
 
 object KitEditorManager {
     val config: FileConfiguration = FileConfiguration("kiteditor.yml", "plugins/Practice")
@@ -12,5 +15,15 @@ object KitEditorManager {
     var displayItem by ItemStackProp(config, "KitEditor.DisplayItem", ItemStacks.DEFAULT_KIT_EDITOR_DISPLAY_ITEM)
     var slot by IntProp(config, "KitEditor.Slot", 0)
     var enabled by BoolProp(config, "KitEditor.Enable", true)
-    var location by LocationProp(config, "KitEditor.Location", Location(Bukkit.getWorlds()[0], 0.0, 70.0, 0.0))
+    var location by SpawnLocationProp(config, "KitEditor.Location", SpawnLocation(0, 70, 0))
+
+    private val schematicFile by lazy {
+        val worldName = config.getString("KitEditor.Location.World", "KitEditorWorld")
+        Schematic.get(worldName) ?: SchematicFile(File("", "$worldName.schematic"))
+    }
+
+    private val lobbyWorld by lazy { schematicFile.generateWorld("") }
+
+    val bukkitLocation: Location
+        get() = location.bukkit(lobbyWorld)
 }

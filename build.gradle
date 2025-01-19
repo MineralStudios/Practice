@@ -97,7 +97,7 @@ remotes {
 }
 
 task deploy {
-    dependsOn jar
+    dependsOn shadowJar
     doLast {
         ssh.run {
             session(remotes.deployServer) {

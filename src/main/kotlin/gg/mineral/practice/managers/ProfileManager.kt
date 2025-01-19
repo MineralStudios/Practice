@@ -6,8 +6,10 @@ import gg.mineral.practice.entity.ExtendedProfileData
 import gg.mineral.practice.entity.Profile
 import gg.mineral.practice.entity.ProfileData
 import gg.mineral.practice.inventory.menus.InventoryStatsMenu
-import gg.mineral.practice.util.config.LocationProp
+import gg.mineral.practice.util.config.SpawnLocationProp
 import gg.mineral.practice.util.messages.Message
+import gg.mineral.practice.util.world.Schematic
+import gg.mineral.practice.util.world.SpawnLocation
 import it.unimi.dsi.fastutil.objects.Object2ObjectFunction
 import it.unimi.dsi.fastutil.objects.Object2ObjectOpenHashMap
 import org.bukkit.Bukkit
@@ -27,7 +29,17 @@ object ProfileManager {
         "plugins/Practice/PlayerData"
     )
 
-    var spawnLocation by LocationProp(lobbyConfig, "Lobby", Location(Bukkit.getWorlds()[0], 0.0, 70.0, 0.0))
+    private val schematicFile by lazy {
+        val worldName = lobbyConfig.getString("Lobby.World", "PracticeLobby")
+        Schematic.get(worldName) ?: throw IllegalStateException("Lobby schematic not found")
+    }
+
+    private val lobbyWorld by lazy { schematicFile.generateWorld("") }
+
+    var spawnLocation by SpawnLocationProp(lobbyConfig, "Lobby", SpawnLocation(0, 70, 0))
+
+    val lobbyLocation: Location
+        get() = spawnLocation.bukkit(lobbyWorld)
 
     val profiles = ProfileMap()
     private val inventoryStats = Object2ObjectOpenHashMap<String, List<InventoryStatsMenu>>()

@@ -11,13 +11,14 @@ import gg.mineral.practice.managers.KitEditorManager.displayItem
 import gg.mineral.practice.managers.KitEditorManager.enabled
 import gg.mineral.practice.managers.KitEditorManager.location
 import gg.mineral.practice.util.messages.impl.ChatMessages
+import gg.mineral.practice.util.world.appender.LocationAppender
 import org.bukkit.command.CommandSender
 import org.bukkit.entity.Player
 import java.util.*
 
 @Command(name = "kiteditor")
 @Permission("practice.config")
-class KitEditorCommand : CommandSenderAppender {
+class KitEditorCommand : CommandSenderAppender, LocationAppender {
 
     @Execute(name = "enable")
     fun executeEnable(@Context sender: CommandSender, @Arg toggled: Boolean) {
@@ -45,7 +46,7 @@ class KitEditorCommand : CommandSenderAppender {
 
     @Execute(name = "setlocation", aliases = ["location"])
     fun executeLocation(@Context player: Player) {
-        location = player.location
+        location = player.location.toSpawnLocation()
         player.send(ChatMessages.KIT_EDITOR_LOCATION_SET)
     }
 

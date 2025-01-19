@@ -16,8 +16,8 @@ import gg.mineral.practice.kit.KitEditor
 import gg.mineral.practice.managers.ArenaManager.arenas
 import gg.mineral.practice.managers.ProfileManager.broadcast
 import gg.mineral.practice.managers.ProfileManager.getProfile
+import gg.mineral.practice.managers.ProfileManager.lobbyLocation
 import gg.mineral.practice.managers.ProfileManager.playerConfig
-import gg.mineral.practice.managers.ProfileManager.spawnLocation
 import gg.mineral.practice.match.Match
 import gg.mineral.practice.match.TeamMatch
 import gg.mineral.practice.party.Party
@@ -427,7 +427,7 @@ class Profile(player: Player) : ExtendedProfileData(player.name, player.uniqueId
         if (match?.ended == false) return
 
         this.player.handle.backtrackSystem.isEnabled = false
-        PlayerUtil.teleport(this, spawnLocation)
+        PlayerUtil.teleport(this, lobbyLocation)
 
         if (playerStatus !== PlayerStatus.FOLLOWING && playerStatus !== PlayerStatus.QUEUEING) playerStatus =
             PlayerStatus.IDLE

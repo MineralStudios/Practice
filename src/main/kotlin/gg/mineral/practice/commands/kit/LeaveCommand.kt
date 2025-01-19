@@ -12,7 +12,7 @@ class LeaveCommand {
     @Execute
     fun execute(@Context profile: Profile) {
         if (profile.playerStatus !== PlayerStatus.KIT_CREATOR
-            || profile.playerStatus !== PlayerStatus.KIT_EDITOR
+            && profile.playerStatus !== PlayerStatus.KIT_EDITOR
         ) {
             profile.message(ErrorMessages.NOT_IN_KIT_EDITOR_OR_CREATOR)
             return
