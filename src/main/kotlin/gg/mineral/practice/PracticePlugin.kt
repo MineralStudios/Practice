@@ -1,5 +1,7 @@
 package gg.mineral.practice
 
+import com.github.retrooper.packetevents.PacketEvents
+import com.github.retrooper.packetevents.event.PacketListenerPriority
 import dev.rollczi.litecommands.LiteCommands
 import dev.rollczi.litecommands.bukkit.LiteBukkitFactory
 import gg.mineral.practice.arena.Arena
@@ -36,19 +38,28 @@ import gg.mineral.practice.queue.Queuetype
 import gg.mineral.practice.util.world.SpawnLocation
 import gg.mineral.practice.util.world.VoidWorldGenerator
 import gg.mineral.server.combat.KnockbackProfile
+import io.github.retrooper.packetevents.factory.spigot.SpigotPacketEventsBuilder
 import org.bukkit.Bukkit
 import org.bukkit.command.CommandSender
 import org.bukkit.event.Listener
 import org.bukkit.plugin.java.JavaPlugin
+
 
 class PracticePlugin : JavaPlugin() {
     companion object {
         lateinit var INSTANCE: PracticePlugin
     }
 
+    override fun onLoad() {
+        PacketEvents.setAPI(SpigotPacketEventsBuilder.build(this))
+        PacketEvents.getAPI().load()
+    }
+
     private lateinit var liteCommands: LiteCommands<CommandSender>
 
     override fun onEnable() {
+        PacketEvents.getAPI().init()
+
         INSTANCE = this
 
         ArenaManager.load()
@@ -120,15 +131,19 @@ class PracticePlugin : JavaPlugin() {
             )
             .build()
 
+        PacketEvents.getAPI().eventManager.registerListener(
+            PacketEventsListener(), PacketListenerPriority.NORMAL
+        )
         registerListeners(
             BuildListener(), InteractListener(), ComsumeListener(), InventoryListener(),
             DeathListener(), DamageListener(), EntryListener(), HealthListener(),
-            MovementListener(), ProjectileListener(), CommandListener(), PacketListener()
+            MovementListener(), ProjectileListener(), CommandListener()
         )
     }
 
     override fun onDisable() {
         Bukkit.getServer().scheduler.cancelTasks(this)
+        PacketEvents.getAPI().terminate()
         this.liteCommands.unregister()
     }
 

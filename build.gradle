@@ -25,6 +25,8 @@ repositories {
     maven {
         url = 'https://repo.panda-lang.org/releases'
     }
+    maven { url = uri("https://repo.codemc.io/repository/maven-releases/") }
+    maven { url = uri("https://repo.codemc.io/repository/maven-snapshots/") }
 }
 
 dependencies {
@@ -34,6 +36,7 @@ dependencies {
     compileOnly 'gg.mineral:database-api:20241117-09.57.02'
     compileOnly 'de.jeezycore:jeezy-core:20241117-09.57.15'
     compileOnly 'gg.mineral:bot-intelligence:20241204-03.39.22'
+    compileOnly 'com.github.retrooper:packetevents-spigot:2.7.0'
     implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk8"
     implementation "dev.rollczi:litecommands-bukkit:3.9.7"
 }
