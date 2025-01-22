@@ -145,7 +145,7 @@ class CreateCustomKnockbackMenu(private val menu: Menu, private val prevMenu: Me
                     ConfigureValueMenu.of(
                         this,
                         { friction: Double -> this.setFriction(friction) },
-                        Double::class.javaPrimitiveType!!
+                        Double::class
                     )
                 )
         }
@@ -165,7 +165,7 @@ class CreateCustomKnockbackMenu(private val menu: Menu, private val prevMenu: Me
                     ConfigureValueMenu.of(
                         this,
                         { horizontal: Double -> this.setHorizontal(horizontal) },
-                        Double::class.javaPrimitiveType!!
+                        Double::class
                     )
                 )
         }
@@ -185,7 +185,7 @@ class CreateCustomKnockbackMenu(private val menu: Menu, private val prevMenu: Me
                     ConfigureValueMenu.of(
                         this,
                         { vertical: Double -> this.setVertical(vertical) },
-                        Double::class.javaPrimitiveType!!
+                        Double::class
                     )
                 )
         }
@@ -207,7 +207,7 @@ class CreateCustomKnockbackMenu(private val menu: Menu, private val prevMenu: Me
                     ConfigureValueMenu.of(
                         this,
                         { horizontalExtra: Double -> this.setHorizontalExtra(horizontalExtra) },
-                        Double::class.javaPrimitiveType!!
+                        Double::class
                     )
                 )
         }
@@ -228,7 +228,7 @@ class CreateCustomKnockbackMenu(private val menu: Menu, private val prevMenu: Me
                     ConfigureValueMenu.of(
                         this,
                         { verticalExtra: Double -> this.setVerticalExtra(verticalExtra) },
-                        Double::class.javaPrimitiveType!!
+                        Double::class
                     )
                 )
         }
@@ -249,7 +249,7 @@ class CreateCustomKnockbackMenu(private val menu: Menu, private val prevMenu: Me
                     ConfigureValueMenu.of(
                         this,
                         { verticalLimit: Double -> this.setVerticalLimit(verticalLimit) },
-                        Double::class.javaPrimitiveType!!
+                        Double::class
                     )
                 )
         }

@@ -49,13 +49,13 @@ class CustomBotDifficultyMenu(private val menu: SelectGametypeMenu) : PracticeMe
             if (interaction.clickType == ClickType.RIGHT) interaction.profile.openMenu(
                 ConfigureValueMenu.of(
                     this, { value -> difficulty!!.verticalAimSpeed = value },
-                    Float::class.javaPrimitiveType!!
+                    Float::class
                 )
             )
             else interaction.profile.openMenu(
                 ConfigureValueMenu.of(
                     this, { value -> difficulty!!.horizontalAimSpeed = value },
-                    Float::class.javaPrimitiveType!!
+                    Float::class
                 )
             )
             premadeDifficulty = Difficulty.CUSTOM
@@ -78,14 +78,14 @@ class CustomBotDifficultyMenu(private val menu: SelectGametypeMenu) : PracticeMe
             if (interaction.clickType == ClickType.RIGHT) interaction.profile.openMenu(
                 ConfigureValueMenu.of(
                     this, { value -> difficulty!!.verticalAimAccuracy = value },
-                    Float::class.javaPrimitiveType!!
+                    Float::class
                 )
             )
             else interaction.profile.openMenu(
                 ConfigureValueMenu.of(
                     this,
                     { value -> difficulty!!.horizontalAimAccuracy = value },
-                    Float::class.javaPrimitiveType!!
+                    Float::class
                 )
             )
             premadeDifficulty = Difficulty.CUSTOM
@@ -110,14 +110,14 @@ class CustomBotDifficultyMenu(private val menu: SelectGametypeMenu) : PracticeMe
                 ConfigureValueMenu.of(
                     this,
                     { value -> difficulty!!.verticalErraticness = value },
-                    Float::class.javaPrimitiveType!!
+                    Float::class
                 )
             )
             else interaction.profile.openMenu(
                 ConfigureValueMenu.of(
                     this,
                     { value -> difficulty!!.horizontalErraticness = value },
-                    Float::class.javaPrimitiveType!!
+                    Float::class
                 )
             )
             premadeDifficulty = Difficulty.CUSTOM
@@ -143,7 +143,7 @@ class CustomBotDifficultyMenu(private val menu: SelectGametypeMenu) : PracticeMe
                 ConfigureValueMenu.of(
                     this,
                     { value -> difficulty!!.sprintResetAccuracy = value },
-                    Float::class.javaPrimitiveType!!
+                    Float::class
                 )
             )
             premadeDifficulty = Difficulty.CUSTOM
@@ -168,7 +168,7 @@ class CustomBotDifficultyMenu(private val menu: SelectGametypeMenu) : PracticeMe
                 ConfigureValueMenu.of(
                     this,
                     { value -> difficulty!!.hitSelectAccuracy = value },
-                    Float::class.javaPrimitiveType!!
+                    Float::class
                 )
             )
             premadeDifficulty = Difficulty.CUSTOM
@@ -190,7 +190,7 @@ class CustomBotDifficultyMenu(private val menu: SelectGametypeMenu) : PracticeMe
                     ConfigureValueMenu.of(
                         this,
                         { value -> difficulty!!.averageCps = value.toFloat() },
-                        Int::class.javaPrimitiveType!!
+                        Int::class
                     )
                 )
             premadeDifficulty = Difficulty.CUSTOM
@@ -213,7 +213,7 @@ class CustomBotDifficultyMenu(private val menu: SelectGametypeMenu) : PracticeMe
                     ConfigureValueMenu.of(
                         this,
                         { value -> difficulty!!.latency = value },
-                        Int::class.javaPrimitiveType!!
+                        Int::class
                     )
                 )
             premadeDifficulty = Difficulty.CUSTOM
@@ -235,7 +235,7 @@ class CustomBotDifficultyMenu(private val menu: SelectGametypeMenu) : PracticeMe
                 ConfigureValueMenu.of(
                     this,
                     { value -> difficulty!!.latencyDeviation = value },
-                    Int::class.javaPrimitiveType!!
+                    Int::class
                 )
             )
             premadeDifficulty = Difficulty.CUSTOM

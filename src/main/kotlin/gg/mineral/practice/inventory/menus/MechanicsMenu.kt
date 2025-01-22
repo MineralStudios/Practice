@@ -69,7 +69,7 @@ class MechanicsMenu(private val prevMenu: Menu? = null, val submitAction: Submit
                     ConfigureValueMenu.of(
                         this,
                         { duelSettings.noDamageTicks = it },
-                        Int::class.javaPrimitiveType!!
+                        Int::class
                     )
                 )
         }
@@ -145,7 +145,7 @@ class MechanicsMenu(private val prevMenu: Menu? = null, val submitAction: Submit
                     ConfigureValueMenu.of(
                         this,
                         { duelSettings.pearlCooldown = it },
-                        Int::class.javaPrimitiveType!!
+                        Int::class
                     )
                 )
         }

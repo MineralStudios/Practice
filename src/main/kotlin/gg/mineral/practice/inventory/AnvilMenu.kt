@@ -118,7 +118,7 @@ abstract class AnvilMenu : Menu {
 
     override fun onClose() {}
 
-    override fun getItemBySlot(slot: Int): ItemStack = items[slot]
+    override fun getItemBySlot(slot: Int): ItemStack? = items[slot]
 
     override fun getItemByType(material: Material): ItemStack? {
         for (itemStack in items.values) if (itemStack.type == material) return itemStack
@@ -157,7 +157,7 @@ abstract class AnvilMenu : Menu {
         for (i in contents.indices) contents[i]?.let { setSlot(i, it) }
     }
 
-    override fun getTask(slot: Int): Consumer<Interaction> = dataMap[slot]
+    override fun getTask(slot: Int): Consumer<Interaction>? = dataMap[slot]
 
     override fun clear() {
         dataMap.clear()
