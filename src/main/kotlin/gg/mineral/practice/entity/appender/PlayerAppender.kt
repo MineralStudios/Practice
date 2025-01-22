@@ -1,5 +1,6 @@
 package gg.mineral.practice.entity.appender
 
+import gg.mineral.bot.api.BotAPI
 import org.bukkit.entity.Player
 
 interface PlayerAppender {
@@ -11,4 +12,7 @@ interface PlayerAppender {
     }
 
     fun Player.removePotionEffects() = this.activePotionEffects.forEach { this.removePotionEffect(it.type) }
+
+    fun Player.isFake() =
+        BotAPI.INSTANCE.isFakePlayer(this.uniqueId)
 }

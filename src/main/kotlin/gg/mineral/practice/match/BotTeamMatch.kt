@@ -59,8 +59,6 @@ class BotTeamMatch(
         team1Players.alive { teamMember -> PlayerUtil.teleport(teamMember, location1) }
         team2Players.alive { teamMember -> PlayerUtil.teleport(teamMember, location2) }
 
-        startCountdown()
-
         var suffix = 0
 
         for (config in team1Bots) {
@@ -100,5 +98,7 @@ class BotTeamMatch(
             for (instance in team2BotInstances) instance.configuration
                 .friendlyUUIDs.add(teamMember.uuid)
         }
+
+        startCountdown()
     }
 }

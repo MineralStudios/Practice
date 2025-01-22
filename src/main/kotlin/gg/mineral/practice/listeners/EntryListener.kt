@@ -1,6 +1,5 @@
 package gg.mineral.practice.listeners
 
-import gg.mineral.bot.api.BotAPI
 import gg.mineral.practice.entity.PlayerStatus
 import gg.mineral.practice.entity.appender.PlayerAppender
 import gg.mineral.practice.managers.EloManager.updateName
@@ -25,7 +24,7 @@ class EntryListener : Listener, PlayerAppender {
         event.player.gameMode = GameMode.SURVIVAL
         event.player.heal()
 
-        if (BotAPI.INSTANCE.isFakePlayer(event.player.uniqueId)) return
+        if (event.player.isFake()) return
 
         event.player.removePotionEffects()
         updateName(event.player)
@@ -60,7 +59,7 @@ class EntryListener : Listener, PlayerAppender {
 
     @EventHandler
     fun onPlayerInitialSpawn(e: PlayerInitialSpawnEvent) {
-        if (BotAPI.INSTANCE.isFakePlayer(e.player.uniqueId)) return
+        if (e.player.isFake()) return
         e.spawnLocation = lobbyLocation
     }
 }

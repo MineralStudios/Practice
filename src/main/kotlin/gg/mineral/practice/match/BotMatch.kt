@@ -46,11 +46,11 @@ class BotMatch(profile1: Profile, config: BotConfiguration, matchData: MatchData
         val bukkitPl = Bukkit.getPlayer(config.uuid) ?: throw NullPointerException("Fake player is null")
 
         this.profile2 = getOrCreateProfile(bukkitPl)
-
+        addParticipants(profile2!!)
+        
         handleOpponentMessages()
         startMatchTimeLimit()
         startCountdown()
-        addParticipants(profile2!!)
 
         prepareForMatch(participants)
     }
@@ -79,7 +79,7 @@ class BotMatch(profile1: Profile, config: BotConfiguration, matchData: MatchData
     }
 
     override fun giveQueueAgainItem(profile: Profile) {
-        if (BotAPI.INSTANCE.isFakePlayer(profile.player.uniqueId)) return
+        if (profile.player.isFake()) return
 
         Bukkit.getServer().scheduler.runTaskLater(
             PracticePlugin.INSTANCE,

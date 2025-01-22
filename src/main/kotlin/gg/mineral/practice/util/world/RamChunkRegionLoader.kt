@@ -8,20 +8,16 @@ import net.minecraft.server.v1_8_R3.ChunkCoordIntPair.a as longHash
 class RamChunkRegionLoader(private val chunkMap: Long2ObjectOpenHashMap<ChunkSnapshot?> = Long2ObjectOpenHashMap()) :
     ChunkRegionLoader(File("")) {
 
-    override fun chunkExists(world: World?, i: Int, j: Int) = chunkMap.containsKey(ChunkCoordIntPair.a(i, j))
+    // Always return false to trigger vanilla chunk loading
+    override fun chunkExists(world: World?, i: Int, j: Int) = false
 
-    override fun a(world: World, chunkX: Int, chunkZ: Int): Chunk? {
-        val data = loadChunk(world, chunkX, chunkZ) ?: return null
-        val chunk = data[0] as Chunk?
-        val compound = data[1] as NBTTagCompound?
-        if (chunk != null && compound != null)
-            loadEntities(chunk, compound.getCompound("Level"), world)
-        return chunk
-    }
+    override fun a(world: World, chunkX: Int, chunkZ: Int) = loadChunk(world, chunkX, chunkZ)?.get(0) as Chunk?
 
     override fun loadChunk(world: World, i: Int, j: Int): Array<Any>? {
-        val snapshot: ChunkSnapshot = chunkMap[longHash(i, j)] ?: return null
-        return arrayOf(chunkFromSnapshot(world, snapshot), NBTTagCompound())
+        synchronized(chunkMap) {
+            val snapshot: ChunkSnapshot = chunkMap[longHash(i, j)] ?: return null
+            return arrayOf(chunkFromSnapshot(world, snapshot), NBTTagCompound())
+        }
     }
 
     override fun a(world: World, chunk: Chunk) {}
@@ -58,15 +54,17 @@ class RamChunkRegionLoader(private val chunkMap: Long2ObjectOpenHashMap<ChunkSna
         val timeInhabited: Long = 0,
         val biomes: ByteArray = ByteArray(256)
     ) {
-
         private fun ChunkSection.setSkylightArray(array: NibbleArray) = this.b(array)
 
         fun setTypeAndData(x: Int, y: Int, z: Int, type: Int, data: Byte) {
             if (y >= 0 && y shr 4 < sections.size) {
                 val chunksection: ChunkSection = sections[y shr 4] ?: run {
-                    val section = ChunkSection(y shr 4, true)
-                    section.setSkylightArray(NibbleArray(ByteArray(2048) { 0xFF.toByte() }))
-                    section
+                    val chunksection = ChunkSection(
+                        y shr 4 shl 4,
+                        true
+                    ).apply { setSkylightArray(NibbleArray(ByteArray(2048) { 0xFF.toByte() })) }
+                    sections[y shr 4] = chunksection
+                    chunksection
                 }
                 chunksection.setType(x and 15, y and 15, z and 15, Block.getById(type).fromLegacyData(data.toInt()))
                 sections[y shr 4] = chunksection

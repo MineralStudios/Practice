@@ -1,6 +1,5 @@
 package gg.mineral.practice.entity
 
-import gg.mineral.bot.api.BotAPI
 import gg.mineral.practice.PracticePlugin
 import gg.mineral.practice.duel.DuelSettings
 import gg.mineral.practice.entity.appender.CommandSenderAppender
@@ -16,6 +15,7 @@ import gg.mineral.practice.kit.KitEditor
 import gg.mineral.practice.managers.ArenaManager.arenas
 import gg.mineral.practice.managers.ProfileManager.broadcast
 import gg.mineral.practice.managers.ProfileManager.getProfile
+import gg.mineral.practice.managers.ProfileManager.isFake
 import gg.mineral.practice.managers.ProfileManager.lobbyLocation
 import gg.mineral.practice.managers.ProfileManager.playerConfig
 import gg.mineral.practice.match.Match
@@ -359,10 +359,11 @@ class Profile(player: Player) : ExtendedProfileData(player.name, player.uniqueId
     fun giveKit(kit: Kit) {
         inventory.setContents(kit.contents)
         inventory.armorContents = kit.armourContents
+        inventory.holder.player.updateInventory()
         kitLoaded = true
     }
 
-    fun testTabVisibility(uuid: UUID) = !BotAPI.INSTANCE.isFakePlayer(uuid) || player.world.players.stream()
+    fun testTabVisibility(uuid: UUID) = Bukkit.getPlayer(uuid)?.isFake() == false || player.world.players.stream()
         .anyMatch { p: Player -> p.uniqueId == uuid }
 
     fun message(message: Message) = this.player.send(message)

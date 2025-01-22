@@ -187,7 +187,7 @@ open class TeamMatch : Match, MatchAppender {
 
             var allBots = true
 
-            for (profile in participants) if (!BotAPI.INSTANCE.isFakePlayer(profile.uuid)) {
+            for (profile in participants) if (!profile.player.isFake()) {
                 allBots = false
                 break
             }

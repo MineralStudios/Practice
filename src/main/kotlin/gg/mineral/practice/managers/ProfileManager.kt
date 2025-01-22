@@ -1,10 +1,10 @@
 package gg.mineral.practice.managers
 
 import gg.mineral.api.config.FileConfiguration
-import gg.mineral.bot.api.BotAPI
 import gg.mineral.practice.entity.ExtendedProfileData
 import gg.mineral.practice.entity.Profile
 import gg.mineral.practice.entity.ProfileData
+import gg.mineral.practice.entity.appender.PlayerAppender
 import gg.mineral.practice.inventory.menus.InventoryStatsMenu
 import gg.mineral.practice.util.config.SpawnLocationProp
 import gg.mineral.practice.util.messages.Message
@@ -18,7 +18,7 @@ import org.bukkit.entity.Player
 import java.util.*
 import java.util.function.Predicate
 
-object ProfileManager {
+object ProfileManager : PlayerAppender {
 
     class ProfileMap : Object2ObjectOpenHashMap<UUID, Profile>()
 
@@ -66,7 +66,7 @@ object ProfileManager {
         var count = 0
         lastOnline = Bukkit.getOnlinePlayers().size
         for (player in Bukkit.getOnlinePlayers()) {
-            if (!BotAPI.INSTANCE.isFakePlayer(player.uniqueId)) continue
+            if (!player.isFake()) continue
 
             count++
         }
