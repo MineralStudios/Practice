@@ -5,6 +5,7 @@ import gg.mineral.practice.inventory.Interaction
 import gg.mineral.practice.inventory.PracticeMenu
 import gg.mineral.practice.managers.MatchManager.matches
 import gg.mineral.practice.util.items.ItemBuilder
+import gg.mineral.practice.util.items.ItemStacks
 import gg.mineral.practice.util.messages.CC
 
 @ClickCancelled(true)
@@ -14,15 +15,16 @@ class SpectateMenu : PracticeMenu() {
         for (m in matches) {
             val gametype = m.data.gametype
 
-            if (m.profile1 == null || m.profile2 == null || gametype == null) continue
+            if (m.profile1 == null || m.profile2 == null) continue
 
-            val item = gametype.displayItem.clone()
+
+            val item = gametype?.displayItem?.clone() ?: ItemStacks.LOAD_KIT.build()
 
             val skull = ItemBuilder(item.clone())
                 .name(CC.SECONDARY + CC.B + m.profile1!!.name + " vs " + m.profile2!!.name)
                 .lore(
                     CC.WHITE + "Game type:",
-                    CC.GOLD + gametype.name,
+                    CC.GOLD + (gametype?.name ?: "Custom"),
                     CC.BOARD_SEPARATOR, CC.ACCENT + "Click to spectate."
                 )
                 .build()
