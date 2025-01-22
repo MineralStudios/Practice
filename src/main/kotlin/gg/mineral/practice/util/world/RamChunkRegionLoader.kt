@@ -59,9 +59,15 @@ class RamChunkRegionLoader(private val chunkMap: Long2ObjectOpenHashMap<ChunkSna
         val biomes: ByteArray = ByteArray(256)
     ) {
 
+        private fun ChunkSection.setSkylightArray(array: NibbleArray) = this.b(array)
+
         fun setTypeAndData(x: Int, y: Int, z: Int, type: Int, data: Byte) {
             if (y >= 0 && y shr 4 < sections.size) {
-                val chunksection = sections[y shr 4] ?: ChunkSection(y shr 4, true)
+                val chunksection: ChunkSection = sections[y shr 4] ?: run {
+                    val section = ChunkSection(y shr 4, true)
+                    section.setSkylightArray(NibbleArray(ByteArray(2048) { 0xFF.toByte() }))
+                    section
+                }
                 chunksection.setType(x and 15, y and 15, z and 15, Block.getById(type).fromLegacyData(data.toInt()))
                 sections[y shr 4] = chunksection
             }
