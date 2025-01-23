@@ -3,7 +3,6 @@ package gg.mineral.practice.managers
 import com.eatthepath.uuid.FastUUID
 import gg.mineral.database.DatabaseAPIPlugin
 import gg.mineral.database.sql.QueryResult
-import gg.mineral.database.sql.SQLManager
 import gg.mineral.practice.entity.ExtendedProfileData
 import gg.mineral.practice.entity.ProfileData
 import gg.mineral.practice.gametype.Gametype
@@ -19,110 +18,80 @@ object EloManager {
     private const val TABLE: String = "elo"
 
     init {
-        DatabaseAPIPlugin.INSTANCE.retrieveSqlManager().ifPresent { sqlManager: SQLManager ->
-            sqlManager.executeStatement(
-                ("CREATE TABLE IF NOT EXISTS " + TABLE
-                        + " (ELO INT NOT NULL, PLAYER VARCHAR(200), GAMETYPE VARCHAR(200), UUID VARCHAR(200), UNIQUE(PLAYER, GAMETYPE, UUID))")
-            )
-                .join()
-        }
+        DatabaseAPIPlugin.INSTANCE.sqlManager?.executeStatement(
+            ("CREATE TABLE IF NOT EXISTS " + TABLE
+                    + " (ELO INT NOT NULL, PLAYER VARCHAR(200), GAMETYPE VARCHAR(200), UUID VARCHAR(200), UNIQUE(PLAYER, GAMETYPE, UUID))")
+        )?.join()
     }
 
     fun update(p: ExtendedProfileData, g: String?, elo: Int) {
-        DatabaseAPIPlugin.INSTANCE.retrieveSqlManager().ifPresent { sqlManager: SQLManager ->
-            sqlManager.executeStatement(
-                "INSERT INTO " + TABLE + " (ELO, PLAYER, GAMETYPE, UUID) VALUES (?, ?, ?, ?) " +
-                        "ON DUPLICATE KEY UPDATE ELO=?, PLAYER=?",
-                elo, p.name, g, p.uuid.toString(),
-                elo, p.name
-            )
-        }
+        DatabaseAPIPlugin.INSTANCE.sqlManager?.executeStatement(
+            "INSERT INTO " + TABLE + " (ELO, PLAYER, GAMETYPE, UUID) VALUES (?, ?, ?, ?) " +
+                    "ON DUPLICATE KEY UPDATE ELO=?, PLAYER=?",
+            elo, p.name, g, p.uuid.toString(),
+            elo, p.name
+        )
     }
 
     @JvmStatic
     fun updateName(p: Player) {
-        DatabaseAPIPlugin.INSTANCE.retrieveSqlManager().ifPresent { sqlManager: SQLManager ->
-            sqlManager.executeStatement(
-                "INSERT INTO " + TABLE + " (PLAYER, UUID) VALUES (?, ?) " +
-                        "ON DUPLICATE KEY UPDATE PLAYER=?",
-                p.name, p.uniqueId.toString(),
-                p.name
-            )
-        }
+        DatabaseAPIPlugin.INSTANCE.sqlManager?.executeStatement(
+            "INSERT INTO " + TABLE + " (PLAYER, UUID) VALUES (?, ?) " +
+                    "ON DUPLICATE KEY UPDATE PLAYER=?",
+            p.name, p.uniqueId.toString(),
+            p.name
+        )
     }
 
     fun get(gametype: Gametype, uuid: UUID): CompletableFuture<Int> {
-        if (DatabaseAPIPlugin.INSTANCE.retrieveSqlManager().isPresent) {
-            return DatabaseAPIPlugin.INSTANCE.retrieveSqlManager().get()
-                .executeQuery(
-                    "SELECT * FROM " + TABLE + " WHERE GAMETYPE=? AND UUID=?", gametype.name,
-                    uuid.toString()
-                )
-                .thenApply { queryResult: QueryResult ->
-                    var elo = 1000
-                    try {
-                        queryResult.resultSet.use { r ->
-                            if (r.next()) elo = r.getInt("ELO")
-                        }
-                    } catch (e: Exception) {
-                        e.printStackTrace()
-                    }
-                    elo
-                }
-        }
-
-        return CompletableFuture.completedFuture(1000)
+        return DatabaseAPIPlugin.INSTANCE.sqlManager?.executeQuery(
+            "SELECT * FROM $TABLE WHERE GAMETYPE=? AND UUID=?", { queryResult: QueryResult ->
+                var elo = 1000
+                queryResult.resultSet.use { if (it.next()) elo = it.getInt("ELO") }
+                elo
+            }, gametype.name,
+            uuid.toString()
+        ) ?: CompletableFuture.completedFuture(1000)
     }
 
-    fun get(gametype: Gametype, playerName: String?): CompletableFuture<Int> {
-        if (DatabaseAPIPlugin.INSTANCE.retrieveSqlManager().isPresent) {
-            return DatabaseAPIPlugin.INSTANCE.retrieveSqlManager().get()
-                .executeQuery(
-                    "SELECT * FROM " + TABLE + " WHERE PLAYER=? AND GAMETYPE=?", playerName,
-                    gametype.name
-                )
-                .thenApply { queryResult: QueryResult ->
-                    var elo = 1000
-                    try {
-                        queryResult.resultSet.use { r ->
-                            if (r.next()) elo = r.getInt("ELO")
-                        }
-                    } catch (e: Exception) {
-                        e.printStackTrace()
+    fun get(gametype: Gametype, playerName: String): CompletableFuture<Int> {
+        return DatabaseAPIPlugin.INSTANCE.sqlManager?.executeQuery(
+            "SELECT * FROM $TABLE WHERE PLAYER=? AND GAMETYPE=?", { queryResult: QueryResult ->
+                var elo = 1000
+                try {
+                    queryResult.resultSet.use { r ->
+                        if (r.next()) elo = r.getInt("ELO")
                     }
-                    elo
+                } catch (e: Exception) {
+                    e.printStackTrace()
                 }
-        }
-
-        return CompletableFuture.completedFuture(1000)
+                elo
+            }, playerName,
+            gametype.name
+        ) ?: CompletableFuture.completedFuture(1000)
     }
 
-    fun setAllEloAndLeaderboards() {
-        if (DatabaseAPIPlugin.INSTANCE.retrieveSqlManager().isPresent) {
-            DatabaseAPIPlugin.INSTANCE.retrieveSqlManager().get()
-                .executeQuery("SELECT * FROM " + TABLE)
-                .thenAccept { queryResult: QueryResult ->
-                    try {
-                        queryResult.resultSet.use { r ->
-                            while (r.next()) {
-                                val playerName = r.getString("PLAYER")
-                                val elo = r.getInt("ELO")
-                                val uuid = r.getString("UUID")
-                                val gametypeName = r.getString("GAMETYPE")
-                                val gametype = getGametypeByName(gametypeName) ?: continue
+    fun setAllEloAndLeaderboards(): CompletableFuture<Unit> {
+        return DatabaseAPIPlugin.INSTANCE.sqlManager?.executeQuery("SELECT * FROM $TABLE", { queryResult: QueryResult ->
+            queryResult.resultSet.use { r ->
+                while (r.next()) {
+                    val playerName = r.getString("PLAYER")
+                    val elo = r.getInt("ELO")
+                    val uuid = r.getString("UUID")
+                    val gametypeName = r.getString("GAMETYPE")
+                    val gametype = getGametypeByName(gametypeName) ?: continue
+                    if (elo == gametype.eloCache.defaultReturnValue()) continue
 
-                                gametype.eloCache.put(
-                                    ProfileManager.getProfileData(playerName, FastUUID.parseUUID(uuid)), elo
-                                )
-
-                                gametype.leaderboardMap.put(playerName, elo)
-                            }
-                        }
-                    } catch (e: Exception) {
-                        e.printStackTrace()
+                    synchronized(gametype.eloCache) {
+                        gametype.eloCache.put(
+                            ProfileManager.getProfileData(playerName, FastUUID.parseUUID(uuid)), elo
+                        )
                     }
-                }.join()
-        }
+
+                    gametype.leaderboardMap.put(playerName, elo)
+                }
+            }
+        }) ?: CompletableFuture.completedFuture(Unit)
     }
 
     fun getGlobalEloLeaderboard(queuetype: Queuetype): LeaderboardMap {
@@ -142,13 +111,16 @@ object EloManager {
 
                 // Iterate through entries and put the sum of elo in the map for each player
                 for (e in menuEntry.eloCache.object2IntEntrySet()) {
+                    val elo = e.intValue
+
+                    if (elo == menuEntry.eloCache.defaultReturnValue()) continue
                     // Get the combined value (eloSum and divisor)
                     val combinedValue: Long = globalEloMap.getLong(e.key)
                     var eloSum = (combinedValue ushr 32).toInt()
                     var divisor = combinedValue.toInt()
 
                     // Add elo
-                    eloSum += e.intValue
+                    eloSum += elo
                     divisor += 1
 
                     // Update the map with the new combined value

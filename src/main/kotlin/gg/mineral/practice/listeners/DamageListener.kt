@@ -59,7 +59,7 @@ class DamageListener : Listener, CommandSenderAppender {
             return
         }
 
-        if (victim.inMatchCountdown || victim.match?.ended == true) {
+        if ((e.cause != DamageCause.SUICIDE && victim.inMatchCountdown) || victim.match?.ended == true) {
             e.isCancelled = true
             return
         }

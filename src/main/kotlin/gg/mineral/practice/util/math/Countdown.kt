@@ -29,7 +29,7 @@ class Countdown(private val match: Match) {
                 return@scheduleSyncRepeatingTask
             }
             broadcast(
-                match.participants,
+                match.participants.filter { it.inMatchCountdown },
                 ChatMessages.BEGINS_IN.clone().replace("%time%", "" + time)
             )
             --time
@@ -39,7 +39,7 @@ class Countdown(private val match: Match) {
     private fun cancel() {
         match.onMatchStart()
 
-        for (profile in match.participants) {
+        for (profile in match.participants.filter { it.inMatchCountdown }) {
             match.onMatchStart(profile)
             profile.inMatchCountdown = false
             profile.message(ChatMessages.MATCH_STARTED)

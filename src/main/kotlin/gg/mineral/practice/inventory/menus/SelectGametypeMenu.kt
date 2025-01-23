@@ -68,7 +68,7 @@ open class SelectGametypeMenu(
             QueueArenaEnableMenu(
                 queuetype,
                 gametype,
-                queueInteraction
+                queueInteraction, this
             )
         )
         else queueInteraction.accept(interact)
@@ -325,7 +325,7 @@ open class SelectGametypeMenu(
                     entry.intValue + (if (type == Type.UNRANKED) 18 else 9) - offset, item
                 ) { interaction: Interaction ->
                     interaction.profile
-                        .openMenu(SelectCategorizedGametypeMenu(queuetype, menuEntry, type))
+                        .openMenu(SelectCategorizedGametypeMenu(queuetype, menuEntry, type, this))
                 }
             }
         }

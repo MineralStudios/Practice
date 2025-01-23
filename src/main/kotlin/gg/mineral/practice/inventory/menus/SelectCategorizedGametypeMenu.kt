@@ -32,7 +32,7 @@ class SelectCategorizedGametypeMenu(queuetype: Queuetype, val category: Category
     override fun shouldSkip(menuEntry: QueuetypeMenuEntry) = menuEntry is Gametype && !menuEntry.inCategory
 
     override fun onClose() {
-        if (viewer.playerStatus === PlayerStatus.FIGHTING || viewer.openMenu != null) return
+        if (viewer.playerStatus === PlayerStatus.FIGHTING || viewer.playerStatus === PlayerStatus.KIT_CREATOR || viewer.playerStatus === PlayerStatus.KIT_EDITOR || viewer.openMenu != null) return
         viewer.openMenu(SelectGametypeMenu(queuetype, type, null))
     }
 }

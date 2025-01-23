@@ -83,8 +83,8 @@ class SelectArenaMenu(private val menu: Menu, private val prevMenu: Menu, privat
             addAfter(9, item, arenaRunnable)
         }
 
-        setSlot(
-            40, ItemStacks.BACK
+        addOnNextRow(
+            13, ItemStacks.BACK
         ) { viewer.openMenu(prevMenu) }
     }
 

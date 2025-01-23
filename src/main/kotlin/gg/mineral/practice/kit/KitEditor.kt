@@ -18,11 +18,9 @@ class KitEditor(val gametype: Gametype, val queuetype: Queuetype, val profile: P
         val newKitContents: Array<ItemStack?> = profile.inventory.contents
 
         val hash = (queuetype.id.toInt() shl 8 or gametype.id.toInt()).toShort()
-        var kitLoadouts: Int2ObjectOpenHashMap<Array<ItemStack?>>? = profile.getCustomKits(
+        val kitLoadouts: Int2ObjectOpenHashMap<Array<ItemStack?>> = profile.getCustomKits(
             queuetype, gametype, hash
         )
-
-        if (kitLoadouts == null) kitLoadouts = Int2ObjectOpenHashMap()
 
         kitLoadouts.put(loadoutSlot, newKitContents)
         profile.customKits.put(hash, kitLoadouts)
@@ -68,8 +66,6 @@ class KitEditor(val gametype: Gametype, val queuetype: Queuetype, val profile: P
         val kitLoadouts = profile.getCustomKits(
             queuetype, gametype, hash
         )
-
-        if (kitLoadouts == null) return
 
         kitLoadouts.remove(loadoutSlot)
         profile.customKits.put(hash, kitLoadouts)

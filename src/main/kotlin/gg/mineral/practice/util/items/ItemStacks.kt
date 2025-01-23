@@ -36,6 +36,8 @@ object ItemStacks {
         .lore(CC.ACCENT + "Right click to queue.").build()
     val QUEUE_AGAIN: ItemStack = ItemBuilder(Material.PAPER).name(CC.SECONDARY + CC.B + "Queue Again")
         .lore(CC.ACCENT + "Right click to queue again.").build()
+    val REMATCH: ItemStack = ItemBuilder(Material.PAPER).name(CC.SECONDARY + CC.B + "Rematch")
+        .lore(CC.ACCENT + "Right click to fight again.").build()
     val LIST_PLAYERS: ItemStack = ItemBuilder(Material.PAPER).name(CC.SECONDARY + CC.B + "List Players")
         .lore(CC.ACCENT + "Right click to list players.")
         .build()

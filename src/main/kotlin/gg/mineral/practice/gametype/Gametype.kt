@@ -75,31 +75,32 @@ class Gametype(val name: String, val id: Byte) : QueuetypeMenuEntry {
     val leaderboardMap = LeaderboardMap()
     val eloCache: Object2IntOpenHashMap<ProfileData> = Object2IntOpenHashMap()
 
+    init {
+        eloCache.defaultReturnValue(1000)
+    }
+
     fun setEventArena(arena: Arena) {
         this.eventArenaId = arena.id
         config[path + "EventArena"] = arena.name
     }
 
-    fun getElo(profile: ProfileData): Int {
-        val elo = eloCache.getInt(profile)
+    fun getElo(profile: ProfileData): CompletableFuture<Int> {
 
-        if (profile !is ExtendedProfileData) return if (elo == 0)
-            EloManager.get(this, profile.name)
-                .whenComplete { value: Int, _: Throwable? -> eloCache.put(profile, value) }
-                .join()
-        else
-            elo
-
-        return if (elo == 0)
-            EloManager.get(this, profile.uuid).whenComplete { value: Int, _: Throwable? ->
-                eloCache.put(
-                    profile,
-                    value
-                )
+        if (profile !is ExtendedProfileData) return if (!eloCache.containsKey(profile))
+            EloManager.get(this, profile.name).thenApply {
+                synchronized(eloCache) { eloCache.put(profile, it) }
+                it
             }
-                .join()
         else
-            elo
+            CompletableFuture.completedFuture(eloCache.getInt(profile))
+
+        return if (!eloCache.containsKey(profile))
+            EloManager.get(this, profile.uuid).thenApply {
+                synchronized(eloCache) { eloCache.put(profile, it) }
+                it
+            }
+        else
+            CompletableFuture.completedFuture(eloCache.getInt(profile))
     }
 
     fun getEloMap(vararg profiles: ExtendedProfileData): CompletableFuture<Object2IntOpenHashMap<UUID>> {
@@ -109,11 +110,18 @@ class Gametype(val name: String, val id: Byte) : QueuetypeMenuEntry {
 
             for (profile in profiles) {
                 val elo = eloCache.getInt(profile)
-
-                if (elo != 0) map.put(profile.uuid, elo)
+                
+                synchronized(eloCache) {
+                    if (eloCache.containsKey(profile)) map.put(profile.uuid, elo)
+                }
 
                 futures[profile.uuid] = EloManager.get(this, profile.uuid)
-                    .whenComplete { value: Int, _: Throwable? -> eloCache.put(profile, value) }
+                    .thenApply {
+                        synchronized(eloCache) {
+                            eloCache.put(profile, it)
+                        }
+                        it
+                    }
             }
 
             for ((key, value) in futures) map.put(

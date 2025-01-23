@@ -4,9 +4,8 @@ import gg.mineral.api.collection.GlueList
 import gg.mineral.practice.category.Category
 import gg.mineral.practice.entity.ProfileData
 import gg.mineral.practice.gametype.Gametype
+import gg.mineral.practice.inventory.AsyncMenu
 import gg.mineral.practice.inventory.ClickCancelled
-import gg.mineral.practice.inventory.Interaction
-import gg.mineral.practice.inventory.PracticeMenu
 import gg.mineral.practice.managers.GametypeManager
 import gg.mineral.practice.queue.Queuetype
 import gg.mineral.practice.queue.QueuetypeMenuEntry
@@ -16,7 +15,7 @@ import gg.mineral.practice.util.messages.CC
 import it.unimi.dsi.fastutil.objects.Object2IntLinkedOpenHashMap
 
 @ClickCancelled(true)
-open class EloMenu(protected var arg: ProfileData, protected var queuetype: Queuetype) : PracticeMenu() {
+open class EloMenu(protected var arg: ProfileData, protected var queuetype: Queuetype) : AsyncMenu() {
     protected open val menuEntries: Object2IntLinkedOpenHashMap<QueuetypeMenuEntry> by lazy { queuetype.menuEntries }
 
     protected open fun shouldSkip(menuEntry: QueuetypeMenuEntry) = menuEntry is Gametype && menuEntry.inCategory
@@ -32,7 +31,7 @@ open class EloMenu(protected var arg: ProfileData, protected var queuetype: Queu
                             + " across all game types."),
                     " ",
                     CC.WHITE + "Currently:",
-                    CC.GOLD + queuetype.getGlobalElo(arg)
+                    CC.GOLD + queuetype.getGlobalElo(arg).join()
                 )
 
                 .build()
@@ -48,7 +47,7 @@ open class EloMenu(protected var arg: ProfileData, protected var queuetype: Queu
                     .lore(
                         " ",
                         CC.WHITE + arg.name + "'s Elo:",
-                        CC.GOLD + menuEntry.getElo(arg)
+                        CC.GOLD + menuEntry.getElo(arg).join()
                     )
                     .build()
                 setSlot(entry.intValue + 18, item)
@@ -74,9 +73,9 @@ open class EloMenu(protected var arg: ProfileData, protected var queuetype: Queu
 
                 setSlot(
                     entry.intValue + 18, item
-                ) { interaction: Interaction ->
-                    interaction.profile
-                        .openMenu(CategorizedEloMenu(arg, queuetype, menuEntry))
+                ) {
+                    it.profile
+                        .openMenu(CategorizedEloMenu(arg, queuetype, menuEntry, this))
                 }
             }
         }

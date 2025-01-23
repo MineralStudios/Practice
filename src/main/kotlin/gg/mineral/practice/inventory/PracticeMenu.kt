@@ -16,7 +16,7 @@ import kotlin.math.max
 
 abstract class PracticeMenu(menu: PracticeMenu? = null) : Menu {
     protected lateinit var viewer: Profile
-    private var openPage: Page? = null
+    protected var openPage: Page? = null
     val pageMap: Int2ObjectOpenHashMap<Page> by lazy { menu?.pageMap ?: Int2ObjectOpenHashMap() }
     override val inventory: Inventory?
         get() = openPage?.inv
@@ -69,6 +69,32 @@ abstract class PracticeMenu(menu: PracticeMenu? = null) : Menu {
         findUnusedPage().let { it.setSlot(it.findUnusedSlot(afterSlot), item, d) }
     }
 
+
+    // TODO: ensure it doesn't go onto another page
+    fun addOnNextRow(slot: Int, item: ItemStack, d: Consumer<Interaction>): Int {
+        val page = findUnusedPage()
+        val slotOnRow = ((page.findLastUsedSlot() / 9) + 1) * 9 + slot
+        page.setSlot(slotOnRow, item, d)
+        return slotOnRow
+    }
+
+    fun addOnNextRow(slot: Int, item: ItemStack): Int {
+        val page = findUnusedPage()
+        val slotOnRow = ((page.findLastUsedSlot() / 9) + 1) * 9 + slot
+        page.setSlot(slotOnRow, item)
+        return slotOnRow
+    }
+
+    fun addOnRow(rowSlot: Int, slot: Int, item: ItemStack, d: Consumer<Interaction>) {
+        val page = findUnusedPage()
+
+        val rowStart = (rowSlot / 9) * 9
+
+        val slotOnRow = rowStart + slot
+
+        page.setSlot(slotOnRow, item, d)
+    }
+
     override fun add(itemStack: ItemStack) {
         findUnusedPage().let { it.setSlot(it.findUnusedSlot(), itemStack) }
     }
@@ -113,9 +139,9 @@ abstract class PracticeMenu(menu: PracticeMenu? = null) : Menu {
             Int2ObjectFunction { p -> Page(p) })
     }
 
-    private var needsUpdate: Boolean = true
+    protected var needsUpdate: Boolean = true
 
-    fun open(viewer: Profile, pageNumber: Int) {
+    open fun open(viewer: Profile, pageNumber: Int) {
         this.closed = false
         this.viewer = viewer
 
@@ -247,6 +273,11 @@ abstract class PracticeMenu(menu: PracticeMenu? = null) : Menu {
 
         fun findUnusedSlot(start: Int = 0): Int {
             for (i in start..size) if (items[i] == null) return i
+            return -1
+        }
+
+        fun findLastUsedSlot(): Int {
+            for (i in size downTo 0) if (items[i] != null) return i
             return -1
         }
 

@@ -13,11 +13,13 @@ import gg.mineral.practice.util.items.ItemStacks
 import it.unimi.dsi.fastutil.bytes.Byte2BooleanOpenHashMap
 import it.unimi.dsi.fastutil.ints.Int2ObjectOpenHashMap
 import org.bukkit.inventory.ItemStack
+import java.util.concurrent.CompletableFuture
 
 class MatchData private constructor() {
     var queuetype: Queuetype? = null
         set(value) {
             this.knockback = value?.knockback
+            this.ranked = value?.ranked ?: false
             field = value
         }
     var gametype: Gametype? = null
@@ -55,7 +57,7 @@ class MatchData private constructor() {
             field = value
             if (knockback == null && value) knockback = OldStyleKnockback()
         }
-    val ranked = false
+    var ranked = false
     var enabledArenas: Byte2BooleanOpenHashMap = Byte2BooleanOpenHashMap()
     private var displayItem: ItemStack = ItemStacks.WOOD_AXE
 
@@ -98,12 +100,12 @@ class MatchData private constructor() {
         this.oldCombat = duelSettings.oldCombat
     }
 
-    fun getCustomKits(p: Profile): Int2ObjectOpenHashMap<Array<ItemStack?>>? {
+    fun getCustomKits(p: Profile): Int2ObjectOpenHashMap<Array<ItemStack?>> {
         if (queuetype == null || gametype == null) return Int2ObjectOpenHashMap()
         return p.getCustomKits(queuetype!!, gametype!!)
     }
 
-    fun getElo(p: Profile) = gametype?.getElo(p) ?: 0
+    fun getElo(p: Profile): CompletableFuture<Int> = gametype?.getElo(p) ?: CompletableFuture.completedFuture(1000)
 
     val queueAndGameTypeHash: Short
         get() {
@@ -111,4 +113,24 @@ class MatchData private constructor() {
             val gametypeId: Byte = gametype?.id ?: 0
             return (queuetypeId.toInt() shl 8 or gametypeId.toInt()).toShort()
         }
+
+    fun deriveDuelSettings(): DuelSettings {
+        val duelSettings = DuelSettings()
+        duelSettings.queuetype = queuetype
+        duelSettings.gametype = gametype
+        duelSettings.arenaId = arenaId
+        duelSettings.kit = kit
+        duelSettings.knockback = knockback
+        duelSettings.noDamageTicks = noDamageTicks
+        duelSettings.pearlCooldown = pearlCooldown
+        duelSettings.hunger = hunger
+        duelSettings.boxing = boxing
+        duelSettings.build = build
+        duelSettings.damage = damage
+        duelSettings.griefing = griefing
+        duelSettings.deadlyWater = deadlyWater
+        duelSettings.regeneration = regeneration
+        duelSettings.oldCombat = oldCombat
+        return duelSettings
+    }
 }

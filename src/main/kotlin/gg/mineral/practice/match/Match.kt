@@ -46,6 +46,7 @@ import org.bukkit.inventory.ItemStack
 import org.bukkit.potion.PotionEffect
 import org.bukkit.potion.PotionEffectType
 import java.util.*
+import java.util.concurrent.CompletableFuture
 import java.util.concurrent.ConcurrentLinkedDeque
 import java.util.concurrent.ConcurrentLinkedQueue
 import java.util.function.Consumer
@@ -230,7 +231,7 @@ open class Match(
 
         profile.inventory.clear()
 
-        if (map.isNullOrEmpty()) return
+        if (map.isEmpty()) return
 
         if (map.size == 1) {
             profile.giveKit(getKit(map.values.iterator().next()))
@@ -272,17 +273,24 @@ open class Match(
         profile2?.let { profile1?.let { it1 -> handleOpponentMessages(it, it1) } }
     }
 
+    private fun handleRankedOpponentMessages(): CompletableFuture<Void> = CompletableFuture.allOf(
+        profile1?.let { profile2?.let { it1 -> handleRankedOpponentMessages(it, it1) } },
+        profile2?.let { profile1?.let { it1 -> handleRankedOpponentMessages(it, it1) } })
+
+    private fun handleRankedOpponentMessages(profile1: Profile, profile2: Profile): CompletableFuture<Void> =
+        data.getElo(profile2).thenAccept {
+            profile1.player.sendMessage(CC.BOARD_SEPARATOR)
+            profile1.player.sendMessage("Opponent: " + CC.AQUA + profile2.name)
+            profile1.player.sendMessage(CC.WHITE + "Elo: " + CC.AQUA + it)
+            profile1.player.sendMessage(CC.BOARD_SEPARATOR)
+        }
+
     private fun handleOpponentMessages(profile1: Profile, profile2: Profile) {
-        val sb = "Opponent: " + CC.AQUA + profile2.name + (if (data.ranked)
-            """
-                ${CC.WHITE}
-                Elo: ${CC.AQUA}${data.getElo(profile2)}
-                """.trimIndent()
-        else
-            "")
+        if (data.ranked)
+            throw IllegalStateException("Ranked matches are not supported.")
 
         profile1.player.sendMessage(CC.BOARD_SEPARATOR)
-        profile1.player.sendMessage(sb)
+        profile1.player.sendMessage("Opponent: " + CC.AQUA + profile2.name)
         profile1.player.sendMessage(CC.BOARD_SEPARATOR)
     }
 
@@ -325,8 +333,12 @@ open class Match(
         teleportPlayers(location1, location2)
 
         prepareForMatch(participants)
-        handleOpponentMessages()
-        startCountdown()
+
+        if (data.ranked) handleRankedOpponentMessages().thenAccept { startCountdown() }
+        else {
+            handleOpponentMessages()
+            startCountdown()
+        }
     }
 
     open fun end(victim: Profile) {
@@ -347,11 +359,12 @@ open class Match(
         return ended
     }
 
-    private fun updateElo(attacker: Profile, victim: Profile) {
-        val gametype = data.gametype ?: return
+    private fun updateElo(attacker: Profile, victim: Profile): CompletableFuture<Pair<Pair<Int, Int>, Pair<Int, Int>>> {
+        val gametype =
+            data.gametype ?: return CompletableFuture.completedFuture(Pair(Pair(1000, 1000), Pair(1000, 1000)))
 
-        gametype.getEloMap(attacker, victim)
-            .thenAccept { map: Object2IntOpenHashMap<UUID> ->
+        return gametype.getEloMap(attacker, victim)
+            .thenApply { map: Object2IntOpenHashMap<UUID> ->
                 val attackerElo = map.getInt(attacker.uuid)
                 val victimElo = map.getInt(victim.uuid)
                 val newAttackerElo = MathUtil.getNewRating(attackerElo, victimElo, true)
@@ -362,11 +375,10 @@ open class Match(
                 gametype.updatePlayerLeaderboard(victim, newVictimElo, victimElo)
                 gametype.updatePlayerLeaderboard(attacker, newAttackerElo, attackerElo)
 
-                val rankedMessage = (CC.GREEN + attacker.name + " (+" + (newAttackerElo - attackerElo) + ") "
-                        + CC.RED
-                        + victim.name + " (" + (newVictimElo - victimElo) + ")")
-                attacker.player.sendMessage(rankedMessage)
-                victim.player.sendMessage(rankedMessage)
+                val oldPair = Pair(attackerElo, victimElo)
+                val newPair = Pair(newAttackerElo, newVictimElo)
+
+                Pair(oldPair, newPair)
             }
     }
 
@@ -396,14 +408,57 @@ open class Match(
         val winMessage = getWinMessage(attacker)
         val loseMessage = getLoseMessage(victim)
 
-        for (profile in participants) {
-            profile.player.sendMessage(CC.SEPARATOR)
-            profile.player.sendMessage(Strings.MATCH_RESULTS)
-            profile.player.spigot().sendMessage(winMessage, TextComponents.SPLITTER, loseMessage)
-            profile.player.sendMessage(CC.SEPARATOR)
+        fun printMessagesAndStopSpectators(eloMessage: TextComponent? = null, eloMessage2: TextComponent? = null) {
+            for (profile in participants) {
+                profile.player.sendMessage(CC.SEPARATOR)
+                profile.player.sendMessage(Strings.MATCH_RESULTS)
+                if (data.ranked && eloMessage != null && eloMessage2 != null)
+                    profile.player.spigot()
+                        .sendMessage(winMessage, eloMessage, TextComponents.SPLITTER, loseMessage, eloMessage2)
+                else
+                    profile.player.spigot().sendMessage(winMessage, TextComponents.SPLITTER, loseMessage)
+
+                if (this !is BotMatch && this !is TeamMatch)
+                    getOpponent(profile)?.let {
+                        profile.player.sendMessage(" ")
+                        profile.player.spigot().sendMessage(getRematchMessage(it))
+                    }
+                profile.player.sendMessage(CC.SEPARATOR)
+            }
+
+            for (spectator in spectators) {
+                spectator.player.sendMessage(CC.SEPARATOR)
+                spectator.player.sendMessage(Strings.MATCH_RESULTS)
+                spectator.player.spigot().sendMessage(winMessage, TextComponents.SPLITTER, loseMessage)
+                if (data.ranked && eloMessage != null && eloMessage2 != null)
+                    spectator.player.spigot()
+                        .sendMessage(winMessage, eloMessage, TextComponents.SPLITTER, loseMessage, eloMessage2)
+                else
+                    spectator.player.spigot().sendMessage(winMessage, TextComponents.SPLITTER, loseMessage)
+                spectator.player.sendMessage(CC.SEPARATOR)
+                spectator.stopSpectating()
+            }
         }
 
-        if (data.ranked) updateElo(attacker, victim)
+        if (data.ranked) {
+            updateElo(attacker, victim).thenAccept {
+                val oldPair = it.first
+                val newPair = it.second
+
+                val attackerEloDiff = newPair.first - oldPair.first
+                val victimEloDiff = newPair.second - oldPair.second
+
+                val eloMessage = TextComponent(
+                    CC.GREEN + " +" + attackerEloDiff + CC.GRAY + " (" + CC.GREEN + newPair.first + CC.GRAY + ")"
+                )
+
+                val eloMessage2 = TextComponent(
+                    CC.RED + " " + victimEloDiff + CC.GRAY + " (" + CC.RED + newPair.second + CC.GRAY + ")"
+                )
+
+                printMessagesAndStopSpectators(eloMessage, eloMessage2)
+            }
+        } else printMessagesAndStopSpectators()
 
         resetPearlCooldown(attacker, victim)
         attacker.scoreboard = MatchEndScoreboard.INSTANCE
@@ -422,14 +477,6 @@ open class Match(
             attacker.scoreboard = DefaultScoreboard.INSTANCE
             sendBackToLobby(attacker)
         }, POST_MATCH_TIME.toLong())
-
-        for (spectator in spectators) {
-            spectator.player.sendMessage(CC.SEPARATOR)
-            spectator.player.sendMessage(Strings.MATCH_RESULTS)
-            spectator.player.spigot().sendMessage(winMessage, TextComponents.SPLITTER, loseMessage)
-            spectator.player.sendMessage(CC.SEPARATOR)
-            spectator.stopSpectating()
-        }
 
         clearWorld()
     }
@@ -473,6 +520,34 @@ open class Match(
         return loseMessage
     }
 
+    private fun getRematchMessage(opponent: Profile): TextComponent {
+        fun centerString(baseLength: Int, insert: String): String {
+            // Calculate the spaces needed to center the string
+            val totalPadding = baseLength - insert.length
+            if (totalPadding <= 0) return insert // If the insert string is longer, return it as is
+
+            val paddingStart = totalPadding / 2
+            val paddingEnd = totalPadding - paddingStart
+
+            // Add spaces to center the string
+            return " ".repeat(paddingStart) + insert + " ".repeat(paddingEnd)
+        }
+
+        val message = TextComponent(CC.GREEN + CC.B + centerString(CC.SPLITTER.length, "Click To Rematch"))
+        message.clickEvent =
+            ClickEvent(ClickEvent.Action.RUN_COMMAND, "/duel " + opponent.name)
+        message.hoverEvent = HoverEvent(
+            HoverEvent.Action.SHOW_TEXT,
+            ComponentBuilder(
+                ("""
+                    ${CC.GREEN}Click to send a rematch request to ${opponent.name}
+                        """.trimIndent())
+            )
+                .create()
+        )
+        return message
+    }
+
     fun deathAnimation(attacker: Profile, victim: Profile) {
         attacker.player.heal()
         attacker.player.removePotionEffects()
@@ -484,10 +559,24 @@ open class Match(
         val queuetype = data.queuetype
         val gametype = data.gametype
 
-        if (queuetype == null || gametype == null) return
         Bukkit.getServer().scheduler.runTaskLater(
             PracticePlugin.INSTANCE,
             {
+
+                if (queuetype == null || gametype == null) {
+                    getOpponent(profile)?.let {
+                        profile.inventory.setItem(
+                            profile.inventory.heldItemSlot,
+                            ItemStacks.REMATCH,
+                            Runnable {
+                                profile.duelSettings = data.deriveDuelSettings()
+                                profile.sendDuelRequest(it)
+                            })
+
+                    }
+                    return@runTaskLater
+                }
+
                 profile.inventory.setItem(
                     profile.inventory.heldItemSlot,
                     ItemStacks.QUEUE_AGAIN,

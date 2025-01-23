@@ -23,6 +23,7 @@ import it.unimi.dsi.fastutil.objects.Object2IntLinkedOpenHashMap
 import it.unimi.dsi.fastutil.objects.Object2IntMap
 import it.unimi.dsi.fastutil.objects.ObjectSortedSet
 import java.util.*
+import java.util.concurrent.CompletableFuture
 
 class Queuetype(val name: String, val id: Byte) {
     val config: FileConfiguration = QueuetypeManager.config
@@ -139,18 +140,28 @@ class Queuetype(val name: String, val id: Byte) {
         return filteredArenas
     }
 
-    fun getGlobalElo(profile: ProfileData): Int {
+    fun getGlobalElo(profile: ProfileData): CompletableFuture<Int> {
         val set: ObjectSortedSet<QueuetypeMenuEntry> = menuEntries.keys
 
-        var sum = 0
-        var divisor = 0
+        val futures = mutableListOf<CompletableFuture<Int>>()
 
         for (menuEntry in set) if (menuEntry is Gametype) {
-            sum += menuEntry.getElo(profile)
-            divisor++
+            futures.add(menuEntry.getElo(profile))
         }
 
-        return Math.round((sum / divisor).toFloat())
+        if (futures.isEmpty()) return CompletableFuture.completedFuture(1000)
+
+        return CompletableFuture.allOf(*futures.toTypedArray()).thenApply {
+            var sum = 0
+            var divisor = 0
+
+            for (future in futures) {
+                sum += future.join()
+                divisor++
+            }
+            if (divisor == 0) return@thenApply 1000
+            sum / divisor
+        }
     }
 
     val globalLeaderboardLore: List<String>

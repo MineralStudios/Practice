@@ -22,8 +22,6 @@ class SaveLoadKitsMenu : PracticeMenu() {
             kitEditor.gametype
         )
 
-        if (loadouts == null) return
-
         for (i in 0..8) {
             if (!loadouts.containsKey(i)) setSlot(
                 i, ItemStacks.SAVE_KIT
@@ -45,7 +43,5 @@ class SaveLoadKitsMenu : PracticeMenu() {
     override val title: String
         get() = CC.BLUE + "Save Kits"
 
-    override fun shouldUpdate(): Boolean {
-        return true
-    }
+    override fun shouldUpdate() = true
 }

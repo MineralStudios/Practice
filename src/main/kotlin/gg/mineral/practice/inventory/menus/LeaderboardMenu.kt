@@ -3,9 +3,9 @@ package gg.mineral.practice.inventory.menus
 import gg.mineral.api.collection.GlueList
 import gg.mineral.practice.category.Category
 import gg.mineral.practice.gametype.Gametype
+import gg.mineral.practice.inventory.AsyncMenu
 import gg.mineral.practice.inventory.ClickCancelled
 import gg.mineral.practice.inventory.Interaction
-import gg.mineral.practice.inventory.PracticeMenu
 import gg.mineral.practice.managers.GametypeManager
 import gg.mineral.practice.queue.Queuetype
 import gg.mineral.practice.queue.QueuetypeMenuEntry
@@ -15,7 +15,7 @@ import gg.mineral.practice.util.messages.CC
 import it.unimi.dsi.fastutil.objects.Object2IntLinkedOpenHashMap
 
 @ClickCancelled(true)
-open class LeaderboardMenu(protected val queuetype: Queuetype) : PracticeMenu() {
+open class LeaderboardMenu(protected val queuetype: Queuetype) : AsyncMenu() {
     protected open val menuEntries: Object2IntLinkedOpenHashMap<QueuetypeMenuEntry> by lazy { queuetype.menuEntries }
 
     override fun update() {
@@ -65,7 +65,7 @@ open class LeaderboardMenu(protected val queuetype: Queuetype) : PracticeMenu() 
                     entry.intValue + 18, item
                 ) { interaction: Interaction ->
                     interaction.profile
-                        .openMenu(CategorizedLeaderboardMenu(queuetype, menuEntry))
+                        .openMenu(CategorizedLeaderboardMenu(queuetype, menuEntry, this))
                 }
             }
         }

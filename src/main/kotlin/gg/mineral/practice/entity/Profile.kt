@@ -66,6 +66,7 @@ class Profile(player: Player) : ExtendedProfileData(player.name, player.uniqueId
             field = value
             playerStatus = if (value != null) PlayerStatus.FIGHTING
             else PlayerStatus.IDLE
+            if (value == null) this.inMatchCountdown = false
         }
 
     var scoreboard = DefaultScoreboard.INSTANCE
@@ -571,7 +572,7 @@ class Profile(player: Player) : ExtendedProfileData(player.name, player.uniqueId
         }
 
         for (request in receiver.recievedDuelRequests) {
-            if (request.sender.equals(this)) {
+            if (request.sender == this) {
                 message(ErrorMessages.DUEL_REQUEST_ALREADY_SENT)
                 return
             }
@@ -580,7 +581,7 @@ class Profile(player: Player) : ExtendedProfileData(player.name, player.uniqueId
         var sender: String = this.name
 
         party?.let {
-            if (!it.partyLeader.equals(this)) {
+            if (it.partyLeader != this) {
                 message(ErrorMessages.YOU_ARE_NOT_PARTY_LEADER)
                 return
             }

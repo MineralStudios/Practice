@@ -4,6 +4,8 @@ import gg.mineral.practice.util.messages.ErrorMessage
 import gg.mineral.practice.util.messages.Message
 
 object ErrorMessages {
+    val CANNOT_FORFEIT_RANKED: Message = ErrorMessage("You can not leave ranked matches.")
+
     // Arena
     val ARENA_ALREADY_EXISTS: Message = ErrorMessage("That arena already exists.")
     val ARENA_DOES_NOT_EXIST: Message = ErrorMessage("That arena does not exist.")

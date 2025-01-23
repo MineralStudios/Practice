@@ -3,14 +3,16 @@ package gg.mineral.practice.inventory.menus
 import gg.mineral.practice.category.Category
 import gg.mineral.practice.gametype.Gametype
 import gg.mineral.practice.inventory.ClickCancelled
+import gg.mineral.practice.inventory.Menu
 import gg.mineral.practice.managers.GametypeManager
 import gg.mineral.practice.queue.Queuetype
 import gg.mineral.practice.queue.QueuetypeMenuEntry
+import gg.mineral.practice.util.items.ItemStacks
 import gg.mineral.practice.util.messages.CC
 import it.unimi.dsi.fastutil.objects.Object2IntLinkedOpenHashMap
 
 @ClickCancelled(true)
-class CategorizedLeaderboardMenu(queuetype: Queuetype, private val category: Category) :
+class CategorizedLeaderboardMenu(queuetype: Queuetype, private val category: Category, private val prevMenu: Menu) :
     LeaderboardMenu(queuetype) {
     override val menuEntries: Object2IntLinkedOpenHashMap<QueuetypeMenuEntry> by lazy {
         val value = Object2IntLinkedOpenHashMap<QueuetypeMenuEntry>()
@@ -20,6 +22,13 @@ class CategorizedLeaderboardMenu(queuetype: Queuetype, private val category: Cat
     }
 
     override fun shouldSkip(menuEntry: QueuetypeMenuEntry) = menuEntry is Gametype && !menuEntry.inCategory
+
+    override fun update() {
+        super.update()
+        addOnNextRow(
+            13, ItemStacks.BACK
+        ) { viewer.openMenu(prevMenu) }
+    }
 
     override val title: String
         get() = CC.BLUE + category.displayName

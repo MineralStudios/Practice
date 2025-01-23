@@ -13,6 +13,7 @@ import gg.mineral.practice.commands.duel.AcceptCommand
 import gg.mineral.practice.commands.duel.DuelCommand
 import gg.mineral.practice.commands.events.EventCommand
 import gg.mineral.practice.commands.kit.LeaveCommand
+import gg.mineral.practice.commands.match.ForfeitCommand
 import gg.mineral.practice.commands.party.PartyCommand
 import gg.mineral.practice.commands.resolver.*
 import gg.mineral.practice.commands.settings.*
@@ -102,7 +103,8 @@ class PracticePlugin : JavaPlugin() {
                 LeaderboardsCommand(),
                 TournamentCommand(),
                 JoinCommand(),
-                BotTestingCommand()
+                BotTestingCommand(),
+                ForfeitCommand()
             )
             .context(Profile::class.java, ProfileContext())
             .context(

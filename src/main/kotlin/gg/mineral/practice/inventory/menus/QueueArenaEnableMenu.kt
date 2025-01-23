@@ -3,6 +3,7 @@ package gg.mineral.practice.inventory.menus
 import gg.mineral.practice.gametype.Gametype
 import gg.mineral.practice.inventory.ClickCancelled
 import gg.mineral.practice.inventory.Interaction
+import gg.mineral.practice.inventory.Menu
 import gg.mineral.practice.inventory.PracticeMenu
 import gg.mineral.practice.managers.ArenaManager
 import gg.mineral.practice.queue.Queuetype
@@ -15,7 +16,8 @@ import java.util.function.Consumer
 class QueueArenaEnableMenu(
     private val queuetype: Queuetype,
     private val gametype: Gametype,
-    private val queueInteraction: Consumer<Interaction>
+    private val queueInteraction: Consumer<Interaction>,
+    private val prevMenu: Menu
 ) : PracticeMenu() {
 
     override fun update() {
@@ -44,14 +46,18 @@ class QueueArenaEnableMenu(
             }
         }
 
-        setSlot(29, ItemStacks.DESELECT_ALL) {
+        val slot = addOnNextRow(
+            9, ItemStacks.BACK
+        ) { viewer.openMenu(prevMenu) }
+
+        addOnRow(slot, 2, ItemStacks.DESELECT_ALL) {
             queueSettings.enabledArenas.clear()
             reload()
         }
 
-        setSlot(31, ItemStacks.APPLY, queueInteraction)
+        addOnRow(slot, 4, ItemStacks.APPLY, queueInteraction)
 
-        setSlot(33, ItemStacks.SELECT_ALL) {
+        addOnRow(slot, 6, ItemStacks.SELECT_ALL) {
             queuetype.filterArenasByGametype(gametype)
                 .forEach { arenaId: Byte -> queueSettings.enableArena(arenaId, true) }
             reload()
