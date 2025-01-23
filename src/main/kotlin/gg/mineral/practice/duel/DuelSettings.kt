@@ -5,6 +5,7 @@ import gg.mineral.practice.gametype.Gametype
 import gg.mineral.practice.kit.Kit
 import gg.mineral.practice.managers.ArenaManager.arenas
 import gg.mineral.practice.managers.GametypeManager.gametypes
+import gg.mineral.practice.match.knockback.OldStyleKnockback
 import gg.mineral.practice.queue.Queuetype
 import gg.mineral.practice.util.items.ItemStacks
 import gg.mineral.practice.util.messages.CC
@@ -47,6 +48,11 @@ class DuelSettings(queuetype: Queuetype? = null, gametype: Gametype? = null) {
     var deadlyWater = false
     var regeneration = true
     var oldCombat = false
+        set(value) {
+            field = value
+            if (knockback == null && value) knockback = OldStyleKnockback()
+            else if (!value) knockback = null
+        }
     private var displayItem: ItemStack = ItemStacks.WOOD_AXE
 
     init {

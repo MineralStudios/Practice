@@ -1,6 +1,6 @@
 package gg.mineral.practice.util.config
 
-import gg.mineral.api.config.FileConfiguration
+import gg.mineral.practice.util.config.yaml.FileConfiguration
 import gg.mineral.practice.util.world.SpawnLocation
 
 class SpawnLocationProp(config: FileConfiguration, path: String, default: SpawnLocation) :

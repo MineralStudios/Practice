@@ -1,12 +1,12 @@
 package gg.mineral.practice.managers
 
-import gg.mineral.api.config.FileConfiguration
 import gg.mineral.practice.entity.ExtendedProfileData
 import gg.mineral.practice.entity.Profile
 import gg.mineral.practice.entity.ProfileData
 import gg.mineral.practice.entity.appender.PlayerAppender
 import gg.mineral.practice.inventory.menus.InventoryStatsMenu
 import gg.mineral.practice.util.config.SpawnLocationProp
+import gg.mineral.practice.util.config.yaml.FileConfiguration
 import gg.mineral.practice.util.messages.Message
 import gg.mineral.practice.util.world.Schematic
 import gg.mineral.practice.util.world.SpawnLocation

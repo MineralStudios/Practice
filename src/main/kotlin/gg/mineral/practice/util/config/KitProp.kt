@@ -2,8 +2,8 @@ package gg.mineral.practice.util.config
 
 
 import gg.mineral.api.collection.GlueList
-import gg.mineral.api.config.FileConfiguration
 import gg.mineral.practice.kit.Kit
+import gg.mineral.practice.util.config.yaml.FileConfiguration
 import gg.mineral.practice.util.items.ItemStacks
 import org.bukkit.inventory.ItemStack
 

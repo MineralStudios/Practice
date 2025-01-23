@@ -51,13 +51,16 @@ class MatchData private constructor() {
     var deadlyWater = false
     var regeneration = true
     var oldCombat = false
+        set(value) {
+            field = value
+            if (knockback == null && value) knockback = OldStyleKnockback()
+        }
     val ranked = false
     var enabledArenas: Byte2BooleanOpenHashMap = Byte2BooleanOpenHashMap()
     private var displayItem: ItemStack = ItemStacks.WOOD_AXE
 
     constructor(queuetype: Queuetype, gametype: Gametype, queueSettings: QueueSettings) : this(queuetype, gametype) {
         this.oldCombat = queueSettings.oldCombat
-        if (knockback == null && this.oldCombat) this.knockback = OldStyleKnockback()
         this.enabledArenas = Byte2BooleanOpenHashMap(queueSettings.enabledArenas)
     }
 
@@ -74,7 +77,6 @@ class MatchData private constructor() {
 
     constructor(queueEntry: QueueSettings.QueueEntry) : this(queueEntry.queuetype, queueEntry.gametype) {
         this.oldCombat = queueEntry.oldCombat
-        if (knockback == null && this.oldCombat) this.knockback = OldStyleKnockback()
     }
 
     constructor(duelSettings: DuelSettings) : this(duelSettings.queuetype, duelSettings.gametype) {

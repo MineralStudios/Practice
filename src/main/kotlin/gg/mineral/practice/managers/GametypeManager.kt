@@ -1,8 +1,8 @@
 package gg.mineral.practice.managers
 
-import gg.mineral.api.config.FileConfiguration
 import gg.mineral.practice.gametype.Gametype
 import gg.mineral.practice.managers.QueuetypeManager.queuetypes
+import gg.mineral.practice.util.config.yaml.FileConfiguration
 import it.unimi.dsi.fastutil.bytes.Byte2ObjectOpenHashMap
 
 object GametypeManager {
@@ -25,7 +25,7 @@ object GametypeManager {
     }
 
     fun load() {
-        val configSection = config.getConfigurationSection("Gametype.")
+        val configSection = config.getConfigurationSection("Gametype.") ?: return
 
         for (key in configSection.getKeys(false)) {
             if (key == null) continue

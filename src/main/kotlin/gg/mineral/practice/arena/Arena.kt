@@ -1,10 +1,10 @@
 package gg.mineral.practice.arena
 
-import gg.mineral.api.config.FileConfiguration
 import gg.mineral.practice.managers.ArenaManager
 import gg.mineral.practice.util.config.ItemStackProp
 import gg.mineral.practice.util.config.SpawnLocationProp
 import gg.mineral.practice.util.config.StringProp
+import gg.mineral.practice.util.config.yaml.FileConfiguration
 import gg.mineral.practice.util.items.ItemStacks
 import gg.mineral.practice.util.world.Schematic
 import gg.mineral.practice.util.world.SchematicFile

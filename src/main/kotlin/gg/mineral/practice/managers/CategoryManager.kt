@@ -1,8 +1,8 @@
 package gg.mineral.practice.managers
 
-import gg.mineral.api.config.FileConfiguration
 import gg.mineral.practice.category.Category
 import gg.mineral.practice.managers.QueuetypeManager.queuetypes
+import gg.mineral.practice.util.config.yaml.FileConfiguration
 import it.unimi.dsi.fastutil.bytes.Byte2ObjectOpenHashMap
 import org.bukkit.configuration.ConfigurationSection
 
@@ -31,7 +31,7 @@ object CategoryManager {
     }
 
     fun load() {
-        val configSection: ConfigurationSection = config.getConfigurationSection("Category.")
+        val configSection: ConfigurationSection = config.getConfigurationSection("Category.") ?: return
 
         for (key in configSection.getKeys(false)) {
             if (key == null) continue

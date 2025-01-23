@@ -1,7 +1,6 @@
 package gg.mineral.practice.gametype
 
 import gg.mineral.api.collection.GlueList
-import gg.mineral.api.config.FileConfiguration
 import gg.mineral.practice.arena.Arena
 import gg.mineral.practice.entity.ExtendedProfileData
 import gg.mineral.practice.entity.Profile
@@ -14,6 +13,7 @@ import gg.mineral.practice.managers.GametypeManager
 import gg.mineral.practice.queue.QueuetypeMenuEntry
 import gg.mineral.practice.util.collection.LeaderboardMap
 import gg.mineral.practice.util.config.*
+import gg.mineral.practice.util.config.yaml.FileConfiguration
 import gg.mineral.practice.util.items.ItemStacks
 import gg.mineral.practice.util.messages.CC
 import it.unimi.dsi.fastutil.bytes.ByteOpenHashSet

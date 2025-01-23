@@ -1,7 +1,6 @@
 package gg.mineral.practice.queue
 
 import gg.mineral.api.collection.GlueList
-import gg.mineral.api.config.FileConfiguration
 import gg.mineral.practice.arena.Arena
 import gg.mineral.practice.category.Category
 import gg.mineral.practice.entity.ProfileData
@@ -13,6 +12,7 @@ import gg.mineral.practice.util.config.BoolProp
 import gg.mineral.practice.util.config.IntProp
 import gg.mineral.practice.util.config.ItemStackProp
 import gg.mineral.practice.util.config.StringProp
+import gg.mineral.practice.util.config.yaml.FileConfiguration
 import gg.mineral.practice.util.items.ItemStacks
 import gg.mineral.practice.util.messages.CC
 import gg.mineral.server.combat.KnockbackProfile

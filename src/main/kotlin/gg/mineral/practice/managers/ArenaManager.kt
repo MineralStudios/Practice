@@ -1,7 +1,7 @@
 package gg.mineral.practice.managers
 
-import gg.mineral.api.config.FileConfiguration
 import gg.mineral.practice.arena.Arena
+import gg.mineral.practice.util.config.yaml.FileConfiguration
 import it.unimi.dsi.fastutil.bytes.Byte2ObjectOpenHashMap
 import org.bukkit.configuration.ConfigurationSection
 
@@ -26,7 +26,7 @@ object ArenaManager {
     }
 
     fun load() {
-        val configSection: ConfigurationSection = config.getConfigurationSection("Arena.")
+        val configSection: ConfigurationSection = config.getConfigurationSection("Arena.") ?: return
 
         for (key in configSection.getKeys(false)) {
             if (key == null) continue

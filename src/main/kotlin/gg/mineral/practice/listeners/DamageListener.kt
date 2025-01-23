@@ -72,9 +72,9 @@ class DamageListener : Listener, CommandSenderAppender {
 
     @EventHandler
     fun onPlayerDamageByPlayer(e: PlayerDamageByPlayerEvent) {
-        val attacker: Profile? = getProfile(
+        val attacker = getProfile(
             e.damager.uniqueId
-        ) { p -> p.playerStatus === PlayerStatus.FIGHTING }
+        ) { it.playerStatus === PlayerStatus.FIGHTING }
 
         if (attacker == null || attacker.match?.ended == true) {
             e.isCancelled = true
@@ -83,7 +83,7 @@ class DamageListener : Listener, CommandSenderAppender {
 
         val victim = getProfile(
             e.player.uniqueId
-        ) { p: Profile -> p.playerStatus === PlayerStatus.FIGHTING }
+        ) { it.playerStatus === PlayerStatus.FIGHTING }
 
         if (victim == null) {
             e.isCancelled = true

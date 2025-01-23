@@ -313,7 +313,7 @@ class Profile(player: Player) : ExtendedProfileData(player.name, player.uniqueId
         return kit
     }
 
-    fun getCustomKits(queuetype: Queuetype, gametype: Gametype): Int2ObjectOpenHashMap<Array<ItemStack?>>? {
+    fun getCustomKits(queuetype: Queuetype, gametype: Gametype): Int2ObjectOpenHashMap<Array<ItemStack?>> {
         val hash = (queuetype.id.toInt() shl 8 or gametype.id.toInt()).toShort()
         return getCustomKits(queuetype, gametype, hash)
     }
@@ -322,29 +322,22 @@ class Profile(player: Player) : ExtendedProfileData(player.name, player.uniqueId
         queuetype: Queuetype,
         gametype: Gametype,
         hash: Short
-    ): Int2ObjectOpenHashMap<Array<ItemStack?>>? {
-        var kitLoadouts = customKits[hash]
-
-        if (kitLoadouts != null) return kitLoadouts
+    ): Int2ObjectOpenHashMap<Array<ItemStack?>> {
+        val kitLoadouts = customKits.getOrDefault(hash, Int2ObjectOpenHashMap())
+        if (kitLoadouts.isNotEmpty()) return kitLoadouts
 
         val cs = playerConfig
             .getConfigurationSection(
                 (name + ".KitData."
                         + gametype.name + "." + queuetype.name)
-            )
-
-        if (cs == null) return null
-
-        kitLoadouts = Int2ObjectOpenHashMap()
+            ) ?: return kitLoadouts
 
         for (key in cs.getKeys(false)) {
             val cs1 = playerConfig
                 .getConfigurationSection(
                     (name + ".KitData."
                             + gametype.name + "." + queuetype.name + "." + key)
-                )
-
-            if (cs1 == null) continue
+                ) ?: continue
 
             kitLoadouts.put(key.toInt(), getCustomKit(gametype, cs1))
         }

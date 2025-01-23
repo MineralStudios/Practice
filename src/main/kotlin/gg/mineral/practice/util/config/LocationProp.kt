@@ -1,6 +1,6 @@
 package gg.mineral.practice.util.config
 
-import gg.mineral.api.config.FileConfiguration
+import gg.mineral.practice.util.config.yaml.FileConfiguration
 import org.bukkit.Bukkit
 import org.bukkit.Location
 

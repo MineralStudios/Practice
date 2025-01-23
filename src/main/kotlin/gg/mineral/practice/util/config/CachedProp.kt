@@ -1,7 +1,7 @@
 package gg.mineral.practice.util.config
 
-import gg.mineral.api.config.FileConfiguration
 
+import gg.mineral.practice.util.config.yaml.FileConfiguration
 import kotlin.properties.ReadWriteProperty
 import kotlin.reflect.KProperty
 
@@ -18,7 +18,7 @@ abstract class CachedProp<T>(
     override fun getValue(thisRef: Any?, property: KProperty<*>): T {
         if (cache == null)
             cache = readValue()
-        
+
         return cache!!
     }
 

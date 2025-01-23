@@ -29,6 +29,7 @@ import gg.mineral.practice.util.messages.CC
 import gg.mineral.practice.util.messages.impl.ErrorMessages
 import gg.mineral.practice.util.messages.impl.Strings
 import gg.mineral.practice.util.messages.impl.TextComponents
+import gg.mineral.server.combat.KnockbackProfileList
 import it.unimi.dsi.fastutil.objects.Object2IntOpenHashMap
 import it.unimi.dsi.fastutil.objects.Object2ObjectOpenHashMap
 import net.md_5.bungee.api.chat.ClickEvent
@@ -152,7 +153,11 @@ open class Match(
         stat(p) { it.clearHitCount() }
         p.dead = false
         p.player.maximumNoDamageTicks = data.noDamageTicks
-        p.player.setKnockback(data.knockback)
+        p.player.setKnockback(
+            data.knockback
+                ?: if (data.noDamageTicks <= 10) KnockbackProfileList.getComboKnockbackProfile() else KnockbackProfileList.getDefaultKnockbackProfile()
+        )
+        p.player.handle.backtrackSystem.isEnabled = data.oldCombat
         p.inventory.inventoryClickCancelled = false
         p.player.saturation = 20f
         p.player.foodLevel = 20
@@ -181,7 +186,6 @@ open class Match(
         setPotionEffects(p)
         setScoreboard(p)
         handleFollowers(p)
-        p.player.handle.backtrackSystem.isEnabled = data.oldCombat
     }
 
     private fun rideInvisibleArmorStand(profile: Profile) {

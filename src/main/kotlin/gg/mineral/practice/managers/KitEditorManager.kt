@@ -1,7 +1,7 @@
 package gg.mineral.practice.managers
 
-import gg.mineral.api.config.FileConfiguration
 import gg.mineral.practice.util.config.*
+import gg.mineral.practice.util.config.yaml.FileConfiguration
 import gg.mineral.practice.util.items.ItemStacks
 import gg.mineral.practice.util.world.Schematic
 import gg.mineral.practice.util.world.SchematicFile

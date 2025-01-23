@@ -1,7 +1,7 @@
 package gg.mineral.practice.managers
 
-import gg.mineral.api.config.FileConfiguration
 import gg.mineral.practice.queue.Queuetype
+import gg.mineral.practice.util.config.yaml.FileConfiguration
 import it.unimi.dsi.fastutil.bytes.Byte2ObjectOpenHashMap
 import org.bukkit.configuration.ConfigurationSection
 
@@ -23,7 +23,7 @@ object QueuetypeManager {
     }
 
     fun load() {
-        val configSection: ConfigurationSection = config.getConfigurationSection("Queue.")
+        val configSection: ConfigurationSection = config.getConfigurationSection("Queue.") ?: return
 
         for (key in configSection.getKeys(false)) {
             if (key == null) continue

@@ -1,12 +1,12 @@
 package gg.mineral.practice.category
 
-import gg.mineral.api.config.FileConfiguration
 import gg.mineral.practice.gametype.Gametype
 import gg.mineral.practice.managers.CategoryManager
 import gg.mineral.practice.managers.GametypeManager
 import gg.mineral.practice.queue.QueuetypeMenuEntry
 import gg.mineral.practice.util.config.ItemStackProp
 import gg.mineral.practice.util.config.StringProp
+import gg.mineral.practice.util.config.yaml.FileConfiguration
 import gg.mineral.practice.util.items.ItemStacks
 import it.unimi.dsi.fastutil.bytes.ByteOpenHashSet
 

@@ -1,10 +1,10 @@
 package gg.mineral.practice.managers
 
-import gg.mineral.api.config.FileConfiguration
 import gg.mineral.practice.util.config.BoolProp
 import gg.mineral.practice.util.config.IntProp
 import gg.mineral.practice.util.config.ItemStackProp
 import gg.mineral.practice.util.config.StringProp
+import gg.mineral.practice.util.config.yaml.FileConfiguration
 import gg.mineral.practice.util.items.ItemStacks
 
 object PlayerSettingsManager {
