@@ -74,6 +74,22 @@ class SchematicFile(
         ).b() as WorldServer
         internal.keepSpawnInMemory = false
         internal.savingDisabled = true
+        val gameRules = internal.gameRules
+        gameRules.set("doFireTick", "false")
+        gameRules.set("mobGriefing", "false")
+        gameRules.set("keepInventory", "false")
+        gameRules.set("doMobSpawning", "true")
+        gameRules.set("doMobLoot", "true")
+        gameRules.set("doTileDrops", "true")
+        gameRules.set("doEntityDrops", "true")
+        gameRules.set("commandBlockOutput", "false")
+        gameRules.set("naturalRegeneration", "true")
+        gameRules.set("doDaylightCycle", "false")
+        gameRules.set("logAdminCommands", "true")
+        gameRules.set("showDeathMessages", "true")
+        gameRules.set("randomTickSpeed", "3")
+        gameRules.set("sendCommandFeedback", "true")
+        gameRules.set("reducedDebugInfo", "false")
 
         internal.scoreboard = (getScoreboardManager().mainScoreboard as CraftScoreboard).handle
 

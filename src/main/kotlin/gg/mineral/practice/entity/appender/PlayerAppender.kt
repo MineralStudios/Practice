@@ -15,4 +15,11 @@ interface PlayerAppender {
 
     fun Player.isFake() =
         BotAPI.INSTANCE.isFakePlayer(this.uniqueId)
+
+    fun Player.isDay(): Boolean {
+        val time = this.playerTimeOffset % 24000
+        return time in 0..12299
+    }
+
+    fun Player.isNight() = !isDay()
 }

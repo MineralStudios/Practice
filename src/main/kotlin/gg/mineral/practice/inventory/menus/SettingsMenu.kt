@@ -1,16 +1,19 @@
 package gg.mineral.practice.inventory.menus
 
+import gg.mineral.practice.PracticePlugin
+import gg.mineral.practice.entity.appender.PlayerAppender
 import gg.mineral.practice.inventory.ClickCancelled
 import gg.mineral.practice.inventory.Interaction
 import gg.mineral.practice.inventory.PracticeMenu
 import gg.mineral.practice.util.CoreConnector
 import gg.mineral.practice.util.items.ItemStacks
 import gg.mineral.practice.util.messages.CC
+import org.bukkit.Bukkit
 import org.bukkit.Material
 import org.bukkit.inventory.ItemStack
 
 @ClickCancelled(true)
-class SettingsMenu : PracticeMenu() {
+class SettingsMenu : PracticeMenu(), PlayerAppender {
     override fun update() {
         setSlot(
             10,
@@ -73,17 +76,16 @@ class SettingsMenu : PracticeMenu() {
                 CC.WHITE + "Changes the" + CC.SECONDARY + " time" + CC.WHITE + ".",
                 " ",
                 CC.WHITE + "Currently:",
-                if (viewer.player.playerTime >= 14000)
+                if (viewer.player.isNight())
                     CC.PURPLE + "Night"
                 else
                     CC.GOLD + "Day",
                 CC.BOARD_SEPARATOR, CC.ACCENT + "Click to change value."
             )
                 .build()
-        ) { interaction: Interaction ->
-            val p = interaction.profile
-            p.player.performCommand(if (p.player.playerTime >= 14000) "day" else "night")
-            reload()
+        ) {
+            it.profile.player.performCommand(if (viewer.player.isNight()) "day" else "night")
+            Bukkit.getScheduler().runTaskLater(PracticePlugin.INSTANCE, { reload() }, 2)
         }
         setSlot(
             28,
