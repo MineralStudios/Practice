@@ -429,7 +429,6 @@ open class Match(
             for (spectator in spectators) {
                 spectator.player.sendMessage(CC.SEPARATOR)
                 spectator.player.sendMessage(Strings.MATCH_RESULTS)
-                spectator.player.spigot().sendMessage(winMessage, TextComponents.SPLITTER, loseMessage)
                 if (data.ranked && eloMessage != null && eloMessage2 != null)
                     spectator.player.spigot()
                         .sendMessage(winMessage, eloMessage, TextComponents.SPLITTER, loseMessage, eloMessage2)
