@@ -212,20 +212,20 @@ class MechanicsMenu(private val prevMenu: Menu? = null, val submitAction: Submit
             reload()
         }
 
-        prevMenu?.let {
-            setSlot(45, ItemStacks.BACK) { interaction: Interaction ->
-                interaction.profile.openMenu(it)
-            }
-        }
-
-        setSlot(42, ItemStacks.RESET_SETTINGS) {
+        val slot = addOnNextRow(15, ItemStacks.RESET_SETTINGS) {
             viewer.resetDuelSettings()
             reload()
         }
 
-        setSlot(40, ItemStacks.SUBMIT) {
+        addOnRow(slot, 4, ItemStacks.SUBMIT) {
             viewer.player.closeInventory()
             submitAction.execute(viewer)
+        }
+
+        prevMenu?.let {
+            addOnRow(slot, 2, ItemStacks.BACK) { interaction: Interaction ->
+                interaction.profile.openMenu(it)
+            }
         }
     }
 
