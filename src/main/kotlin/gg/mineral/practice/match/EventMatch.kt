@@ -69,7 +69,7 @@ class EventMatch(profile1: Profile?, profile2: Profile?, matchData: MatchData, p
             val eventArena = arenas[event.eventArenaId]
 
             if (!event.ended) {
-                PlayerUtil.teleport(attacker, eventArena.waitingLocation.bukkit(this.world))
+                eventArena?.waitingLocation?.bukkit(this.world)?.let { PlayerUtil.teleport(attacker, it) }
                 attacker.playerStatus = PlayerStatus.IDLE
                 attacker.inventory.setInventoryForEvent()
             } else {

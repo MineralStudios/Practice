@@ -86,7 +86,7 @@ open class TeamMatch : Match, MatchAppender {
         if (noArenas()) return
         if (!registerMatch(this)) return
 
-        val arena = arenas[data.arenaId]
+        val arena = arenas[data.arenaId] ?: throw NullPointerException("Arena not found")
         val location1 = arena.location1.bukkit(world)
         val location2 = arena.location2.bukkit(world)
         setupLocations(location1, location2)

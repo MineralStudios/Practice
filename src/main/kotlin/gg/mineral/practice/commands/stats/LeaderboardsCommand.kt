@@ -11,5 +11,11 @@ import gg.mineral.practice.managers.QueuetypeManager.queuetypes
 class LeaderboardsCommand {
     @Execute
     fun execute(@Context profile: Profile) =
-        queuetypes.values.first { it.ranked }.let { queuetype -> profile.openMenu(LeaderboardMenu(queuetype)) }
+        queuetypes.values.first { it?.ranked == true }.let { queuetype ->
+            queuetype?.let {
+                LeaderboardMenu(
+                    it
+                )
+            }?.let { profile.openMenu(it) }
+        }
 }

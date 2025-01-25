@@ -62,7 +62,8 @@ class Gametype(val name: String, val id: Byte) : QueuetypeMenuEntry {
 
     val arenas by lazy {
         val set = ByteOpenHashSet()
-        for (a in ArenaManager.arenas.values) if (config.getBoolean(path + "Arenas." + a.name, false)) set.add(a.id)
+        ArenaManager.arenas.values.filterNotNull().filter { config.getBoolean(path + "Arenas." + it.name, false) }
+            .forEach { set.add(it.id) }
         set
     }
 
@@ -110,7 +111,7 @@ class Gametype(val name: String, val id: Byte) : QueuetypeMenuEntry {
 
             for (profile in profiles) {
                 val elo = eloCache.getInt(profile)
-                
+
                 synchronized(eloCache) {
                     if (eloCache.containsKey(profile)) map.put(profile.uuid, elo)
                 }

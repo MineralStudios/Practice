@@ -17,11 +17,11 @@ class SelectModeMenu(private val action: SubmitAction) : PracticeMenu() {
             val p = interaction.profile
             p.resetDuelSettings()
             val gametype by lazy { p.duelSettings.gametype }
-            val queuetype by lazy { p.duelSettings.queuetype ?: queuetypes.values.first { it.unranked } }
+            val queuetype by lazy { p.duelSettings.queuetype ?: queuetypes.values.first { it?.unranked == true } }
             p.openMenu(
                 SelectExistingKitMenu(
                     QueueArenaEnableMenu(
-                        queuetype?.let { gametype?.let { it1 -> it.filterArenasByGametype(it1) } ?: queuetype.arenas }
+                        queuetype?.let { gametype?.let { it1 -> it.filterArenasByGametype(it1) } ?: it.arenas }
                             ?: gametype?.arenas ?: arenas.keys,
                         { action.execute(viewer) },
                         this

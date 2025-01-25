@@ -161,6 +161,7 @@ class PlayerInventory(var holder: Profile) :
         }
 
         for (queuetype in queuetypes.values) {
+            queuetype ?: continue
             if (!queuetype.unranked) continue
 
             val item = ItemBuilder(queuetype.displayItem)
@@ -196,6 +197,7 @@ class PlayerInventory(var holder: Profile) :
         this.clear()
 
         for (queuetype in queuetypes.values) {
+            queuetype ?: continue
             val item = ItemBuilder(queuetype.displayItem)
                 .name(CC.SECONDARY + CC.B + queuetype.displayName)
                 .lore(CC.ACCENT + "Right click to queue.").build()

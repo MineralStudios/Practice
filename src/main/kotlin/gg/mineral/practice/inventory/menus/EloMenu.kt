@@ -61,7 +61,7 @@ open class EloMenu(protected var arg: ProfileData, protected var queuetype: Queu
                 val sb = GlueList<String>()
                 sb.add(CC.SECONDARY + "Includes:")
 
-                menuEntry.gametypes.map { GametypeManager.gametypes[it] }
+                menuEntry.gametypes.mapNotNull { GametypeManager.gametypes[it] }
                     .forEach { sb.add(CC.WHITE + it.displayName) }
 
                 sb.add(" ")

@@ -223,10 +223,10 @@ class GametypeCommand : CommandSenderAppender {
         val iterator = gametypes.values.iterator()
 
         while (iterator.hasNext()) {
-            val gametype = iterator.next()
-            sb.append(CC.GREEN).append(gametype.name)
-
-            if (iterator.hasNext()) sb.append(CC.GRAY).append(", ")
+            iterator.next()?.let {
+                sb.append(CC.GREEN).append(it.name)
+                if (iterator.hasNext()) sb.append(CC.GRAY).append(", ")
+            }
         }
 
         sb.append(CC.GRAY).append("]")
@@ -262,7 +262,7 @@ class GametypeCommand : CommandSenderAppender {
 
     @Execute(name = "enablearenaforall")
     fun executeEnableArenaForAll(@Context sender: CommandSender, @Arg arena: Arena, @Arg toggled: Boolean) {
-        for (gametype in gametypes.values) gametype.enableArena(arena, toggled)
+        for (gametype in gametypes.values) gametype?.enableArena(arena, toggled)
         sender.send(
             ChatMessages.GAMETYPE_ARENA_FOR_ALL_SET.clone().replace("%arena%", arena.name).replace(
                 "%toggled%",

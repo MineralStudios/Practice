@@ -10,6 +10,7 @@ import gg.mineral.practice.arena.Arena
 import gg.mineral.practice.managers.ArenaManager
 import gg.mineral.practice.util.messages.impl.ErrorMessages
 import org.bukkit.command.CommandSender
+import java.util.*
 
 
 class ArenaResolver : ArgumentResolver<CommandSender, Arena>() {
@@ -28,6 +29,6 @@ class ArenaResolver : ArgumentResolver<CommandSender, Arena>() {
         invocation: Invocation<CommandSender>,
         argument: Argument<Arena>,
         context: SuggestionContext
-    ): SuggestionResult = ArenaManager.arenas.values.stream()
-        .map { it.name }.collect(SuggestionResult.collector())
+    ): SuggestionResult = ArenaManager.arenas.values.stream().filter(Objects::nonNull)
+        .map { it!!.name }.collect(SuggestionResult.collector())
 }

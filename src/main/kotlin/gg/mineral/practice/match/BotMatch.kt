@@ -34,7 +34,7 @@ class BotMatch(profile1: Profile, config: BotConfiguration, matchData: MatchData
         if (noArenas()) return
 
         registerMatch(this)
-        val arena = arenas[data.arenaId]
+        val arena = arenas[data.arenaId] ?: throw NullPointerException("Arena not found")
         val location1 = arena.location1.bukkit(world)
         val location2 = arena.location2.bukkit(world)
 
@@ -47,7 +47,7 @@ class BotMatch(profile1: Profile, config: BotConfiguration, matchData: MatchData
 
         this.profile2 = getOrCreateProfile(bukkitPl)
         addParticipants(profile2!!)
-        
+
         handleOpponentMessages()
         startMatchTimeLimit()
         startCountdown()

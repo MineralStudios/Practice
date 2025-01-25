@@ -13,4 +13,8 @@ class Kit(
         contents: Array<ItemStack?> = arrayOfNulls(36),
         armourContents: Array<ItemStack?> = arrayOfNulls(4)
     ) : this("Custom", contents, armourContents)
+
+    companion object {
+        val emptyKit = Kit("Empty")
+    }
 }

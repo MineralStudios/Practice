@@ -20,7 +20,7 @@ class Category(val name: String, val id: Byte) : QueuetypeMenuEntry {
             val iterator = gametypes.iterator()
             while (iterator.hasNext()) {
                 val gametypeId = iterator.nextByte()
-                if (GametypeManager.gametypes[gametypeId].botsEnabled) return true
+                if (GametypeManager.gametypes[gametypeId]?.botsEnabled == true) return true
             }
             return false
         }
@@ -28,7 +28,11 @@ class Category(val name: String, val id: Byte) : QueuetypeMenuEntry {
     val gametypes by lazy {
         val set = ByteOpenHashSet()
         for (gametype in GametypeManager.gametypes.values)
-            if (gametype.inCategory && gametype.categoryName.equals(name, ignoreCase = true)) set.add(gametype.id)
+            if (gametype != null && gametype.inCategory && gametype.categoryName.equals(
+                    name,
+                    ignoreCase = true
+                )
+            ) set.add(gametype.id)
         set
     }
 

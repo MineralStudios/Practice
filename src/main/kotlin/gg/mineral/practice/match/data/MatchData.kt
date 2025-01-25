@@ -91,10 +91,7 @@ class MatchData private constructor() {
     ) {
         this.enabledArenas = enabledArenas
         this.arenaId = nextArenaIdFiltered(arenas.keys)
-        this.kit = if (duelSettings.kit == null)
-            GametypeManager.gametypes.get(0.toByte()).kit
-        else
-            duelSettings.kit!!
+        this.kit = duelSettings.kit ?: GametypeManager.gametypes.get(0.toByte())?.kit ?: Kit.emptyKit
         this.knockback = duelSettings.knockback
         this.noDamageTicks = duelSettings.noDamageTicks
         this.hunger = duelSettings.hunger

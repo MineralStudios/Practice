@@ -7,18 +7,18 @@ import org.bukkit.configuration.ConfigurationSection
 
 object QueuetypeManager {
     val config: FileConfiguration = FileConfiguration("queues.yml", "plugins/Practice")
-    var queuetypes: Byte2ObjectOpenHashMap<Queuetype> = Byte2ObjectOpenHashMap()
+    var queuetypes: Byte2ObjectOpenHashMap<Queuetype?> = Byte2ObjectOpenHashMap()
     var CURRENT_ID: Byte = 0
 
     fun registerQueuetype(queuetype: Queuetype): Queuetype? = queuetypes.put(queuetype.id, queuetype)
 
-    fun remove(queuetype: Queuetype) {
-        queuetypes.remove(queuetype.id)
+    fun remove(queuetype: Queuetype): Queuetype? {
         queuetype.delete()
+        return queuetypes.remove(queuetype.id)
     }
 
     fun getQueuetypeByName(string: String): Queuetype? {
-        for (queuetype in queuetypes.values) if (queuetype.name.equals(string, ignoreCase = true)) return queuetype
+        for (queuetype in queuetypes.values) if (queuetype?.name.equals(string, ignoreCase = true)) return queuetype
         return null
     }
 

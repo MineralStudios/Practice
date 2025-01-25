@@ -86,7 +86,7 @@ open class Match(
         }
 
     open fun generateWorld(): World {
-        val arena = arenas[data.arenaId]
+        val arena = arenas[data.arenaId] ?: throw NullPointerException("Arena not found")
         return arena.generate()
     }
 
@@ -327,7 +327,7 @@ open class Match(
     open fun start() {
         if (noArenas()) return
         if (!registerMatch(this)) return
-        val arena = arenas[data.arenaId]
+        val arena = arenas[data.arenaId] ?: throw NullPointerException("Arena not found")
         val location1 = arena.location1.bukkit(world)
         val location2 = arena.location2.bukkit(world)
 

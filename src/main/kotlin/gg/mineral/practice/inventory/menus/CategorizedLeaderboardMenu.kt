@@ -16,7 +16,7 @@ class CategorizedLeaderboardMenu(queuetype: Queuetype, private val category: Cat
     LeaderboardMenu(queuetype) {
     override val menuEntries: Object2IntLinkedOpenHashMap<QueuetypeMenuEntry> by lazy {
         val value = Object2IntLinkedOpenHashMap<QueuetypeMenuEntry>()
-        category.gametypes.map { GametypeManager.gametypes[it] }
+        category.gametypes.mapNotNull { GametypeManager.gametypes[it] }
             .forEach { if (it.inCategory) value.put(it, queuetype.menuEntries.getInt(it)) }
         value
     }

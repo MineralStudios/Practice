@@ -20,6 +20,8 @@ class QueueManagerMenu : PracticeMenu() {
             val g = gametypes[queueEntry.gametype.id]
             val q = queuetypes[queueEntry.queuetype.id]
 
+            if (g == null || q == null) continue
+
             val categoryName = if (g.categoryName.isEmpty()) g.categoryName + " " else ""
 
             val item = ItemBuilder(g.displayItem)

@@ -1,6 +1,7 @@
 package gg.mineral.practice.inventory.menus
 
 import gg.mineral.practice.inventory.*
+import gg.mineral.practice.kit.Kit
 import gg.mineral.practice.managers.ArenaManager.arenas
 import gg.mineral.practice.managers.GametypeManager.gametypes
 import gg.mineral.practice.util.items.ItemStacks
@@ -22,7 +23,7 @@ class MechanicsMenu(private val prevMenu: Menu? = null, val submitAction: Submit
         else
             duelSettings.knockback
 
-        val kit = duelSettings.kit ?: gametypes[0.toByte()].kit
+        val kit = duelSettings.kit ?: gametypes[0.toByte()]?.kit ?: Kit.emptyKit
 
         setSlot(
             10,

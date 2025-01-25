@@ -10,6 +10,7 @@ import gg.mineral.practice.category.Category
 import gg.mineral.practice.managers.CategoryManager
 import gg.mineral.practice.util.messages.impl.ErrorMessages
 import org.bukkit.command.CommandSender
+import java.util.*
 
 class CategoryResolver : ArgumentResolver<CommandSender, Category>() {
     override fun parse(
@@ -27,6 +28,6 @@ class CategoryResolver : ArgumentResolver<CommandSender, Category>() {
         invocation: Invocation<CommandSender>,
         argument: Argument<Category>,
         context: SuggestionContext
-    ): SuggestionResult = CategoryManager.categories.values.stream()
-        .map { it.name }.collect(SuggestionResult.collector())
+    ): SuggestionResult = CategoryManager.categories.values.stream().filter(Objects::nonNull)
+        .map { it!!.name }.collect(SuggestionResult.collector())
 }

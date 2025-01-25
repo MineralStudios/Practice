@@ -23,6 +23,7 @@ open class SelectExistingKitMenu(
         clear()
 
         for (g in GametypeManager.gametypes.values) {
+            g ?: continue
             if (g.inCategory) continue
             val item: ItemStack = ItemBuilder(g.displayItem)
                 .name(CC.SECONDARY + CC.B + g.displayName).lore(CC.ACCENT + "Click to select.").build()
@@ -35,13 +36,14 @@ open class SelectExistingKitMenu(
         }
 
         for (c in CategoryManager.categories.values) {
+            c ?: continue
             val itemBuild: ItemBuilder = ItemBuilder(c.displayItem)
                 .name(CC.SECONDARY + CC.B + c.displayName)
 
             val sb: GlueList<String> = GlueList<String>()
             sb.add(CC.SECONDARY + "Includes:")
 
-            c.gametypes.map { GametypeManager.gametypes[it] }
+            c.gametypes.mapNotNull { GametypeManager.gametypes[it] }
                 .forEach { sb.add(CC.WHITE + it.displayName) }
 
             sb.add(" ")

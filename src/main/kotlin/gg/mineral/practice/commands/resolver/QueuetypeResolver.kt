@@ -10,6 +10,7 @@ import gg.mineral.practice.managers.QueuetypeManager
 import gg.mineral.practice.queue.Queuetype
 import gg.mineral.practice.util.messages.impl.ErrorMessages
 import org.bukkit.command.CommandSender
+import java.util.*
 
 class QueuetypeResolver : ArgumentResolver<CommandSender, Queuetype>() {
     override fun parse(
@@ -27,6 +28,6 @@ class QueuetypeResolver : ArgumentResolver<CommandSender, Queuetype>() {
         invocation: Invocation<CommandSender>,
         argument: Argument<Queuetype>,
         context: SuggestionContext
-    ): SuggestionResult = QueuetypeManager.queuetypes.values.stream()
-        .map { it.name }.collect(SuggestionResult.collector())
+    ): SuggestionResult = QueuetypeManager.queuetypes.values.stream().filter(Objects::nonNull)
+        .map { it!!.name }.collect(SuggestionResult.collector())
 }

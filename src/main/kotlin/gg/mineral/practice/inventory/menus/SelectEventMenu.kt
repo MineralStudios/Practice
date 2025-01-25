@@ -12,6 +12,7 @@ import gg.mineral.practice.util.messages.impl.ErrorMessages
 class SelectEventMenu : PracticeMenu() {
     override fun update() {
         for (g in gametypes.values) {
+            g ?: continue
             if (!g.event) continue
 
             val item = ItemBuilder(g.displayItem)

@@ -76,9 +76,10 @@ class ArenaCommand : CommandSenderAppender, LocationAppender {
         val iterator = arenas.values.iterator()
 
         while (iterator.hasNext()) {
-            val a = iterator.next()
-            sb.append(CC.GREEN).append(a.name)
-            if (iterator.hasNext()) sb.append(CC.GRAY).append(", ")
+            iterator.next()?.let {
+                sb.append(CC.GREEN).append(it.name)
+                if (iterator.hasNext()) sb.append(CC.GRAY).append(", ")
+            }
         }
 
         sb.append(CC.GRAY).append("]")

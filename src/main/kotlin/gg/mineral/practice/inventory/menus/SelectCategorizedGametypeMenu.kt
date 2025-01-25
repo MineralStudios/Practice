@@ -17,7 +17,7 @@ class SelectCategorizedGametypeMenu(queuetype: Queuetype, val category: Category
 
     override fun setMenuEntries(): Object2IntLinkedOpenHashMap<QueuetypeMenuEntry> {
         val menuEntries = Object2IntLinkedOpenHashMap<QueuetypeMenuEntry>()
-        category.gametypes.map { GametypeManager.gametypes[it] }.forEach { gametype ->
+        category.gametypes.mapNotNull { GametypeManager.gametypes[it] }.forEach { gametype ->
             if (gametype.inCategory) menuEntries.put(
                 gametype,
                 queuetype.menuEntries.getInt(gametype)

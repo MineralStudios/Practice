@@ -107,9 +107,10 @@ class QueuetypeCommand : CommandSenderAppender {
         val queuetypes = queuetypes.values.iterator()
 
         while (queuetypes.hasNext()) {
-            val q = queuetypes.next()
-            sb.append(CC.GREEN + q.name)
-            if (queuetypes.hasNext()) sb.append(CC.GRAY + ", ")
+            queuetypes.next()?.let {
+                sb.append(CC.GREEN + it.name)
+                if (queuetypes.hasNext()) sb.append(CC.GRAY + ", ")
+            }
         }
 
         sb.append(CC.GRAY + "]")

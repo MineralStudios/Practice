@@ -15,11 +15,11 @@ class EloCommand {
     @Execute
     fun execute(@Context profile: Profile, @Arg profileData: Optional<ProfileData>) {
         // TODO: Support multiple ranked queuetypes
-        queuetypes.values.first { it.ranked }.let { queuetype ->
+        queuetypes.values.first { it?.ranked == true }.let { queuetype ->
             profileData.ifPresentOrElse({ eloProfile ->
-                profile.openMenu(EloMenu(eloProfile, queuetype))
+                queuetype?.let { EloMenu(eloProfile, it) }?.let { profile.openMenu(it) }
             }, {
-                profile.openMenu(EloMenu(profile, queuetype))
+                queuetype?.let { EloMenu(profile, it) }?.let { profile.openMenu(it) }
             })
         }
     }

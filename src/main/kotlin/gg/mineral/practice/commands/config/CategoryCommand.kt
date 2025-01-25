@@ -92,10 +92,10 @@ class CategoryCommand : CommandSenderAppender {
         val categoryIter = categories.values.iterator()
 
         while (categoryIter.hasNext()) {
-            val c = categoryIter.next()
-            sb.append(CC.GREEN + c.name)
-
-            if (categoryIter.hasNext()) sb.append(CC.GRAY + ", ")
+            categoryIter.next()?.let {
+                sb.append(CC.GREEN + it.name)
+                if (categoryIter.hasNext()) sb.append(CC.GRAY + ", ")
+            }
         }
 
         sb.append(CC.GRAY + "]")

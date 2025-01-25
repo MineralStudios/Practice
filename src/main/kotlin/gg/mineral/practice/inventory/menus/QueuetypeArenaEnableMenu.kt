@@ -19,6 +19,7 @@ class QueuetypeArenaEnableMenu(val queuetype: Queuetype) : PracticeMenu() {
         val arenas = arenas.values
 
         for (a in arenas) {
+            a ?: continue
             val arenaEnabled = queuetype.arenas.contains(a.id)
             val color = if (arenaEnabled) ChatColor.GREEN else ChatColor.RED
 

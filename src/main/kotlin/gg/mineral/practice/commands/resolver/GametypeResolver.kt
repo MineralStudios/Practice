@@ -10,6 +10,7 @@ import gg.mineral.practice.gametype.Gametype
 import gg.mineral.practice.managers.GametypeManager
 import gg.mineral.practice.util.messages.impl.ErrorMessages
 import org.bukkit.command.CommandSender
+import java.util.*
 
 class GametypeResolver : ArgumentResolver<CommandSender, Gametype>() {
     override fun parse(
@@ -27,6 +28,6 @@ class GametypeResolver : ArgumentResolver<CommandSender, Gametype>() {
         invocation: Invocation<CommandSender>,
         argument: Argument<Gametype>,
         context: SuggestionContext
-    ): SuggestionResult = GametypeManager.gametypes.values.stream()
-        .map { it.name }.collect(SuggestionResult.collector())
+    ): SuggestionResult = GametypeManager.gametypes.values.stream().filter(Objects::nonNull)
+        .map { it!!.name }.collect(SuggestionResult.collector())
 }

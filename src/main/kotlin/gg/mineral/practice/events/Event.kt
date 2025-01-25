@@ -37,7 +37,7 @@ class Event(hostProfile: Profile, val eventArenaId: Byte) : Spectatable {
         this.matchData = MatchData(duelSettings, enabledArenas)
         this.host = hostProfile.name
         val arena = ArenaManager.arenas.get(eventArenaId)
-        this.world = arena.generate()
+        this.world = arena?.generate() ?: throw NullPointerException("Arena not found")
         this.addPlayer(hostProfile)
     }
 
@@ -54,7 +54,8 @@ class Event(hostProfile: Profile, val eventArenaId: Byte) : Spectatable {
 
         val eventArena = ArenaManager.arenas.get(eventArenaId)
 
-        PlayerUtil.teleport(profile, eventArena.waitingLocation.bukkit(this.world))
+        eventArena?.waitingLocation?.bukkit(this.world)?.let { PlayerUtil.teleport(profile, it) }
+            ?: throw NullPointerException("Arena not found")
         profile.event = this
         participants.add(profile)
 

@@ -21,6 +21,7 @@ class GametypeArenaEnableMenu(private val gametype: Gametype) : PracticeMenu() {
         numberOfArenas = ArenaManager.arenas.size
 
         for (a in arenas) {
+            a ?: continue
             val arenaEnabled = gametype.arenas.contains(a.id)
             val color = if (arenaEnabled) ChatColor.GREEN else ChatColor.RED
 

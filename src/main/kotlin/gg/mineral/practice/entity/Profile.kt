@@ -560,7 +560,8 @@ class Profile(player: Player) : ExtendedProfileData(player.name, player.uniqueId
             PlayerUtil.teleport(
                 this,
                 if (it is Event)
-                    arenas[it.eventArenaId].waitingLocation.bukkit(it.world)
+                    arenas[it.eventArenaId]?.waitingLocation?.bukkit(it.world)
+                        ?: throw NullPointerException("Event arena not found")
                 else
                     toBeSpectated.player.location
             )
@@ -578,8 +579,15 @@ class Profile(player: Player) : ExtendedProfileData(player.name, player.uniqueId
             PlayerUtil.teleport(
                 this,
                 when (it) {
-                    is Event -> arenas[it.eventArenaId].waitingLocation.bukkit(it.world)
-                    is Match -> arenas[it.data.arenaId].location1.bukkit(it.world)
+                    is Event -> arenas[it.eventArenaId]?.waitingLocation?.bukkit(it.world)
+                        ?: throw NullPointerException(
+                            "Event arena not found"
+                        )
+
+                    is Match -> arenas[it.data.arenaId]?.location1?.bukkit(it.world) ?: throw NullPointerException(
+                        "Arena not found"
+                    )
+
                     is SpectatableArena -> it.arena.location1.bukkit(it.world)
                     else -> throw IllegalArgumentException("Invalid spectatable type")
                 }

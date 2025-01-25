@@ -80,7 +80,7 @@ class DuelSettings(queuetype: Queuetype? = null, gametype: Gametype? = null) {
         else
             knockback!!
 
-        val kit = if (this.kit == null) gametypes[0.toByte()].kit else kit!!
+        val kit = this.kit ?: kit ?: gametypes[0.toByte()]?.kit ?: Kit.emptyKit
 
         sb.append(CC.GREEN).append("Kit: ").append(kit.name)
         sb.append(newLine)

@@ -1,7 +1,6 @@
 package gg.mineral.practice.queue
 
 import gg.mineral.api.collection.GlueList
-import gg.mineral.bot.api.configuration.BotConfiguration
 import gg.mineral.practice.bots.Difficulty
 import gg.mineral.practice.entity.Profile
 import gg.mineral.practice.gametype.Gametype
@@ -70,12 +69,12 @@ object QueueSystem {
             val teamBotDifficulty = queueSettings.teammateBotDifficulty
             val opponentBotDifficulty = queueSettings.opponentBotDifficulty
             val teamBotsNeeded = teamSize - entity.profiles.size
-            val teamBots: GlueList<BotConfiguration> = GlueList<BotConfiguration>(teamBotsNeeded)
-            val opponentBots = GlueList<BotConfiguration>(teamSize)
-            for (i in 0..<teamBotsNeeded) teamBots.add(teamBotDifficulty.getConfiguration(queueSettings))
-
-            for (i in 0..<teamSize) opponentBots.add(opponentBotDifficulty.getConfiguration(queueSettings))
-
+            val teamBots = teamBotsNeeded.rangeTo(0)
+                .map { teamBotDifficulty.getConfiguration(queueSettings) }
+                .toList()
+            val opponentBots = teamSize.rangeTo(0)
+                .map { opponentBotDifficulty.getConfiguration(queueSettings) }
+                .toList()
             BotTeamMatch(entity.profiles, LinkedList(), teamBots, opponentBots, data).start()
             return true
         }
@@ -247,8 +246,7 @@ object QueueSystem {
 
         if (bots) {
             teamA.addAll(teamB)
-            val teamBBots = GlueList<BotConfiguration>()
-            for (i in 0..<teamSize) teamBBots.add(difficulty.getConfiguration())
+            val teamBBots = teamSize.rangeTo(0).map { difficulty.getConfiguration() }.toList()
             BotTeamMatch(teamA, LinkedList(), GlueList(), teamBBots, matchData).start()
             return
         }

@@ -308,7 +308,7 @@ open class SelectGametypeMenu(
                 val sb = GlueList<String>()
                 sb.add(CC.SECONDARY + "Includes:")
 
-                menuEntry.gametypes.map { GametypeManager.gametypes[it] }
+                menuEntry.gametypes.mapNotNull { GametypeManager.gametypes[it] }
                     .forEach {
                         val isQueued = QueueSystem.getQueueEntry(viewer, queuetype, it) != null
                         sb.add(CC.WHITE + it.displayName + (if (isQueued) " - " + CC.GREEN + "Queued" else ""))

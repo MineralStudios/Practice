@@ -16,7 +16,7 @@ class SelectCategorizedExistingKitMenu(private val category: Category, menu: Pra
         get() = CC.BLUE + category.name
 
     override fun update() {
-        category.gametypes.map { GametypeManager.gametypes[it] }.forEach { g ->
+        category.gametypes.mapNotNull { GametypeManager.gametypes[it] }.forEach { g ->
             val item: ItemStack = ItemBuilder(g.displayItem.clone())
                 .name(CC.SECONDARY + CC.B + g.displayName).lore(CC.ACCENT + "Click to select.").build()
             add(item) {

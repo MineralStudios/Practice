@@ -8,16 +8,15 @@ import org.bukkit.configuration.ConfigurationSection
 
 object CategoryManager {
     val config: FileConfiguration = FileConfiguration("category.yml", "plugins/Practice")
-    val categories: Byte2ObjectOpenHashMap<Category> = Byte2ObjectOpenHashMap()
+    val categories: Byte2ObjectOpenHashMap<Category?> = Byte2ObjectOpenHashMap()
     var CURRENT_ID: Byte = 0
 
     fun registerCategory(category: Category): Category? = categories.put(category.id, category)
 
-    fun remove(category: Category) {
-        categories.remove(category.id)
+    fun remove(category: Category): Category? {
         category.delete()
-
-        for (queuetype in queuetypes.values) queuetype.menuEntries.removeInt(category)
+        for (queuetype in queuetypes.values) queuetype?.menuEntries?.removeInt(category)
+        return categories.remove(category.id)
     }
 
     fun contains(category: Category): Boolean {
@@ -26,7 +25,7 @@ object CategoryManager {
     }
 
     fun getCategoryByName(string: String): Category? {
-        for (category in categories.values) if (category.name.equals(string, ignoreCase = true)) return category
+        for (category in categories.values) if (category?.name.equals(string, ignoreCase = true)) return category
         return null
     }
 

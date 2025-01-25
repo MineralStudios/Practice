@@ -4,7 +4,6 @@ import gg.mineral.practice.inventory.ClickCancelled
 import gg.mineral.practice.inventory.Interaction
 import gg.mineral.practice.inventory.PracticeMenu
 import gg.mineral.practice.managers.QueuetypeManager.queuetypes
-import gg.mineral.practice.queue.Queuetype
 import gg.mineral.practice.util.items.ItemBuilder
 import gg.mineral.practice.util.messages.CC
 import org.bukkit.Material
@@ -18,7 +17,7 @@ class SelectQueuetypeMenu(private val type: SelectGametypeMenu.Type) : PracticeM
         setSlot(18, ItemStack(Material.AIR))
         val queueCount: Int = queuetypes.size
         val horizontalSpacing = 9 / queueCount
-        val queuetypeArray = queuetypes.values.toTypedArray<Queuetype>()
+        val queuetypeArray = queuetypes.values.filterNotNull().toTypedArray()
         for (i in 0..<queueCount) {
             val q = queuetypeArray[i]
             addAfter(

@@ -87,17 +87,17 @@ class Queuetype(val name: String, val id: Byte) {
         // TODO: move to queuetype.yml
         val gametypeConfig = GametypeManager.config
 
-        for (gametype in GametypeManager.gametypes.values) {
-            if (!gametypeConfig.getBoolean("Gametype.${gametype.name}.$name.Enabled", false)) continue
-            map[gametype] = gametypeConfig.getInt("Gametype.${gametype.name}.$name.Slot", 0)
+        GametypeManager.gametypes.values.filterNotNull().forEach {
+            if (gametypeConfig.getBoolean("Gametype.${it.name}.$name.Enabled", false))
+                map[it] = gametypeConfig.getInt("Gametype.${it.name}.$name.Slot", 0)
         }
 
         // TODO: move to queuetype.yml
         val categoryConfig = CategoryManager.config
 
-        for (category in CategoryManager.categories.values) {
-            if (!categoryConfig.getBoolean("Category.${category.name}.$name.Enabled", false)) continue
-            map[category] = categoryConfig.getInt("Category.${category.name}.$name.Slot", 0)
+        CategoryManager.categories.values.filterNotNull().forEach {
+            if (categoryConfig.getBoolean("Category.${it.name}.$name.Enabled", false))
+                map[it] = categoryConfig.getInt("Category.${it.name}.$name.Slot", 0)
         }
 
         map
@@ -106,7 +106,8 @@ class Queuetype(val name: String, val id: Byte) {
 
     val arenas by lazy {
         val set = ByteOpenHashSet()
-        for (a in ArenaManager.arenas.values) if (config.getBoolean(path + "Arenas." + a.name, false)) set.add(a.id)
+        ArenaManager.arenas.values.filterNotNull().filter { config.getBoolean(path + "Arenas." + it.name, false) }
+            .forEach { set.add(it.id) }
         set
     }
 
