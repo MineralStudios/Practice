@@ -1,5 +1,6 @@
 package gg.mineral.practice.arena
 
+import gg.mineral.practice.entity.Profile
 import gg.mineral.practice.managers.ArenaManager
 import gg.mineral.practice.util.config.ItemStackProp
 import gg.mineral.practice.util.config.SpawnLocationProp
@@ -31,7 +32,11 @@ class Arena(var name: String, val id: Byte) {
 
     override fun hashCode() = name.hashCode()
 
+    fun spectateArena(profile: Profile) = profile.spectate(SpectatableArena(this))
+
     fun generate(): World = schematicFile.generateWorld("_" + currentNameID++)
+
+    fun generateBaseWorld(): World = schematicFile.generateWorld("")
 
     fun delete() {
         config.remove("Arena.$name")

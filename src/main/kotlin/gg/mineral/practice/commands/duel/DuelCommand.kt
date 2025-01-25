@@ -12,7 +12,7 @@ import gg.mineral.practice.util.messages.impl.ErrorMessages
 import gg.mineral.practice.util.messages.impl.UsageMessages
 import java.util.*
 
-@Command(name = "duel")
+@Command(name = "duel", aliases = ["1v1", "d"])
 class DuelCommand {
 
     @Execute

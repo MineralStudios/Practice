@@ -45,7 +45,7 @@ object QueueSystem {
             val profile = queueRecord.entity
             val entry = queueRecord.queueEntry
             val data = MatchData(queueRecord.queueEntry, profile.queueSettings)
-            val arenaId = entry.queuetype.nextArenaId(data, entry.gametype)
+            val arenaId = data.nextArenaIdFiltered(entry.compatibleArenas())
             data.arenaId = arenaId
             val queueSettings: QueueSettings = profile.queueSettings
             val botDifficulty = queueSettings.opponentBotDifficulty
@@ -64,7 +64,7 @@ object QueueSystem {
             val entity = queueRecord.entity
             val entry = queueRecord.queueEntry
             val data = MatchData(entry, entity.queueSettings)
-            val arenaId = entry.queuetype.nextArenaId(data, entry.gametype)
+            val arenaId = data.nextArenaIdFiltered(entry.compatibleArenas())
             data.arenaId = arenaId
             val queueSettings = entity.queueSettings
             val teamBotDifficulty = queueSettings.teammateBotDifficulty

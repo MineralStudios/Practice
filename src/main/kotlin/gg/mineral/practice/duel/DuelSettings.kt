@@ -1,6 +1,7 @@
 package gg.mineral.practice.duel
 
 import gg.mineral.api.knockback.Knockback
+import gg.mineral.practice.arena.Arena
 import gg.mineral.practice.gametype.Gametype
 import gg.mineral.practice.kit.Kit
 import gg.mineral.practice.managers.ArenaManager.arenas
@@ -10,6 +11,7 @@ import gg.mineral.practice.queue.Queuetype
 import gg.mineral.practice.util.items.ItemStacks
 import gg.mineral.practice.util.messages.CC
 import gg.mineral.server.combat.KnockbackProfileList
+import it.unimi.dsi.fastutil.bytes.Byte2BooleanOpenHashMap
 import org.bukkit.inventory.ItemStack
 
 class DuelSettings(queuetype: Queuetype? = null, gametype: Gametype? = null) {
@@ -35,7 +37,7 @@ class DuelSettings(queuetype: Queuetype? = null, gametype: Gametype? = null) {
             }
             field = value
         }
-    var arenaId: Byte = 0
+    var enabledArenas: Byte2BooleanOpenHashMap = Byte2BooleanOpenHashMap()
     var kit: Kit? = null
     var knockback: Knockback? = null
     var noDamageTicks = 20
@@ -60,11 +62,15 @@ class DuelSettings(queuetype: Queuetype? = null, gametype: Gametype? = null) {
         this.gametype = gametype
     }
 
+    fun enableArena(arena: Arena, enabled: Boolean) = enableArena(arena.id, enabled)
+
+    fun enableArena(id: Byte, enabled: Boolean) = enabledArenas.put(id, enabled)
+
     override fun toString(): String {
         val sb = StringBuilder()
         val newLine = CC.R + "\n"
 
-        val arena = arenas[arenaId]
+        val arenas = enabledArenas.filter { it.value }.keys.mapNotNull { arenas[it] }
 
         val knockback = if (this.knockback == null)
             if (noDamageTicks < 10)
@@ -78,7 +84,7 @@ class DuelSettings(queuetype: Queuetype? = null, gametype: Gametype? = null) {
 
         sb.append(CC.GREEN).append("Kit: ").append(kit.name)
         sb.append(newLine)
-        sb.append(CC.GREEN).append("Arena: ").append(arena.displayName)
+        sb.append(CC.GREEN).append("Arena Count: ").append(arenas.size)
         sb.append(newLine)
         sb.append(CC.GREEN).append("Knockback: ").append(knockback.name)
         sb.append(newLine)

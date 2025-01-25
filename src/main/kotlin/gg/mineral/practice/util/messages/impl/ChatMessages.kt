@@ -345,6 +345,10 @@ object ChatMessages {
         CC.D_AQUA,
         "the event"
     )
+    val VIEW_ARENA: ChatMessage = ChatMessage("You are now viewing the arena.", CC.AQUA).highlightText(
+        CC.D_AQUA,
+        "the arena"
+    )
     val WON_EVENT: ChatMessage =
         ChatMessage("%player% has won the event.", CC.AQUA).highlightText(CC.D_AQUA, "%player%")
     val ROUND_OVER: ChatMessage =

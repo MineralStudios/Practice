@@ -11,6 +11,7 @@ import gg.mineral.server.combat.KnockbackProfileList
 class MechanicsMenu(private val prevMenu: Menu? = null, val submitAction: SubmitAction) : PracticeMenu() {
 
     override fun update() {
+        clear()
         val duelSettings = viewer.duelSettings
         val noDamageTicks = duelSettings.noDamageTicks
         val knockback = if (duelSettings.knockback == null)
@@ -150,22 +151,23 @@ class MechanicsMenu(private val prevMenu: Menu? = null, val submitAction: Submit
                 )
         }
 
-        val arena = arenas[duelSettings.arenaId]
+        val arenaCount =
+            duelSettings.enabledArenas.byte2BooleanEntrySet().stream().filter { it.booleanValue }.count().toInt()
         setSlot(
             20, ItemStacks.ARENA
                 .lore(
-                    (CC.WHITE + "Changes the " + CC.SECONDARY + "arena" + CC.WHITE
+                    (CC.WHITE + "Changes the " + CC.SECONDARY + "arenas" + CC.WHITE
                             + "."), " ",
-                    CC.WHITE + "Currently:", CC.GOLD + arena.name,
+                    CC.WHITE + "Currently:", CC.GOLD + arenaCount + " Enabled Arenas",
                     CC.BOARD_SEPARATOR, CC.ACCENT + "Click to change arena."
                 )
                 .build()
         ) { interaction: Interaction ->
             interaction.profile.openMenu(
-                SelectArenaMenu(
-                    this,
-                    this,
-                    submitAction
+                QueueArenaEnableMenu(
+                    arenas.keys,
+                    { this.reload() },
+                    this
                 )
             )
         }

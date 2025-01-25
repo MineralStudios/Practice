@@ -1,48 +1,47 @@
 package gg.mineral.practice.inventory.menus
 
-import gg.mineral.practice.gametype.Gametype
 import gg.mineral.practice.inventory.ClickCancelled
 import gg.mineral.practice.inventory.Interaction
 import gg.mineral.practice.inventory.Menu
 import gg.mineral.practice.inventory.PracticeMenu
 import gg.mineral.practice.managers.ArenaManager
-import gg.mineral.practice.queue.Queuetype
-import gg.mineral.practice.util.items.ItemBuilder
 import gg.mineral.practice.util.items.ItemStacks
 import gg.mineral.practice.util.messages.CC
+import it.unimi.dsi.fastutil.bytes.ByteSet
 import java.util.function.Consumer
 
 @ClickCancelled(true)
 class QueueArenaEnableMenu(
-    private val queuetype: Queuetype,
-    private val gametype: Gametype,
+    private val arenas: ByteSet,
     private val queueInteraction: Consumer<Interaction>,
     private val prevMenu: Menu
 ) : PracticeMenu() {
 
     override fun update() {
         clear()
-        val arenas = queuetype.filterArenasByGametype(gametype).iterator()
+        val arenas = arenas.iterator()
         val queueSettings = viewer.queueSettings
+        val duelSettings = viewer.duelSettings
 
         while (arenas.hasNext()) {
             val arenaId = arenas.nextByte()
-            val arenaEnabled = queueSettings.enabledArenas[arenaId]
+            val arenaEnabled = queueSettings.enabledArenas[arenaId] && duelSettings.enabledArenas[arenaId]
 
             val arena = ArenaManager.arenas[arenaId] ?: continue
 
-            val displayItem = arena.displayItem
-
             val displayName = arena.displayName
 
-            val item = if (arenaEnabled) ItemBuilder(displayItem)
-                .name(CC.SECONDARY + CC.B + displayName)
-                .lore(CC.GREEN + "Click to disable arena.")
-                .build() else ItemStacks.ARENA_DISABLED.name(displayName).build()
+            val item = if (arenaEnabled) ItemStacks.ARENA_ENABLED.name(CC.SECONDARY + CC.B + displayName)
+                .build() else ItemStacks.ARENA_DISABLED.name(CC.SECONDARY + CC.B + displayName).build()
 
-            add(item) {
-                queueSettings.enableArena(arena, !arenaEnabled)
-                reload()
+            addAfter(9, item) {
+                if (it.clickType.isRightClick) arena.spectateArena(viewer)
+                else {
+                    val shouldEnable = !arenaEnabled
+                    queueSettings.enableArena(arena, shouldEnable)
+                    duelSettings.enableArena(arena, shouldEnable)
+                    reload()
+                }
             }
         }
 
@@ -52,14 +51,17 @@ class QueueArenaEnableMenu(
 
         addOnRow(slot, 2, ItemStacks.DESELECT_ALL) {
             queueSettings.enabledArenas.clear()
+            duelSettings.enabledArenas.clear()
             reload()
         }
 
         addOnRow(slot, 4, ItemStacks.APPLY, queueInteraction)
 
         addOnRow(slot, 6, ItemStacks.SELECT_ALL) {
-            queuetype.filterArenasByGametype(gametype)
-                .forEach { arenaId: Byte -> queueSettings.enableArena(arenaId, true) }
+            this.arenas.forEach {
+                queueSettings.enableArena(it, true)
+                duelSettings.enableArena(it, true)
+            }
             reload()
         }
     }

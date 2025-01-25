@@ -7,7 +7,6 @@ import gg.mineral.practice.entity.ProfileData
 import gg.mineral.practice.gametype.Gametype
 import gg.mineral.practice.managers.*
 import gg.mineral.practice.managers.ArenaManager.getArenaByName
-import gg.mineral.practice.match.data.MatchData
 import gg.mineral.practice.util.config.BoolProp
 import gg.mineral.practice.util.config.IntProp
 import gg.mineral.practice.util.config.ItemStackProp
@@ -110,9 +109,6 @@ class Queuetype(val name: String, val id: Byte) {
         for (a in ArenaManager.arenas.values) if (config.getBoolean(path + "Arenas." + a.name, false)) set.add(a.id)
         set
     }
-    private var arenaIndex: Long = 0
-
-    private var arenaQueue: ByteSet = ByteOpenHashSet()
 
     fun randomGametype(): Gametype {
         val list = GlueList<Gametype>()
@@ -180,56 +176,9 @@ class Queuetype(val name: String, val id: Byte) {
             return lore
         }
 
-    private fun nextArenaId(g: Gametype): Byte {
-        // Return early if there are no arenas
-        if (arenas.isEmpty() || g.arenas.isEmpty()) return -1
-
-        arenaQueue.removeIf { arenaId: Byte -> !g.arenas.contains(arenaId) }
-
-        if (arenaQueue.isEmpty()) arenaQueue.addAll(filterArenasByGametype(g))
-
-        if (arenaQueue.isEmpty()) return -1
-
-        val iterator = arenaQueue.iterator()
-
-        val nextArenaId = iterator.nextByte()
-        iterator.remove()
-
-        return nextArenaId
-    }
-
-    fun nextArenaId(matchData: MatchData, gametype: Gametype): Byte {
-        // If there are no enabled arenas in the MatchData, revert to the other method
-
-        if (matchData.enabledArenas.isEmpty()) return nextArenaId(gametype)
-
-        // Filter arenas based on Gametype and MatchData
-        val filteredArenas = filterArenasByGametype(gametype)
-
-        val iterator = filteredArenas.iterator()
-        while (iterator.hasNext()) {
-            val arenaId = iterator.nextByte()
-            if (!matchData.enabledArenas[arenaId]) iterator.remove()
-        }
-
-        if (filteredArenas.isEmpty()) return nextArenaId(gametype)
-
-        // Select a random arena from the filtered list
-        val randomIndex = (arenaIndex++ % filteredArenas.size).toInt()
-        val selectedArenaId = filteredArenas.toArray(ByteArray(0))[randomIndex]
-
-        // Remove the selected arena from the main queue to avoid repetition
-        arenaQueue.remove(selectedArenaId)
-
-        return selectedArenaId
-    }
-
     fun enableArena(arena: Arena, enabled: Boolean) {
         if (enabled) arenas.add(arena.id)
-        else {
-            arenas.remove(arena.id)
-            arenaQueue.remove(arena.id)
-        }
+        else arenas.remove(arena.id)
         config[path + "Arenas." + arena.name] = arenas.contains(arena.id) && getArenaByName(arena.name) != null
     }
 

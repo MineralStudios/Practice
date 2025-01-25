@@ -14,11 +14,7 @@ import gg.mineral.practice.util.messages.impl.ErrorMessages
 class EventCommand {
     @Execute
     fun execute(@Context profile: Profile) {
-        if (profile.playerStatus !== PlayerStatus.IDLE) {
-            profile.message(ErrorMessages.YOU_ARE_NOT_IN_LOBBY)
-            return
-        }
-
-        profile.openMenu(SelectEventMenu())
+        if (profile.playerStatus !== PlayerStatus.IDLE) profile.message(ErrorMessages.YOU_ARE_NOT_IN_LOBBY)
+        else profile.openMenu(SelectEventMenu())
     }
 }

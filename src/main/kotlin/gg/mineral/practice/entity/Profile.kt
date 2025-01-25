@@ -1,6 +1,7 @@
 package gg.mineral.practice.entity
 
 import gg.mineral.practice.PracticePlugin
+import gg.mineral.practice.arena.SpectatableArena
 import gg.mineral.practice.duel.DuelSettings
 import gg.mineral.practice.entity.appender.CommandSenderAppender
 import gg.mineral.practice.events.Event
@@ -258,6 +259,17 @@ class Profile(player: Player) : ExtendedProfileData(player.name, player.uniqueId
     var duelRequests: Boolean = true
     var partyRequests: Boolean = true
     var duelRequestReciever: Profile? = null
+    private var clientTickStartMillis = 0L
+    var clientTick = 0
+        set(value) {
+            if (field == 0) clientTickStartMillis = System.nanoTime() / 1000000
+            field = value
+        }
+    val clientTimeMillis: Long
+        get() {
+            return if (clientTick == 0) System.nanoTime() / 1000000
+            else clientTickStartMillis + (clientTick * 50L)
+        }
 
     init {
         this.duelSettings = DuelSettings()
@@ -558,6 +570,31 @@ class Profile(player: Player) : ExtendedProfileData(player.name, player.uniqueId
 
             message(ChatMessages.STOP_SPECTATING)
         } ?: message(ErrorMessages.PLAYER_NOT_IN_MATCH_OR_EVENT)
+    }
+
+    fun spectate(spectatable: Spectatable) {
+        this.spectatable = spectatable
+        spectatable.let {
+            PlayerUtil.teleport(
+                this,
+                when (it) {
+                    is Event -> arenas[it.eventArenaId].waitingLocation.bukkit(it.world)
+                    is Match -> arenas[it.data.arenaId].location1.bukkit(it.world)
+                    is SpectatableArena -> it.arena.location1.bukkit(it.world)
+                    else -> throw IllegalArgumentException("Invalid spectatable type")
+                }
+            )
+
+            when (it) {
+                is Event -> message(ChatMessages.SPECTATING_EVENT)
+                is SpectatableArena -> message(ChatMessages.VIEW_ARENA)
+                else -> message(
+                    ChatMessages.SPECTATING.clone().replace("%player%", spectatable.participants.first().name)
+                )
+            }
+
+            message(ChatMessages.STOP_SPECTATING)
+        }
     }
 
     fun sendDuelRequest(receiver: Profile) {

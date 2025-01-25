@@ -14,6 +14,7 @@ import gg.mineral.practice.util.PlayerUtil
 import gg.mineral.practice.util.collection.ProfileList
 import gg.mineral.practice.util.messages.impl.ChatMessages
 import gg.mineral.practice.util.messages.impl.ErrorMessages
+import it.unimi.dsi.fastutil.bytes.Byte2BooleanOpenHashMap
 import net.md_5.bungee.api.chat.ClickEvent
 import org.bukkit.Bukkit
 import org.bukkit.World
@@ -32,8 +33,8 @@ class Event(hostProfile: Profile, val eventArenaId: Byte) : Spectatable {
 
     init {
         val duelSettings = hostProfile.duelSettings
-        duelSettings.arenaId = eventArenaId
-        this.matchData = MatchData(duelSettings)
+        val enabledArenas = Byte2BooleanOpenHashMap().apply { put(eventArenaId, true) }
+        this.matchData = MatchData(duelSettings, enabledArenas)
         this.host = hostProfile.name
         val arena = ArenaManager.arenas.get(eventArenaId)
         this.world = arena.generate()

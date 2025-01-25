@@ -5,12 +5,14 @@ import gg.mineral.practice.duel.DuelSettings
 import gg.mineral.practice.entity.Profile
 import gg.mineral.practice.gametype.Gametype
 import gg.mineral.practice.kit.Kit
+import gg.mineral.practice.managers.ArenaManager.arenas
 import gg.mineral.practice.managers.GametypeManager
 import gg.mineral.practice.match.knockback.OldStyleKnockback
 import gg.mineral.practice.queue.QueueSettings
 import gg.mineral.practice.queue.Queuetype
 import gg.mineral.practice.util.items.ItemStacks
 import it.unimi.dsi.fastutil.bytes.Byte2BooleanOpenHashMap
+import it.unimi.dsi.fastutil.bytes.ByteSet
 import it.unimi.dsi.fastutil.ints.Int2ObjectOpenHashMap
 import org.bukkit.inventory.ItemStack
 import java.util.concurrent.CompletableFuture
@@ -81,8 +83,14 @@ class MatchData private constructor() {
         this.oldCombat = queueEntry.oldCombat
     }
 
-    constructor(duelSettings: DuelSettings) : this(duelSettings.queuetype, duelSettings.gametype) {
-        this.arenaId = duelSettings.arenaId
+    constructor(duelSettings: DuelSettings) : this(duelSettings, duelSettings.enabledArenas)
+
+    constructor(duelSettings: DuelSettings, enabledArenas: Byte2BooleanOpenHashMap) : this(
+        duelSettings.queuetype,
+        duelSettings.gametype
+    ) {
+        this.enabledArenas = enabledArenas
+        this.arenaId = nextArenaIdFiltered(arenas.keys)
         this.kit = if (duelSettings.kit == null)
             GametypeManager.gametypes.get(0.toByte()).kit
         else
@@ -107,6 +115,17 @@ class MatchData private constructor() {
 
     fun getElo(p: Profile): CompletableFuture<Int> = gametype?.getElo(p) ?: CompletableFuture.completedFuture(1000)
 
+    private fun nextArenaId(compatibleArenas: ByteSet?) = compatibleArenas?.random() ?: -1
+
+    private fun nextQueueArenaId() = nextArenaIdFiltered(gametype?.let { queuetype?.filterArenasByGametype(it) })
+
+    fun nextArenaIdFiltered(compatibleArenas: ByteSet?): Byte {
+        val filteredArenas =
+            compatibleArenas?.filter { enabledArenas[it] }
+        if (filteredArenas?.isEmpty() == true) return nextArenaId(compatibleArenas)
+        return filteredArenas?.random() ?: nextArenaId(compatibleArenas)
+    }
+
     val queueAndGameTypeHash: Short
         get() {
             val queuetypeId: Byte = queuetype?.id ?: 0
@@ -118,7 +137,7 @@ class MatchData private constructor() {
         val duelSettings = DuelSettings()
         duelSettings.queuetype = queuetype
         duelSettings.gametype = gametype
-        duelSettings.arenaId = arenaId
+        duelSettings.enabledArenas = enabledArenas
         duelSettings.kit = kit
         duelSettings.knockback = knockback
         duelSettings.noDamageTicks = noDamageTicks

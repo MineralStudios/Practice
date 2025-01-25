@@ -266,12 +266,26 @@ object ItemStacks {
     val CPS: ItemBuilder = ItemBuilder(Material.SUGAR).lore("Click to change value.")
     val PING: ItemBuilder = ItemBuilder(Material.REDSTONE).lore("Click to change value.")
     val PING_DEVIATION: ItemBuilder = ItemBuilder(Material.GLOWSTONE_DUST).lore("Click to change value.")
-    val ARENA_DISABLED: ItemBuilder = ItemBuilder(ItemStack(351, 1, 1.toShort()))
-        .lore(CC.RED + "Click to enable arena.")
-    val SUBTRACT_1: ItemBuilder = ItemBuilder(ItemStack(Material.WOOL, 1, DyeColor.RED.data.toShort()))
-        .lore("Click to change value.")
-    val ADD_1: ItemBuilder = ItemBuilder(ItemStack(Material.WOOL, 1, DyeColor.GREEN.data.toShort()))
-        .lore("Click to change value.")
+    val ARENA_DISABLED: ItemBuilder = ItemBuilder(ItemStack(351, 1, DyeColor.GRAY.dyeData.toShort()))
+        .lore(
+            CC.WHITE + "Toggles the" + CC.SECONDARY + " arena" + CC.WHITE + ".",
+            " ",
+            CC.WHITE + "Currently:",
+            CC.RED + "Disabled",
+            CC.BOARD_SEPARATOR,
+            CC.GREEN + "Left click to disable arena.",
+            CC.RED + "Right click to view arena."
+        )
+    val ARENA_ENABLED: ItemBuilder = ItemBuilder(ItemStack(351, 1, DyeColor.LIME.dyeData.toShort()))
+        .lore(
+            CC.WHITE + "Toggles the" + CC.SECONDARY + " arena" + CC.WHITE + ".",
+            " ",
+            CC.WHITE + "Currently:",
+            CC.GREEN + "Enabled",
+            CC.BOARD_SEPARATOR,
+            CC.GREEN + "Left click to disable arena.",
+            CC.RED + "Right click to view arena."
+        )
     val GLOBAL_ELO: ItemBuilder = ItemBuilder(Material.ENDER_PORTAL_FRAME)
     val TOGGLE_PLAYER_VISIBILITY: ItemBuilder = ItemBuilder(Material.GOLDEN_CARROT)
         .name(CC.SECONDARY + CC.B + "Toggle Player Visibility")

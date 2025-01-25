@@ -89,7 +89,7 @@ class ArenaCommand : CommandSenderAppender, LocationAppender {
     @Execute(name = "teleport", aliases = ["tp"])
     fun executeTeleport(@Context player: Player, @Arg arena: Arena) {
         try {
-            val world = arena.generate()
+            val world = arena.generateBaseWorld()
             PlayerUtil.teleport(player as CraftPlayer, arena.location1.bukkit(world))
         } catch (e: Exception) {
             ErrorMessages.CANNOT_TELEPORT_TO_ARENA.send(player)

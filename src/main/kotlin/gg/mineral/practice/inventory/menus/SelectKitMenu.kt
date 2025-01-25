@@ -28,7 +28,7 @@ class SelectKitMenu(private val menu: MechanicsMenu) : PracticeMenu() {
 
         setSlot(
             31, ItemStacks.BACK
-        ) { interaction: Interaction -> interaction.profile.openMenu(menu) }
+        ) { it.profile.openMenu(menu) }
     }
 
     override val title: String

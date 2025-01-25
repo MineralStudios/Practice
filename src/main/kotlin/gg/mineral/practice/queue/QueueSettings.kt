@@ -42,6 +42,8 @@ class QueueSettings {
                 .stream()
                 .anyMatch { arena: Byte2BooleanMap.Entry -> entry.enabledArenas[arena.byteKey] == arena.booleanValue })
         }
+        
+        fun compatibleArenas() = queuetype.filterArenasByGametype(gametype)
     }
 
     val opponentBotDifficulty: Difficulty

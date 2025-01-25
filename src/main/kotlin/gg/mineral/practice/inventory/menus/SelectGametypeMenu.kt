@@ -66,8 +66,7 @@ open class SelectGametypeMenu(
 
         if (viewer.queueSettings.arenaSelection) viewer.openMenu(
             QueueArenaEnableMenu(
-                queuetype,
-                gametype,
+                queuetype.filterArenasByGametype(gametype),
                 queueInteraction, this
             )
         )

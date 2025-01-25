@@ -158,7 +158,9 @@ open class Match(
             data.knockback
                 ?: if (data.noDamageTicks <= 10) KnockbackProfileList.getComboKnockbackProfile() else KnockbackProfileList.getDefaultKnockbackProfile()
         )
-        p.player.handle.backtrackSystem.isEnabled = data.oldCombat
+        p.player.setBacktrack(data.oldCombat)
+        p.player.setKnockbackSync(!data.oldCombat)
+
         p.inventory.inventoryClickCancelled = false
         p.player.saturation = 20f
         p.player.foodLevel = 20
@@ -529,7 +531,7 @@ open class Match(
             val paddingEnd = totalPadding - paddingStart
 
             // Add spaces to center the string
-            return " ".repeat(paddingStart) + insert + " ".repeat(paddingEnd)
+            return "\u2064".repeat(paddingStart) + insert + "\u2064".repeat(paddingEnd)
         }
 
         val message = TextComponent(CC.GREEN + CC.B + centerString(CC.SPLITTER.length, "Click To Rematch"))

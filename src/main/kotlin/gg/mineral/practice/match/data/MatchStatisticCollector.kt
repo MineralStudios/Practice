@@ -54,7 +54,7 @@ class MatchStatisticCollector(val profile: Profile) {
         longestCombo = 0
         hitCount = 0
         currentCombo = 0
-        clickCounterStart = System.currentTimeMillis()
+        clickCounterStart = profile.clientTimeMillis
         potionEffectStrings = GlueList()
     }
 
@@ -132,10 +132,10 @@ class MatchStatisticCollector(val profile: Profile) {
     fun click() {
         if (!active) return
 
-        if (System.currentTimeMillis() - clickCounterStart > 1000) {
-            clickCounterStart = System.currentTimeMillis()
+        if (profile.clientTimeMillis - clickCounterStart >= 1000) {
+            clickCounterStart = profile.clientTimeMillis
             highestCps = max(clicks.toDouble(), highestCps.toDouble()).toInt()
-            clicks = 1
+            clicks = 0
         }
 
         clicks++

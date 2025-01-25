@@ -1,6 +1,9 @@
 package gg.mineral.practice.entity.appender
 
 import gg.mineral.bot.api.BotAPI
+import org.bukkit.Bukkit
+import org.bukkit.craftbukkit.v1_8_R3.entity.CraftPlayer
+
 import org.bukkit.entity.Player
 
 interface PlayerAppender {
@@ -22,4 +25,35 @@ interface PlayerAppender {
     }
 
     fun Player.isNight() = !isDay()
+
+    fun Player.setKnockbackSync(enabled: Boolean) {
+        try {
+            val hasPlayerData = me.caseload.knockbacksync.manager.PlayerDataManager.containsPlayerData(this.uniqueId)
+            if (hasPlayerData) {
+                if (me.caseload.knockbacksync.manager.CombatManager.getPlayers()
+                        .contains(this.uniqueId)
+                ) me.caseload.knockbacksync.manager.CombatManager.removePlayer(this.uniqueId)
+                me.caseload.knockbacksync.manager.PlayerDataManager.removePlayerData(this.uniqueId)
+            } else {
+                me.caseload.knockbacksync.manager.PlayerDataManager.addPlayerData(
+                    this.uniqueId,
+                    me.caseload.knockbacksync.player.PlayerData(
+                        me.caseload.knockbacksync.Base.INSTANCE.platformServer.getPlayer(
+                            this.uniqueId
+                        )
+                    )
+                )
+            }
+        } catch (ignored: Exception) {
+            Bukkit.getLogger().warning("Failed to set knockback sync for ${this.name}")
+        }
+    }
+
+    fun Player.setBacktrack(enabled: Boolean) {
+        try {
+            (this as CraftPlayer).handle.backtrackSystem.isEnabled = enabled
+        } catch (ignored: Exception) {
+            Bukkit.getLogger().warning("Failed to set backtrack for ${this.name}")
+        }
+    }
 }

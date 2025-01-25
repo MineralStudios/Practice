@@ -11,6 +11,11 @@ import gg.mineral.practice.managers.ProfileManager.getProfile
 class PacketEventsListener : PacketListener {
 
     override fun onPacketReceive(event: PacketReceiveEvent) {
+        if (event.packetType == PacketType.Play.Client.PLAYER_FLYING || event.packetType == PacketType.Play.Client.PLAYER_POSITION || event.packetType == PacketType.Play.Client.PLAYER_POSITION_AND_ROTATION || event.packetType == PacketType.Play.Client.PLAYER_ROTATION) {
+            val profile = getProfile(event.user.profile.uuid) ?: return
+            profile.clientTick += 1
+        }
+
         event.isCancelled =
             event.packetType == PacketType.Play.Client.STEER_VEHICLE && getProfile(event.user.profile.uuid)?.inMatchCountdown == true
     }
