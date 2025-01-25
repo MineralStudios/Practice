@@ -29,12 +29,12 @@ interface PlayerAppender {
     fun Player.setKnockbackSync(enabled: Boolean) {
         try {
             val hasPlayerData = me.caseload.knockbacksync.manager.PlayerDataManager.containsPlayerData(this.uniqueId)
-            if (hasPlayerData) {
+            if (hasPlayerData && !enabled) {
                 if (me.caseload.knockbacksync.manager.CombatManager.getPlayers()
                         .contains(this.uniqueId)
                 ) me.caseload.knockbacksync.manager.CombatManager.removePlayer(this.uniqueId)
                 me.caseload.knockbacksync.manager.PlayerDataManager.removePlayerData(this.uniqueId)
-            } else {
+            } else if (!hasPlayerData && enabled) {
                 me.caseload.knockbacksync.manager.PlayerDataManager.addPlayerData(
                     this.uniqueId,
                     me.caseload.knockbacksync.player.PlayerData(
