@@ -48,7 +48,7 @@ class FileConfiguration(fileName: String, fileDirectory: String = "") {
 
     fun getVector(string: String, o: Any) = config[string, o] as Vector
 
-    fun getString(string: String, s: String) = config.getString(string, s)
+    fun getString(string: String, s: String): String = config.getString(string, s)
 
     fun getItemstack(string: String, itemStack: ItemStack?) = config[string, itemStack] as ItemStack
 

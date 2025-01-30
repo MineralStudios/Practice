@@ -18,16 +18,7 @@ class FastEntityTracker(private val world: WorldServer) : EntityTracker(world) {
         when (entity) {
             is EntityPlayer -> {
                 this.addEntity(entity, 512, GlobalConfig.getInstance().relativeMoveFrequency)
-                val entityplayer: EntityPlayer = entity
-                val iterator: Iterator<EntityTrackerEntry> = c.iterator()
-
-                while (iterator.hasNext()) {
-                    val entitytrackerentry: EntityTrackerEntry = iterator.next()
-
-                    if (entitytrackerentry.tracker !== entityplayer) {
-                        entitytrackerentry.updatePlayer(entityplayer)
-                    }
-                }
+                c.filter { it.tracker !== entity }.forEach { it.updatePlayer(entity) }
             }
 
             is EntityFishingHook -> this.addEntity(entity, 64, 5, true)

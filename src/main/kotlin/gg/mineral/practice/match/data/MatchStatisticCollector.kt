@@ -9,6 +9,9 @@ import org.bukkit.Material
 import org.bukkit.inventory.ItemStack
 import java.util.*
 import kotlin.math.max
+import kotlin.math.min
+import kotlin.math.roundToInt
+import kotlin.math.sqrt
 
 class MatchStatisticCollector(val profile: Profile) {
     var hitCount: Int = 0
@@ -26,6 +29,7 @@ class MatchStatisticCollector(val profile: Profile) {
     var soupsRemaining: Int = 0
     var remainingHealth: Int = 0
     private var clicks: Int = 0
+    var totalClicks = 0
     private var clickCounterStart: Long = 0
     lateinit var inventoryContents: Array<ItemStack?>
     var helmet: ItemStack? = null
@@ -35,6 +39,18 @@ class MatchStatisticCollector(val profile: Profile) {
     private var potionEffectStrings: MutableList<String>? = null
     private var active: Boolean = false
     var alive: Boolean = false
+    val potionEffectStringArray: Array<String>
+        get() = potionEffectStrings!!.toTypedArray<String>()
+    private val cpsRecord = mutableListOf<Int>()
+    val averageCps: Int
+        get() = cpsRecord.average().roundToInt()
+    val cpsDeviation: Int
+        get() {
+            if (cpsRecord.isEmpty()) return 0
+            val mean = averageCps.toDouble()
+            val variance = cpsRecord.map { (it - mean) * (it - mean) }.average()
+            return sqrt(variance).roundToInt()
+        }
 
     fun start() {
         check(!active) { "Already started" }
@@ -135,12 +151,11 @@ class MatchStatisticCollector(val profile: Profile) {
         if (profile.clientTimeMillis - clickCounterStart >= 1000) {
             clickCounterStart = profile.clientTimeMillis
             highestCps = max(clicks.toDouble(), highestCps.toDouble()).toInt()
+            if (clicks > min(1, highestCps)) cpsRecord.add(clicks)
             clicks = 0
         }
 
         clicks++
+        totalClicks++
     }
-
-    val potionEffectStringArray: Array<String>
-        get() = potionEffectStrings!!.toTypedArray<String>()
 }

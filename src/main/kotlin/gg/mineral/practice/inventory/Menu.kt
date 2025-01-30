@@ -7,6 +7,13 @@ import org.bukkit.inventory.ItemStack
 import java.util.function.Consumer
 
 interface Menu {
+
+    var closed: Boolean
+
+    val clickCancelled: Boolean
+
+    val inventory: Inventory?
+
     fun setSlot(slot: Int, itemStack: ItemStack)
 
     fun setSlot(slot: Int, itemStack: ItemStack, consumer: Consumer<Interaction>)
@@ -36,10 +43,4 @@ interface Menu {
     fun getTask(slot: Int): Consumer<Interaction>?
 
     fun clear()
-
-    var closed: Boolean
-
-    val clickCancelled: Boolean
-
-    val inventory: Inventory?
 }

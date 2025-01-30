@@ -15,7 +15,7 @@ object StringUtil {
                         newString.toCharArray()[i + 1]
                     ))
                 ) c = c.uppercaseChar()
-            } else if (c != 'x' || !Character.isDigit(newString.toCharArray()[i + 1])) c = c.uppercaseChar()
+            } else if (c != 'x' || !Character.isDigit(newString.toCharArray()[1])) c = c.uppercaseChar()
 
             sb.append(c)
         }

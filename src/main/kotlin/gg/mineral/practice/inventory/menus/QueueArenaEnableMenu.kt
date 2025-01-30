@@ -19,12 +19,12 @@ class QueueArenaEnableMenu(
 
     override fun update() {
         clear()
-        val arenas = arenas.iterator()
+        val iter = arenas.iterator()
         val queueSettings = viewer.queueSettings
         val duelSettings = viewer.duelSettings
 
-        while (arenas.hasNext()) {
-            val arenaId = arenas.nextByte()
+        while (iter.hasNext()) {
+            val arenaId = iter.nextByte()
             val arenaEnabled = queueSettings.enabledArenas[arenaId] && duelSettings.enabledArenas[arenaId]
 
             val arena = ArenaManager.arenas[arenaId] ?: continue

@@ -15,6 +15,8 @@ enum class SubmitAction {
     },
     P_SPLIT {
         override fun execute(profile: Profile) {
+            profile.player.closeInventory()
+
             profile.party?.let {
                 if (it.partyLeader != profile) {
                     profile.message(ErrorMessages.YOU_ARE_NOT_PARTY_LEADER)
@@ -29,16 +31,10 @@ enum class SubmitAction {
                 val partyMatch = TeamMatch(it, MatchData(profile.duelSettings))
                 partyMatch.start()
             }
-            profile.player.closeInventory()
         }
     },
     TOURNAMENT {
         override fun execute(profile: Profile) = Tournament(profile).start()
-    },
-    UNRANKED {
-        override fun execute(profile: Profile) {
-
-        }
     };
 
     abstract fun execute(profile: Profile)

@@ -5,9 +5,6 @@ import gg.mineral.practice.bots.Difficulty
 import gg.mineral.practice.gametype.Gametype
 import it.unimi.dsi.fastutil.bytes.Byte2BooleanMap
 import it.unimi.dsi.fastutil.bytes.Byte2BooleanOpenHashMap
-import it.unimi.dsi.fastutil.bytes.ByteOpenHashSet
-import it.unimi.dsi.fastutil.bytes.ByteSet
-import java.util.*
 
 
 class QueueSettings {
@@ -36,13 +33,13 @@ class QueueSettings {
         val enabledArenas: Byte2BooleanOpenHashMap
     ) {
         fun isCompatible(entry: QueueEntry): Boolean {
-            return queuetype === entry.queuetype && gametype === entry.gametype && teamSize == entry.teamSize && botsEnabled == entry.botsEnabled && oldCombat == entry.oldCombat && (teamSize <= 1 || !botsEnabled || !entry.botsEnabled || botTeamSetting == entry.botTeamSetting)
+            return queuetype === entry.queuetype && gametype === entry.gametype && teamSize == entry.teamSize && botsEnabled == entry.botsEnabled && oldCombat == entry.oldCombat && (teamSize <= 1 || !botsEnabled || botTeamSetting == entry.botTeamSetting)
                     && (!botsEnabled || opponentDifficulty == entry.opponentDifficulty)
                     && (enabledArenas.isEmpty() || entry.enabledArenas.isEmpty() || enabledArenas.byte2BooleanEntrySet()
                 .stream()
                 .anyMatch { arena: Byte2BooleanMap.Entry -> entry.enabledArenas[arena.byteKey] == arena.booleanValue })
         }
-        
+
         fun compatibleArenas() = queuetype.filterArenasByGametype(gametype)
     }
 
@@ -72,13 +69,5 @@ class QueueSettings {
             )
         }
 
-        fun getEnabledArenaIds(uuid: UUID): ByteSet {
-            val leastSigBits = uuid.leastSignificantBits
-            val enabledArenaIds = ByteOpenHashSet()
-
-            for (index in 0..63) if ((leastSigBits and (1L shl index)) != 0L) enabledArenaIds.add(index.toByte())
-
-            return enabledArenaIds
-        }
     }
 }

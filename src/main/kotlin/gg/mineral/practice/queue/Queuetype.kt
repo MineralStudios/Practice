@@ -17,7 +17,6 @@ import gg.mineral.practice.util.messages.CC
 import gg.mineral.server.combat.KnockbackProfile
 import gg.mineral.server.combat.KnockbackProfileList
 import it.unimi.dsi.fastutil.bytes.ByteOpenHashSet
-import it.unimi.dsi.fastutil.bytes.ByteSet
 import it.unimi.dsi.fastutil.objects.Object2IntLinkedOpenHashMap
 import it.unimi.dsi.fastutil.objects.Object2IntMap
 import it.unimi.dsi.fastutil.objects.ObjectSortedSet
@@ -130,12 +129,7 @@ class Queuetype(val name: String, val id: Byte) {
     }
 
     // Helper method to filter available arenas based on a Gametype
-    fun filterArenasByGametype(g: Gametype): ByteSet {
-        val filteredArenas = ByteOpenHashSet(this.arenas)
-        filteredArenas
-            .retainAll(g.arenas)
-        return filteredArenas
-    }
+    fun filterArenasByGametype(g: Gametype) = ByteOpenHashSet(this.arenas).apply { retainAll(g.arenas) }
 
     fun getGlobalElo(profile: ProfileData): CompletableFuture<Int> {
         val set: ObjectSortedSet<QueuetypeMenuEntry> = menuEntries.keys

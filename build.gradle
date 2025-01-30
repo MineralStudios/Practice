@@ -1,7 +1,7 @@
 plugins {
     id 'maven-publish'
     id 'com.gradleup.shadow' version '8.3.5'
-    id 'pmd'
+    id 'io.gitlab.arturbosch.detekt' version '1.23.7'
     id 'org.hidetake.ssh' version '2.11.2'
     id 'org.jetbrains.kotlin.jvm'
 }
@@ -41,6 +41,11 @@ dependencies {
     compileOnly 'com.github.retrooper:packetevents-spigot:2.7.0'
     implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk8"
     implementation "dev.rollczi:litecommands-bukkit:3.9.7"
+}
+
+detekt {
+    config = files("detekt.yml") // Optional: Your custom configuration
+    buildUponDefaultConfig = true
 }
 
 shadowJar {

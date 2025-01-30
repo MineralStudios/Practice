@@ -5,9 +5,8 @@ import dev.rollczi.litecommands.annotations.context.Context
 import dev.rollczi.litecommands.annotations.execute.Execute
 import gg.mineral.practice.entity.PlayerStatus
 import gg.mineral.practice.entity.Profile
+import gg.mineral.practice.managers.ProfileManager.kill
 import gg.mineral.practice.util.messages.impl.ErrorMessages
-import org.bukkit.Bukkit
-import org.bukkit.event.entity.EntityDamageEvent
 
 
 @Command(name = "forfeit", aliases = ["l", "giveup"])
@@ -24,12 +23,6 @@ class ForfeitCommand {
             return
         }
 
-        val ede = EntityDamageEvent(profile.player, EntityDamageEvent.DamageCause.SUICIDE, 1000)
-        Bukkit.getPluginManager().callEvent(ede)
-        if (ede.isCancelled) return
-
-        ede.entity.lastDamageCause = ede
-
-        profile.player.health = 0.0
+        profile.player.kill()
     }
 }

@@ -52,6 +52,8 @@ class PracticePlugin : JavaPlugin() {
     }
 
     override fun onLoad() {
+        INSTANCE = this
+
         PacketEvents.setAPI(SpigotPacketEventsBuilder.build(this))
         PacketEvents.getAPI().load()
     }
@@ -61,13 +63,10 @@ class PracticePlugin : JavaPlugin() {
     override fun onEnable() {
         PacketEvents.getAPI().init()
 
-        INSTANCE = this
-
         ArenaManager.load()
         QueuetypeManager.load()
         CategoryManager.load()
         GametypeManager.load()
-
         // TODO: change invalid command messages
         this.liteCommands = LiteBukkitFactory.builder("Practice", this)
             .commands(
@@ -141,6 +140,10 @@ class PracticePlugin : JavaPlugin() {
             DeathListener(), DamageListener(), EntryListener(), HealthListener(),
             MovementListener(), ProjectileListener(), CommandListener()
         )
+    }
+
+    private fun initCommands() {
+
     }
 
     override fun onDisable() {

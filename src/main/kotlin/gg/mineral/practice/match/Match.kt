@@ -72,8 +72,8 @@ open class Match(
     protected var timeTaskId: Int = 0
 
     init {
-        if (profile1 != null && profile2 != null)
-            addParticipants(profile1!!, profile2!!)
+        profile1?.let { addParticipants(it) }
+        profile2?.let { addParticipants(it) }
     }
 
     val buildLimit: Int
@@ -148,6 +148,13 @@ open class Match(
             MatchStatisticCollector(profile)
         }
         return function.apply(collector)
+    }
+
+    protected fun onError(message: String) {
+        participants.map { it.player }.forEach {
+            it.kill()
+            it.sendMessage(CC.RED + message)
+        }
     }
 
     private fun setAttributes(p: Profile) {

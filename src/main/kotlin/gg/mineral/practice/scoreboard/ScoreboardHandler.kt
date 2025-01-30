@@ -203,7 +203,7 @@ class ScoreboardHandler(val player: Player) {
     @Synchronized
     fun updateLines(lines: Collection<String>) {
         Objects.requireNonNull(lines, "lines")
-        checkLineNumber(lines.size, false, true)
+        checkLineNumber(lines.size, checkInRange = false, checkMax = true)
 
         if (!VersionType.V1_13.isHigherOrEqual) {
             for ((lineCount, s) in lines.withIndex()) {
@@ -389,26 +389,23 @@ class ScoreboardHandler(val player: Player) {
             var prefix: String
             var suffix: String? = null
 
-            if (line.isEmpty()) {
-                prefix = COLOR_CODES[score] + ChatColor.RESET
-            } else if (line.length <= maxLength) {
-                prefix = line
-            } else {
+            if (line.isEmpty()) prefix = COLOR_CODES[score] + ChatColor.RESET
+            else if (line.length <= maxLength) prefix = line
+            else {
                 // Prevent splitting color codes
                 val index = if (line[maxLength - 1] == ChatColor.COLOR_CHAR) (maxLength - 1) else maxLength
                 prefix = line.substring(0, index)
                 val suffixTmp = line.substring(index)
                 var chatColor: ChatColor? = null
 
-                if (suffixTmp.length >= 2 && suffixTmp[0] == ChatColor.COLOR_CHAR) {
-                    chatColor = ChatColor.getByChar(suffixTmp[1])
-                }
+                if (suffixTmp.length >= 2 && suffixTmp[0] == ChatColor.COLOR_CHAR) chatColor =
+                    ChatColor.getByChar(suffixTmp[1])
 
                 val color = ChatColor.getLastColors(prefix)
                 val addColor = chatColor == null || chatColor.isFormat
 
                 suffix =
-                    (if (addColor) (if (color.isEmpty()) ChatColor.RESET.toString() else color) else "") + suffixTmp
+                    (if (addColor) (color.ifEmpty { ChatColor.RESET.toString() }) else "") + suffixTmp
             }
 
             if (prefix.length > maxLength || (suffix != null && suffix.length > maxLength)) {

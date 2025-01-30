@@ -20,21 +20,21 @@ import gg.mineral.practice.util.items.ItemStacks
 import org.bukkit.Bukkit
 import org.bukkit.Location
 
-class BotMatch(profile1: Profile, config: BotConfiguration, matchData: MatchData) : Match(matchData) {
+class BotMatch(profile1: Profile, private val config: BotConfiguration, matchData: MatchData) :
+    Match(matchData, profile1) {
     private var clientInstance: ClientInstance? = null
-    private val config: BotConfiguration
-
-    init {
-        this.profile1 = profile1
-        this.config = config
-        addParticipants(profile1)
-    }
 
     override fun start() {
-        if (noArenas()) return
+        if (noArenas()) {
+            onError("No arenas available")
+            return
+        }
 
         registerMatch(this)
-        val arena = arenas[data.arenaId] ?: throw NullPointerException("Arena not found")
+        val arena = arenas[data.arenaId] ?: run {
+            onError("Arena not found")
+            return
+        }
         val location1 = arena.location1.bukkit(world)
         val location2 = arena.location2.bukkit(world)
 
@@ -43,7 +43,10 @@ class BotMatch(profile1: Profile, config: BotConfiguration, matchData: MatchData
         teleportPlayers(location1, location2)
 
         this.clientInstance = Difficulty.spawn(config, location2)
-        val bukkitPl = Bukkit.getPlayer(config.uuid) ?: throw NullPointerException("Fake player is null")
+        val bukkitPl = Bukkit.getPlayer(config.uuid) ?: run {
+            onError("Fake player is null")
+            return
+        }
 
         this.profile2 = getOrCreateProfile(bukkitPl)
         addParticipants(profile2!!)
@@ -69,7 +72,7 @@ class BotMatch(profile1: Profile, config: BotConfiguration, matchData: MatchData
                 EatGappleGoal(it),
                 MeleeCombatGoal(it)
             )
-        } ?: throw IllegalStateException("Client Instance is null.")
+        } ?: onError("Client instance is null")
     }
 
     override fun end(victim: Profile) {
@@ -103,8 +106,8 @@ class BotMatch(profile1: Profile, config: BotConfiguration, matchData: MatchData
     }
 
     override fun end(attacker: Profile, victim: Profile) {
-        super.end(attacker, victim)
-
         BotAPI.INSTANCE.despawn(attacker.player.uniqueId, victim.player.uniqueId)
+
+        super.end(attacker, victim)
     }
 }

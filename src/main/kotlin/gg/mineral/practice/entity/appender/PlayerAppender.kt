@@ -5,6 +5,7 @@ import org.bukkit.Bukkit
 import org.bukkit.craftbukkit.v1_8_R3.entity.CraftPlayer
 
 import org.bukkit.entity.Player
+import org.bukkit.event.entity.EntityDamageEvent
 
 interface PlayerAppender {
     fun Player.heal() {
@@ -55,5 +56,15 @@ interface PlayerAppender {
         } catch (ignored: Exception) {
             Bukkit.getLogger().warning("Failed to set backtrack for ${this.name}")
         }
+    }
+
+    fun Player.kill() {
+        val ede = EntityDamageEvent(this, EntityDamageEvent.DamageCause.SUICIDE, 1000)
+        Bukkit.getPluginManager().callEvent(ede)
+        if (ede.isCancelled) return
+
+        ede.entity.lastDamageCause = ede
+
+        this.health = 0.0
     }
 }

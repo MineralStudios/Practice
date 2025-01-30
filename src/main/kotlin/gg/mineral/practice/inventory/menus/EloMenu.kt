@@ -15,8 +15,10 @@ import gg.mineral.practice.util.messages.CC
 import it.unimi.dsi.fastutil.objects.Object2IntLinkedOpenHashMap
 
 @ClickCancelled(true)
-open class EloMenu(protected var arg: ProfileData, protected var queuetype: Queuetype) : AsyncMenu() {
+open class EloMenu(private val profileData: ProfileData, protected val queuetype: Queuetype) : AsyncMenu() {
     protected open val menuEntries: Object2IntLinkedOpenHashMap<QueuetypeMenuEntry> by lazy { queuetype.menuEntries }
+    override val title: String
+        get() = CC.BLUE + profileData.name
 
     protected open fun shouldSkip(menuEntry: QueuetypeMenuEntry) = menuEntry is Gametype && menuEntry.inCategory
 
@@ -24,14 +26,14 @@ open class EloMenu(protected var arg: ProfileData, protected var queuetype: Queu
         setSlot(
             4,
             ItemStacks.GLOBAL_ELO.name(
-                CC.SECONDARY + CC.B + arg.name + "'s Global Elo"
+                CC.SECONDARY + CC.B + profileData.name + "'s Global Elo"
             )
                 .lore(
                     (CC.WHITE + "The " + CC.SECONDARY + "average elo" + CC.WHITE
                             + " across all game types."),
                     " ",
                     CC.WHITE + "Currently:",
-                    CC.GOLD + queuetype.getGlobalElo(arg).join()
+                    CC.GOLD + queuetype.getGlobalElo(profileData).join()
                 )
 
                 .build()
@@ -46,8 +48,8 @@ open class EloMenu(protected var arg: ProfileData, protected var queuetype: Queu
                     .name(CC.SECONDARY + CC.B + menuEntry.displayName)
                     .lore(
                         " ",
-                        CC.WHITE + arg.name + "'s Elo:",
-                        CC.GOLD + menuEntry.getElo(arg).join()
+                        CC.WHITE + profileData.name + "'s Elo:",
+                        CC.GOLD + menuEntry.getElo(profileData).join()
                     )
                     .build()
                 setSlot(entry.intValue + 18, item)
@@ -75,14 +77,11 @@ open class EloMenu(protected var arg: ProfileData, protected var queuetype: Queu
                     entry.intValue + 18, item
                 ) {
                     it.profile
-                        .openMenu(CategorizedEloMenu(arg, queuetype, menuEntry, this))
+                        .openMenu(CategorizedEloMenu(profileData, queuetype, menuEntry, this))
                 }
             }
         }
     }
-
-    override val title: String
-        get() = CC.BLUE + arg.name
 
     override fun shouldUpdate() = true
 }

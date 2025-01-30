@@ -82,7 +82,15 @@ class InventoryStatsMenu(val opponent: String? = null, val matchStatisticCollect
 
         setSlot(
             if (previousMenu != null) 52 else 49, ItemStacks.CLICKS
-                .name(CC.SECONDARY + CC.B + "Highest CPS: " + matchStatisticCollector.highestCps)
+                .name(CC.SECONDARY + CC.B + matchStatisticCollector.totalClicks + " Clicks")
+                .lore(
+                    (CC.WHITE + "Highest CPS: " + CC.GOLD
+                            + matchStatisticCollector.highestCps),
+                    (CC.WHITE + "Average CPS: " + CC.GOLD
+                            + matchStatisticCollector.averageCps),
+                    (CC.WHITE + "CPS Deviation: " + CC.GOLD
+                            + "±" + matchStatisticCollector.cpsDeviation)
+                )
                 .build()
         )
 

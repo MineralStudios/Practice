@@ -27,10 +27,6 @@ import java.util.*
 @Command(name = "arena")
 @Permission("practice.config")
 class ArenaCommand : CommandSenderAppender, LocationAppender {
-    companion object {
-        private const val PLACEHOLDER = "%arena%"
-    }
-
     @Execute(name = "create")
     fun executeCreate(@Context sender: CommandSender, @Arg name: String) {
         if (getArenaByName(name) != null) {
@@ -115,5 +111,9 @@ class ArenaCommand : CommandSenderAppender, LocationAppender {
             ChatMessages.ARENA_TP,
             ChatMessages.ARENA_DELETE
         )
+    }
+
+    companion object {
+        private const val PLACEHOLDER = "%arena%"
     }
 }

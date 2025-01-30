@@ -1,8 +1,10 @@
 package gg.mineral.practice.inventory.menus
 
 import gg.mineral.api.collection.GlueList
+import gg.mineral.practice.gametype.Gametype
 import gg.mineral.practice.inventory.ClickCancelled
 import gg.mineral.practice.inventory.Interaction
+import gg.mineral.practice.inventory.Menu
 import gg.mineral.practice.inventory.PracticeMenu
 import gg.mineral.practice.managers.CategoryManager
 import gg.mineral.practice.managers.GametypeManager
@@ -14,26 +16,24 @@ import org.bukkit.inventory.ItemStack
 
 @ClickCancelled(true)
 open class SelectExistingKitMenu(
-    protected val menu: PracticeMenu,
-    protected val simple: Boolean,
-    private val prevMenu: PracticeMenu? = null,
+    protected val onSelect: (Gametype) -> Unit,
+    private val simple: Boolean,
+    private val prevMenu: Menu? = null,
 ) : PracticeMenu() {
+
+    fun addGametypes(gametypes: Collection<Gametype>) {
+        gametypes.forEach {
+            val item: ItemStack = ItemBuilder(it.displayItem)
+                .name(CC.SECONDARY + CC.B + it.displayName).lore(CC.ACCENT + "Click to select.").build()
+
+            addAfter(9, item) { _ -> onSelect(it) }
+        }
+    }
 
     override fun update() {
         clear()
 
-        for (g in GametypeManager.gametypes.values) {
-            g ?: continue
-            if (g.inCategory) continue
-            val item: ItemStack = ItemBuilder(g.displayItem)
-                .name(CC.SECONDARY + CC.B + g.displayName).lore(CC.ACCENT + "Click to select.").build()
-
-            addAfter(9, item) {
-                if (simple) viewer.duelSettings.gametype = g
-                else viewer.duelSettings.kit = g.kit
-                viewer.openMenu(menu)
-            }
-        }
+        addGametypes(GametypeManager.gametypes.values.filterNotNull().filter { !it.inCategory })
 
         for (c in CategoryManager.categories.values) {
             c ?: continue
@@ -54,7 +54,7 @@ open class SelectExistingKitMenu(
             val item: ItemStack = itemBuild.build()
             addAfter(9, item) { interaction: Interaction ->
                 interaction.profile
-                    .openMenu(SelectCategorizedExistingKitMenu(c, menu, simple))
+                    .openMenu(SelectCategorizedExistingKitMenu(c, onSelect, simple))
             }
         }
 
@@ -72,9 +72,9 @@ open class SelectExistingKitMenu(
                 CC.WHITE + "Currently:", if (oldCombat) CC.GREEN + "Enabled" else CC.RED + "Disabled", " ",
                 CC.BOARD_SEPARATOR, CC.ACCENT + "Click to toggle old combat."
             ).build()
-        ) { interaction: Interaction ->
-            interaction.profile.duelSettings.oldCombat = !oldCombat
-            interaction.profile.duelSettings.knockback = OldStyleKnockback()
+        ) {
+            it.profile.duelSettings.oldCombat = !oldCombat
+            it.profile.duelSettings.knockback = OldStyleKnockback()
             reload()
         }
     }

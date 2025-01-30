@@ -33,20 +33,15 @@ class KitEditor(val gametype: Gametype, val queuetype: Queuetype, val profile: P
             val oldItem: ItemStack? = gametype.kit.contents[f]
 
             val newItemNull = newItem == null
+            val similar = newItem?.isSimilar(oldItem) == true
 
-            if (newItemNull && oldItem == null) continue
-
-            if (newItemNull) {
-                config[path + f] = "empty"
+            if (newItemNull || similar) {
+                if (oldItem != null && !similar) config[path + f] = "empty"
                 continue
             }
 
-            if (newItem?.isSimilar(oldItem) == true) continue
-
             config[path + f] = newItem
         }
-
-        config.save()
 
         ChatMessages.KIT_SAVED.send(profile.player)
     }

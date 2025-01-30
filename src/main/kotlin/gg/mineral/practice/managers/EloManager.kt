@@ -105,27 +105,25 @@ object EloManager {
         var maxDivisor = 0
 
         // Iterates through every gametype in ranked, eg. NoDebuff, Debuff, Gapple etc.
-        for (menuEntry in queuetype.menuEntries.keys) {
-            if (menuEntry is Gametype) {
-                maxDivisor++
+        queuetype.menuEntries.keys.filterIsInstance<Gametype>().forEach {
+            maxDivisor++
 
-                // Iterate through entries and put the sum of elo in the map for each player
-                for (e in menuEntry.eloCache.object2IntEntrySet()) {
-                    val elo = e.intValue
+            // Iterate through entries and put the sum of elo in the map for each player
+            for (e in it.eloCache.object2IntEntrySet()) {
+                val elo = e.intValue
 
-                    if (elo == menuEntry.eloCache.defaultReturnValue()) continue
-                    // Get the combined value (eloSum and divisor)
-                    val combinedValue: Long = globalEloMap.getLong(e.key)
-                    var eloSum = (combinedValue ushr 32).toInt()
-                    var divisor = combinedValue.toInt()
+                if (elo == it.eloCache.defaultReturnValue()) continue
+                // Get the combined value (eloSum and divisor)
+                val combinedValue: Long = globalEloMap.getLong(e.key)
+                var eloSum = (combinedValue ushr 32).toInt()
+                var divisor = combinedValue.toInt()
 
-                    // Add elo
-                    eloSum += elo
-                    divisor += 1
+                // Add elo
+                eloSum += elo
+                divisor += 1
 
-                    // Update the map with the new combined value
-                    globalEloMap.put(e.key, ((eloSum.toLong()) shl 32) or (divisor.toLong() and 0xFFFFFFFFL))
-                }
+                // Update the map with the new combined value
+                globalEloMap.put(e.key, ((eloSum.toLong()) shl 32) or (divisor.toLong() and 0xFFFFFFFFL))
             }
         }
 

@@ -1,5 +1,6 @@
 package gg.mineral.practice.inventory.menus
 
+import gg.mineral.practice.entity.PlayerStatus
 import gg.mineral.practice.inventory.ClickCancelled
 import gg.mineral.practice.inventory.Interaction
 import gg.mineral.practice.inventory.PracticeMenu
@@ -15,7 +16,15 @@ class SelectKitMenu(private val menu: MechanicsMenu) : PracticeMenu() {
         ) { interaction: Interaction ->
             interaction.profile.openMenu(
                 SelectExistingKitMenu(
-                    menu, false, menu
+                    {
+                        if (viewer.playerStatus === PlayerStatus.KIT_CREATOR) {
+                            viewer.giveKit(it.kit)
+                            return@SelectExistingKitMenu
+                        }
+
+                        viewer.duelSettings.kit = it.kit
+                        menu.reload()
+                    }, false, menu
                 )
             )
         }

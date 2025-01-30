@@ -18,31 +18,25 @@ class ProjectileListener : Listener {
 
         val shooter = e.entity.shooter as Player
 
-        for (effect in e.entity.effects) {
-            if (effect.type != PotionEffectType.HEAL) continue
+        // Only log for health potions
+        e.entity.effects.first { it.type == PotionEffectType.HEAL } ?: return
 
-            for (entity in e.affectedEntities) {
-                if (entity.uniqueId == shooter.uniqueId || entity !is Player) continue
+        e.affectedEntities.filter { it.uniqueId == shooter.uniqueId && it is Player }.forEach { entity ->
+            val uuid = entity.uniqueId
 
-                val uuid = entity.getUniqueId()
-                val profile = getProfile(uuid) ?: continue
-
-                profile.match?.let { match ->
-                    if (!match.ended) match.stat(
-                        uuid
-                    ) { it.stolenPotion() }
-                }
-            }
-
-            val uuid = shooter.uniqueId
-            val profile = getProfile(uuid) ?: continue
-
-            profile.match?.let { match ->
+            getProfile(uuid)?.match?.let { match ->
                 if (!match.ended) match.stat(
                     uuid
-                ) { it.thrownPotion(e.getIntensity(shooter) <= 0.5) }
+                ) { it.stolenPotion() }
             }
-            break
+        }
+
+        val uuid = shooter.uniqueId
+
+        getProfile(uuid)?.match?.let { match ->
+            if (!match.ended) match.stat(
+                uuid
+            ) { it.thrownPotion(e.getIntensity(shooter) <= 0.5) }
         }
     }
 

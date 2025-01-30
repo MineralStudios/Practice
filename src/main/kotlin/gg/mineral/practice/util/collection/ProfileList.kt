@@ -27,21 +27,11 @@ class ProfileList : ConcurrentLinkedQueue<Profile> {
         val subList: MutableList<Profile> = GlueList()
         val iterator: Iterator<Profile> = iterator()
 
-        for (i in 0..<fromIndex) {
-            if (iterator.hasNext()) {
-                iterator.next()
-            } else {
-                throw IndexOutOfBoundsException()
-            }
-        }
+        fromIndex.rangeTo(0)
+            .forEach { _ -> if (iterator.hasNext()) iterator.next() else throw IndexOutOfBoundsException() }
 
-        for (i in fromIndex..<toIndex) {
-            if (iterator.hasNext()) {
-                subList.add(iterator.next())
-            } else {
-                throw IndexOutOfBoundsException()
-            }
-        }
+        fromIndex.rangeTo(toIndex)
+            .forEach { _ -> if (iterator.hasNext()) subList.add(iterator.next()) else throw IndexOutOfBoundsException() }
 
         return subList
     }
