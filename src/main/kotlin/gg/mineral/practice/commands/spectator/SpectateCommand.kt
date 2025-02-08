@@ -14,16 +14,11 @@ import java.util.*
 class SpectateCommand {
     @Execute
     fun execute(@Context profile: Profile, @Arg profileToSpectate: Optional<Profile>) {
-        if (profile.playerStatus !== PlayerStatus.IDLE) {
-            profile.message(ErrorMessages.YOU_ARE_NOT_IN_LOBBY)
-            return
-        }
+        if (profile.playerStatus !== PlayerStatus.IDLE) return profile.message(ErrorMessages.YOU_ARE_NOT_IN_LOBBY)
 
-        profileToSpectate.ifPresentOrElse({ p ->
-            if (profile == p) profile.message(ErrorMessages.NOT_SPEC_SELF)
-            else profile.spectate(p)
-        }, {
-            profile.openMenu(SpectateMenu())
-        })
+        profileToSpectate.ifPresentOrElse({
+            if (profile == it) profile.message(ErrorMessages.NOT_SPEC_SELF)
+            else profile.spectate(it)
+        }, { profile.openMenu(SpectateMenu()) })
     }
 }

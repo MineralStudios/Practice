@@ -170,12 +170,12 @@ open class TeamMatch : Match, MatchAppender {
 
         victimTeam.reportDeath(victim)
 
-        for (profile in participants) {
-            val hasKiller = victim.killer != null
-            var message = if (hasKiller) ChatMessages.KILLED_BY_PLAYER else ChatMessages.DIED
-            message = message.clone().replace("%victim%", victim.name)
-            profile.message(if (hasKiller) message.replace("%attacker%", victim.killer!!.name) else message)
-        }
+        val hasKiller = victim.killer != null
+        var message = if (hasKiller) ChatMessages.KILLED_BY_PLAYER else ChatMessages.DIED
+        message = message.clone().replace("%victim%", victim.name)
+        val finalMessage = if (hasKiller) message.replace("%attacker%", victim.killer!!.name) else message
+
+        for (profile in participants) profile.message(finalMessage)
 
         val victimsAlive = victimTeam.alive()
 

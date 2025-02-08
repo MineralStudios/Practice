@@ -17,40 +17,19 @@ class DuelCommand {
 
     @Execute
     fun execute(@Context profile: Profile, @Arg duelReceiver: Optional<Profile>) {
-        if (profile.match?.ended == false) {
-            profile.message(ErrorMessages.YOU_ARE_NOT_IN_LOBBY)
-            return
-        }
+        if (profile.match?.ended == false) return profile.message(ErrorMessages.YOU_ARE_NOT_IN_LOBBY)
 
-        duelReceiver.ifPresentOrElse({ receiver ->
-            if (profile == receiver) {
-                profile.message(ErrorMessages.YOU_CAN_NOT_DUEL_YOURSELF)
-                return@ifPresentOrElse
-            }
-            profile.party?.let {
-                if (!(receiver.party?.partyLeader == receiver
-                            && it.partyLeader == profile)
-                ) {
-                    profile.message(ErrorMessages.PLAYER_NOT_IN_PARTY_OR_PARTY_LEADER)
-                    return@ifPresentOrElse
-                }
-            } ?: run {
-                if (receiver.party != null) {
-                    profile.message(ErrorMessages.PLAYER_IN_PARTY)
-                    return@ifPresentOrElse
-                }
-            }
+        duelReceiver.ifPresentOrElse({
+            if (profile == it) return@ifPresentOrElse profile.message(ErrorMessages.YOU_CAN_NOT_DUEL_YOURSELF)
 
-            profile.duelRequestReciever = receiver
+            if (it.party?.isPartyLeader(it) != profile.party?.isPartyLeader(profile))
+                return@ifPresentOrElse profile.message(if (it.party != null) ErrorMessages.PLAYER_NOT_IN_PARTY_OR_PARTY_LEADER else ErrorMessages.NOT_IN_PARTY_OR_PARTY_LEADER)
+
+            profile.duelRequestReciever = it
             profile.openMenu(SelectModeMenu(SubmitAction.DUEL))
         }, {
-            if (profile.party == null) {
-                profile.message(UsageMessages.DUEL)
-                return@ifPresentOrElse
-            }
-
+            if (profile.party == null) return@ifPresentOrElse profile.message(UsageMessages.DUEL)
             profile.openMenu(OtherPartiesMenu())
-            return@ifPresentOrElse
         })
     }
 }

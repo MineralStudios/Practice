@@ -54,6 +54,9 @@ object ErrorMessages {
     val PLAYER_NOT_IN_PARTY_OR_PARTY_LEADER: Message = ErrorMessage(
         "That player is in a party or not a party leader."
     )
+    val NOT_IN_PARTY_OR_PARTY_LEADER: Message = ErrorMessage(
+        "You are not in a party or not a party leader."
+    )
     val YOU_ARE_ALREADY_IN_PARTY: Message = ErrorMessage("You are already in a party.")
     val YOU_ARE_NOT_IN_PARTY: Message = ErrorMessage("You are not in a party.")
     val PLAYER_IN_PARTY: Message = ErrorMessage("That player is in a party.")

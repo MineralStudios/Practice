@@ -4,7 +4,7 @@ import gg.mineral.api.collection.GlueList
 
 class LeaderboardMap(val size: Int = 10) {
 
-    data class Entry(val key: String, var value: Int)
+    class Entry(val key: String, var value: Int)
 
     var entries: GlueList<Entry> = GlueList()
 
@@ -16,15 +16,9 @@ class LeaderboardMap(val size: Int = 10) {
         while (firstIndex != lastIndex) {
             val midValue: Int = get(midIndex).value
 
-            if (midValue > value) {
-                // below on leaderboard
-                firstIndex = midIndex + 1
-            } else if (midValue < value) {
-                // above on leaderboard
-                lastIndex = midIndex
-            } else {
-                return midIndex
-            }
+            if (midValue > value) firstIndex = midIndex + 1
+            else if (midValue < value) lastIndex = midIndex
+            else return midIndex
 
             midIndex = (firstIndex + lastIndex) / 2
         }

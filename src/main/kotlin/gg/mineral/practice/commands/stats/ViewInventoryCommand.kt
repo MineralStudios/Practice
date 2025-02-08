@@ -15,10 +15,7 @@ class ViewInventoryCommand {
     fun execute(@Context profile: Profile, @Arg playerName: String) {
         val inventoryStats = getInventoryStats(playerName)
 
-        if (inventoryStats.isNullOrEmpty()) {
-            profile.message(ErrorMessages.PLAYER_INVENTORY_NOT_FOUND)
-            return
-        }
+        if (inventoryStats.isNullOrEmpty()) return profile.message(ErrorMessages.PLAYER_INVENTORY_NOT_FOUND)
 
         val firstEntry = inventoryStats[0]
 

@@ -13,32 +13,29 @@ import gg.mineral.practice.util.collection.ProfileList
 import gg.mineral.practice.util.messages.impl.ChatMessages
 import gg.mineral.practice.util.messages.impl.ErrorMessages
 import net.md_5.bungee.api.chat.ClickEvent
-import org.bukkit.scheduler.BukkitRunnable
+import org.bukkit.Bukkit
 
 class Tournament(p: Profile) {
     private var matches: GlueList<Match> = GlueList()
     var players: ProfileList = ProfileList()
-    var started: Boolean = false
+    private var started: Boolean = false
     var ended: Boolean = false
-    var matchData: MatchData = MatchData(p.duelSettings)
-    var round: Int = 1
+    private var matchData: MatchData = MatchData(p.duelSettings)
+    private var round: Int = 1
     val host: String = p.name
 
     init {
         addPlayer(p)
     }
 
-    fun addPlayer(p: Profile) {
-        if (started) {
-            p.message(ErrorMessages.TOURNAMENT_STARTED)
-            return
-        }
+    fun addPlayer(p: Profile): Boolean {
+        if (started) return p.message(ErrorMessages.TOURNAMENT_STARTED).let { true }
 
         p.tournament = this
-        players.add(p)
 
         val joinedMessage = ChatMessages.JOINED_TOURNAMENT.clone().replace("%player%", p.name)
         broadcast(players, joinedMessage)
+        return players.add(p)
     }
 
     fun removePlayer(p: Profile) {
@@ -83,26 +80,21 @@ class Tournament(p: Profile) {
 
         broadcast(messageToBroadcast)
 
-        object : BukkitRunnable() {
-            override fun run() {
-                started = true
+        Bukkit.getServer().scheduler.runTaskLater(PracticePlugin.INSTANCE, {
+            started = true
 
-                if (players.size == 1) {
-                    val winner = players.first
-                    winner?.tournament = null
+            if (players.size == 1) {
+                val winner = players.first
+                winner?.tournament = null
 
-                    ErrorMessages.TOURNAMENT_NOT_ENOUGH_PLAYERS.send(winner!!.player)
-                    remove(this@Tournament)
-                    ended = true
-                    return
-                }
-
-                startRound()
-            }
-        }.runTaskLater(PracticePlugin.INSTANCE, 600)
+                ErrorMessages.TOURNAMENT_NOT_ENOUGH_PLAYERS.send(winner!!.player)
+                remove(this@Tournament)
+                ended = true
+            } else startRound()
+        }, 600)
     }
 
-    fun startRound() {
+    private fun startRound() {
         if (players.size == 1) {
             val winner = players.first
             winner?.tournament = null
@@ -114,16 +106,12 @@ class Tournament(p: Profile) {
         val iter: Iterator<Profile> = players.iterator()
 
         while (iter.hasNext()) {
-            val p1 = iter.next()
+            val profile1 = iter.next()
 
-            if (!iter.hasNext()) {
-                ChatMessages.NO_OPPONENT.send(p1.player)
-                return
-            }
+            if (!iter.hasNext()) return profile1.message(ChatMessages.NO_OPPONENT)
 
-            val p2 = iter.next()
-
-            val match = TournamentMatch(p1, p2, matchData, this)
+            val profile2 = iter.next()
+            val match = TournamentMatch(profile1, profile2, matchData, this)
             match.start()
             matches.add(match)
         }
@@ -135,16 +123,12 @@ class Tournament(p: Profile) {
         if (ended) return
 
         if (matches.isEmpty()) {
-            val broadcastedMessage = ChatMessages.ROUND_OVER.clone().replace("%round%", "" + round)
+            broadcast(players, ChatMessages.ROUND_OVER.clone().replace("%round%", "" + round))
 
-            broadcast(players, broadcastedMessage)
-
-            object : BukkitRunnable() {
-                override fun run() {
-                    startRound()
-                    round++
-                }
-            }.runTaskLater(PracticePlugin.INSTANCE, 100)
+            Bukkit.getServer().scheduler.runTaskLater(PracticePlugin.INSTANCE, {
+                startRound()
+                round++
+            }, 100)
         }
     }
 }

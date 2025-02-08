@@ -23,6 +23,8 @@ class Party(val partyLeader: Profile) : QueuedEntity {
         return other.partyLeader == partyLeader
     }
 
+    fun isPartyLeader(profile: Profile) = partyLeader == profile
+
     fun add(p: Profile) = partyMembers.add(p)
 
     fun remove(p: Profile) = partyMembers.remove(p)

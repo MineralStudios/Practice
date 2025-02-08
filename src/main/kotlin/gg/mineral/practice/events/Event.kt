@@ -41,25 +41,16 @@ class Event(hostProfile: Profile, val eventArenaId: Byte) : Spectatable {
         this.addPlayer(hostProfile)
     }
 
-    fun addPlayer(profile: Profile) {
-        if (started) {
-            profile.message(ErrorMessages.EVENT_STARTED)
-            return
-        }
+    fun addPlayer(profile: Profile): Boolean {
+        if (started) return profile.message(ErrorMessages.EVENT_STARTED).let { true }
 
-        if (participants.contains(profile)) {
-            profile.message(ErrorMessages.ALREADY_IN_EVENT)
-            return
-        }
-
-        val eventArena = ArenaManager.arenas.get(eventArenaId)
-
-        eventArena?.waitingLocation?.bukkit(this.world)?.let { PlayerUtil.teleport(profile, it) }
-            ?: throw NullPointerException("Arena not found")
+        ArenaManager.arenas.get(eventArenaId)?.waitingLocation?.bukkit(this.world)
+            ?.let { PlayerUtil.teleport(profile, it) }
+            ?: error("Arena not found")
         profile.event = this
-        participants.add(profile)
 
         ProfileManager.broadcast(participants, ChatMessages.JOINED_EVENT.clone().replace("%player%", profile.name))
+        return participants.add(profile)
     }
 
     private fun startRound() {

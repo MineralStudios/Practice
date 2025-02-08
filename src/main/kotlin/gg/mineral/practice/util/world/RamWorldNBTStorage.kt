@@ -26,7 +26,7 @@ open class RamWorldNBTStorage(file: File?, private val fileName: String) : IData
     override fun checkSession() {}
 
     override fun createChunkLoader(worldprovider: WorldProvider?): IChunkLoader {
-        throw RuntimeException("Old Chunk Storage is no longer supported.")
+        error("Old Chunk Storage is no longer supported.")
     }
 
     override fun saveWorldData(worlddata: WorldData, nbttagcompound: NBTTagCompound?) {}

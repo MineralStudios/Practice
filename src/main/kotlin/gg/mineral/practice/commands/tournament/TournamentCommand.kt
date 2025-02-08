@@ -15,10 +15,7 @@ import gg.mineral.practice.util.messages.impl.ErrorMessages
 class TournamentCommand {
     @Execute
     fun execute(@Context profile: Profile) {
-        if (profile.playerStatus !== PlayerStatus.IDLE) {
-            profile.message(ErrorMessages.YOU_ARE_NOT_IN_LOBBY)
-            return
-        }
+        if (profile.playerStatus !== PlayerStatus.IDLE) return profile.message(ErrorMessages.YOU_ARE_NOT_IN_LOBBY)
 
         profile.openMenu(SelectModeMenu(SubmitAction.TOURNAMENT))
     }

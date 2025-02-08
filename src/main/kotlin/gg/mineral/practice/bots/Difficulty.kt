@@ -107,21 +107,21 @@ enum class Difficulty(val display: String) {
     },
     RANDOM(CC.AQUA + "Random") {
         override fun getConfiguration(settings: QueueSettings?): BotConfiguration {
-            val r = Random()
+            val random = Random()
 
-            val latency = r.nextInt((150 - 5) + 1) + 5
+            val latency = random.nextInt((150 - 5) + 1) + 5
 
             return BotConfiguration.builder().username("RandomBot")
-                .horizontalAimSpeed(0.3f + r.nextFloat() * (1.1f - 0.3f))
-                .verticalAimSpeed(0.3f + r.nextFloat() * (1.1f - 0.3f))
-                .horizontalAimAccuracy(0.25f + r.nextFloat() * (1.1f - 0.25f))
-                .verticalAimAccuracy(0.25f + r.nextFloat() * (1.1f - 0.25f))
-                .horizontalErraticness(r.nextFloat())
-                .verticalErraticness(r.nextFloat())
-                .averageCps((r.nextInt((20 - 5) + 1) + 5).toFloat())
-                .latency(latency).latencyDeviation(r.nextInt((latency / 30) + 1))
-                .sprintResetAccuracy(0.25f + r.nextFloat() * (1.0f - 0.25f))
-                .hitSelectAccuracy(r.nextFloat()).build()
+                .horizontalAimSpeed(0.3f + random.nextFloat() * (1.1f - 0.3f))
+                .verticalAimSpeed(0.3f + random.nextFloat() * (1.1f - 0.3f))
+                .horizontalAimAccuracy(0.25f + random.nextFloat() * (1.1f - 0.25f))
+                .verticalAimAccuracy(0.25f + random.nextFloat() * (1.1f - 0.25f))
+                .horizontalErraticness(random.nextFloat())
+                .verticalErraticness(random.nextFloat())
+                .averageCps((random.nextInt((20 - 5) + 1) + 5).toFloat())
+                .latency(latency).latencyDeviation(random.nextInt((latency / 30) + 1))
+                .sprintResetAccuracy(0.25f + random.nextFloat() * (1.0f - 0.25f))
+                .hitSelectAccuracy(random.nextFloat()).build()
         }
 
         override fun configEquals(botConfiguration: BotConfiguration) = false

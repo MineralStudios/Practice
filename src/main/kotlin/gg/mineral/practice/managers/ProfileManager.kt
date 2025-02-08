@@ -81,36 +81,22 @@ object ProfileManager : PlayerAppender {
             if (profile != null) return profile
         }
 
-        for (p in profiles.values) {
-            if (!p.name.equals(name, ignoreCase = true)) continue
-            return p
-        }
+        getProfile(name)?.let { return it }
 
         return uuid?.let { ExtendedProfileData(name, it) } ?: ProfileData(name)
     }
 
-    fun getProfile(uuid: UUID) = profiles[uuid]
-
-    fun getProfile(uuid: UUID, predicate: Predicate<Profile>): Profile? {
+    fun getProfile(uuid: UUID, predicate: Predicate<Profile>? = null): Profile? {
         val profile = profiles[uuid]
 
-        if (profile == null || !predicate.test(profile)) return null
+        if (profile == null || predicate?.test(profile) == false) return null
 
         return profile
     }
 
-    fun getProfile(name: String): Profile? {
-        for (p in profiles.values) {
-            if (!p.name.equals(name, ignoreCase = true)) continue
-            return p
-        }
-        return null
-    }
+    fun getProfile(name: String) = profiles.values.find { it.name.equals(name, ignoreCase = true) }
 
-    fun removeIfExists(pl: Player?) {
-        if (pl == null) return
-        profiles.remove(pl.uniqueId)
-    }
+    fun removeIfExists(pl: Player) = profiles.remove(pl.uniqueId)
 
     fun getOrCreateProfile(pl: Player): Profile = profiles.computeIfAbsent(
         pl.uniqueId,

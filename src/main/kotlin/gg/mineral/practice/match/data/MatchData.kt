@@ -12,6 +12,7 @@ import gg.mineral.practice.queue.QueueSettings
 import gg.mineral.practice.queue.Queuetype
 import gg.mineral.practice.util.items.ItemStacks
 import it.unimi.dsi.fastutil.bytes.Byte2BooleanOpenHashMap
+import it.unimi.dsi.fastutil.bytes.ByteOpenHashSet
 import it.unimi.dsi.fastutil.bytes.ByteSet
 import it.unimi.dsi.fastutil.ints.Int2ObjectOpenHashMap
 import org.bukkit.inventory.ItemStack
@@ -90,7 +91,7 @@ class MatchData private constructor() {
         duelSettings.gametype
     ) {
         this.enabledArenas = enabledArenas
-        this.arenaId = nextArenaIdFiltered(arenas.keys)
+        this.arenaId = nextArenaIdFiltered(queueCompatibleArenas() ?: arenas.keys)
         this.kit = duelSettings.kit ?: GametypeManager.gametypes.get(0.toByte())?.kit ?: Kit.emptyKit
         this.knockback = duelSettings.knockback
         this.noDamageTicks = duelSettings.noDamageTicks
@@ -114,7 +115,8 @@ class MatchData private constructor() {
 
     private fun nextArenaId(compatibleArenas: ByteSet?) = compatibleArenas?.random() ?: -1
 
-    private fun nextQueueArenaId() = nextArenaIdFiltered(gametype?.let { queuetype?.filterArenasByGametype(it) })
+    private fun queueCompatibleArenas(): ByteOpenHashSet? =
+        gametype?.let { queuetype?.filterArenasByGametype(it) }
 
     fun nextArenaIdFiltered(compatibleArenas: ByteSet?): Byte {
         val filteredArenas =
@@ -134,7 +136,7 @@ class MatchData private constructor() {
         val duelSettings = DuelSettings()
         duelSettings.queuetype = queuetype
         duelSettings.gametype = gametype
-        duelSettings.enabledArenas = enabledArenas
+        duelSettings.enabledArenas = Byte2BooleanOpenHashMap().apply { put(arenaId, true) }
         duelSettings.kit = kit
         duelSettings.knockback = knockback
         duelSettings.noDamageTicks = noDamageTicks

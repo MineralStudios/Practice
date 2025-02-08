@@ -55,6 +55,7 @@ object EloManager {
     }
 
     fun get(gametype: Gametype, playerName: String): CompletableFuture<Int> {
+
         return DatabaseAPIPlugin.INSTANCE.sqlManager?.executeQuery(
             "SELECT * FROM $TABLE WHERE PLAYER=? AND GAMETYPE=?", { queryResult: QueryResult ->
                 var elo = 1000

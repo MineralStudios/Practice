@@ -46,45 +46,14 @@ class PlayerInventory(var holder: Profile) :
 
     fun getTask(slot: Int) = dataMap[slot]
 
-    fun getNumber(material: Material, durability: Short): Int {
-        var count = 0
+    fun getNumber(material: Material, durability: Short) =
+        contents.count { it != null && it.type == material && it.durability == durability }
 
-        for (itemStack in contents) {
-            if (itemStack == null) continue
-            if (itemStack.type != material) continue
-            if (itemStack.durability != durability) continue
-            count++
-        }
+    fun getNumberAndAmount(material: Material, durability: Short) =
+        contents.filter { it != null && it.type == material && it.durability == durability }
+            .sumOf { it.amount }
 
-        return count
-    }
-
-    fun getNumberAndAmount(material: Material, durability: Short): Int {
-        var count = 0
-
-        for (itemStack in contents) {
-            if (itemStack == null) continue
-            if (itemStack.type != material) continue
-            if (itemStack.durability != durability) continue
-
-            count += itemStack.amount
-        }
-
-        return count
-    }
-
-    fun getNumber(material: Material): Int {
-        var count = 0
-
-        for (itemStack in contents) {
-            if (itemStack == null) continue
-            if (itemStack.type != material) continue
-
-            count++
-        }
-
-        return count
-    }
+    fun getNumber(material: Material) = contents.count { it != null && it.type == material }
 
     override fun clear() {
         this.dataMap.clear()
@@ -138,12 +107,18 @@ class PlayerInventory(var holder: Profile) :
     }
 
     fun setInventoryForParty() {
+        if (this.holder.playerStatus === PlayerStatus.QUEUEING) return
+
+        if (this.holder.match?.ended == false) return
         this.inventoryClickCancelled = true
         this.clear()
         this.setItem(8, ItemStacks.WAIT_TO_LEAVE, Runnable { holder.message(ErrorMessages.CAN_NOT_LEAVE_YET) })
 
         object : BukkitRunnable() {
             override fun run() {
+                if (holder.playerStatus === PlayerStatus.QUEUEING) return
+
+                if (holder.match?.ended == false) return
                 setItem(
                     8, ItemStacks.LEAVE_PARTY
                 ) { p: Profile -> p.player.performCommand("p leave") }
@@ -172,7 +147,7 @@ class PlayerInventory(var holder: Profile) :
                 queuetype.slotNumber, item
             ) { profile: Profile ->
                 profile.party?.let {
-                    if (!it.partyLeader.equals(profile)) {
+                    if (it.partyLeader != profile) {
                         profile.message(ErrorMessages.YOU_ARE_NOT_PARTY_LEADER)
                         return@setItem true
                     }

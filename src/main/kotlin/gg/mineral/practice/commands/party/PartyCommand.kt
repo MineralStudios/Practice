@@ -19,15 +19,8 @@ import org.bukkit.command.CommandSender
 class PartyCommand : CommandSenderAppender {
     @Execute(name = "create")
     fun executeCreate(@Context profile: Profile) {
-        if (profile.playerStatus !== PlayerStatus.IDLE) {
-            profile.message(ErrorMessages.YOU_ARE_NOT_IN_LOBBY)
-            return
-        }
-
-        if (profile.party != null) {
-            profile.message(ErrorMessages.YOU_ARE_ALREADY_IN_PARTY)
-            return
-        }
+        if (profile.playerStatus !== PlayerStatus.IDLE) return profile.message(ErrorMessages.YOU_ARE_NOT_IN_LOBBY)
+        if (profile.party != null) return profile.message(ErrorMessages.YOU_ARE_ALREADY_IN_PARTY)
 
         profile.party = Party(profile)
         profile.message(ChatMessages.PARTY_CREATED)
@@ -35,31 +28,13 @@ class PartyCommand : CommandSenderAppender {
 
     @Execute(name = "invite")
     fun executeInvite(@Context profile: Profile, @Arg invitee: Profile) {
-        if (profile == invitee) {
-            profile.message(ErrorMessages.YOU_CAN_NOT_INVITE_YOURSELF)
-            return
-        }
-
-        if (invitee.party != null) {
-            profile.message(ErrorMessages.PLAYER_IN_PARTY)
-            return
-        }
-
-        if (!invitee.partyRequests) {
-            profile.message(ErrorMessages.PARTY_REQUESTS_DISABLED)
-            return
-        }
+        if (profile == invitee) return profile.message(ErrorMessages.YOU_CAN_NOT_INVITE_YOURSELF)
+        if (invitee.party != null) return profile.message(ErrorMessages.PLAYER_IN_PARTY)
+        if (!invitee.partyRequests) return profile.message(ErrorMessages.PARTY_REQUESTS_DISABLED)
 
         profile.party?.let {
-            if (it.partyLeader != profile) {
-                profile.message(ErrorMessages.YOU_ARE_NOT_PARTY_LEADER)
-                return
-            }
-
-            if (invitee.recievedPartyRequests.containsKey(it)) {
-                ErrorMessages.WAIT_TO_INVITE.send(profile.player)
-                return
-            }
+            if (it.partyLeader != profile) return profile.message(ErrorMessages.YOU_ARE_NOT_PARTY_LEADER)
+            if (invitee.recievedPartyRequests.containsKey(it)) return profile.message(ErrorMessages.WAIT_TO_INVITE)
 
             invitee.recievedPartyRequests.add(it)
 
@@ -77,10 +52,7 @@ class PartyCommand : CommandSenderAppender {
     @Execute(name = "open")
     fun executeOpen(@Context profile: Profile) {
         profile.party?.let {
-            if (it.partyLeader != profile) {
-                profile.message(ErrorMessages.YOU_ARE_NOT_PARTY_LEADER)
-                return
-            }
+            if (it.partyLeader != profile) return profile.message(ErrorMessages.YOU_ARE_NOT_PARTY_LEADER)
 
             it.open = !it.open
             profile.message(ChatMessages.PARTY_OPENED.clone().replace("%opened%", if (it.open) "opened" else "closed"))
@@ -99,32 +71,18 @@ class PartyCommand : CommandSenderAppender {
                         )
 
                     broadcast(messageToBroadcast)
-
-                    return
-                }
-
-                profile.message(ChatMessages.CAN_NOT_BROADCAST)
+                } else profile.message(ChatMessages.CAN_NOT_BROADCAST)
             }
         } ?: profile.message(ErrorMessages.YOU_ARE_NOT_IN_PARTY)
     }
 
     @Execute(name = "join")
     fun executeJoin(@Context profile: Profile, @Arg partyLeader: Profile) {
-        if (profile.playerStatus !== PlayerStatus.IDLE) {
-            profile.message(ErrorMessages.YOU_ARE_NOT_IN_LOBBY)
-            return
-        }
-
-        if (profile.party != null) {
-            profile.message(ErrorMessages.YOU_ARE_ALREADY_IN_PARTY)
-            return
-        }
+        if (profile.playerStatus !== PlayerStatus.IDLE) return profile.message(ErrorMessages.YOU_ARE_NOT_IN_LOBBY)
+        if (profile.party != null) return profile.message(ErrorMessages.YOU_ARE_ALREADY_IN_PARTY)
 
         partyLeader.party?.let {
-            if (!it.open) {
-                profile.message(ErrorMessages.PARTY_NOT_OPEN)
-                return
-            }
+            if (!it.open) return profile.message(ErrorMessages.PARTY_NOT_OPEN)
 
             profile.party = it
             broadcast(it.partyMembers, ChatMessages.JOINED_PARTY.clone().replace("%player%", profile.name))
@@ -133,10 +91,7 @@ class PartyCommand : CommandSenderAppender {
 
     @Execute(name = "accept")
     fun executeAccept(@Context profile: Profile, @Arg partyLeader: Profile) {
-        if (profile.playerStatus !== PlayerStatus.IDLE) {
-            profile.message(ErrorMessages.YOU_ARE_NOT_IN_LOBBY)
-            return
-        }
+        if (profile.playerStatus !== PlayerStatus.IDLE) return profile.message(ErrorMessages.YOU_ARE_NOT_IN_LOBBY)
 
         val it = profile.recievedPartyRequests
             .entryIterator()

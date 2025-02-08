@@ -5,20 +5,36 @@ import java.util.*
 
 object StringUtil {
     fun toNiceString(string: String): String {
-        val newString = ChatColor.stripColor(string).replace('_', ' ').lowercase(Locale.getDefault())
+        val newString = ChatColor.stripColor(string)
+            .replace('_', ' ')
+            .lowercase(Locale.getDefault())
+        val chars = newString.toCharArray()
+        val length = chars.size
         val sb = StringBuilder()
-        for (i in newString.toCharArray().indices) {
-            var c = newString.toCharArray()[i]
+
+        for (i in 0 until length) {
+            var c = chars[i]
             if (i > 0) {
-                val prev = newString.toCharArray()[i - 1]
-                if ((prev == ' ' || prev == '[' || prev == '(') && (i == newString.toCharArray().size - 1 || c != 'x' || !Character.isDigit(
-                        newString.toCharArray()[i + 1]
-                    ))
-                ) c = c.uppercaseChar()
-            } else if (c != 'x' || !Character.isDigit(newString.toCharArray()[1])) c = c.uppercaseChar()
+                val prev = chars[i - 1]
+                val spaceOrBracket = prev in setOf(' ', '[', '(')
+                if (spaceOrBracket) {
+                    val isLast = i == length - 1
+                    val nextIsDigit = if (i < length - 1) Character.isDigit(chars[i + 1]) else false
+                    if (isLast || c != 'x' || !nextIsDigit) {
+                        c = c.uppercaseChar()
+                    }
+                }
+            } else {
+                val isX = c == 'x'
+                val nextIsDigit = if (length - 1 > 0) Character.isDigit(chars[1]) else false
+                if (!isX || !nextIsDigit) c = c.uppercaseChar()
+            }
 
             sb.append(c)
         }
+
         return sb.toString()
     }
+
+
 }

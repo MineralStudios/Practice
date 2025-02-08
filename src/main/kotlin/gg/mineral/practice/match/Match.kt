@@ -65,11 +65,17 @@ open class Match(
     var placedTnt: Int = 0
     var buildLog: GlueList<Location> = GlueList()
     var itemRemovalQueue: Queue<Item> = ConcurrentLinkedQueue()
-
     override val world: World by lazy { this.generateWorld() }
     private val matchStatisticMap: MutableMap<UUID, MatchStatisticCollector> = Object2ObjectOpenHashMap()
     protected var timeRemaining: Int = 0
     protected var timeTaskId: Int = 0
+    val kit: Kit
+        get() = Kit(data.kit)
+    protected val timeLimitSec: Int
+        get() {
+            val mins = 5 * log10((5 * participants.size).toDouble())
+            return (mins * 60).toInt()
+        }
 
     init {
         profile1?.let { addParticipants(it) }
@@ -94,12 +100,6 @@ open class Match(
         for (profile in profiles) prepareForMatch(profile)
     }
 
-    protected val timeLimitSec: Int
-        get() {
-            val mins = 5 * log10((5 * participants.size).toDouble())
-            return (mins * 60).toInt()
-        }
-
     protected open fun startMatchTimeLimit() {
         this.timeRemaining = this.timeLimitSec
         this.timeTaskId = Bukkit.getServer().scheduler.scheduleSyncRepeatingTask(
@@ -117,16 +117,13 @@ open class Match(
         return kit
     }
 
-    val kit: Kit
-        get() = Kit(data.kit)
-
     fun stat(uuid: UUID, consumer: Consumer<MatchStatisticCollector>) {
         if (ended) return
 
         val collector = matchStatisticMap.computeIfAbsent(
             uuid
         ) { _: UUID? ->
-            val profile: Profile = this.participants.get(uuid) ?: throw IllegalStateException("Profile is null")
+            val profile: Profile = this.participants.get(uuid) ?: error("Profile is null")
             MatchStatisticCollector(profile)
         }
         consumer.accept(collector)
@@ -295,8 +292,7 @@ open class Match(
         }
 
     private fun handleOpponentMessages(profile1: Profile, profile2: Profile) {
-        if (data.ranked)
-            throw IllegalStateException("Ranked matches are not supported.")
+        check(!data.ranked) { "Ranked matches are not supported." }
 
         profile1.player.sendMessage(CC.BOARD_SEPARATOR)
         profile1.player.sendMessage("Opponent: " + CC.AQUA + profile2.name)
@@ -570,6 +566,7 @@ open class Match(
         Bukkit.getServer().scheduler.runTaskLater(
             PracticePlugin.INSTANCE,
             {
+                if (profile.party?.isPartyLeader(profile) == false) return@runTaskLater
 
                 if (queuetype == null || gametype == null) {
                     getOpponent(profile)?.let {
@@ -577,7 +574,18 @@ open class Match(
                             profile.inventory.heldItemSlot,
                             ItemStacks.REMATCH,
                             Runnable {
+
                                 profile.duelSettings = data.deriveDuelSettings()
+
+                                val party1 = profile.party
+                                val party2 = getOpponent(profile)?.party
+
+                                if (party1 != null && party2 != null && party1 == party2) {
+                                    val partyMatch = TeamMatch(party1, MatchData(profile.duelSettings))
+                                    partyMatch.start()
+                                    return@Runnable
+                                }
+
                                 profile.sendDuelRequest(it)
                             })
 

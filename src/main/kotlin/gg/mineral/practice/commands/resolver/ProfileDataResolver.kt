@@ -11,11 +11,19 @@ import gg.mineral.practice.managers.ProfileManager
 import org.bukkit.command.CommandSender
 
 class ProfileDataResolver : ArgumentResolver<CommandSender, ProfileData>() {
+    private fun String.isValidUsername(): Boolean {
+        val regex = "^(?=.{3,16}\$)(?![._])(?!.*[._]{2})[a-zA-Z0-9._]+(?<![._])\$".toRegex()
+        return this.matches(regex)
+    }
+
     override fun parse(
         invocation: Invocation<CommandSender>,
         argument: Argument<ProfileData>,
         string: String
     ): ParseResult<ProfileData> {
+        if (!string.isValidUsername())
+            return ParseResult.failure("Invalid username")
+        
         val profile = ProfileManager.getProfileData(string)
         return ParseResult.success(profile)
     }

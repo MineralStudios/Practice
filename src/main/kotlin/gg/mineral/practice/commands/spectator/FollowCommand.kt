@@ -13,15 +13,8 @@ import gg.mineral.practice.util.messages.impl.ErrorMessages
 class FollowCommand {
     @Execute
     fun execute(@Context profile: Profile, @Arg profileToFollow: Profile) {
-        if (profile == profileToFollow) {
-            profile.message(ErrorMessages.NOT_FOLLOW_SELF)
-            return
-        }
-
-        if (profile.playerStatus !== PlayerStatus.IDLE) {
-            profile.message(ErrorMessages.YOU_ARE_NOT_IN_LOBBY)
-            return
-        }
+        if (profile == profileToFollow) return profile.message(ErrorMessages.NOT_FOLLOW_SELF)
+        if (profile.playerStatus !== PlayerStatus.IDLE) return profile.message(ErrorMessages.YOU_ARE_NOT_IN_LOBBY)
 
         profile.following = profileToFollow
         profile.message(ChatMessages.FOLLOWING.clone().replace("%player%", profileToFollow.name))

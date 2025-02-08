@@ -13,10 +13,7 @@ import org.bukkit.Material
 class PotsCommand {
     @Execute
     fun execute(@Context profile: Profile) {
-        if (profile.playerStatus !== PlayerStatus.FIGHTING) {
-            profile.message(ErrorMessages.NOT_IN_MATCH)
-            return
-        }
+        if (profile.playerStatus !== PlayerStatus.FIGHTING) return profile.message(ErrorMessages.NOT_IN_MATCH)
 
         val pots = profile.inventory.getNumber(Material.POTION, 16421.toShort())
         profile.message(ChatMessages.POTS.clone().replace("%pots%", pots.toString()))

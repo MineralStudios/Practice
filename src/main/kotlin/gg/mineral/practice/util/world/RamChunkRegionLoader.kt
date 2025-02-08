@@ -133,8 +133,7 @@ class RamChunkRegionLoader(private val chunkMap: Long2ObjectOpenHashMap<ChunkSna
                 val nbttagcompound4: NBTTagCompound = it.get(j2)
                 val tileentity: TileEntity? = TileEntity.c(nbttagcompound4)
 
-                if (tileentity != null)
-                    chunk.a(tileentity)
+                if (tileentity != null) chunk.a(tileentity)
             }
         }
 
@@ -143,11 +142,9 @@ class RamChunkRegionLoader(private val chunkMap: Long2ObjectOpenHashMap<ChunkSna
                 for (k2 in 0..<it.size()) {
                     val nbttagcompound5: NBTTagCompound = it.get(k2)
 
-                    val block: Block = if (nbttagcompound5.hasKeyOfType("i", 8)) {
-                        Block.getByName(nbttagcompound5.getString("i"))
-                    } else {
-                        Block.getById(nbttagcompound5.getInt("i"))
-                    }
+                    val block: Block =
+                        if (nbttagcompound5.hasKeyOfType("i", 8)) Block.getByName(nbttagcompound5.getString("i"))
+                        else Block.getById(nbttagcompound5.getInt("i"))
 
                     world.b(
                         BlockPosition(

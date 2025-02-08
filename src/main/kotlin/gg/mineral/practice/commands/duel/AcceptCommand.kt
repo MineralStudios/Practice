@@ -18,21 +18,17 @@ class AcceptCommand {
         if (profile.playerStatus === PlayerStatus.QUEUEING) profile.removeFromQueue()
         if (duelSender.playerStatus === PlayerStatus.QUEUEING) duelSender.removeFromQueue()
 
-        if (profile.playerStatus !== PlayerStatus.IDLE) {
-            profile.message(ErrorMessages.YOU_ARE_NOT_IN_LOBBY)
-            return
-        }
+        if (profile.playerStatus !== PlayerStatus.IDLE && profile.match?.ended == false) return profile.message(
+            ErrorMessages.YOU_ARE_NOT_IN_LOBBY
+        )
+        if (duelSender.playerStatus !== PlayerStatus.IDLE && duelSender.match?.ended == false) return profile.message(
+            ErrorMessages.DUEL_SENDER_NOT_IN_LOBBY
+        )
 
-        if (duelSender.playerStatus !== PlayerStatus.IDLE) {
-            profile.message(ErrorMessages.DUEL_SENDER_NOT_IN_LOBBY)
-            return
-        }
-
-        if ((duelSender.party != null) != (profile.party != null)) {
-            if (profile.party != null) profile.message(ErrorMessages.PLAYER_NOT_IN_PARTY_OR_PARTY_LEADER)
-            else profile.message(ErrorMessages.PLAYER_IN_PARTY)
-            return
-        }
+        if (duelSender.party?.isPartyLeader(duelSender) != profile.party?.isPartyLeader(profile)) return profile.message(
+            if (profile.party != null)
+                ErrorMessages.NOT_IN_PARTY_OR_PARTY_LEADER else ErrorMessages.PLAYER_NOT_IN_PARTY_OR_PARTY_LEADER
+        )
 
         val it = profile.recievedDuelRequests.entryIterator()
 

@@ -173,10 +173,7 @@ class Profile(player: Player) : ExtendedProfileData(player.name, player.uniqueId
             value?.let {
                 if (playerStatus !== PlayerStatus.IDLE
                     && playerStatus !== PlayerStatus.FOLLOWING
-                ) {
-                    message(ErrorMessages.YOU_ARE_NOT_IN_LOBBY)
-                    return
-                }
+                ) return message(ErrorMessages.YOU_ARE_NOT_IN_LOBBY)
 
                 if (it.ended) return
                 it.spectators.add(this)
@@ -231,20 +228,14 @@ class Profile(player: Player) : ExtendedProfileData(player.name, player.uniqueId
     var following: Profile? = null
         set(value) {
             if (value != null) {
-                if (playerStatus !== PlayerStatus.IDLE) {
-                    message(ErrorMessages.YOU_ARE_NOT_IN_LOBBY)
-                    return
-                }
+                if (playerStatus !== PlayerStatus.IDLE) return message(ErrorMessages.YOU_ARE_NOT_IN_LOBBY)
 
                 playerStatus = PlayerStatus.FOLLOWING
                 inventory.setInventoryToFollow()
                 scoreboard = FollowingScoreboard.INSTANCE
                 if (value.playerStatus === PlayerStatus.FIGHTING || value.event != null) spectate(value)
             } else {
-                if (playerStatus !== PlayerStatus.FOLLOWING) {
-                    message(ErrorMessages.NOT_FOLLOWING)
-                    return
-                }
+                if (playerStatus !== PlayerStatus.FOLLOWING) return message(ErrorMessages.NOT_FOLLOWING)
                 playerStatus = PlayerStatus.SPECTATING
                 stopSpectating()
             }
@@ -394,11 +385,9 @@ class Profile(player: Player) : ExtendedProfileData(player.name, player.uniqueId
         queuetype: Queuetype,
         gametype: Gametype
     ) {
+        if (party != null && party!!.partyLeader != this) return message(ErrorMessages.YOU_ARE_NOT_PARTY_LEADER)
         val botQueue = queuetype.botsEnabled && queueSettings.botQueue
-        if (botQueue && !gametype.botsEnabled) {
-            message(ErrorMessages.COMING_SOON)
-            return
-        }
+        if (botQueue && !gametype.botsEnabled) return message(ErrorMessages.COMING_SOON)
 
         if (playerStatus === PlayerStatus.IDLE || playerStatus === PlayerStatus.QUEUEING || match?.ended == true) {
             if (playerStatus !== PlayerStatus.QUEUEING) {
@@ -606,33 +595,10 @@ class Profile(player: Player) : ExtendedProfileData(player.name, player.uniqueId
     }
 
     fun sendDuelRequest(receiver: Profile) {
-        if (receiver.playerStatus !== PlayerStatus.IDLE) {
-            message(ErrorMessages.PLAYER_NOT_IN_LOBBY)
-            return
-        }
+        if (receiver.playerStatus !== PlayerStatus.IDLE) return message(ErrorMessages.PLAYER_NOT_IN_LOBBY)
+        if (!receiver.duelRequests) return message(ErrorMessages.DUEL_REQUESTS_DISABLED)
 
-        if (!receiver.duelRequests) {
-            message(ErrorMessages.DUEL_REQUESTS_DISABLED)
-            return
-        }
-
-        for (request in receiver.recievedDuelRequests) {
-            if (request.sender == this) {
-                message(ErrorMessages.DUEL_REQUEST_ALREADY_SENT)
-                return
-            }
-        }
-
-        var sender: String = this.name
-
-        party?.let {
-            if (it.partyLeader != this) {
-                message(ErrorMessages.YOU_ARE_NOT_PARTY_LEADER)
-                return
-            }
-
-            sender += "'s party (" + it.partyMembers.size + ") "
-        }
+        for (request in receiver.recievedDuelRequests) if (request.sender == this) return message(ErrorMessages.DUEL_REQUEST_ALREADY_SENT)
 
         val request = DuelRequest(this, duelSettings)
         receiver.recievedDuelRequests.add(request)
@@ -645,7 +611,10 @@ class Profile(player: Player) : ExtendedProfileData(player.name, player.uniqueId
             ComponentBuilder(duelSettings.toString()).create()
         )
         receiver.message(
-            ChatMessages.DUEL_REQUEST_RECIEVED.clone().replace("%player%", sender)
+            ChatMessages.DUEL_REQUEST_RECIEVED.clone().replace("%player%", party?.let {
+                if (it.partyLeader != this) return message(ErrorMessages.YOU_ARE_NOT_PARTY_LEADER)
+                "$name's party (" + it.partyMembers.size + ") "
+            } ?: this.name)
                 .setTextEvent(
                     ClickEvent(ClickEvent.Action.RUN_COMMAND, "/accept " + this.name),
                     hoverEvent

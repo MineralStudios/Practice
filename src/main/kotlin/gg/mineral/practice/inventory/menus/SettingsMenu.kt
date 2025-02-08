@@ -14,6 +14,9 @@ import org.bukkit.inventory.ItemStack
 
 @ClickCancelled(true)
 class SettingsMenu : PracticeMenu(), PlayerAppender {
+    override val title: String
+        get() = CC.BLUE + "Settings"
+
     override fun update() {
         setSlot(
             10,
@@ -182,9 +185,6 @@ class SettingsMenu : PracticeMenu(), PlayerAppender {
             setSlot(36, ItemStack(Material.AIR))
         }
     }
-
-    override val title: String
-        get() = CC.BLUE + "Settings"
 
     override fun shouldUpdate() = true
 }

@@ -11,7 +11,7 @@ object CoreConnector {
     }
 
     init {
-        if (Bukkit.getPluginManager().isPluginEnabled("JeezyCore")) {
+        if (Bukkit.getPluginManager().isPluginEnabled("MineralCore")) {
             INSTANCE = CoreLoader()
         } else {
             INSTANCE = null

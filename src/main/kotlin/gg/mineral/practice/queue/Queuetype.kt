@@ -136,9 +136,8 @@ class Queuetype(val name: String, val id: Byte) {
 
         val futures = mutableListOf<CompletableFuture<Int>>()
 
-        for (menuEntry in set) if (menuEntry is Gametype) {
+        for (menuEntry in set) if (menuEntry is Gametype)
             futures.add(menuEntry.getElo(profile))
-        }
 
         if (futures.isEmpty()) return CompletableFuture.completedFuture(1000)
 

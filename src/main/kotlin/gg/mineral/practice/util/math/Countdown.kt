@@ -24,10 +24,8 @@ class Countdown(private val match: Match) {
             )
         }, 2L)
         taskID = scheduler.scheduleSyncRepeatingTask(PracticePlugin.INSTANCE, {
-            if (time == 0) {
-                cancel()
-                return@scheduleSyncRepeatingTask
-            }
+            if (time == 0) return@scheduleSyncRepeatingTask cancel()
+
             broadcast(
                 match.participants.filter { it.inMatchCountdown },
                 ChatMessages.BEGINS_IN.clone().replace("%time%", "" + time)

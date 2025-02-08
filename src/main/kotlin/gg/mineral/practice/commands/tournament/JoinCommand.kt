@@ -14,29 +14,13 @@ import gg.mineral.practice.util.messages.impl.ErrorMessages
 class JoinCommand {
     @Execute
     fun execute(@Context profile: Profile, @Arg name: String) {
-        if (profile.tournament != null) {
-            profile.message(ErrorMessages.ALREADY_IN_TOURNAMENT)
-            return
-        }
-
-        if (profile.event != null) {
-            profile.message(ErrorMessages.ALREADY_IN_EVENT)
-            return
-        }
-
-        if (profile.playerStatus !== PlayerStatus.IDLE) {
-            profile.message(ErrorMessages.YOU_ARE_NOT_IN_LOBBY)
-            return
-        }
+        profile.tournament?.let { return profile.message(ErrorMessages.ALREADY_IN_TOURNAMENT) }
+        profile.event?.let { return profile.message(ErrorMessages.ALREADY_IN_EVENT) }
+        if (profile.playerStatus !== PlayerStatus.IDLE) return profile.message(ErrorMessages.YOU_ARE_NOT_IN_LOBBY)
 
         val event = getEventByName(name)
-
-        event?.addPlayer(profile)
-
         val tournament = TournamentManager.getTournament(name)
 
-        tournament?.addPlayer(profile)
-
-        if (event == null && tournament == null) profile.message(ErrorMessages.EVENT_TOURNAMENT_NOT_EXIST)
+        if (event?.addPlayer(profile) == false && tournament?.addPlayer(profile) == false) profile.message(ErrorMessages.EVENT_TOURNAMENT_NOT_EXIST)
     }
 }

@@ -1,25 +1,30 @@
 package gg.mineral.practice.util.world
 
-import com.google.common.collect.Lists
+import gg.mineral.practice.util.collection.FastUtilIntHashMap
 import gg.mineral.server.config.GlobalConfig
 import it.unimi.dsi.fastutil.objects.ObjectOpenHashSet
 import net.minecraft.server.v1_8_R3.*
-import org.apache.logging.log4j.LogManager
-import org.apache.logging.log4j.Logger
-import org.spigotmc.AsyncCatcher
 import org.spigotmc.TrackingRange
-import java.util.concurrent.Callable
 
 class FastEntityTracker(private val world: WorldServer) : EntityTracker(world) {
-    private val c: MutableSet<EntityTrackerEntry> = ObjectOpenHashSet()
-    private val e: Int = world.minecraftServer.playerList.d()
+    private fun PlayerList.renderDistance() = this.d()
+    private fun EntityTrackerEntry.removePlayer(player: EntityPlayer) = this.a(player)
+    private fun EntityTrackerEntry.remove() = this.a()
+    private fun <V> IntHashMap<V>.remove(key: Int) = this.d(key)
+    private fun <V> IntHashMap<V>.containsKey(key: Int): Boolean = this.b(key)
+    private fun <V> IntHashMap<V>.put(key: Int, value: V) = this.a(key, value)
+
+    private val playerChunkRange: Int = world.minecraftServer.playerList.renderDistance()
+    private val entrySet: MutableSet<EntityTrackerEntry> = ObjectOpenHashSet()
+
+    init {
+        this.trackedEntities = FastUtilIntHashMap()
+    }
 
     override fun track(entity: Entity) {
         when (entity) {
-            is EntityPlayer -> {
-                this.addEntity(entity, 512, GlobalConfig.getInstance().relativeMoveFrequency)
-                c.filter { it.tracker !== entity }.forEach { it.updatePlayer(entity) }
-            }
+            is EntityPlayer -> this.addEntity(entity, 512, GlobalConfig.getInstance().relativeMoveFrequency)
+                .also { entrySet.filter { it.tracker !== entity }.forEach { it.updatePlayer(entity) } }
 
             is EntityFishingHook -> this.addEntity(entity, 64, 5, true)
             is EntityArrow -> this.addEntity(entity, 64, 20, true)
@@ -49,154 +54,77 @@ class FastEntityTracker(private val world: WorldServer) : EntityTracker(world) {
         }
     }
 
-    override fun addEntity(entity: Entity, i: Int, j: Int) = this.addEntity(entity, i, j, false)
+    override fun addEntity(entity: Entity, maxRange: Int, updateFreq: Int, disableRelMove: Boolean) {
+        val range = TrackingRange.getEntityTrackingRange(entity, maxRange)
+            .let { if (it > this.playerChunkRange) this.playerChunkRange else it }
 
-    override fun addEntity(entity: Entity, i: Int, j: Int, flag: Boolean) {
-        var i = i
-        AsyncCatcher.catchOp("entity track") // Spigot
-        i = TrackingRange.getEntityTrackingRange(entity, i) // Spigot
-        if (i > this.e) {
-            i = this.e
-        }
+        check(!trackedEntities.containsKey(entity.id)) { "Entity is already tracked!" }
 
-        try {
-            check(!trackedEntities.b(entity.id)) { "Entity is already tracked!" }
-
-            val entitytrackerentry = EntityTrackerEntry(entity, i, j, flag)
-
-            c.add(entitytrackerentry)
-            trackedEntities.a(entity.id, entitytrackerentry)
-            entitytrackerentry.scanPlayers(world.players)
-        } catch (throwable: Throwable) {
-            val crashreport: CrashReport = CrashReport.a(throwable, "Adding entity to track")
-            val crashreportsystemdetails: CrashReportSystemDetails = crashreport.a("Entity To Track")
-
-            crashreportsystemdetails.a("Tracking range", ("$i blocks") as Any)
-            val finalI = i // CraftBukkit - fix decompile error
-            crashreportsystemdetails.a("Update interval", object : Callable<Any?> {
-                @Throws(Exception::class)
-                fun a(): String {
-                    var s = "Once per $finalI ticks" // CraftBukkit
-
-                    if (finalI == Int.MAX_VALUE) { // CraftBukkit
-                        s = "Maximum ($s)"
-                    }
-
-                    return s
-                }
-
-                @Throws(Exception::class)
-                override fun call(): Any {
-                    return this.a()
-                }
-            })
-            entity.appendEntityCrashDetails(crashreportsystemdetails)
-            val crashreportsystemdetails1: CrashReportSystemDetails = crashreport.a("Entity That Is Already Tracked")
-
-            trackedEntities.get(entity.id)?.tracker
-                ?.appendEntityCrashDetails(crashreportsystemdetails1)
-
-            try {
-                throw ReportedException(crashreport)
-            } catch (reportedexception: ReportedException) {
-                a.error("\"Silently\" catching entity tracking error.", reportedexception)
-            }
+        EntityTrackerEntry(entity, range, updateFreq, disableRelMove).let {
+            entrySet.add(it)
+            trackedEntities.put(entity.id, it)
+            it.scanPlayers(world.players)
         }
     }
 
     override fun untrackEntity(entity: Entity) {
-        AsyncCatcher.catchOp("entity untrack") // Spigot
-        if (entity is EntityPlayer) {
-            val entityplayer: EntityPlayer = entity
-            val iterator: Iterator<*> = c.iterator()
+        if (entity is EntityPlayer) entrySet.forEach { it.removePlayer(entity) }
 
-            while (iterator.hasNext()) {
-                val entitytrackerentry: EntityTrackerEntry = iterator.next() as EntityTrackerEntry
-
-                entitytrackerentry.a(entityplayer)
-            }
-        }
-
-        val entitytrackerentry1: EntityTrackerEntry? = trackedEntities.d(entity.id)
-
-        if (entitytrackerentry1 != null) {
-            c.remove(entitytrackerentry1)
-            entitytrackerentry1.a()
+        trackedEntities.remove(entity.id)?.let {
+            entrySet.remove(it)
+            it.remove()
         }
     }
 
     override fun updatePlayers() {
-        val arraylist: ArrayList<EntityPlayer> = Lists.newArrayList()
-        val iterator: Iterator<EntityTrackerEntry> = c.iterator()
+        val players = mutableListOf<EntityPlayer>()
 
-        while (iterator.hasNext()) {
-            val entitytrackerentry: EntityTrackerEntry = iterator.next()
-
-            entitytrackerentry.track(world.players)
-            if (entitytrackerentry.n && entitytrackerentry.tracker is EntityPlayer) {
-                arraylist.add(entitytrackerentry.tracker as EntityPlayer)
-            }
+        entrySet.forEach {
+            it.track(world.players)
+            val tracker = it.tracker
+            if (it.n && tracker is EntityPlayer)
+                players.add(tracker)
         }
 
-        for (i in arraylist.indices) {
-            val entityplayer: EntityPlayer = arraylist[i]
-            val iterator1: Iterator<EntityTrackerEntry> = c.iterator()
-
-            while (iterator1.hasNext()) {
-                val entitytrackerentry1: EntityTrackerEntry = iterator1.next()
-
-                if (entitytrackerentry1.tracker !== entityplayer) {
-                    entitytrackerentry1.updatePlayer(entityplayer)
-                }
-            }
-        }
+        for (player in players)
+            entrySet.forEach { if (it.tracker !== player) it.updatePlayer(player) }
     }
 
-    override fun a(entityplayer: EntityPlayer) {
-        val iterator: Iterator<EntityTrackerEntry> = c.iterator()
+    override fun a(player: EntityPlayer) {
+        val iterator: Iterator<EntityTrackerEntry> = entrySet.iterator()
 
         while (iterator.hasNext()) {
             val entitytrackerentry: EntityTrackerEntry = iterator.next()
 
-            if (entitytrackerentry.tracker === entityplayer) {
+            if (entitytrackerentry.tracker === player) {
                 entitytrackerentry.scanPlayers(world.players)
             } else {
-                entitytrackerentry.updatePlayer(entityplayer)
+                entitytrackerentry.updatePlayer(player)
             }
         }
     }
 
-    override fun a(entity: Entity, packet: Packet<PacketListener>?) {
+    override fun a(entity: Entity, packet: Packet<PacketListener>) {
         trackedEntities.get(entity.id)?.broadcast(packet)
     }
 
-    override fun sendPacketToEntity(entity: Entity, packet: Packet<PacketListener>?) {
+    override fun sendPacketToEntity(entity: Entity, packet: Packet<PacketListener>) {
         trackedEntities.get(entity.id)?.broadcastIncludingSelf(packet)
     }
 
-    override fun untrackPlayer(entityplayer: EntityPlayer?) {
-        val iterator: Iterator<*> = c.iterator()
-
-        while (iterator.hasNext()) {
-            val entitytrackerentry: EntityTrackerEntry = iterator.next() as EntityTrackerEntry
-
-            entitytrackerentry.clear(entityplayer)
-        }
+    override fun untrackPlayer(player: EntityPlayer) {
+        entrySet.forEach { it.clear(player) }
     }
 
-    override fun a(entityplayer: EntityPlayer, chunk: Chunk) {
-        val iterator: Iterator<EntityTrackerEntry> = c.iterator()
+    override fun a(player: EntityPlayer, chunk: Chunk) {
+        val iterator: Iterator<EntityTrackerEntry> = entrySet.iterator()
 
         while (iterator.hasNext()) {
             val entitytrackerentry: EntityTrackerEntry = iterator.next()
 
-            if (entitytrackerentry.tracker !== entityplayer && entitytrackerentry.tracker.ae == chunk.locX && entitytrackerentry.tracker.ag == chunk.locZ) {
-                entitytrackerentry.updatePlayer(entityplayer)
-            }
-        }
-    }
+            if (entitytrackerentry.tracker !== player && entitytrackerentry.tracker.ae == chunk.locX && entitytrackerentry.tracker.ag == chunk.locZ)
+                entitytrackerentry.updatePlayer(player)
 
-    companion object {
-        private val a: Logger = LogManager.getLogger()
+        }
     }
 }

@@ -13,15 +13,8 @@ import gg.mineral.practice.util.messages.impl.ErrorMessages
 class ForfeitCommand {
     @Execute
     fun execute(@Context profile: Profile) {
-        if (profile.playerStatus !== PlayerStatus.FIGHTING) {
-            profile.message(ErrorMessages.NOT_IN_MATCH)
-            return
-        }
-
-        if (profile.match?.data?.ranked == true) {
-            profile.message(ErrorMessages.CANNOT_FORFEIT_RANKED)
-            return
-        }
+        if (profile.playerStatus !== PlayerStatus.FIGHTING) return profile.message(ErrorMessages.NOT_IN_MATCH)
+        if (profile.match?.data?.ranked == true) return profile.message(ErrorMessages.CANNOT_FORFEIT_RANKED)
 
         profile.player.kill()
     }
