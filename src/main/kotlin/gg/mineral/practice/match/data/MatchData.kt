@@ -115,8 +115,24 @@ class MatchData private constructor() {
 
     private fun nextArenaId(compatibleArenas: ByteSet?) = compatibleArenas?.random() ?: -1
 
-    private fun queueCompatibleArenas(): ByteOpenHashSet? =
-        gametype?.let { queuetype?.filterArenasByGametype(it) }
+    private fun queueCompatibleArenas(): ByteSet? {
+        val queuetypeArenas = queuetype?.arenas ?: arenas.keys
+        val gametypeArenas = gametype?.arenas ?: arenas.keys
+
+        return queuetypeArenas.intersect(gametypeArenas)
+    }
+
+    private fun ByteSet.intersect(set: ByteSet): ByteSet? {
+        var compatibleArenas: ByteSet? = null
+        val iter = set.iterator()
+        while (iter.hasNext()) {
+            val arena = iter.nextByte()
+            if (compatibleArenas == null) compatibleArenas = ByteOpenHashSet()
+            if (this.contains(arena)) compatibleArenas.add(arena)
+        }
+
+        return if (compatibleArenas?.isEmpty() == true) null else compatibleArenas
+    }
 
     fun nextArenaIdFiltered(compatibleArenas: ByteSet?): Byte {
         val filteredArenas =

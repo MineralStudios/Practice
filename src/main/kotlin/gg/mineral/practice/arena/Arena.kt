@@ -12,6 +12,7 @@ import gg.mineral.practice.util.world.SchematicFile
 import gg.mineral.practice.util.world.SpawnLocation
 import org.bukkit.World
 import java.io.File
+import java.util.concurrent.atomic.AtomicInteger
 
 class Arena(var name: String, val id: Byte) {
     val config: FileConfiguration = ArenaManager.config
@@ -23,7 +24,7 @@ class Arena(var name: String, val id: Byte) {
     var location2 by SpawnLocationProp(config, path + "Spawn.2", SpawnLocation(0, 70, 0))
     var waitingLocation by SpawnLocationProp(config, path + "Spawn.Waiting", SpawnLocation(0, 70, 0))
     var displayItem by ItemStackProp(config, path + "DisplayItem", ItemStacks.DEFAULT_ARENA_DISPLAY_ITEM)
-    private var currentNameID: Int = 0
+    private var currentNameID = AtomicInteger(0)
 
     override fun equals(other: Any?): Boolean {
         if (other is Arena) return other.name.equals(this.name, ignoreCase = true)
@@ -34,7 +35,7 @@ class Arena(var name: String, val id: Byte) {
 
     fun spectateArena(profile: Profile) = profile.spectate(SpectatableArena(this))
 
-    fun generate(): World = schematicFile.generateWorld("_" + currentNameID++)
+    fun generate(): World = schematicFile.generateWorld("_" + currentNameID.incrementAndGet())
 
     fun generateBaseWorld(): World = schematicFile.generateWorld("")
 

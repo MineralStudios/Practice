@@ -33,75 +33,78 @@ class SchematicFile(
     }
 
     fun generateWorld(suffix: String): World {
-        val schemName = source.name
+        synchronized(this) {
+            val schemName = source.name
 
-        val name = schemName.substring(0, schemName.length - ".schematic".length) + suffix
-        val world: World? = getWorld(name)
-        val type: WorldType = WorldType.FLAT
-        val generateStructures = false
+            val name = schemName.substring(0, schemName.length - ".schematic".length) + suffix
+            val world: World? = getWorld(name)
 
-        if (world != null)
-            return world
+            if (world != null)
+                unloadWorld(world, false)
 
-        var dimension: Int = CraftWorld.CUSTOM_DIMENSION_OFFSET + MinecraftServer.getServer().worlds.size
-        var used = false
-        do {
-            for (server in MinecraftServer.getServer().worlds) {
-                used = server.dimension == dimension
-                if (used) {
-                    dimension++
-                    break
+            val type: WorldType = WorldType.FLAT
+            val generateStructures = false
+
+            var dimension: Int = CraftWorld.CUSTOM_DIMENSION_OFFSET + MinecraftServer.getServer().worlds.size
+            var used = false
+            do {
+                for (server in MinecraftServer.getServer().worlds) {
+                    used = server.dimension == dimension
+                    if (used) {
+                        dimension++
+                        break
+                    }
                 }
+            } while (used)
+            val hardcore = false
+
+            val sdm: IDataManager = RamServerNBTManager(this, getWorldContainer(), name)
+            var worlddata = sdm.worldData
+            if (worlddata == null) {
+                val worldSettings = WorldSettings(
+                    0,
+                    WorldSettings.EnumGamemode.getById(getDefaultGameMode().value), generateStructures, hardcore,
+                    type
+                )
+                worldSettings.setGeneratorSettings("")
+                worlddata = WorldData(worldSettings, name)
             }
-        } while (used)
-        val hardcore = false
+            worlddata.checkName(name)
+            val internal = FastWorldServer(
+                sdm, worlddata, dimension, MinecraftServer.getServer().methodProfiler,
+                World.Environment.NORMAL
+            ).b() as WorldServer
+            internal.keepSpawnInMemory = false
+            internal.savingDisabled = true
+            val gameRules = internal.gameRules
+            gameRules.set("doFireTick", "false")
+            gameRules.set("mobGriefing", "false")
+            gameRules.set("keepInventory", "false")
+            gameRules.set("doMobSpawning", "true")
+            gameRules.set("doMobLoot", "true")
+            gameRules.set("doTileDrops", "true")
+            gameRules.set("doEntityDrops", "true")
+            gameRules.set("commandBlockOutput", "false")
+            gameRules.set("naturalRegeneration", "true")
+            gameRules.set("doDaylightCycle", "false")
+            gameRules.set("logAdminCommands", "true")
+            gameRules.set("showDeathMessages", "true")
+            gameRules.set("randomTickSpeed", "3")
+            gameRules.set("sendCommandFeedback", "true")
+            gameRules.set("reducedDebugInfo", "false")
 
-        val sdm: IDataManager = RamServerNBTManager(this, getWorldContainer(), name)
-        var worlddata = sdm.worldData
-        if (worlddata == null) {
-            val worldSettings = WorldSettings(
-                0,
-                WorldSettings.EnumGamemode.getById(getDefaultGameMode().value), generateStructures, hardcore,
-                type
-            )
-            worldSettings.setGeneratorSettings("")
-            worlddata = WorldData(worldSettings, name)
+            internal.scoreboard = (getScoreboardManager().mainScoreboard as CraftScoreboard).handle
+
+            internal.tracker = FastEntityTracker(internal)
+            internal.addIWorldAccess(WorldManager(MinecraftServer.getServer(), internal))
+            internal.worldData.difficulty = EnumDifficulty.EASY
+            internal.setSpawnFlags(false, false)
+            MinecraftServer.getServer().worlds.add(internal)
+
+            //getPluginManager().callEvent(WorldInitEvent(internal.world))
+            //getPluginManager().callEvent(WorldLoadEvent(internal.world))
+            PracticePlugin.INSTANCE.logger.info("Loading schematic with ${chunkMap.size} chunks (${name})")
+            return internal.world
         }
-        worlddata.checkName(name)
-        val internal = FastWorldServer(
-            sdm, worlddata, dimension, MinecraftServer.getServer().methodProfiler,
-            World.Environment.NORMAL
-        ).b() as WorldServer
-        internal.keepSpawnInMemory = false
-        internal.savingDisabled = true
-        val gameRules = internal.gameRules
-        gameRules.set("doFireTick", "false")
-        gameRules.set("mobGriefing", "false")
-        gameRules.set("keepInventory", "false")
-        gameRules.set("doMobSpawning", "true")
-        gameRules.set("doMobLoot", "true")
-        gameRules.set("doTileDrops", "true")
-        gameRules.set("doEntityDrops", "true")
-        gameRules.set("commandBlockOutput", "false")
-        gameRules.set("naturalRegeneration", "true")
-        gameRules.set("doDaylightCycle", "false")
-        gameRules.set("logAdminCommands", "true")
-        gameRules.set("showDeathMessages", "true")
-        gameRules.set("randomTickSpeed", "3")
-        gameRules.set("sendCommandFeedback", "true")
-        gameRules.set("reducedDebugInfo", "false")
-
-        internal.scoreboard = (getScoreboardManager().mainScoreboard as CraftScoreboard).handle
-
-        internal.tracker = FastEntityTracker(internal)
-        internal.addIWorldAccess(WorldManager(MinecraftServer.getServer(), internal))
-        internal.worldData.difficulty = EnumDifficulty.EASY
-        internal.setSpawnFlags(false, false)
-        MinecraftServer.getServer().worlds.add(internal)
-
-        //getPluginManager().callEvent(WorldInitEvent(internal.world))
-        //getPluginManager().callEvent(WorldLoadEvent(internal.world))
-        PracticePlugin.INSTANCE.logger.info("Loading schematic with ${chunkMap.size} chunks (${name})")
-        return internal.world
     }
 }
