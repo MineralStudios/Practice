@@ -1,10 +1,7 @@
 package gg.mineral.practice.match
 
 import gg.mineral.api.collection.GlueList
-import gg.mineral.bot.ai.goal.DrinkPotionGoal
-import gg.mineral.bot.ai.goal.EatGappleGoal
-import gg.mineral.bot.ai.goal.MeleeCombatGoal
-import gg.mineral.bot.ai.goal.ReplaceArmorGoal
+import gg.mineral.bot.ai.goal.*
 import gg.mineral.bot.api.configuration.BotConfiguration
 import gg.mineral.bot.api.instance.ClientInstance
 import gg.mineral.practice.bots.Difficulty
@@ -32,7 +29,10 @@ class BotTeamMatch(
             instance.configuration.pearlCooldown = data.pearlCooldown
             instance.startGoals(
                 ReplaceArmorGoal(instance), DrinkPotionGoal(instance),
+                ThrowHealthPotGoal(instance),
                 EatGappleGoal(instance),
+                EatFoodGoal(instance),
+                ThrowPearlGoal(instance),
                 MeleeCombatGoal(instance)
             )
         }
@@ -41,7 +41,10 @@ class BotTeamMatch(
             instance.configuration.pearlCooldown = data.pearlCooldown
             instance.startGoals(
                 ReplaceArmorGoal(instance), DrinkPotionGoal(instance),
+                ThrowHealthPotGoal(instance),
                 EatGappleGoal(instance),
+                EatFoodGoal(instance),
+                ThrowPearlGoal(instance),
                 MeleeCombatGoal(instance)
             )
         }

@@ -21,7 +21,7 @@ class ProjectileListener : Listener {
         // Only log for health potions
         e.entity.effects.first { it.type == PotionEffectType.HEAL } ?: return
 
-        e.affectedEntities.filter { it.uniqueId == shooter.uniqueId && it is Player }.forEach { entity ->
+        e.affectedEntities.filter { it.uniqueId != shooter.uniqueId && it is Player }.forEach { entity ->
             val uuid = entity.uniqueId
 
             getProfile(uuid)?.match?.let { match ->

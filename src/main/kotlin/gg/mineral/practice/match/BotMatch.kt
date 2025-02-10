@@ -1,9 +1,6 @@
 package gg.mineral.practice.match
 
-import gg.mineral.bot.ai.goal.DrinkPotionGoal
-import gg.mineral.bot.ai.goal.EatGappleGoal
-import gg.mineral.bot.ai.goal.MeleeCombatGoal
-import gg.mineral.bot.ai.goal.ReplaceArmorGoal
+import gg.mineral.bot.ai.goal.*
 import gg.mineral.bot.api.BotAPI
 import gg.mineral.bot.api.configuration.BotConfiguration
 import gg.mineral.bot.api.instance.ClientInstance
@@ -69,7 +66,10 @@ class BotMatch(profile1: Profile, private val config: BotConfiguration, matchDat
             it.configuration.pearlCooldown = data.pearlCooldown
             it.startGoals(
                 ReplaceArmorGoal(it), DrinkPotionGoal(it),
+                ThrowHealthPotGoal(it),
                 EatGappleGoal(it),
+                EatFoodGoal(it),
+                ThrowPearlGoal(it),
                 MeleeCombatGoal(it)
             )
         } ?: onError("Client instance is null")

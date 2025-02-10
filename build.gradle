@@ -1,7 +1,7 @@
 plugins {
     id 'maven-publish'
     id 'com.gradleup.shadow' version '8.3.5'
-    id 'io.gitlab.arturbosch.detekt' version '1.23.7'
+    //id 'io.gitlab.arturbosch.detekt' version '1.23.7'
     id 'org.hidetake.ssh' version '2.11.2'
     id 'org.jetbrains.kotlin.jvm'
 }
@@ -37,16 +37,16 @@ dependencies {
     compileOnly 'gg.mineral:bot-api:20241204-03.39.21'
     compileOnly "gg.mineral:database-api:20250123-18.54.06"
     compileOnly 'de.jeezycore:jeezy-core:20241117-09.57.15'
-    compileOnly 'gg.mineral:bot-intelligence:20241204-03.39.22'
+    compileOnly "gg.mineral:bot-intelligence:20250210-21.13.58"
     compileOnly 'com.github.retrooper:packetevents-spigot:2.7.0'
     implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk8"
     implementation "dev.rollczi:litecommands-bukkit:3.9.7"
 }
 
-detekt {
+/*detekt {
     config = files("detekt.yml") // Optional: Your custom configuration
     buildUponDefaultConfig = true
-}
+}*/
 
 shadowJar {
     archiveFileName = 'MineralPractice.jar'
