@@ -72,7 +72,7 @@ open class Match(
     val kit: Kit
         get() = Kit(data.kit)
     protected val timeLimitSec by lazy {
-        val mins = 5 * log10((5 * participants.size).toDouble())
+        val mins = 30 * log10((5 * participants.size).toDouble())
         (mins * 60).toInt()
     }
 
