@@ -1,8 +1,9 @@
 plugins {
-    id 'java'
     id 'maven-publish'
-    //id 'pmd'
+    id 'com.gradleup.shadow' version '8.3.5'
+    //id 'io.gitlab.arturbosch.detekt' version '1.23.7'
     id 'org.hidetake.ssh' version '2.11.2'
+    id 'org.jetbrains.kotlin.jvm'
 }
 
 group = 'gg.mineral'
@@ -21,37 +22,45 @@ repositories {
     maven {
         url = 'https://repo.clojars.org/'
     }
+    maven {
+        url = 'https://repo.panda-lang.org/releases'
+    }
+    maven { url = uri("https://repo.codemc.io/repository/maven-releases/") }
+    maven { url = uri("https://repo.codemc.io/repository/maven-snapshots/") }
+    maven { url 'https://www.jitpack.io' }
 }
 
 dependencies {
     compileOnly "gg.mineral:nametag-api:20241126-14.08.47"
+    compileOnly "me.caseload.knockbacksync:bukkit:20250124-20.12.51"
     compileOnly "gg.mineral.mineralspigot:mineralspigot-server:20241230-23.01.56"
     compileOnly 'gg.mineral:bot-api:20241204-03.39.21'
-    compileOnly 'gg.mineral:database-api:20241117-09.57.02'
+    compileOnly "gg.mineral:database-api:20250123-18.54.06"
     compileOnly 'de.jeezycore:jeezy-core:20241117-09.57.15'
-    compileOnly 'gg.mineral:bot-intelligence:20241204-03.39.22'
-    compileOnly 'org.projectlombok:lombok:1.18.36'
-    annotationProcessor 'org.projectlombok:lombok:1.18.36'
-    compileOnly 'org.eclipse.jdt:org.eclipse.jdt.annotation:2.3.0'
-    annotationProcessor 'org.eclipse.jdt:org.eclipse.jdt.annotation:2.3.0'
+    compileOnly "gg.mineral:bot-intelligence:20250211-23.07.05"
+    compileOnly 'com.github.retrooper:packetevents-spigot:2.7.0'
+    implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk8"
+    implementation "dev.rollczi:litecommands-bukkit:3.9.7"
 }
 
-java {
-    toolchain {
-        languageVersion = JavaLanguageVersion.of(17)
-    }
-}
+/*detekt {
+    config = files("detekt.yml") // Optional: Your custom configuration
+    buildUponDefaultConfig = true
+}*/
 
-jar {
+shadowJar {
     archiveFileName = 'MineralPractice.jar'
-    from {
-        configurations.runtimeClasspath.collect { it.isDirectory() ? it : zipTree(it) }.collect {
-            it.filter { file ->
-                !file.name.startsWith('META-INF')
-            }
-        }
+    from(sourceSets.main.resources.srcDirs) {
+        into('/')
     }
     duplicatesStrategy = DuplicatesStrategy.EXCLUDE
+    archiveClassifier.set('')
+    mergeServiceFiles()
+}
+
+tasks.build {
+    dependsOn shadowJar
+    tasks.jar.enabled = false
 }
 
 afterEvaluate { project ->
@@ -80,17 +89,22 @@ ssh.settings {
     knownHosts = allowAnyHosts // Allow connections to unknown hosts
 }
 
+kotlin {
+    jvmToolchain(21)
+}
+
 remotes {
     deployServer {
         host = project.findProperty("deploy.ip") ?: System.getenv("DEPLOY_IP") // IP address
-        port = project.findProperty("deploy.port")?.toInteger() ?: System.getenv("DEPLOY_PORT")?.toInteger() ?: 22 // Default to port 22
+        port = project.findProperty("deploy.port")?.toInteger() ?: System.getenv("DEPLOY_PORT")?.toInteger() ?: 22
+        // Default to port 22
         user = project.findProperty("deploy.user") ?: System.getenv("DEPLOY_USER") // Username
         identity = file(System.getProperty('user.home') + '/.ssh/id_rsa') // Path to private key
     }
 }
 
 task deploy {
-    dependsOn jar
+    dependsOn shadowJar
     doLast {
         ssh.run {
             session(remotes.deployServer) {
