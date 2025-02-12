@@ -50,7 +50,7 @@ class DamageListener : Listener, CommandSenderAppender {
 
         val victim = getProfile(
             player.uniqueId
-        ) { p: Profile -> p.playerStatus === PlayerStatus.FIGHTING }
+        ) { it.playerStatus === PlayerStatus.FIGHTING }
 
         if (victim == null) {
             if (e.cause == DamageCause.VOID) player.teleport(lobbyLocation)

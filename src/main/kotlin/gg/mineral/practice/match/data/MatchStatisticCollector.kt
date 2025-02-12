@@ -43,7 +43,7 @@ class MatchStatisticCollector(val profile: Profile) {
         get() = potionEffectStrings!!.toTypedArray<String>()
     private val cpsRecord = mutableListOf<Int>()
     val averageCps: Int
-        get() = cpsRecord.average().roundToInt()
+        get() = if (cpsRecord.isEmpty()) 0 else cpsRecord.average().roundToInt()
     val cpsDeviation: Int
         get() {
             if (cpsRecord.isEmpty()) return 0
@@ -68,6 +68,7 @@ class MatchStatisticCollector(val profile: Profile) {
         highestCps = 0
         averageCombo = 0
         longestCombo = 0
+        remainingHealth = 0
         hitCount = 0
         currentCombo = 0
         clickCounterStart = profile.clientTimeMillis

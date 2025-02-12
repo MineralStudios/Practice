@@ -49,7 +49,6 @@ class BotMatch(profile1: Profile, private val config: BotConfiguration, matchDat
         addParticipants(profile2!!)
 
         handleOpponentMessages()
-        startMatchTimeLimit()
         startCountdown()
 
         prepareForMatch(participants)
@@ -65,11 +64,14 @@ class BotMatch(profile1: Profile, private val config: BotConfiguration, matchDat
         clientInstance?.let {
             it.configuration.pearlCooldown = data.pearlCooldown
             it.startGoals(
-                ReplaceArmorGoal(it), DrinkPotionGoal(it),
+                ReplaceArmorGoal(it),
+                HealSoupGoal(it),
                 ThrowHealthPotGoal(it),
+                DrinkPotionGoal(it),
                 EatGappleGoal(it),
                 EatFoodGoal(it),
                 ThrowPearlGoal(it),
+                DropEmptyBowlGoal(it),
                 MeleeCombatGoal(it)
             )
         } ?: onError("Client instance is null")
@@ -106,8 +108,8 @@ class BotMatch(profile1: Profile, private val config: BotConfiguration, matchDat
     }
 
     override fun end(attacker: Profile, victim: Profile) {
-        BotAPI.INSTANCE.despawn(attacker.player.uniqueId, victim.player.uniqueId)
-
         super.end(attacker, victim)
+
+        BotAPI.INSTANCE.despawn(attacker.player.uniqueId, victim.player.uniqueId)
     }
 }

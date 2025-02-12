@@ -124,7 +124,6 @@ open class TeamMatch : Match, MatchAppender {
 
         prepareForMatch(participants)
 
-        startMatchTimeLimit()
         startCountdown()
     }
 

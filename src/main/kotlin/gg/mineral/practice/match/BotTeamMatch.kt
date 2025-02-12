@@ -28,11 +28,14 @@ class BotTeamMatch(
         for (instance in team1BotInstances) {
             instance.configuration.pearlCooldown = data.pearlCooldown
             instance.startGoals(
-                ReplaceArmorGoal(instance), DrinkPotionGoal(instance),
+                ReplaceArmorGoal(instance),
+                HealSoupGoal(instance),
                 ThrowHealthPotGoal(instance),
+                DrinkPotionGoal(instance),
                 EatGappleGoal(instance),
                 EatFoodGoal(instance),
                 ThrowPearlGoal(instance),
+                DropEmptyBowlGoal(instance),
                 MeleeCombatGoal(instance)
             )
         }
@@ -40,11 +43,14 @@ class BotTeamMatch(
         for (instance in team2BotInstances) {
             instance.configuration.pearlCooldown = data.pearlCooldown
             instance.startGoals(
-                ReplaceArmorGoal(instance), DrinkPotionGoal(instance),
+                ReplaceArmorGoal(instance),
+                HealSoupGoal(instance),
                 ThrowHealthPotGoal(instance),
+                DrinkPotionGoal(instance),
                 EatGappleGoal(instance),
                 EatFoodGoal(instance),
                 ThrowPearlGoal(instance),
+                DropEmptyBowlGoal(instance),
                 MeleeCombatGoal(instance)
             )
         }

@@ -44,25 +44,72 @@ class RamChunkRegionLoader(private val chunkMap: Long2ObjectOpenHashMap<ChunkSna
 
     private fun Chunk.setSections(sections: Array<ChunkSection?>) = this.a(sections)
 
+    data class ChunkSectionSnapshot(
+        val yPos: Int,
+        val blocks: CharArray = CharArray(4096),
+        val blockLight: NibbleArray = NibbleArray(),
+        val hasSkylight: Boolean = true,
+        val skyLight: NibbleArray? = if (hasSkylight) NibbleArray() else null
+    ) {
+
+        fun NibbleArray.clone() = NibbleArray(a().clone())
+
+        fun toChunkSection(): ChunkSection {
+            val chunkSection = ChunkSection(yPos, true)
+            chunkSection.a(blocks.clone())
+            chunkSection.a(blockLight.clone())
+            skyLight?.let { chunkSection.b(it.clone()) }
+            chunkSection.recalcBlockCounts()
+            return chunkSection
+        }
+
+        fun setType(x: Int, y: Int, z: Int, blockData: IBlockData) {
+            this.blocks[y shl 8 or (z shl 4) or x] = Block.d.b(blockData).toChar()
+        }
+
+        override fun equals(other: Any?): Boolean {
+            if (this === other) return true
+            if (javaClass != other?.javaClass) return false
+
+            other as ChunkSectionSnapshot
+
+            if (yPos != other.yPos) return false
+            if (!blocks.contentEquals(other.blocks)) return false
+            if (blockLight != other.blockLight) return false
+            if (skyLight != other.skyLight) return false
+
+            return true
+        }
+
+        override fun hashCode(): Int {
+            var result = yPos
+            result = 31 * result + blocks.contentHashCode()
+            result = 31 * result + blockLight.hashCode()
+            result = 31 * result + skyLight.hashCode()
+            return result
+        }
+    }
+
     data class ChunkSnapshot(
         val xPos: Int,
         val zPos: Int,
-        val sections: Array<ChunkSection?> = arrayOfNulls(16),
+        val sections: Array<ChunkSectionSnapshot?> = arrayOfNulls(16),
         val heightMap: IntArray = IntArray(256),
         val terrainPopulated: Boolean = true,
         val lightPopulated: Boolean = true,
         val timeInhabited: Long = 0,
         val biomes: ByteArray = ByteArray(256)
     ) {
-        private fun ChunkSection.setSkylightArray(array: NibbleArray) = this.b(array)
-
         fun setTypeAndData(x: Int, y: Int, z: Int, type: Int, data: Byte) {
             if (y >= 0 && y shr 4 < sections.size) {
-                val chunksection: ChunkSection = sections[y shr 4] ?: run {
-                    val chunksection = ChunkSection(
-                        y shr 4 shl 4,
-                        true
-                    ).apply { setSkylightArray(NibbleArray(ByteArray(2048) { 0xFF.toByte() })) }
+                val chunksection: ChunkSectionSnapshot = sections[y shr 4] ?: run {
+                    val chunksection = ChunkSectionSnapshot(
+                        y shr 4,
+                        CharArray(4096),
+                        NibbleArray(),
+                        true,
+                        NibbleArray(ByteArray(2048) { 0xFF.toByte() })
+                    )
                     sections[y shr 4] = chunksection
                     chunksection
                 }
@@ -91,7 +138,7 @@ class RamChunkRegionLoader(private val chunkMap: Long2ObjectOpenHashMap<ChunkSna
         chunk.setTerrainPopulated(snapshot.terrainPopulated)
         chunk.setLightPopulated(snapshot.lightPopulated)
         chunk.setInhabitedTime(snapshot.timeInhabited)
-        chunk.setSections(snapshot.sections)
+        chunk.setSections(snapshot.sections.map { it?.toChunkSection() }.toTypedArray())
         chunk.setBiomes(snapshot.biomes)
 
         return chunk

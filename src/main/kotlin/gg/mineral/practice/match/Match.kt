@@ -71,11 +71,10 @@ open class Match(
     protected var timeTaskId: Int = 0
     val kit: Kit
         get() = Kit(data.kit)
-    protected val timeLimitSec: Int
-        get() {
-            val mins = 5 * log10((5 * participants.size).toDouble())
-            return (mins * 60).toInt()
-        }
+    protected val timeLimitSec by lazy {
+        val mins = 5 * log10((5 * participants.size).toDouble())
+        (mins * 60).toInt()
+    }
 
     init {
         profile1?.let { addParticipants(it) }
