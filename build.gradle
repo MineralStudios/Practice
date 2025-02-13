@@ -34,7 +34,7 @@ dependencies {
     compileOnly "gg.mineral:nametag-api:20250212-02.03.02"
     compileOnly "me.caseload.knockbacksync:bukkit:20250124-20.12.51"
     compileOnly "gg.mineral.mineralspigot:mineralspigot-server:20241230-23.01.56"
-    compileOnly 'gg.mineral:bot-api:20250212-03.31.53'
+    compileOnly 'gg.mineral:bot-api:20250213-15.18.36'
     compileOnly "gg.mineral:database-api:20250212-02.11.34"
     compileOnly 'de.jeezycore:jeezy-core:20250205-21.47.50'
     compileOnly "gg.mineral:bot-intelligence:20250212-03.31.53"
