@@ -26,7 +26,7 @@ class ProjectileListener : Listener {
 
             getProfile(uuid)?.match?.let { match ->
                 if (!match.ended) match.stat(
-                    uuid
+                    shooter.uniqueId
                 ) { it.stolenPotion() }
             }
         }
