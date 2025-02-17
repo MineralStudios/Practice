@@ -34,6 +34,7 @@ class BotTeamMatch(
                 DrinkPotionGoal(instance),
                 EatGappleGoal(instance),
                 EatFoodGoal(instance),
+                ThrowDebuffPotGoal(instance),
                 ThrowPearlGoal(instance),
                 DropEmptyBowlGoal(instance),
                 MeleeCombatGoal(instance)
@@ -49,6 +50,7 @@ class BotTeamMatch(
                 DrinkPotionGoal(instance),
                 EatGappleGoal(instance),
                 EatFoodGoal(instance),
+                ThrowDebuffPotGoal(instance),
                 ThrowPearlGoal(instance),
                 DropEmptyBowlGoal(instance),
                 MeleeCombatGoal(instance)

@@ -70,6 +70,7 @@ class BotMatch(profile1: Profile, private val config: BotConfiguration, matchDat
                 DrinkPotionGoal(it),
                 EatGappleGoal(it),
                 EatFoodGoal(it),
+                ThrowDebuffPotGoal(it),
                 ThrowPearlGoal(it),
                 DropEmptyBowlGoal(it),
                 MeleeCombatGoal(it)
