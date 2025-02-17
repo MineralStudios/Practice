@@ -35,7 +35,7 @@ dependencies {
     compileOnly "me.caseload.knockbacksync:bukkit:20250213-15.20.17"
     compileOnly "gg.mineral.mineralspigot:mineralspigot-server:20241230-23.01.56"
     compileOnly 'gg.mineral:bot-api:20250217-13.38.40'
-    compileOnly "gg.mineral:database-api:20250212-02.11.34"
+    compileOnly "gg.mineral:database-api:20250217-18.17.46"
     compileOnly 'de.jeezycore:jeezy-core:20250205-21.47.50'
     compileOnly "gg.mineral:bot-intelligence:20250213-15.18.37"
     compileOnly 'com.github.retrooper:packetevents-spigot:2.7.0'
