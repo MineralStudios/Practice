@@ -61,7 +61,7 @@ class MatchData private constructor() {
             if (knockback == null && value) knockback = OldStyleKnockback()
         }
     var ranked = false
-    var enabledArenas: Byte2BooleanOpenHashMap = Byte2BooleanOpenHashMap()
+    private var enabledArenas: Byte2BooleanOpenHashMap = Byte2BooleanOpenHashMap()
     private var displayItem: ItemStack = ItemStacks.WOOD_AXE
 
     constructor(queuetype: Queuetype, gametype: Gametype, queueSettings: QueueSettings) : this(queuetype, gametype) {

@@ -21,8 +21,8 @@ class EventMatch(profile1: Profile?, profile2: Profile?, matchData: MatchData, p
     override fun generateWorld() = event.world
 
     override fun end(attacker: Profile, victim: Profile) {
-        stat(attacker) { collector: MatchStatisticCollector -> collector.end(true) }
-        stat(victim) { collector: MatchStatisticCollector -> collector.end(false) }
+        stat(attacker) { it.end(true) }
+        stat(victim) { it.end(false) }
 
         deathAnimation(attacker, victim)
 

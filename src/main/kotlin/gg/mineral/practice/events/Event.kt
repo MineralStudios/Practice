@@ -24,7 +24,7 @@ class Event(hostProfile: Profile, val eventArenaId: Byte) : Spectatable {
     private val matches = GlueList<Match>()
     override val spectators = ConcurrentLinkedDeque<Profile>()
     override val world: World
-    val matchData: MatchData
+    private val matchData: MatchData
     private var round = 1
     val host: String
     private var started = false
@@ -35,6 +35,7 @@ class Event(hostProfile: Profile, val eventArenaId: Byte) : Spectatable {
         val duelSettings = hostProfile.duelSettings
         val enabledArenas = Byte2BooleanOpenHashMap().apply { put(eventArenaId, true) }
         this.matchData = MatchData(duelSettings, enabledArenas)
+        matchData.arenaId = eventArenaId
         this.host = hostProfile.name
         val arena = ArenaManager.arenas.get(eventArenaId)
         this.world = arena?.generate() ?: throw NullPointerException("Arena not found")
@@ -62,6 +63,13 @@ class Event(hostProfile: Profile, val eventArenaId: Byte) : Spectatable {
 
             ended = true
             EventManager.remove(this)
+            return
+        }
+
+        if (participants.isEmpty()) {
+            for (spectator in spectators) spectator.stopSpectating()
+            EventManager.remove(this)
+            ended = true
             return
         }
 
@@ -93,7 +101,7 @@ class Event(hostProfile: Profile, val eventArenaId: Byte) : Spectatable {
             return
         }
 
-        if (started && participants.size == 1) {
+        if (participants.size == 1) {
             val winner = participants.first
             winner?.event = null
 
