@@ -19,6 +19,7 @@ import gg.mineral.practice.queue.QueuetypeMenuEntry
 import gg.mineral.practice.util.items.ItemBuilder
 import gg.mineral.practice.util.items.ItemStacks
 import gg.mineral.practice.util.messages.CC
+import gg.mineral.practice.util.messages.impl.ChatMessages
 import gg.mineral.practice.util.messages.impl.ErrorMessages
 import it.unimi.dsi.fastutil.ints.Int2ObjectOpenHashMap
 import it.unimi.dsi.fastutil.objects.Object2IntLinkedOpenHashMap
@@ -88,6 +89,9 @@ open class SelectGametypeMenu(
                 CC.BOARD_SEPARATOR, CC.ACCENT + "Click to toggle old combat."
             ).build()
         ) { interaction: Interaction ->
+            interaction.profile.message(
+                ChatMessages.OLD_COMBAT_ENABLED.clone().replace("%toggled%", if (oldCombat) "enabled" else "disabled")
+            )
             interaction.profile.queueSettings.oldCombat = !oldCombat
             reload()
         }

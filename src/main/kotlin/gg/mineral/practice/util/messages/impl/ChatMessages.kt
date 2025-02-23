@@ -249,11 +249,19 @@ object ChatMessages {
         CC.YELLOW
     )
         .highlightText(CC.GOLD, "%slot%")
+
+    val OLD_COMBAT_ENABLED: ChatMessage = ChatMessage(
+        "Old combat mode has been set to %toggled%.",
+        CC.YELLOW
+    )
+        .highlightText(CC.GOLD, "%toggled%")
+
     val LEADERBOARD_ENABLED: ChatMessage = ChatMessage(
         "The leaderboard item has been set to %toggled%.",
         CC.YELLOW
     )
         .highlightText(CC.GOLD, "%toggled%")
+
     val LEADERBOARD_DISPLAY_SET: ChatMessage = ChatMessage(
         "The leaderboard display item has been set to the item in your hand.",
         CC.YELLOW

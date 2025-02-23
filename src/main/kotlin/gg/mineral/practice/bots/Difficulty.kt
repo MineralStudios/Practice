@@ -9,6 +9,7 @@ import gg.mineral.bot.api.world.ServerWorld
 import gg.mineral.practice.queue.QueueSettings
 import gg.mineral.practice.util.messages.CC
 import org.bukkit.Location
+import org.bukkit.World
 import java.util.*
 
 enum class Difficulty(val display: String) {
@@ -134,17 +135,21 @@ enum class Difficulty(val display: String) {
     companion object {
         fun spawn(config: BotConfiguration, location: Location): ClientInstance {
             return BotAPI.INSTANCE.spawn(config, object : ServerLocation {
-                override fun getWorld() = ServerWorld { location.world }
-
-                override fun getX() = location.x
-
-                override fun getY() = location.y
-
-                override fun getZ() = location.z
-
-                override fun getYaw() = location.yaw
-
-                override fun getPitch() = location.pitch
+                override val pitch: Float
+                    get() = location.pitch
+                override val world: ServerWorld<*>
+                    get() = object : ServerWorld<World> {
+                        override val handle
+                            get() = location.world
+                    }
+                override val x: Double
+                    get() = location.x
+                override val y: Double
+                    get() = location.y
+                override val yaw: Float
+                    get() = location.yaw
+                override val z: Double
+                    get() = location.z
             })
         }
     }
