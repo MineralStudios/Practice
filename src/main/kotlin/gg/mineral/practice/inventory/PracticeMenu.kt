@@ -244,9 +244,11 @@ abstract class PracticeMenu(menu: PracticeMenu? = null) : Menu {
         }
 
         fun open(profile: Profile, updated: Boolean) {
-            if (pageMap.size > 1) addNavigationBar()
-            if (updated || inv == null) inv = toInventory(profile.player)
-            profile.player.openInventory(inv)
+            profile.player?.let {
+                if (pageMap.size > 1) addNavigationBar()
+                if (updated || inv == null) inv = toInventory(it)
+                it.openInventory(inv)
+            }
         }
 
         fun setSlot(slot: Int, item: ItemStack) {

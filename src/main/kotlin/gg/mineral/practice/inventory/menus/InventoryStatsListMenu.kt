@@ -33,7 +33,7 @@ class InventoryStatsListMenu(private val list: List<InventoryStatsMenu>, private
                 lastSlot, ItemStacks.VIEW_OPPONENT_INVENTORY
             ) { interaction: Interaction ->
                 interaction.profile.player
-                    .performCommand("viewinventory $it")
+                    ?.performCommand("viewinventory $it")
             }
         }
     }

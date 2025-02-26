@@ -26,4 +26,5 @@ object KitEditorManager {
 
     val bukkitLocation: Location
         get() = location.bukkit(lobbyWorld)
+            ?: throw IllegalStateException("KitEditor world not found")
 }

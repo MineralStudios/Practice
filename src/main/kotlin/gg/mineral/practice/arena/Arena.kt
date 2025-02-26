@@ -12,6 +12,7 @@ import gg.mineral.practice.util.world.SchematicFile
 import gg.mineral.practice.util.world.SpawnLocation
 import org.bukkit.World
 import java.io.File
+import java.lang.ref.WeakReference
 import java.util.concurrent.atomic.AtomicInteger
 
 class Arena(var name: String, val id: Byte) {
@@ -35,9 +36,9 @@ class Arena(var name: String, val id: Byte) {
 
     fun spectateArena(profile: Profile) = profile.spectate(SpectatableArena(this))
 
-    fun generate(): World = schematicFile.generateWorld("_" + currentNameID.incrementAndGet())
+    fun generate(): WeakReference<World> = schematicFile.generateWorld("_" + currentNameID.incrementAndGet())
 
-    fun generateBaseWorld(): World = schematicFile.generateWorld("")
+    fun generateBaseWorld(): WeakReference<World> = schematicFile.generateWorld("")
 
     fun delete() {
         config.remove("Arena.$name")

@@ -24,7 +24,7 @@ class SelectEventMenu : PracticeMenu() {
                 .build()
 
             add(item) {
-                viewer.player.closeInventory()
+                viewer.player?.closeInventory()
                 viewer.duelSettings.gametype = g
 
                 if (g.eventArenaId.toInt() == -1) {

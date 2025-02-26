@@ -10,13 +10,40 @@ import gg.mineral.practice.managers.ProfileManager.removeIfExists
 import gg.mineral.practice.scoreboard.impl.DefaultScoreboard
 import org.bukkit.Bukkit
 import org.bukkit.GameMode
+import org.bukkit.entity.Player
 import org.bukkit.event.EventHandler
 import org.bukkit.event.Listener
 import org.bukkit.event.player.PlayerInitialSpawnEvent
 import org.bukkit.event.player.PlayerJoinEvent
 import org.bukkit.event.player.PlayerQuitEvent
+import java.util.*
+import java.util.function.Consumer
 
 class EntryListener : Listener, PlayerAppender {
+
+    private val joinListenerQueue = mutableMapOf<UUID, Consumer<Player>>()
+    private val joinListenerMultiQueue = mutableMapOf<Array<UUID>, Runnable>()
+
+    fun addJoinListener(uuid: UUID, consumer: Consumer<Player>) {
+        val bukkitPlayer = Bukkit.getPlayer(uuid)
+
+        if (bukkitPlayer != null) {
+            consumer.accept(bukkitPlayer)
+            return
+        }
+
+        joinListenerQueue[uuid] = consumer
+    }
+
+    fun addJoinListener(players: Array<UUID>, runnable: Runnable) {
+        if (players.all { Bukkit.getPlayer(it) != null }) {
+            runnable.run()
+            return
+        }
+
+        joinListenerMultiQueue[players] = runnable
+    }
+
     @EventHandler
     fun onPlayerJoin(event: PlayerJoinEvent) {
         event.joinMessage = null
@@ -59,6 +86,11 @@ class EntryListener : Listener, PlayerAppender {
 
     @EventHandler
     fun onPlayerInitialSpawn(e: PlayerInitialSpawnEvent) {
+        joinListenerQueue.remove(e.player.uniqueId)?.accept(e.player)
+        joinListenerMultiQueue.keys.filter { uuids: Array<UUID> -> uuids.all { Bukkit.getPlayer(it) != null } }
+            .forEach { array ->
+                joinListenerMultiQueue.remove(array)?.run()
+            }
         if (e.player.isFake()) return
         e.spawnLocation = lobbyLocation
     }

@@ -23,7 +23,7 @@ class InventoryListener : Listener {
         val profile = getProfile(e.whoClicked.uniqueId) ?: return
         val menu = profile.openMenu
 
-        val canClick = profile.player.isOp && profile.player.gameMode == GameMode.CREATIVE
+        val canClick = profile.player?.isOp == true && profile.player?.gameMode == GameMode.CREATIVE
 
         val clickType = e.click
 

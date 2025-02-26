@@ -18,12 +18,12 @@ import it.unimi.dsi.fastutil.bytes.Byte2BooleanOpenHashMap
 import net.md_5.bungee.api.chat.ClickEvent
 import org.bukkit.Bukkit
 import org.bukkit.World
-import java.util.concurrent.ConcurrentLinkedDeque
+import java.lang.ref.WeakReference
 
 class Event(hostProfile: Profile, val eventArenaId: Byte) : Spectatable {
     private val matches = GlueList<Match>()
-    override val spectators = ConcurrentLinkedDeque<Profile>()
-    override val world: World
+    override val spectators = ProfileList()
+    override val world: WeakReference<World>
     private val matchData: MatchData
     private var round = 1
     val host: String

@@ -112,12 +112,12 @@ class MovementListener : Listener {
     fun onPlayerMove(e: PlayerMoveEvent) {
         val profile = getProfile(
             e.player.uniqueId
-        ) { p: Profile -> p.playerStatus === PlayerStatus.FIGHTING }
+        ) { it.playerStatus === PlayerStatus.FIGHTING }
 
         if (profile == null) return
 
         if (profile.match?.data?.deadlyWater == true) {
-            val type = profile.player.location.block.type
+            val type = profile.player?.location?.block?.type ?: return
             if (type == Material.WATER || type == Material.STATIONARY_WATER) profile.match!!.end(profile)
         }
     }

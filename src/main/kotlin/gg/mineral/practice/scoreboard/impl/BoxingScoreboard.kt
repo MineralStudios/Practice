@@ -13,10 +13,10 @@ class BoxingScoreboard : Scoreboard {
 
         val match = profile.match
 
-        match!!.stat(profile.uuid) { collector: MatchStatisticCollector? ->
+        match!!.stat(profile.uuid) {
             val opponent = match.getOpponent(profile) ?: return@stat
             val opponentHitCount = match.computeStat(opponent.uuid, MatchStatisticCollector::hitCount)
-            val hitDifference = (collector!!.hitCount
+            val hitDifference = (it.hitCount
                     - opponentHitCount)
             var symbol = "+"
             var color = CC.D_GREEN
@@ -28,9 +28,9 @@ class BoxingScoreboard : Scoreboard {
             board.updateLines(
                 CC.BOARD_SEPARATOR,
                 (CC.ACCENT + "Opponent: " + CC.SECONDARY
-                        + match.getOpponent(profile)!!.name),
+                        + match.getOpponent(profile)?.name),
                 (CC.ACCENT + "Your Hits: " + CC.SECONDARY
-                        + collector.hitCount + color
+                        + it.hitCount + color
                         + " (" + symbol + hitDifference
                         + ")"),
                 (CC.ACCENT + "Their Hits: " + CC.SECONDARY
@@ -38,8 +38,8 @@ class BoxingScoreboard : Scoreboard {
                 (CC.ACCENT + "Your Ping: " + CC.SECONDARY
                         + (board.player as CraftPlayer).handle.ping),
                 (CC.ACCENT + "Their Ping: " + CC.SECONDARY
-                        + profile.match!!.getOpponent(profile)!!.player
-                    .handle.ping),
+                        + profile.match!!.getOpponent(profile)?.player
+                    ?.handle?.ping),
                 CC.SPACER,
                 CC.SECONDARY + "mineral.gg",
                 CC.BOARD_SEPARATOR

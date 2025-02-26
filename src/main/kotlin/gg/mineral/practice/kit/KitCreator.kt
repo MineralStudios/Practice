@@ -12,8 +12,8 @@ class KitCreator(val profile: Profile, val submitAction: SubmitAction) {
     fun save() {
         profile.duelSettings
             .kit = Kit(profile.inventory.contents, profile.inventory.armorContents)
-        profile.player.closeInventory()
-        ChatMessages.KIT_SAVED.send(profile.player)
+        profile.player?.closeInventory()
+        profile.message(ChatMessages.KIT_SAVED)
     }
 
     fun start() {

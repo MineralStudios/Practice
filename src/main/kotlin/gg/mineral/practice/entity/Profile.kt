@@ -19,6 +19,7 @@ import gg.mineral.practice.managers.ProfileManager.getProfile
 import gg.mineral.practice.managers.ProfileManager.isFake
 import gg.mineral.practice.managers.ProfileManager.lobbyLocation
 import gg.mineral.practice.managers.ProfileManager.playerConfig
+import gg.mineral.practice.managers.ProfileManager.setBacktrack
 import gg.mineral.practice.match.Match
 import gg.mineral.practice.match.TeamMatch
 import gg.mineral.practice.party.Party
@@ -60,7 +61,13 @@ import net.minecraft.server.v1_8_R3.PacketPlayOutPlayerInfo.EnumPlayerInfoAction
 class Profile(player: Player) : ExtendedProfileData(player.name, player.uniqueId),
     QueuedEntity, CommandSenderAppender {
     override val profiles = LinkedList(listOf(this))
-    val player = player as CraftPlayer
+    private var nameCache = name
+    override val name: String
+        get() {
+            nameCache = player?.name ?: nameCache
+            return nameCache
+        }
+    val player get() = Bukkit.getPlayer(uuid) as CraftPlayer?
     val inventory: PlayerInventory
     var match: Match? = null
         set(value) {
@@ -80,18 +87,18 @@ class Profile(player: Player) : ExtendedProfileData(player.name, player.uniqueId
     var scoreboardEnabled = true
         set(value) {
             field = value
-            if (value) scoreboardHandler = ScoreboardHandler(player)
+            if (value) scoreboardHandler = player?.let { ScoreboardHandler(it) } ?: return
             else scoreboardHandler.delete()
         }
     var dead: Boolean = false
     var openMenu: Menu? = null
     var playerStatus = PlayerStatus.IDLE
         set(value) {
-            player.gameMode = value.gameMode
+            player?.gameMode = value.gameMode
             val canFly = value.canFly(this)
 
-            this.player.allowFlight = canFly
-            this.player.isFlying = canFly
+            this.player?.allowFlight = canFly
+            this.player?.isFlying = canFly
 
             field = value
 
@@ -163,7 +170,7 @@ class Profile(player: Player) : ExtendedProfileData(player.name, player.uniqueId
                 if (groups != null) {
                     for (nametagGroup in groups) {
                         nametagGroup.remove(player)
-                        TeamMatch.refreshBukkitScoreboard(player)
+                        player?.let { TeamMatch.refreshBukkitScoreboard(it) }
                     }
                 }
             }
@@ -284,9 +291,11 @@ class Profile(player: Player) : ExtendedProfileData(player.name, player.uniqueId
                 PracticePlugin.INSTANCE,
                 {
                     fakeBlocks.registeredObjects.forEach(Consumer { blockData: BlockData ->
-                        blockData.update(
-                            this.player
-                        )
+                        this.player?.let {
+                            blockData.update(
+                                it
+                            )
+                        }
                     })
                 }, 0, 3
             )
@@ -356,14 +365,14 @@ class Profile(player: Player) : ExtendedProfileData(player.name, player.uniqueId
     fun giveKit(kit: Kit) {
         inventory.setContents(kit.contents)
         inventory.armorContents = kit.armourContents
-        inventory.holder.player.updateInventory()
+        inventory.holder.player?.updateInventory()
         kitLoaded = true
     }
 
-    fun testTabVisibility(uuid: UUID) = Bukkit.getPlayer(uuid)?.isFake() == false || player.world.players.stream()
-        .anyMatch { p: Player -> p.uniqueId == uuid }
+    fun testTabVisibility(uuid: UUID) =
+        Bukkit.getPlayer(uuid)?.isFake() == false || player?.world?.players?.any { it.uniqueId == uuid } ?: false
 
-    fun message(message: Message) = this.player.send(message)
+    fun message(message: Message) = this.player?.send(message) ?: Unit
 
     fun removeFromQueue() {
         QueueSystem.removePlayerFromQueue(this)
@@ -374,7 +383,7 @@ class Profile(player: Player) : ExtendedProfileData(player.name, player.uniqueId
     fun removeFromQueue(queuetype: Queuetype, gametype: Gametype) {
         if (!QueueSystem.removePlayerFromQueue(this, queuetype, gametype)) {
             removeFromQueue()
-            player.closeInventory()
+            player?.closeInventory()
 
             if (party != null) inventory.setInventoryForParty()
             else inventory.setInventoryForLobby()
@@ -422,7 +431,7 @@ class Profile(player: Player) : ExtendedProfileData(player.name, player.uniqueId
     fun teleportToLobby() {
         if (match?.ended == false) return
 
-        this.player.handle.backtrackSystem.isEnabled = false
+        this.player?.setBacktrack(false)
         PlayerUtil.teleport(this, lobbyLocation)
 
         if (playerStatus !== PlayerStatus.FOLLOWING && playerStatus !== PlayerStatus.QUEUEING) playerStatus =
@@ -443,7 +452,7 @@ class Profile(player: Player) : ExtendedProfileData(player.name, player.uniqueId
 
     override fun equals(other: Any?): Boolean {
         if (other !is Profile) return false
-        return other.uuid == player.uniqueId
+        return other.uuid == player?.uniqueId
     }
 
     private fun removeFromTab(uuid: UUID) {
@@ -451,7 +460,7 @@ class Profile(player: Player) : ExtendedProfileData(player.name, player.uniqueId
 
         val player = Bukkit.getPlayer(uuid)
 
-        if (player is CraftPlayer) this.player.handle.playerConnection.sendPacket(
+        if (player is CraftPlayer) this.player?.handle?.playerConnection?.sendPacket(
             PlayerInfoPacket(
                 InfoAction.REMOVE_PLAYER,
                 player.handle
@@ -464,7 +473,7 @@ class Profile(player: Player) : ExtendedProfileData(player.name, player.uniqueId
 
         val player = Bukkit.getPlayer(uuid)
 
-        if (player is CraftPlayer) this.player.handle.playerConnection.sendPacket(
+        if (player is CraftPlayer) this.player?.handle?.playerConnection?.sendPacket(
             PlayerInfoPacket(InfoAction.ADD_PLAYER, player.handle)
         )
     }
@@ -476,21 +485,23 @@ class Profile(player: Player) : ExtendedProfileData(player.name, player.uniqueId
             if (!this.playersVisible) return false
 
             val p = getProfile(uuid)
-            return p == null || p.player.hasPermission("practice.visible")
+            return p == null || p.player?.hasPermission("practice.visible") == true
         }
 
         return true
     }
 
     fun updateVisibility() {
-        for (uuid in player.hiddenPlayers) {
-            val player = Bukkit.getPlayer(uuid) ?: continue
-            this.player.showPlayer(player)
+        player?.hiddenPlayers?.let {
+            for (uuid in it) {
+                val player = Bukkit.getPlayer(uuid) ?: continue
+                this.player?.hidePlayer(player)
+            }
         }
 
         Bukkit.getScheduler().scheduleSyncDelayedTask(PracticePlugin.INSTANCE) {
             for (uuid in visiblePlayersOnTab) if (!testTabVisibility(uuid)) removeFromTab(uuid)
-            val players: List<Player> = player.world.players
+            val players: List<Player> = player?.world?.players ?: return@scheduleSyncDelayedTask
             for (player in players) {
                 val uuid = player.uniqueId
 
@@ -499,11 +510,11 @@ class Profile(player: Player) : ExtendedProfileData(player.name, player.uniqueId
 
                 val profile = getProfile(uuid) ?: continue
 
-                if (testVisibility(uuid)) this.player.showPlayer(profile.player)
-                else this.player.hidePlayer(profile.player, false)
+                if (testVisibility(uuid)) this.player?.showPlayer(profile.player)
+                else this.player?.hidePlayer(profile.player, false)
 
-                if (profile.testVisibility(this.uuid)) profile.player.showPlayer(player)
-                else profile.player.hidePlayer(player, false)
+                if (profile.testVisibility(this.uuid)) profile.player?.showPlayer(player)
+                else profile.player?.hidePlayer(player, false)
 
                 if (profile.testTabVisibility(this.uuid)) profile.showOnTab(this.uuid)
                 else profile.removeFromTab(this.uuid)
@@ -538,25 +549,22 @@ class Profile(player: Player) : ExtendedProfileData(player.name, player.uniqueId
     }
 
     fun spectate(toBeSpectated: Profile) {
-        if (toBeSpectated == this) {
-            message(ErrorMessages.NOT_SPEC_SELF)
-            return
-        }
+        if (toBeSpectated == this) return message(ErrorMessages.NOT_SPEC_SELF)
 
         this.spectatable = toBeSpectated.event ?: toBeSpectated.match
 
         spectatable?.let {
             PlayerUtil.teleport(
                 this,
-                if (it is Event)
-                    arenas[it.eventArenaId]?.waitingLocation?.bukkit(it.world)
-                        ?: throw NullPointerException("Event arena not found")
-                else
-                    toBeSpectated.player.location
+                if (it is Event) arenas[it.eventArenaId]?.waitingLocation?.bukkit(it.world)
+                    ?: throw NullPointerException("Event arena not found")
+                else toBeSpectated.player?.location ?: throw NullPointerException("Player location not found")
             )
 
-            if (it is Event) message(ChatMessages.SPECTATING_EVENT)
-            else message(ChatMessages.SPECTATING.clone().replace("%player%", toBeSpectated.name))
+            message(
+                if (it is Event) ChatMessages.SPECTATING_EVENT
+                else ChatMessages.SPECTATING.clone().replace("%player%", toBeSpectated.name)
+            )
 
             message(ChatMessages.STOP_SPECTATING)
         } ?: message(ErrorMessages.PLAYER_NOT_IN_MATCH_OR_EVENT)
@@ -565,30 +573,29 @@ class Profile(player: Player) : ExtendedProfileData(player.name, player.uniqueId
     fun spectate(spectatable: Spectatable) {
         this.spectatable = spectatable
         spectatable.let {
-            PlayerUtil.teleport(
-                this,
-                when (it) {
-                    is Event -> arenas[it.eventArenaId]?.waitingLocation?.bukkit(it.world)
-                        ?: throw NullPointerException(
-                            "Event arena not found"
-                        )
-
-                    is Match -> arenas[it.data.arenaId]?.location1?.bukkit(it.world) ?: throw NullPointerException(
-                        "Arena not found"
-                    )
-
-                    is SpectatableArena -> it.arena.location1.bukkit(it.world)
-                    else -> throw IllegalArgumentException("Invalid spectatable type")
-                }
-            )
-
             when (it) {
-                is Event -> message(ChatMessages.SPECTATING_EVENT)
-                is SpectatableArena -> message(ChatMessages.VIEW_ARENA)
-                else -> message(
-                    ChatMessages.SPECTATING.clone().replace("%player%", spectatable.participants.first().name)
+                is Event -> arenas[it.eventArenaId]?.waitingLocation?.bukkit(it.world)
+                is Match -> arenas[it.data.arenaId]?.location1?.bukkit(it.world)
+                is SpectatableArena -> it.arena.location1.bukkit(it.world)
+                else -> throw IllegalArgumentException("Invalid spectatable type")
+            }?.let { it2 ->
+                PlayerUtil.teleport(
+                    this,
+                    it2
                 )
             }
+
+            message(
+                when (it) {
+                    is Event -> ChatMessages.SPECTATING_EVENT
+                    is SpectatableArena -> ChatMessages.VIEW_ARENA
+                    else ->
+                        ChatMessages.SPECTATING.clone().replace(
+                            "%player%",
+                            spectatable.participants.first().name
+                        )
+                }
+            )
 
             message(ChatMessages.STOP_SPECTATING)
         }

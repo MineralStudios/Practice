@@ -9,6 +9,7 @@ import org.bukkit.World
 import org.bukkit.craftbukkit.v1_8_R3.CraftWorld
 import org.bukkit.craftbukkit.v1_8_R3.scoreboard.CraftScoreboard
 import java.io.File
+import java.lang.ref.WeakReference
 import net.minecraft.server.v1_8_R3.ChunkCoordIntPair.a as longHash
 
 class SchematicFile(
@@ -32,7 +33,7 @@ class SchematicFile(
         snapshot?.setTypeAndData(x, y, z, type, data)
     }
 
-    fun generateWorld(suffix: String): World {
+    fun generateWorld(suffix: String): WeakReference<World> {
         synchronized(this) {
             val schemName = source.name
 
@@ -104,7 +105,7 @@ class SchematicFile(
             //getPluginManager().callEvent(WorldInitEvent(internal.world))
             //getPluginManager().callEvent(WorldLoadEvent(internal.world))
             PracticePlugin.INSTANCE.logger.info("Loading schematic with ${chunkMap.size} chunks (${name})")
-            return internal.world
+            return WeakReference(internal.world)
         }
     }
 }

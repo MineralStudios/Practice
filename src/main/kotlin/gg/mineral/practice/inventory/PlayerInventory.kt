@@ -21,7 +21,7 @@ import java.util.concurrent.ConcurrentHashMap
 import java.util.function.Predicate
 
 class PlayerInventory(var holder: Profile) :
-    CraftInventoryPlayer((holder.player.inventory as CraftInventoryPlayer).inventory) {
+    CraftInventoryPlayer((holder.player?.inventory as CraftInventoryPlayer).inventory) {
     private val dataMap: ConcurrentHashMap<Int, Predicate<Profile>> = ConcurrentHashMap()
     var inventoryClickCancelled: Boolean = false
 
@@ -121,15 +121,15 @@ class PlayerInventory(var holder: Profile) :
                 if (holder.match?.ended == false) return
                 setItem(
                     8, ItemStacks.LEAVE_PARTY
-                ) { p: Profile -> p.player.performCommand("p leave") }
+                ) { p: Profile -> p.player?.performCommand("p leave") == true }
             }
         }.runTaskLater(PracticePlugin.INSTANCE, 20)
 
         this.setItem(
             7, ItemStacks.LIST_PLAYERS
-        ) { profile: Profile -> profile.player.performCommand("p list") }
-        this.setItem(3, ItemStacks.OPEN_PARTY) { p: Profile -> p.player.performCommand("p open") }
-        this.setItem(4, ItemStacks.DUEL) { p: Profile -> p.player.performCommand("duel") }
+        ) { profile: Profile -> profile.player?.performCommand("p list") == true }
+        this.setItem(3, ItemStacks.OPEN_PARTY) { p: Profile -> p.player?.performCommand("p open") == true }
+        this.setItem(4, ItemStacks.DUEL) { p: Profile -> p.player?.performCommand("duel") == true }
         this.setItem(5, ItemStacks.PARTY_SPLIT) { p: Profile ->
             p.openMenu(SelectModeMenu(SubmitAction.P_SPLIT))
             true
@@ -216,7 +216,7 @@ class PlayerInventory(var holder: Profile) :
                 .build()
             setItem(
                 PartyManager.slot, parties
-            ) { profile: Profile -> profile.player.performCommand("p create") }
+            ) { profile: Profile -> profile.player?.performCommand("p create") == true }
         }
 
         if (PlayerSettingsManager.enabled) {
@@ -226,7 +226,7 @@ class PlayerInventory(var holder: Profile) :
                 .build()
             setItem(
                 PlayerSettingsManager.slot, settings
-            ) { p: Profile -> p.player.performCommand("settings") }
+            ) { p: Profile -> p.player?.performCommand("settings") == true }
         }
 
         if (SpectateManager.enabled) {
@@ -236,7 +236,7 @@ class PlayerInventory(var holder: Profile) :
                 .build()
             setItem(
                 SpectateManager.slot, spectate
-            ) { p: Profile -> p.player.performCommand("spectate") }
+            ) { p: Profile -> p.player?.performCommand("spectate") == true }
         }
 
         if (LeaderboardManager.enabled) {
@@ -246,7 +246,7 @@ class PlayerInventory(var holder: Profile) :
                 .build()
             setItem(
                 LeaderboardManager.slot, leaderboard
-            ) { p: Profile -> p.player.performCommand("leaderboard") }
+            ) { p: Profile -> p.player?.performCommand("leaderboard") == true }
         }
     }
 

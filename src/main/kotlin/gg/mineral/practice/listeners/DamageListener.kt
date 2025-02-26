@@ -104,7 +104,7 @@ class DamageListener : Listener, CommandSenderAppender {
             return
         }
 
-        if (victim.player.noDamageTicks <= victim.player.maximumNoDamageTicks / 2.0f
+        if ((victim.player?.noDamageTicks ?: Int.MAX_VALUE) <= (victim.player?.maximumNoDamageTicks ?: 0) / 2.0f
             && attacker.match!!.incrementTeamHitCount(attacker, victim)
         ) {
             e.isCancelled = true

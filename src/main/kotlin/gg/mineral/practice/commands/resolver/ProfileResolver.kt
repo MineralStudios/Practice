@@ -28,5 +28,5 @@ class ProfileResolver : ArgumentResolver<CommandSender, Profile>() {
         argument: Argument<Profile>,
         context: SuggestionContext
     ): SuggestionResult = ProfileManager.profiles.values.stream()
-        .map { it.name }.collect(SuggestionResult.collector())
+        .map { it?.name }.collect(SuggestionResult.collector())
 }

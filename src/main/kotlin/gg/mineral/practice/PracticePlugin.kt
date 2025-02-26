@@ -51,6 +51,8 @@ class PracticePlugin : JavaPlugin() {
         lateinit var INSTANCE: PracticePlugin
     }
 
+    val entryListener = EntryListener()
+
     override fun onLoad() {
         INSTANCE = this
 
@@ -137,7 +139,7 @@ class PracticePlugin : JavaPlugin() {
         )
         registerListeners(
             BuildListener(), InteractListener(), ComsumeListener(), InventoryListener(),
-            DeathListener(), DamageListener(), EntryListener(), HealthListener(),
+            DeathListener(), DamageListener(), entryListener, HealthListener(),
             MovementListener(), ProjectileListener(), CommandListener()
         )
     }

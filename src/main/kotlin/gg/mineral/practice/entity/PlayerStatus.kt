@@ -19,10 +19,10 @@ enum class PlayerStatus(val gameMode: GameMode) {
         override fun canFly(profile: Profile) = false
     },
     IDLE(GameMode.SURVIVAL) {
-        override fun canFly(profile: Profile) = profile.player.hasPermission("practice.fly")
+        override fun canFly(profile: Profile) = profile.player?.hasPermission("practice.fly") ?: false
     },
     QUEUEING(GameMode.SURVIVAL) {
-        override fun canFly(profile: Profile) = profile.player.hasPermission("practice.fly")
+        override fun canFly(profile: Profile) = profile.player?.hasPermission("practice.fly") ?: false
     };
 
     abstract fun canFly(profile: Profile): Boolean

@@ -19,9 +19,11 @@ class Countdown(private val match: Match) {
         for (profile in match.participants) profile.inMatchCountdown = true
 
         scheduler.scheduleSyncDelayedTask(PracticePlugin.INSTANCE, {
-            for (profile in match.participants) match.onCountdownStart(
-                profile!!
-            )
+            for (profile in match.participants) profile.let {
+                match.onCountdownStart(
+                    it
+                )
+            }
         }, 2L)
         taskID = scheduler.scheduleSyncRepeatingTask(PracticePlugin.INSTANCE, {
             if (time == 0) return@scheduleSyncRepeatingTask cancel()
@@ -38,9 +40,11 @@ class Countdown(private val match: Match) {
         match.onMatchStart()
 
         for (profile in match.participants.filter { it.inMatchCountdown }) {
-            match.onMatchStart(profile)
-            profile.inMatchCountdown = false
-            profile.message(ChatMessages.MATCH_STARTED)
+            profile.let {
+                match.onMatchStart(it)
+                it.inMatchCountdown = false
+                it.message(ChatMessages.MATCH_STARTED)
+            }
         }
 
         Bukkit.getScheduler().cancelTask(taskID)

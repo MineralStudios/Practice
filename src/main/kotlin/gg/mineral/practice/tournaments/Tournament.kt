@@ -87,7 +87,7 @@ class Tournament(p: Profile) {
                 val winner = players.first
                 winner?.tournament = null
 
-                ErrorMessages.TOURNAMENT_NOT_ENOUGH_PLAYERS.send(winner!!.player)
+                winner?.message(ErrorMessages.TOURNAMENT_NOT_ENOUGH_PLAYERS)
                 remove(this@Tournament)
                 ended = true
             } else startRound()

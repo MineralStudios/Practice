@@ -31,7 +31,7 @@ class SelectKitMenu(private val menu: MechanicsMenu) : PracticeMenu() {
 
         setSlot(15, ItemStacks.CHOOSE_CUSTOM_KIT) { interaction: Interaction ->
             val viewer = interaction.profile
-            viewer.player.closeInventory()
+            viewer.player?.closeInventory()
             viewer.sendToKitCreator(menu.submitAction)
         }
 

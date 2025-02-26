@@ -1,16 +1,15 @@
 package gg.mineral.practice.traits
 
-import gg.mineral.practice.entity.Profile
 import gg.mineral.practice.util.collection.ProfileList
 import org.bukkit.World
-import java.util.concurrent.ConcurrentLinkedDeque
+import java.lang.ref.WeakReference
 
 interface Spectatable {
-    val spectators: ConcurrentLinkedDeque<Profile>
+    val spectators: ProfileList
 
     val participants: ProfileList
 
     val ended: Boolean
 
-    val world: World
+    val world: WeakReference<World>
 }

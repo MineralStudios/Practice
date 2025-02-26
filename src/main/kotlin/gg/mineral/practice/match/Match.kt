@@ -30,7 +30,6 @@ import gg.mineral.practice.util.messages.impl.ErrorMessages
 import gg.mineral.practice.util.messages.impl.Strings
 import gg.mineral.practice.util.messages.impl.TextComponents
 import gg.mineral.server.combat.KnockbackProfileList
-import it.unimi.dsi.fastutil.objects.Object2IntOpenHashMap
 import it.unimi.dsi.fastutil.objects.Object2ObjectOpenHashMap
 import net.md_5.bungee.api.chat.ClickEvent
 import net.md_5.bungee.api.chat.ComponentBuilder
@@ -45,9 +44,9 @@ import org.bukkit.entity.Item
 import org.bukkit.inventory.ItemStack
 import org.bukkit.potion.PotionEffect
 import org.bukkit.potion.PotionEffectType
+import java.lang.ref.WeakReference
 import java.util.*
 import java.util.concurrent.CompletableFuture
-import java.util.concurrent.ConcurrentLinkedDeque
 import java.util.concurrent.ConcurrentLinkedQueue
 import java.util.function.Consumer
 import java.util.function.Function
@@ -59,13 +58,13 @@ open class Match(
     var profile1: Profile? = null,
     var profile2: Profile? = null
 ) : Spectatable, PlayerAppender {
-    override var spectators: ConcurrentLinkedDeque<Profile> = ConcurrentLinkedDeque()
+    override var spectators: ProfileList = ProfileList()
     final override val participants: ProfileList = ProfileList()
     override var ended: Boolean = false
     var placedTnt: Int = 0
     var buildLog: GlueList<Location> = GlueList()
     var itemRemovalQueue: Queue<Item> = ConcurrentLinkedQueue()
-    override val world: World by lazy { this.generateWorld() }
+    override val world: WeakReference<World> by lazy { this.generateWorld() }
     private val matchStatisticMap: MutableMap<UUID, MatchStatisticCollector> = Object2ObjectOpenHashMap()
     protected var timeRemaining: Int = 0
     protected var timeTaskId: Int = 0
@@ -81,6 +80,17 @@ open class Match(
         profile2?.let { addParticipants(it) }
     }
 
+    open fun cleanup() {
+        participants.clear()
+        spectators.clear()
+        matchStatisticMap.clear()
+        buildLog.clear()
+        itemRemovalQueue.clear()
+
+        Bukkit.getScheduler().cancelTask(timeTaskId)
+        clearWorld()
+    }
+
     val buildLimit: Int
         get() {
             val arena = arenas[data.arenaId] ?: return 0
@@ -90,7 +100,7 @@ open class Match(
             return maxSpawnY + (data.gametype?.buildLimit ?: 0)
         }
 
-    open fun generateWorld(): World {
+    open fun generateWorld(): WeakReference<World> {
         val arena = arenas[data.arenaId] ?: throw NullPointerException("Arena not found")
         return arena.generate()
     }
@@ -121,7 +131,7 @@ open class Match(
 
         val collector = matchStatisticMap.computeIfAbsent(
             uuid
-        ) { _: UUID? ->
+        ) {
             val profile: Profile = this.participants.get(uuid) ?: error("Profile is null")
             MatchStatisticCollector(profile)
         }
@@ -131,7 +141,7 @@ open class Match(
     protected fun stat(profile: Profile, consumer: Consumer<MatchStatisticCollector>) {
         val collector = matchStatisticMap.computeIfAbsent(
             profile.uuid
-        ) { _: UUID? -> MatchStatisticCollector(profile) }
+        ) { MatchStatisticCollector(profile) }
         consumer.accept(collector)
     }
 
@@ -147,7 +157,7 @@ open class Match(
     }
 
     protected fun onError(message: String) {
-        participants.map { it.player }.forEach {
+        participants.mapNotNull { it.player }.forEach {
             it.kill()
             it.sendMessage(CC.RED + message)
         }
@@ -156,23 +166,26 @@ open class Match(
     private fun setAttributes(p: Profile) {
         stat(p) { it.clearHitCount() }
         p.dead = false
-        p.player.maximumNoDamageTicks = data.noDamageTicks
-        p.player.setKnockback(
-            data.knockback
-                ?: if (data.noDamageTicks <= 10) KnockbackProfileList.getComboKnockbackProfile() else KnockbackProfileList.getDefaultKnockbackProfile()
-        )
-        p.player.setBacktrack(data.oldCombat)
-        p.player.setKnockbackSync(!data.oldCombat)
+        p.player?.let {
+            it.maximumNoDamageTicks = data.noDamageTicks
+            it.setKnockback(
+                data.knockback
+                    ?: if (data.noDamageTicks <= 10) KnockbackProfileList.getComboKnockbackProfile() else KnockbackProfileList.getDefaultKnockbackProfile()
+            )
+            it.setBacktrack(data.oldCombat)
+            it.setKnockbackSync(!data.oldCombat)
+            it.saturation = 20f
+            it.foodLevel = 20
+        }
 
         p.inventory.inventoryClickCancelled = false
-        p.player.saturation = 20f
-        p.player.foodLevel = 20
     }
 
     private fun setPotionEffects(p: Profile) {
-        if (!data.damage) p.player.addPotionEffect(PotionEffect(PotionEffectType.DAMAGE_RESISTANCE, 999999999, 255))
+        if (!data.damage) p.player
+            ?.addPotionEffect(PotionEffect(PotionEffectType.DAMAGE_RESISTANCE, 999999999, 255))
 
-        if (data.boxing) p.player.addPotionEffect(PotionEffect(PotionEffectType.SPEED, 999999999, 1))
+        if (data.boxing) p.player?.addPotionEffect(PotionEffect(PotionEffectType.SPEED, 999999999, 1))
     }
 
     fun prepareForMatch(p: Profile) {
@@ -184,7 +197,7 @@ open class Match(
         if (currentMatch != null && !currentMatch.ended) currentMatch.end(p)
 
         p.recievedDuelRequests.clear()
-        stat(p) { obj: MatchStatisticCollector -> obj.start() }
+        stat(p) { it.start() }
         p.kitLoaded = false
 
         giveLoadoutSelection(p)
@@ -195,11 +208,11 @@ open class Match(
     }
 
     private fun rideInvisibleArmorStand(profile: Profile) {
-        val loc = profile.player.location
+        val loc = profile.player?.location ?: return
         val x = loc.x
         val y = loc.y
         val z = loc.z
-        val handle = profile.player.handle
+        val handle = profile.player?.handle ?: return
         val entity = EntityArmorStand(handle.getWorld(), x, y, z)
         entity.isInvisible = true
         entity.customNameVisible = false
@@ -216,7 +229,7 @@ open class Match(
         spawnArmorStand.l = entity.dataWatcher
         val ridingPacket = PacketPlayOutAttachEntity(0, handle, entity)
         for (p in participants) {
-            val h = p.player.handle
+            val h = p.player?.handle ?: continue
             h.playerConnection.sendPacket(spawnArmorStand)
             h.playerConnection.sendPacket(ridingPacket)
         }
@@ -224,10 +237,10 @@ open class Match(
     }
 
     private fun destroyArmorStand(profile: Profile) {
-        profile.player.fallDistance = 0f
+        profile.player?.fallDistance = 0f
         val entityID = profile.ridingEntityID
         val destroyPacket = PacketPlayOutEntityDestroy(entityID)
-        for (p in participants) p.player.handle.playerConnection.sendPacket(destroyPacket)
+        for (p in participants) p.player?.handle?.playerConnection?.sendPacket(destroyPacket)
         profile.ridingEntityID = -1
     }
 
@@ -284,18 +297,22 @@ open class Match(
 
     private fun handleRankedOpponentMessages(profile1: Profile, profile2: Profile): CompletableFuture<Void> =
         data.getElo(profile2).thenAccept {
-            profile1.player.sendMessage(CC.BOARD_SEPARATOR)
-            profile1.player.sendMessage("Opponent: " + CC.AQUA + profile2.name)
-            profile1.player.sendMessage(CC.WHITE + "Elo: " + CC.AQUA + it)
-            profile1.player.sendMessage(CC.BOARD_SEPARATOR)
+            profile1.player?.let {
+                it.sendMessage(CC.BOARD_SEPARATOR)
+                it.sendMessage("Opponent: " + CC.AQUA + profile2.name)
+                it.sendMessage(CC.WHITE + "Elo: " + CC.AQUA + it)
+                it.sendMessage(CC.BOARD_SEPARATOR)
+            }
         }
 
     private fun handleOpponentMessages(profile1: Profile, profile2: Profile) {
         check(!data.ranked) { "Ranked matches are not supported." }
 
-        profile1.player.sendMessage(CC.BOARD_SEPARATOR)
-        profile1.player.sendMessage("Opponent: " + CC.AQUA + profile2.name)
-        profile1.player.sendMessage(CC.BOARD_SEPARATOR)
+        profile1.player?.let {
+            it.sendMessage(CC.BOARD_SEPARATOR)
+            it.sendMessage("Opponent: " + CC.AQUA + profile2.name)
+            it.sendMessage(CC.BOARD_SEPARATOR)
+        }
     }
 
     private fun setWorldParameters(world: World) {
@@ -330,8 +347,8 @@ open class Match(
         if (noArenas()) return
         if (!registerMatch(this)) return
         val arena = arenas[data.arenaId] ?: throw NullPointerException("Arena not found")
-        val location1 = arena.location1.bukkit(world)
-        val location2 = arena.location2.bukkit(world)
+        val location1 = arena.location1.bukkit(world) ?: return
+        val location2 = arena.location2.bukkit(world) ?: return
 
         setupLocations(location1, location2)
         teleportPlayers(location1, location2)
@@ -357,8 +374,8 @@ open class Match(
     }
 
     open fun incrementTeamHitCount(attacker: Profile, victim: Profile): Boolean {
-        stat(attacker) { obj: MatchStatisticCollector -> obj.increaseHitCount() }
-        stat(victim) { obj: MatchStatisticCollector -> obj.resetCombo() }
+        stat(attacker) { it.increaseHitCount() }
+        stat(victim) { it.resetCombo() }
         stat(attacker) { if (it.hitCount >= 100 && data.boxing) end(victim) }
         return ended
     }
@@ -368,9 +385,9 @@ open class Match(
             data.gametype ?: return CompletableFuture.completedFuture(Pair(Pair(1000, 1000), Pair(1000, 1000)))
 
         return gametype.getEloMap(attacker, victim)
-            .thenApply { map: Object2IntOpenHashMap<UUID> ->
-                val attackerElo = map.getInt(attacker.uuid)
-                val victimElo = map.getInt(victim.uuid)
+            .thenApply {
+                val attackerElo = it.getInt(attacker.uuid)
+                val victimElo = it.getInt(victim.uuid)
                 val newAttackerElo = MathUtil.getNewRating(attackerElo, victimElo, true)
                 val newVictimElo = MathUtil.getNewRating(victimElo, attackerElo, false)
 
@@ -396,16 +413,16 @@ open class Match(
 
         stat(
             attacker
-        ) { matchStatisticCollector: MatchStatisticCollector ->
+        ) {
             this.setInventoryStats(
-                matchStatisticCollector
+                it
             )
         }
         stat(
             victim
-        ) { matchStatisticCollector: MatchStatisticCollector ->
+        ) {
             this.setInventoryStats(
-                matchStatisticCollector
+                it
             )
         }
 
@@ -414,31 +431,36 @@ open class Match(
 
         fun printMessagesAndStopSpectators(eloMessage: TextComponent? = null, eloMessage2: TextComponent? = null) {
             for (profile in participants) {
-                profile.player.sendMessage(CC.SEPARATOR)
-                profile.player.sendMessage(Strings.MATCH_RESULTS)
-                if (data.ranked && eloMessage != null && eloMessage2 != null)
-                    profile.player.spigot()
-                        .sendMessage(winMessage, eloMessage, TextComponents.SPLITTER, loseMessage, eloMessage2)
-                else
-                    profile.player.spigot().sendMessage(winMessage, TextComponents.SPLITTER, loseMessage)
+                profile.player?.let {
+                    it.sendMessage(CC.SEPARATOR)
+                    it.sendMessage(Strings.MATCH_RESULTS)
+                    if (data.ranked && eloMessage != null && eloMessage2 != null)
+                        it.spigot()
+                            ?.sendMessage(winMessage, eloMessage, TextComponents.SPLITTER, loseMessage, eloMessage2)
+                    else
+                        it.spigot()?.sendMessage(winMessage, TextComponents.SPLITTER, loseMessage)
 
-                if (this !is BotMatch && this !is TeamMatch)
-                    getOpponent(profile)?.let {
-                        profile.player.sendMessage(" ")
-                        profile.player.spigot().sendMessage(getRematchMessage(it))
-                    }
-                profile.player.sendMessage(CC.SEPARATOR)
+                    if (this !is BotMatch && this !is TeamMatch)
+                        getOpponent(profile)?.let { opponent ->
+                            it.sendMessage(" ")
+                            it.spigot()?.sendMessage(getRematchMessage(opponent))
+                        }
+                    it.sendMessage(CC.SEPARATOR)
+                }
             }
 
             for (spectator in spectators) {
-                spectator.player.sendMessage(CC.SEPARATOR)
-                spectator.player.sendMessage(Strings.MATCH_RESULTS)
-                if (data.ranked && eloMessage != null && eloMessage2 != null)
-                    spectator.player.spigot()
-                        .sendMessage(winMessage, eloMessage, TextComponents.SPLITTER, loseMessage, eloMessage2)
-                else
-                    spectator.player.spigot().sendMessage(winMessage, TextComponents.SPLITTER, loseMessage)
-                spectator.player.sendMessage(CC.SEPARATOR)
+                spectator.player?.let {
+                    it.sendMessage(CC.SEPARATOR)
+                    it.sendMessage(Strings.MATCH_RESULTS)
+                    if (data.ranked && eloMessage != null && eloMessage2 != null)
+                        it.spigot()
+                            ?.sendMessage(winMessage, eloMessage, TextComponents.SPLITTER, loseMessage, eloMessage2)
+                    else
+                        it.spigot()?.sendMessage(winMessage, TextComponents.SPLITTER, loseMessage)
+                    it.sendMessage(CC.SEPARATOR)
+                }
+
                 spectator.stopSpectating()
             }
         }
@@ -468,8 +490,10 @@ open class Match(
         victim.scoreboard = DefaultScoreboard.INSTANCE
         remove(this)
 
-        victim.player.heal()
-        victim.player.removePotionEffects()
+        victim.player?.let {
+            it.heal()
+            it.removePotionEffects()
+        }
 
         sendBackToLobby(victim)
 
@@ -481,19 +505,19 @@ open class Match(
             sendBackToLobby(attacker)
         }, POST_MATCH_TIME.toLong())
 
-        clearWorld()
+        cleanup()
     }
 
     fun getWinMessage(profile: Profile): TextComponent {
         val winMessage = TextComponent(CC.GREEN + " Winner: " + CC.GRAY + profile.name)
-        stat(profile) { collector: MatchStatisticCollector ->
+        stat(profile) {
             winMessage.hoverEvent = HoverEvent(
                 HoverEvent.Action.SHOW_TEXT,
                 ComponentBuilder(
                     ("""
-                        ${CC.GREEN}Health Potions Remaining: ${collector.potionsRemaining}
-                        ${CC.GREEN}Hits: ${collector.hitCount}
-                        ${CC.GREEN}Health: ${collector.remainingHealth}
+                        ${CC.GREEN}Health Potions Remaining: ${it.potionsRemaining}
+                        ${CC.GREEN}Hits: ${it.hitCount}
+                        ${CC.GREEN}Health: ${it.remainingHealth}
                         """.trimIndent())
                 ).create()
             )
@@ -505,13 +529,13 @@ open class Match(
 
     fun getLoseMessage(profile: Profile): TextComponent {
         val loseMessage = TextComponent(CC.RED + "Loser: " + CC.GRAY + profile.name)
-        stat(profile) { collector: MatchStatisticCollector ->
+        stat(profile) {
             loseMessage.hoverEvent = HoverEvent(
                 HoverEvent.Action.SHOW_TEXT,
                 ComponentBuilder(
                     ("""
-                        ${CC.RED}Health Potions Remaining: ${collector.potionsRemaining}
-                        ${CC.RED}Hits: ${collector.hitCount}
+                        ${CC.RED}Health Potions Remaining: ${it.potionsRemaining}
+                        ${CC.RED}Hits: ${it.hitCount}
                         ${CC.RED}Health: 0
                         """.trimIndent())
                 )
@@ -552,10 +576,13 @@ open class Match(
     }
 
     fun deathAnimation(attacker: Profile, victim: Profile) {
-        attacker.player.heal()
-        attacker.player.removePotionEffects()
+        attacker.player?.let {
+            it.heal()
+            it.removePotionEffects()
+            victim.player?.apply { it.hidePlayer(this, false) }
+        }
+
         attacker.inventory.clear()
-        attacker.player.hidePlayer(victim.player, false)
     }
 
     open fun giveQueueAgainItem(profile: Profile) {
@@ -573,7 +600,6 @@ open class Match(
                             profile.inventory.heldItemSlot,
                             ItemStacks.REMATCH,
                             Runnable {
-
                                 profile.duelSettings = data.deriveDuelSettings()
 
                                 val party1 = profile.party
@@ -611,14 +637,14 @@ open class Match(
     fun resetPearlCooldown(vararg profiles: Profile) {
         for (profile in profiles) {
             pearlCooldown.cooldowns.removeInt(profile.uuid)
-            profile.player.level = 0
+            profile.player?.level = 0
         }
     }
 
-    fun clearWorld() {
+    private fun clearWorld() {
         Bukkit.getServer().scheduler.runTaskLater(
             PracticePlugin.INSTANCE,
-            { Bukkit.unloadWorld(world, false) },
+            { world.get()?.let { Bukkit.unloadWorld(it, false) } },
             (POST_MATCH_TIME + 1).toLong()
         )
     }

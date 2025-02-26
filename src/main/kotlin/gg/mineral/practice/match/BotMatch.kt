@@ -16,10 +16,16 @@ import gg.mineral.practice.util.PlayerUtil
 import gg.mineral.practice.util.items.ItemStacks
 import org.bukkit.Bukkit
 import org.bukkit.Location
+import java.lang.ref.WeakReference
 
 class BotMatch(profile1: Profile, private val config: BotConfiguration, matchData: MatchData) :
     Match(matchData, profile1) {
-    private var clientInstance: ClientInstance? = null
+    private var clientInstance: WeakReference<ClientInstance>? = null
+
+    override fun cleanup() {
+        super.cleanup()
+        clientInstance = null
+    }
 
     override fun start() {
         if (noArenas()) {
@@ -32,26 +38,25 @@ class BotMatch(profile1: Profile, private val config: BotConfiguration, matchDat
             onError("Arena not found")
             return
         }
-        val location1 = arena.location1.bukkit(world)
-        val location2 = arena.location2.bukkit(world)
+        val location1 = arena.location1.bukkit(world) ?: return
+        val location2 = arena.location2.bukkit(world) ?: return
 
         setupLocations(location1, location2)
 
         teleportPlayers(location1, location2)
 
         this.clientInstance = Difficulty.spawn(config, location2)
-        val bukkitPl = Bukkit.getPlayer(config.uuid) ?: run {
-            onError("Fake player is null")
-            return
+        PracticePlugin.INSTANCE.entryListener.addJoinListener(config.uuid) {
+            getOrCreateProfile(it).let { profile ->
+                this.profile2 = profile
+                addParticipants(profile)
+            }
+
+            handleOpponentMessages()
+            startCountdown()
+
+            prepareForMatch(participants)
         }
-
-        this.profile2 = getOrCreateProfile(bukkitPl)
-        addParticipants(profile2!!)
-
-        handleOpponentMessages()
-        startCountdown()
-
-        prepareForMatch(participants)
     }
 
     override fun teleportPlayers(location1: Location, location2: Location) {
@@ -61,7 +66,7 @@ class BotMatch(profile1: Profile, private val config: BotConfiguration, matchDat
     override fun onMatchStart() {
         super.onMatchStart()
 
-        clientInstance?.let {
+        clientInstance?.get()?.let {
             it.configuration.pearlCooldown = data.pearlCooldown
             it.startGoals(
                 ReplaceArmorGoal(it),
@@ -81,11 +86,11 @@ class BotMatch(profile1: Profile, private val config: BotConfiguration, matchDat
     override fun end(victim: Profile) {
         super.end(victim)
 
-        BotAPI.INSTANCE.despawn(victim.player.uniqueId)
+        BotAPI.INSTANCE.despawn(victim.uuid)
     }
 
     override fun giveQueueAgainItem(profile: Profile) {
-        if (profile.player.isFake()) return
+        if (profile.player?.isFake() == true) return
 
         Bukkit.getServer().scheduler.runTaskLater(
             PracticePlugin.INSTANCE,
@@ -111,6 +116,6 @@ class BotMatch(profile1: Profile, private val config: BotConfiguration, matchDat
     override fun end(attacker: Profile, victim: Profile) {
         super.end(attacker, victim)
 
-        BotAPI.INSTANCE.despawn(attacker.player.uniqueId, victim.player.uniqueId)
+        BotAPI.INSTANCE.despawn(attacker.uuid, victim.uuid)
     }
 }

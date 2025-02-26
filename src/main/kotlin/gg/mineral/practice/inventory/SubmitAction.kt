@@ -10,12 +10,12 @@ enum class SubmitAction {
     DUEL {
         override fun execute(profile: Profile) {
             profile.duelRequestReciever?.let { profile.sendDuelRequest(it) }
-            profile.player.closeInventory()
+            profile.player?.closeInventory()
         }
     },
     P_SPLIT {
         override fun execute(profile: Profile) {
-            profile.player.closeInventory()
+            profile.player?.closeInventory()
 
             profile.party?.let {
                 if (it.partyLeader != profile) {
