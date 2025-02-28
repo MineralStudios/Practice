@@ -31,6 +31,7 @@ import net.md_5.bungee.api.chat.HoverEvent
 import net.md_5.bungee.api.chat.TextComponent
 import org.bukkit.Bukkit
 import org.bukkit.entity.Player
+import java.util.*
 
 open class TeamMatch : Match, MatchAppender {
 
@@ -215,21 +216,19 @@ open class TeamMatch : Match, MatchAppender {
 
         attackerEndMatch(attackerTeamLeader, attackerInventoryStatsMenus)
 
-        while (attackerTeamIterator.hasNext()) attackerTeamIterator.next().let {
-            attackerEndMatch(
-                it,
-                attackerInventoryStatsMenus
-            )
-        }
+        while (attackerTeamIterator.hasNext()) attackerEndMatch(
+            attackerTeamIterator.next(),
+            attackerInventoryStatsMenus
+        )
 
         for (invStats in attackerInventoryStatsMenus) {
             val profile = invStats.matchStatisticCollector.profile
-            setInventoryStats(profile, attackerInventoryStatsMenus)
+            setInventoryStats(profile, Collections.unmodifiableList(ArrayList(attackerInventoryStatsMenus)))
         }
 
         for (invStats in victimInventoryStatsMenus) {
             val profile = invStats.matchStatisticCollector.profile
-            setInventoryStats(profile, victimInventoryStatsMenus)
+            setInventoryStats(profile, Collections.unmodifiableList(ArrayList(victimInventoryStatsMenus)))
         }
 
         if (!remove(this)) return
@@ -320,9 +319,9 @@ open class TeamMatch : Match, MatchAppender {
     private fun attackerEndMatch(attacker: Profile, attackerInventoryStatsMenus: MutableList<InventoryStatsMenu>) {
         stat(attacker) { collector: MatchStatisticCollector -> collector.end(true) }
 
-        stat(attacker) { collector: MatchStatisticCollector? ->
+        stat(attacker) {
             attackerInventoryStatsMenus
-                .add(setInventoryStats(collector!!))
+                .add(setInventoryStats(it))
         }
 
         pearlCooldown.cooldowns.removeInt(attacker.uuid)
