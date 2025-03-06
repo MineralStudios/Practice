@@ -37,7 +37,7 @@ dependencies {
     compileOnly "gg.mineral:bot-api:20250303-08.51.37"
     compileOnly "gg.mineral:database-api:20250227-14.36.22"
     compileOnly 'de.jeezycore:jeezy-core:20250303-23.01.03'
-    compileOnly "gg.mineral:bot-intelligence:20250303-08.51.37"
+    compileOnly "gg.mineral:bot-intelligence:20250306-14.11.54"
     compileOnly 'com.github.retrooper:packetevents-spigot:2.7.0'
     implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk8"
     implementation "dev.rollczi:litecommands-bukkit:3.9.7"
