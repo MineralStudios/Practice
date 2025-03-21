@@ -72,8 +72,7 @@ class EntryListener : Listener, PlayerAppender {
         victim.taskIds.forEach { Bukkit.getScheduler().cancelTask(it) }
 
         victim.party?.leave(victim)
-        victim.tournament?.removePlayer(victim)
-        victim.event?.removePlayer(victim)
+        victim.contest?.removePlayer(victim)
 
         when (victim.playerStatus) {
             PlayerStatus.FIGHTING -> victim.match?.end(victim)

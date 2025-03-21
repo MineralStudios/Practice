@@ -29,8 +29,8 @@ class BotTeamMatch(
         team2BotInstances.clear()
     }
 
-    override fun onMatchStart() {
-        super.onMatchStart()
+    override fun onStart() {
+        super.onStart()
 
         for (instance in team1BotInstances) {
             instance.get()?.apply {

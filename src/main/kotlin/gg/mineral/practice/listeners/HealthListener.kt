@@ -33,7 +33,7 @@ class HealthListener : Listener {
             return
         }
 
-        if (profile.inMatchCountdown) {
+        if (profile.inCountdown) {
             e.isCancelled = true
             return
         }

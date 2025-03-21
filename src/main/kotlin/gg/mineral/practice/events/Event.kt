@@ -1,170 +1,156 @@
 package gg.mineral.practice.events
 
-import gg.mineral.api.collection.GlueList
-import gg.mineral.practice.PracticePlugin
+import gg.mineral.practice.arena.Arena
+import gg.mineral.practice.contest.Contest
+import gg.mineral.practice.duel.DuelSettings
 import gg.mineral.practice.entity.Profile
 import gg.mineral.practice.managers.ArenaManager
-import gg.mineral.practice.managers.EventManager
-import gg.mineral.practice.managers.ProfileManager
+import gg.mineral.practice.managers.ContestManager.registerContest
+import gg.mineral.practice.managers.ContestManager.remove
+import gg.mineral.practice.managers.GametypeManager
+import gg.mineral.practice.managers.ProfileManager.broadcast
 import gg.mineral.practice.match.EventMatch
-import gg.mineral.practice.match.Match
 import gg.mineral.practice.match.data.MatchData
 import gg.mineral.practice.traits.Spectatable
 import gg.mineral.practice.util.PlayerUtil
 import gg.mineral.practice.util.collection.ProfileList
+import gg.mineral.practice.util.math.Countdown
 import gg.mineral.practice.util.messages.impl.ChatMessages
 import gg.mineral.practice.util.messages.impl.ErrorMessages
-import it.unimi.dsi.fastutil.bytes.Byte2BooleanOpenHashMap
 import net.md_5.bungee.api.chat.ClickEvent
 import org.bukkit.Bukkit
-import org.bukkit.World
-import java.lang.ref.WeakReference
 
-class Event(hostProfile: Profile, val eventArenaId: Byte) : Spectatable {
-    private val matches = GlueList<Match>()
-    override val spectators = ProfileList()
-    override val world: WeakReference<World>
-    private val matchData: MatchData
-    private var round = 1
-    val host: String
-    private var started = false
-    override var ended = false
-    override val participants = ProfileList()
+open class Event(
+    private val hostName: String,
+    open val waitTime: Int = 60,
+    override val maxPlayers: Int = 24,
+    override val matchData: MatchData =
+        MatchData(DuelSettings(null, GametypeManager.gametypes.values.filter { it?.event == true }.randomOrNull()))
+) : Contest(hostName),
+    Spectatable {
+    override val spectators: ProfileList = ProfileList()
+    val arena: Arena
+        get() {
+            matchData.arenaId = matchData.gametype!!.eventArenaId
+            return ArenaManager.arenas.get(matchData.arenaId) ?: error("Arena not found")
+        }
+    final override val world = arena.generate()
 
-    init {
-        val duelSettings = hostProfile.duelSettings
-        val enabledArenas = Byte2BooleanOpenHashMap().apply { put(eventArenaId, true) }
-        this.matchData = MatchData(duelSettings, enabledArenas)
-        matchData.arenaId = eventArenaId
-        this.host = hostProfile.name
-        val arena = ArenaManager.arenas.get(eventArenaId)
-        this.world = arena?.generate() ?: throw NullPointerException("Arena not found")
-        this.addPlayer(hostProfile)
-    }
-
-    fun addPlayer(profile: Profile): Boolean {
-        if (started) return profile.message(ErrorMessages.EVENT_STARTED).let { true }
-
-        ArenaManager.arenas.get(eventArenaId)?.waitingLocation?.bukkit(this.world)
-            ?.let { PlayerUtil.teleport(profile, it) }
+    override fun addPlayer(p: Profile): Boolean {
+        if (participants.size >= maxPlayers) return p.message(ErrorMessages.EVENT_FULL).let { true }
+        if (started) return p.message(ErrorMessages.EVENT_STARTED).let { true }
+        arena.waitingLocation.bukkit(world)
+            ?.let { PlayerUtil.teleport(p, it) }
             ?: error("Arena not found")
-        profile.event = this
-
-        ProfileManager.broadcast(participants, ChatMessages.JOINED_EVENT.clone().replace("%player%", profile.name))
-        return participants.add(profile)
+        p.contest = this
+        return participants.add(p)
+            .also { broadcast(participants, ChatMessages.JOINED_EVENT.clone().replace("%player%", p.name)) }
     }
 
-    private fun startRound() {
-        if (participants.size == 1) {
-            val winner: Profile? = participants.first
-            winner?.event = null
-
-            for (spectator in spectators) spectator.stopSpectating()
-
-            ended = true
-            EventManager.remove(this)
-            return
-        }
-
+    override fun removePlayer(p: Profile) {
+        if (!participants.remove(p)) return
+        broadcast(participants, ChatMessages.LEFT_EVENT.clone().replace("%player%", p.name))
+        p.contest = null
+        if (!started) return
         if (participants.isEmpty()) {
             for (spectator in spectators) spectator.stopSpectating()
-            EventManager.remove(this)
-            ended = true
-            return
-        }
-
-        val iterator = participants.iterator()
-
-        val profile1 = iterator.next()
-
-        if (!iterator.hasNext()) {
-            profile1.message(ChatMessages.NO_OPPONENT)
-            return
-        }
-
-        val profile2 = iterator.next()
-
-        val match = EventMatch(profile1, profile2, matchData, this)
-        match.start()
-        matches.add(match)
-    }
-
-    fun removePlayer(profile: Profile) {
-        if (!participants.remove(profile)) return
-        profile.event = null
-
-        ProfileManager.broadcast(participants, ChatMessages.LEFT_EVENT.clone().replace("%player%", profile.name))
-
-        if (participants.isEmpty()) {
-            EventManager.remove(this)
-            ended = true
-            return
-        }
-
-        if (participants.size == 1) {
+            onContestEnd()
+            remove(this)
+        } else if (participants.size == 1) {
             val winner = participants.first
-            winner?.event = null
-
+            winner?.contest = null
             for (spectator in spectators) spectator.stopSpectating()
-
-            EventManager.remove(this)
-            ended = true
-
-            if (winner != null)
-                ProfileManager.broadcast(ChatMessages.WON_EVENT.clone().replace("%player%", winner.name))
+            onContestWin(winner)
+            broadcast(ChatMessages.WON_EVENT.clone().replace("%player%", winner!!.name))
         }
     }
 
-    fun start() {
+    override fun startContest() {
         if (started) return
+        registerContest(this)
 
-        EventManager.registerEvent(this)
-
-        val messageToBroadcast = ChatMessages.BROADCAST_EVENT.clone()
-            .replace("%player%", host).setTextEvent(
-                ClickEvent(
-                    ClickEvent.Action.RUN_COMMAND,
-                    "/join $host"
-                ),
-                ChatMessages.CLICK_TO_JOIN
-            )
-
-        ProfileManager.broadcast(messageToBroadcast)
-
-        Bukkit.getScheduler().runTaskLater(PracticePlugin.INSTANCE, {
-            started = true
-
-            if (participants.size == 1) {
-                val winner = participants.first
-                winner?.event = null
-
-                for (spectator in spectators) spectator.stopSpectating()
-
-                winner?.message(ErrorMessages.EVENT_NOT_ENOUGH_PLAYERS)
-                EventManager.remove(this@Event)
-                ended = true
-                return@runTaskLater
+        val countdown = Countdown(waitTime, this) { time ->
+            if (time % 30 != 0) return@Countdown
+            broadcast(ChatMessages.EVENT_BROADCAST)
+            Bukkit.getPlayer(hostName)?.let {
+                broadcast(
+                    ChatMessages.CONTEST_HOST.clone().replace(
+                        "%host%",
+                        hostName
+                    )
+                )
             }
 
-            startRound()
-        }, 600)
+            matchData.gametype?.name?.let {
+                broadcast(
+                    ChatMessages.CONTEST_MODE.clone().replace(
+                        "%mode%",
+                        it
+                    )
+                )
+            }
+
+            broadcast(
+                ChatMessages.CONTEST_PLAYERS.clone().replace(
+                    "%players%",
+                    participants.size.toString() + "/" + maxPlayers
+                )
+            )
+
+            if (this is AutomatedEvent)
+                broadcast(ChatMessages.CONTEST_REWARD.clone().replace("%rank%", reward.rank))
+
+            fun formatSeconds(seconds: Int): String {
+                val minutes = seconds / 60
+                val remainingSeconds = seconds % 60
+                return "${minutes}m ${remainingSeconds}s"
+            }
+
+            broadcast(
+                ChatMessages.CONTEST_STARTS_IN.clone().replace(
+                    "%time%",
+                    formatSeconds(time)
+                )
+            )
+
+            broadcast(
+                ChatMessages.CONTEST_JOIN.clone().setTextEvent(
+                    ClickEvent(ClickEvent.Action.RUN_COMMAND, "/join $hostName"),
+                    ChatMessages.CLICK_TO_JOIN
+                )
+            )
+        }
+        countdown.start()
     }
 
-    fun removeMatch(match: Match) {
-        matches.remove(match)
+    override fun createMatch(p1: Profile, p2: Profile) = EventMatch(p1, p2, matchData, this)
 
-        if (ended) return
+    override fun onContestWin(winner: Profile?) {
+        winner?.contest = null
+        ended = true
+        remove(this)
+    }
 
-        if (matches.isEmpty()) {
-            val broadcastedMessage: gg.mineral.practice.util.messages.ChatMessage =
-                ChatMessages.ROUND_OVER.clone().replace("%round%", "" + round)
+    override fun onContestEnd() {
+        for (spectator in spectators) spectator.stopSpectating()
+        ended = true
+        remove(this)
+    }
 
-            ProfileManager.broadcast(participants, broadcastedMessage)
+    override fun onStart(profile: Profile) {
+    }
 
-            Bukkit.getScheduler().runTaskLater(PracticePlugin.INSTANCE, {
-                startRound()
-                round++
-            }, 100)
-        }
+    override fun onStart() {
+        started = true
+        if (participants.size == 1) {
+            val winner = participants.first
+            winner?.contest = null
+            for (spectator in spectators) spectator.stopSpectating()
+            winner?.message(ErrorMessages.EVENT_NOT_ENOUGH_PLAYERS)
+            onContestEnd()
+        } else startRound()
+    }
+
+    override fun onCountdownStart(profile: Profile) {
     }
 }

@@ -63,8 +63,8 @@ class BotMatch(profile1: Profile, private val config: BotConfiguration, matchDat
         profile1?.let { PlayerUtil.teleport(it, location1) }
     }
 
-    override fun onMatchStart() {
-        super.onMatchStart()
+    override fun onStart() {
+        super.onStart()
 
         clientInstance?.get()?.let {
             it.configuration.pearlCooldown = data.pearlCooldown

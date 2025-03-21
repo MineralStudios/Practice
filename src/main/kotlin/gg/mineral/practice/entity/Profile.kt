@@ -2,6 +2,7 @@ package gg.mineral.practice.entity
 
 import gg.mineral.practice.PracticePlugin
 import gg.mineral.practice.arena.SpectatableArena
+import gg.mineral.practice.contest.Contest
 import gg.mineral.practice.duel.DuelSettings
 import gg.mineral.practice.entity.appender.CommandSenderAppender
 import gg.mineral.practice.events.Event
@@ -74,7 +75,7 @@ class Profile(player: Player) : ExtendedProfileData(player.name, player.uniqueId
             field = value
             playerStatus = if (value != null) PlayerStatus.FIGHTING
             else PlayerStatus.IDLE
-            if (value == null) this.inMatchCountdown = false
+            if (value == null) this.inCountdown = false
         }
 
     var scoreboard = DefaultScoreboard.INSTANCE
@@ -134,29 +135,22 @@ class Profile(player: Player) : ExtendedProfileData(player.name, player.uniqueId
             field?.submitAction?.let { openMenu(MechanicsMenu(null, it)) }
             field = value
         }
-    var tournament: Tournament? = null
+    var contest: Contest? = null
         set(value) {
-            if (value != null) inventory.setInventoryForTournament()
+            if (value != null) when (value) {
+                is Tournament -> inventory.setInventoryForTournament()
+                is Event -> inventory.setInventoryForEvent()
+            }
             else {
                 teleportToLobby()
                 inventory.setInventoryForLobby()
+                field?.removePlayer(this)
             }
-            field?.removePlayer(this)
-            field = value
-        }
-    var event: Event? = null
-        set(value) {
-            if (value != null) inventory.setInventoryForEvent()
-            else {
-                teleportToLobby()
-                inventory.setInventoryForLobby()
-            }
-            field?.removePlayer(this)
             field = value
         }
     var killer: Profile? = null
     var kitLoaded = false
-    var inMatchCountdown = false
+    var inCountdown = false
     var ridingEntityID = -1
     private val fakeBlocks = Registry { obj: BlockData -> obj.toString() }
     val customKits = Short2ObjectOpenHashMap<Int2ObjectOpenHashMap<Array<ItemStack?>>>()
@@ -240,7 +234,7 @@ class Profile(player: Player) : ExtendedProfileData(player.name, player.uniqueId
                 playerStatus = PlayerStatus.FOLLOWING
                 inventory.setInventoryToFollow()
                 scoreboard = FollowingScoreboard.INSTANCE
-                if (value.playerStatus === PlayerStatus.FIGHTING || value.event != null) spectate(value)
+                if (value.playerStatus === PlayerStatus.FIGHTING || value.contest is Event) spectate(value)
             } else {
                 if (playerStatus !== PlayerStatus.FOLLOWING) return message(ErrorMessages.NOT_FOLLOWING)
                 playerStatus = PlayerStatus.SPECTATING
@@ -551,12 +545,12 @@ class Profile(player: Player) : ExtendedProfileData(player.name, player.uniqueId
     fun spectate(toBeSpectated: Profile) {
         if (toBeSpectated == this) return message(ErrorMessages.NOT_SPEC_SELF)
 
-        this.spectatable = toBeSpectated.event ?: toBeSpectated.match
+        this.spectatable = toBeSpectated.contest as? Event ?: toBeSpectated.match
 
         spectatable?.let {
             PlayerUtil.teleport(
                 this,
-                if (it is Event) arenas[it.eventArenaId]?.waitingLocation?.bukkit(it.world)
+                if (it is Event) it.arena.waitingLocation.bukkit(it.world)
                     ?: throw NullPointerException("Event arena not found")
                 else toBeSpectated.player?.location ?: throw NullPointerException("Player location not found")
             )
@@ -574,7 +568,7 @@ class Profile(player: Player) : ExtendedProfileData(player.name, player.uniqueId
         this.spectatable = spectatable
         spectatable.let {
             when (it) {
-                is Event -> arenas[it.eventArenaId]?.waitingLocation?.bukkit(it.world)
+                is Event -> it.arena.waitingLocation.bukkit(it.world)
                 is Match -> arenas[it.data.arenaId]?.location1?.bukkit(it.world)
                 is SpectatableArena -> it.arena.location1.bukkit(it.world)
                 else -> throw IllegalArgumentException("Invalid spectatable type")

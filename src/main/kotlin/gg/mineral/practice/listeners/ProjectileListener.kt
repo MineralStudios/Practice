@@ -46,7 +46,7 @@ class ProjectileListener : Listener {
         val player = e.player
         val profile = getProfile(player)
 
-        if (profile != null && (profile.inMatchCountdown || profile.playerStatus !== PlayerStatus.FIGHTING)) {
+        if (profile != null && (profile.inCountdown || profile.playerStatus !== PlayerStatus.FIGHTING)) {
             e.isCancelled = true
             return
         }

@@ -37,10 +37,12 @@ dependencies {
     compileOnly "gg.mineral:bot-api:20250226-15.51.55"
     compileOnly "gg.mineral:database-api:20250217-18.17.46"
     compileOnly 'de.jeezycore:jeezy-core:20250217-14.33.00'
-    compileOnly "gg.mineral:bot-intelligence:20250226-15.51.55"
+    compileOnly "gg.mineral:bot-intelligence:20250303-03.57.33"
     compileOnly 'com.github.retrooper:packetevents-spigot:2.7.0'
     implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk8"
     implementation "dev.rollczi:litecommands-bukkit:3.9.7"
+    implementation 'com.google.code.gson:gson:2.12.1'
+    implementation "com.squareup.okhttp3:okhttp:4.12.0"
 }
 
 /*detekt {
