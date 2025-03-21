@@ -31,16 +31,18 @@ repositories {
 }
 
 dependencies {
-    compileOnly "gg.mineral:nametag-api:20250228-22.20.42"
-    compileOnly "me.caseload.knockbacksync:bukkit:20250312-01.10.23"
+    compileOnly "gg.mineral:nametag-api:20250217-18.18.19"
+    compileOnly "me.caseload.knockbacksync:bukkit:20250320-14.31.39"
     compileOnly "gg.mineral.mineralspigot:mineralspigot-server:20250306-03.56.18"
-    compileOnly "gg.mineral:bot-api:20250303-08.51.37"
-    compileOnly "gg.mineral:database-api:20250227-14.36.22"
-    compileOnly 'de.jeezycore:jeezy-core:20250303-23.01.03'
-    compileOnly "gg.mineral:bot-intelligence:20250303-08.51.37"
+    compileOnly "gg.mineral:bot-api:20250226-15.51.55"
+    compileOnly "gg.mineral:database-api:20250320-14.27.41"
+    compileOnly 'de.jeezycore:jeezy-core:20250217-14.33.00'
+    compileOnly "gg.mineral:bot-intelligence:20250320-14.41.01"
     compileOnly 'com.github.retrooper:packetevents-spigot:2.7.0'
     implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk8"
     implementation "dev.rollczi:litecommands-bukkit:3.9.7"
+    implementation 'com.google.code.gson:gson:2.12.1'
+    implementation "com.squareup.okhttp3:okhttp:4.12.0"
 }
 
 /*detekt {

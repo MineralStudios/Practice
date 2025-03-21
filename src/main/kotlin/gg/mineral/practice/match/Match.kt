@@ -2,6 +2,7 @@ package gg.mineral.practice.match
 
 import gg.mineral.api.collection.GlueList
 import gg.mineral.practice.PracticePlugin
+import gg.mineral.practice.battle.Battle
 import gg.mineral.practice.entity.Profile
 import gg.mineral.practice.entity.appender.PlayerAppender
 import gg.mineral.practice.inventory.menus.InventoryStatsMenu
@@ -57,7 +58,7 @@ open class Match(
     open val data: MatchData,
     var profile1: Profile? = null,
     var profile2: Profile? = null
-) : Spectatable, PlayerAppender {
+) : Spectatable, Battle, PlayerAppender {
     override var spectators: ProfileList = ProfileList()
     final override val participants: ProfileList = ProfileList()
     override var ended: Boolean = false
@@ -265,14 +266,14 @@ open class Match(
         }
     }
 
-    fun onCountdownStart(p: Profile) = rideInvisibleArmorStand(p)
+    override fun onCountdownStart(profile: Profile) = rideInvisibleArmorStand(profile)
 
-    fun onMatchStart(p: Profile) {
-        destroyArmorStand(p)
-        if (!p.kitLoaded) p.giveKit(kit)
+    override fun onStart(profile: Profile) {
+        destroyArmorStand(profile)
+        if (!profile.kitLoaded) profile.giveKit(kit)
     }
 
-    open fun onMatchStart() = startMatchTimeLimit()
+    override fun onStart() = startMatchTimeLimit()
 
     open fun setScoreboard(p: Profile) {
         p.scoreboard = if (data.boxing) BoxingScoreboard.INSTANCE else InMatchScoreboard.INSTANCE

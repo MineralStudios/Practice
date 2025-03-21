@@ -45,7 +45,7 @@ class InteractListener : Listener {
 
         if (predicate?.test(profile) == true) return
 
-        if (profile.inMatchCountdown) {
+        if (profile.inCountdown) {
             e.isCancelled = true
             return
         }

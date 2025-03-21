@@ -17,7 +17,7 @@ class PacketEventsListener : PacketListener {
         }
 
         event.isCancelled =
-            event.packetType == PacketType.Play.Client.STEER_VEHICLE && getProfile(event.user.profile.uuid)?.inMatchCountdown == true
+            event.packetType == PacketType.Play.Client.STEER_VEHICLE && getProfile(event.user.profile.uuid)?.inCountdown == true
     }
 
     override fun onPacketSend(event: PacketSendEvent) {

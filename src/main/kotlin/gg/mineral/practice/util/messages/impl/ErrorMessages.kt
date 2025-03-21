@@ -98,10 +98,14 @@ object ErrorMessages {
     // Tournament
     val ALREADY_IN_TOURNAMENT: Message = ErrorMessage("You are already in a tournament.")
     val TOURNAMENT_STARTED: Message = ErrorMessage("That tournament has already started.")
+    val NOT_IN_TOURNAMENT: Message = ErrorMessage("You are not in a tournament.")
     val TOURNAMENT_NOT_ENOUGH_PLAYERS: Message = ErrorMessage(
         "There was not enough players to start the tournament."
     )
+    val TOURNAMENT_FULL: Message = ErrorMessage("The tournament is full.")
     val ALREADY_IN_EVENT: Message = ErrorMessage("You are already in an event.")
+    val EVENT_FULL: Message = ErrorMessage("The event is full.")
+    val NOT_IN_EVENT: Message = ErrorMessage("You are not in an event.")
     val EVENT_TOURNAMENT_NOT_EXIST: Message = ErrorMessage("That event/tournament no longer exists.")
     val EVENT_STARTED: Message = ErrorMessage("That event has already started.")
     val EVENT_NOT_ENOUGH_PLAYERS: Message = ErrorMessage(

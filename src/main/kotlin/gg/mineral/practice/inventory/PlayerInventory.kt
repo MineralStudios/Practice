@@ -87,7 +87,7 @@ class PlayerInventory(var holder: Profile) :
 
         object : BukkitRunnable() {
             override fun run() {
-                setItem(0, ItemStacks.LEAVE_TOURNAMENT, Runnable { holder.tournament = null })
+                setItem(0, ItemStacks.LEAVE_TOURNAMENT, Runnable { holder.contest = null })
             }
         }.runTaskLater(PracticePlugin.INSTANCE, 20)
     }
@@ -101,7 +101,7 @@ class PlayerInventory(var holder: Profile) :
 
         object : BukkitRunnable() {
             override fun run() {
-                setItem(0, ItemStacks.LEAVE_EVENT, Runnable { holder.event = null })
+                setItem(0, ItemStacks.LEAVE_EVENT, Runnable { holder.contest = null })
             }
         }.runTaskLater(PracticePlugin.INSTANCE, 20)
     }

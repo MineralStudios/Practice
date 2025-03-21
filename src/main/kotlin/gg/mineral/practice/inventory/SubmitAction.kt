@@ -3,14 +3,14 @@ package gg.mineral.practice.inventory
 import gg.mineral.practice.entity.Profile
 import gg.mineral.practice.match.TeamMatch
 import gg.mineral.practice.match.data.MatchData
-import gg.mineral.practice.tournaments.Tournament
+import gg.mineral.practice.tournaments.HostedTournament
 import gg.mineral.practice.util.messages.impl.ErrorMessages
 
 enum class SubmitAction {
     DUEL {
         override fun execute(profile: Profile) {
-            profile.duelRequestReciever?.let { profile.sendDuelRequest(it) }
             profile.player?.closeInventory()
+            profile.duelRequestReciever?.let { profile.sendDuelRequest(it) }
         }
     },
     P_SPLIT {
@@ -34,7 +34,10 @@ enum class SubmitAction {
         }
     },
     TOURNAMENT {
-        override fun execute(profile: Profile) = Tournament(profile).start()
+        override fun execute(profile: Profile) {
+            profile.player?.closeInventory()
+            HostedTournament(profile).startContest()
+        }
     };
 
     abstract fun execute(profile: Profile)
