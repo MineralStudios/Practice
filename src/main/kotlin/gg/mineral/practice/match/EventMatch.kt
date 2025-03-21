@@ -4,7 +4,6 @@ import gg.mineral.practice.PracticePlugin
 import gg.mineral.practice.entity.PlayerStatus
 import gg.mineral.practice.entity.Profile
 import gg.mineral.practice.events.Event
-import gg.mineral.practice.managers.ArenaManager.arenas
 import gg.mineral.practice.managers.MatchManager.remove
 import gg.mineral.practice.match.data.MatchData
 import gg.mineral.practice.scoreboard.impl.DefaultScoreboard
@@ -57,7 +56,7 @@ class EventMatch(profile1: Profile?, profile2: Profile?, matchData: MatchData, p
 
         victim.player?.heal()
         victim.player?.removePotionEffects()
-        victim.event = null
+        victim.contest = null
         sendBackToLobby(victim)
 
         Bukkit.getServer().scheduler.runTaskLater(PracticePlugin.INSTANCE, {
@@ -65,10 +64,10 @@ class EventMatch(profile1: Profile?, profile2: Profile?, matchData: MatchData, p
             attacker.scoreboard = DefaultScoreboard.INSTANCE
             event.removeMatch(this@EventMatch)
 
-            val eventArena = arenas[event.eventArenaId]
+            val eventArena = event.arena
 
             if (!event.ended) {
-                eventArena?.waitingLocation?.bukkit(this.world)?.let { PlayerUtil.teleport(attacker, it) }
+                eventArena.waitingLocation.bukkit(this.world)?.let { PlayerUtil.teleport(attacker, it) }
                 attacker.playerStatus = PlayerStatus.IDLE
                 attacker.inventory.setInventoryForEvent()
             } else {

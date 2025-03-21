@@ -130,6 +130,6 @@ class MovementListener : Listener {
 
         if (profile == null) return
 
-        if (profile.inMatchCountdown) e.isCancelled = true
+        if (profile.inCountdown) e.isCancelled = true
     }
 }
