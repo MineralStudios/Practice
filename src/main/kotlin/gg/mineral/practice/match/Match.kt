@@ -628,7 +628,7 @@ open class Match(
         )
     }
 
-    fun sendBackToLobby(profile: Profile) {
+    open fun sendBackToLobby(profile: Profile) {
         if (profile.match != this) return
         profile.teleportToLobby()
         profile.inventory.setInventoryForLobby()

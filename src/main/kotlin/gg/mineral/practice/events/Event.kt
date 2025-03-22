@@ -26,7 +26,7 @@ open class Event(
     override val maxPlayers: Int = 24,
     override val matchData: MatchData =
         MatchData(DuelSettings(null, GametypeManager.gametypes.values.filter { it?.event == true }.randomOrNull()))
-) : Contest(hostName),
+) : Contest(hostName, false),
     Spectatable {
     override val spectators: ProfileList = ProfileList()
     val arena: Arena

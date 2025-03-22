@@ -51,7 +51,7 @@ class TournamentMatch(profile1: Profile?, profile2: Profile?, matchData: MatchDa
 
             attacker.teleportToLobby()
 
-            if (!tournament.ended) {
+            if (!tournament.ended && tournament.participants.contains(attacker)) {
                 attacker.playerStatus = PlayerStatus.IDLE
                 attacker.inventory.setInventoryForTournament()
             } else attacker.inventory.setInventoryForLobby()

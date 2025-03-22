@@ -11,7 +11,7 @@ import gg.mineral.practice.util.collection.ProfileList
 import gg.mineral.practice.util.messages.impl.ChatMessages
 import org.bukkit.Bukkit
 
-abstract class Contest(val id: String) : Battle {
+abstract class Contest(val id: String, val concurrentMatches: Boolean = true) : Battle {
     override val participants: ProfileList = ProfileList()
     abstract val maxPlayers: Int
     val matches: GlueList<Match> = GlueList()
@@ -50,6 +50,8 @@ abstract class Contest(val id: String) : Battle {
             val match = createMatch(p1, p2)
             match.start()
             matches.add(match)
+
+            if (!concurrentMatches) break
         }
     }
 

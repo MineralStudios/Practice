@@ -50,14 +50,16 @@ class EventMatch(profile1: Profile?, profile2: Profile?, matchData: MatchData, p
         }
 
         resetPearlCooldown(attacker, victim)
-        attacker.scoreboard = MatchEndScoreboard.INSTANCE
-        victim.scoreboard = DefaultScoreboard.INSTANCE
         remove(this)
 
         victim.player?.heal()
         victim.player?.removePotionEffects()
         victim.contest = null
+
         sendBackToLobby(victim)
+
+        attacker.scoreboard = MatchEndScoreboard.INSTANCE
+        victim.scoreboard = DefaultScoreboard.INSTANCE
 
         Bukkit.getServer().scheduler.runTaskLater(PracticePlugin.INSTANCE, {
             if (attacker.match?.ended == false) return@runTaskLater
@@ -86,5 +88,12 @@ class EventMatch(profile1: Profile?, profile2: Profile?, matchData: MatchData, p
         }
 
         cleanup()
+    }
+
+    override fun sendBackToLobby(profile: Profile) {
+        if (event.ended) return super.sendBackToLobby(profile)
+        if (profile.match != this) return
+        profile.match = null
+        profile.spectate(event)
     }
 }

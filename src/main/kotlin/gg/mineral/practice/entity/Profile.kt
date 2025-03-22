@@ -137,14 +137,18 @@ class Profile(player: Player) : ExtendedProfileData(player.name, player.uniqueId
         }
     var contest: Contest? = null
         set(value) {
+            if (field == value) return
             if (value != null) when (value) {
                 is Tournament -> inventory.setInventoryForTournament()
                 is Event -> inventory.setInventoryForEvent()
             }
             else {
-                teleportToLobby()
-                inventory.setInventoryForLobby()
                 field?.removePlayer(this)
+
+                if (match == null || match?.ended == false) {
+                    teleportToLobby()
+                    inventory.setInventoryForLobby()
+                }
             }
             field = value
         }
@@ -474,6 +478,7 @@ class Profile(player: Player) : ExtendedProfileData(player.name, player.uniqueId
 
     private fun testVisibility(uuid: UUID): Boolean {
         if (playerStatus === PlayerStatus.KIT_CREATOR || playerStatus === PlayerStatus.KIT_EDITOR) return false
+        if (contest?.concurrentMatches == false && contest?.participants?.contains(this) == true) return true
 
         if (playerStatus === PlayerStatus.IDLE || playerStatus === PlayerStatus.QUEUEING) {
             if (!this.playersVisible) return false

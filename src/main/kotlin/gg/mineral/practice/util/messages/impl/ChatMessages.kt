@@ -361,7 +361,7 @@ object ChatMessages {
     val WON_EVENT: ChatMessage =
         ChatMessage("%player% has won the event.", CC.AQUA).highlightText(CC.D_AQUA, "%player%")
     val ROUND_OVER: ChatMessage =
-        ChatMessage("Round %round% his over. The next round will start in 5 seconds.", CC.AQUA)
+        ChatMessage("Round %round% is over. The next round will start in 5 seconds.", CC.AQUA)
             .highlightText(CC.D_AQUA, "%round%")
     val BEGINS_IN_SECONDS: ChatMessage = ChatMessage("The %type% will begin in %time% second(s).", CC.WHITE)
         .highlightText(CC.SECONDARY, "%type%", "%time% second(s)")

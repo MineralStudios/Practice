@@ -299,8 +299,9 @@ open class TeamMatch : Match, MatchAppender {
     override fun getOpponent(p: Profile): Profile? {
         return if (team1Players.all().contains(p))
             team2Players.firstKey()
-        else
+        else if (team1Players.isNotEmpty())
             team1Players.firstKey()
+        else null
     }
 
     override fun cleanup() {

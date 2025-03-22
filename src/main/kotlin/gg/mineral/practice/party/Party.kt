@@ -33,23 +33,19 @@ class Party(val partyLeader: Profile) : QueuedEntity {
     fun leave(profile: Profile) {
         val leftMessage = ChatMessages.LEFT_PARTY.clone().replace("%player%", profile.name)
 
-        val iter = partyMembers.iterator()
-
         if (partyLeader == profile) {
-            while (iter.hasNext()) {
-                val member = iter.next()
-                iter.remove()
-                member.party = null
-                member.message(leftMessage)
+            partyMembers.removeIf {
+                it.party = null
+                it.message(leftMessage)
+                true
             }
-
             remove(this)
         } else {
             profile.party = null
-
-            while (iter.hasNext()) iter.next().message(leftMessage)
+            partyMembers.forEach { it.message(leftMessage) }
         }
     }
+
 
     override fun hashCode() = javaClass.hashCode()
 
