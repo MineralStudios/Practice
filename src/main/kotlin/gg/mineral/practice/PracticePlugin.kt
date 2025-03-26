@@ -65,6 +65,12 @@ class PracticePlugin : JavaPlugin() {
     private lateinit var liteCommands: LiteCommands<CommandSender>
 
     override fun onEnable() {
+        try {
+            val combatModule = com.lunarclient.apollo.Apollo.getModuleManager()
+                .getModule(com.lunarclient.apollo.module.combat.CombatModule::class.java)
+            combatModule.options.set(com.lunarclient.apollo.module.combat.CombatModule.DISABLE_MISS_PENALTY, true)
+        } catch (ignored: Exception) {
+        }
 
         ArenaManager.load()
         QueuetypeManager.load()

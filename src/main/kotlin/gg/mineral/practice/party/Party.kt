@@ -1,5 +1,6 @@
 package gg.mineral.practice.party
 
+import com.google.common.collect.Sets
 import gg.mineral.practice.entity.Profile
 import gg.mineral.practice.managers.PartyManager.registerParty
 import gg.mineral.practice.managers.PartyManager.remove
@@ -11,7 +12,7 @@ import java.util.*
 
 class Party(val partyLeader: Profile) : QueuedEntity {
     var open = false
-    val partyMembers = mutableSetOf<Profile>()
+    val partyMembers: MutableSet<Profile> = Sets.newConcurrentHashSet()
 
     init {
         registerParty(this)

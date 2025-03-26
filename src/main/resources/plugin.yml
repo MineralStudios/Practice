@@ -4,4 +4,4 @@ author: Jaiden
 main: gg.mineral.practice.PracticePlugin
 description: Mineral Practice Plugin!
 depend: [ packetevents, MineralBot, MineralDatabaseAPI, NametagAPI ]
-softdepend: [ KnockbackSync ]
+softdepend: [ KnockbackSync, Apollo-Bukkit ]

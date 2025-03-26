@@ -28,6 +28,10 @@ repositories {
     maven { url = uri("https://repo.codemc.io/repository/maven-releases/") }
     maven { url = uri("https://repo.codemc.io/repository/maven-snapshots/") }
     maven { url 'https://www.jitpack.io' }
+    maven {
+        name = 'lunarclient'
+        url = 'https://repo.lunarclient.dev'
+    }
 }
 
 dependencies {
@@ -39,6 +43,7 @@ dependencies {
     compileOnly 'de.jeezycore:jeezy-core:20250217-14.33.00'
     compileOnly "gg.mineral:bot-intelligence:20250320-14.41.01"
     compileOnly 'com.github.retrooper:packetevents-spigot:2.7.0'
+    compileOnly 'com.lunarclient:apollo-api:1.1.6'
     implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk8"
     implementation "dev.rollczi:litecommands-bukkit:3.9.7"
     implementation 'com.google.code.gson:gson:2.12.1'
