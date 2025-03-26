@@ -21,32 +21,37 @@ class PacketEventsListener : PacketListener {
     }
 
     override fun onPacketSend(event: PacketSendEvent) {
-        if (event.packetType == PacketType.Play.Server.PLAYER_INFO) {
-            val playerInfo = WrapperPlayServerPlayerInfo(event)
-            val action = playerInfo.action
-            val data = playerInfo.playerDataList
-            val iter = data.iterator()
+        when (event.packetType) {
+            PacketType.Play.Server.PLAYER_INFO -> {
+                val playerInfo = WrapperPlayServerPlayerInfo(event)
+                val action = playerInfo.action
+                val data = playerInfo.playerDataList
+                val iter = data.iterator()
 
-            val profile = getProfile(event.user.profile.uuid) ?: return
+                val profile = getProfile(event.user.profile.uuid) ?: return
 
-            while (iter.hasNext()) {
-                val playerInfoData = iter.next() ?: continue
+                while (iter.hasNext()) {
+                    val playerInfoData = iter.next() ?: continue
 
-                val uuid = playerInfoData.userProfile.uuid
+                    val uuid = playerInfoData.userProfile.uuid
 
-                if (uuid != profile.uuid && !profile.testTabVisibility(uuid) && action != WrapperPlayServerPlayerInfo.Action.REMOVE_PLAYER) {
-                    iter.remove()
-                    continue
+                    if (uuid != profile.uuid && !profile.testTabVisibility(uuid) && action != WrapperPlayServerPlayerInfo.Action.REMOVE_PLAYER) {
+                        iter.remove()
+                        continue
+                    }
+
+                    if (action == WrapperPlayServerPlayerInfo.Action.ADD_PLAYER) profile.visiblePlayersOnTab.add(uuid)
+                    else if (action == WrapperPlayServerPlayerInfo.Action.REMOVE_PLAYER) profile.visiblePlayersOnTab.remove(
+                        uuid
+                    )
+                    else if (uuid != profile.uuid && !profile.visiblePlayersOnTab.contains(uuid)) iter.remove()
                 }
 
-                if (action == WrapperPlayServerPlayerInfo.Action.ADD_PLAYER) profile.visiblePlayersOnTab.add(uuid)
-                else if (action == WrapperPlayServerPlayerInfo.Action.REMOVE_PLAYER) profile.visiblePlayersOnTab.remove(
-                    uuid
-                )
-                else if (uuid != profile.uuid && !profile.visiblePlayersOnTab.contains(uuid)) iter.remove()
+                event.isCancelled = data.isEmpty()
             }
 
-            event.isCancelled = data.isEmpty()
+            // Cancel statistics packet
+            PacketType.Play.Server.STATISTICS -> event.isCancelled = true
         }
     }
 }
