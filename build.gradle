@@ -43,7 +43,7 @@ dependencies {
     compileOnly 'de.jeezycore:jeezy-core:20250322-00.36.33'
     compileOnly "gg.mineral:bot-intelligence:20250321-01.43.11"
     compileOnly 'com.github.retrooper:packetevents-spigot:2.7.0'
-    compileOnly 'com.lunarclient:apollo-api:1.1.6'
+    compileOnly 'com.lunarclient:apollo-api:1.1.7'
     implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk8"
     implementation "dev.rollczi:litecommands-bukkit:3.9.7"
     implementation 'com.google.code.gson:gson:2.12.1'
