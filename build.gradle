@@ -35,7 +35,7 @@ repositories {
 }
 
 dependencies {
-    compileOnly "gg.mineral:nametag-api:20250326-17.18.33"
+    compileOnly "gg.mineral:nametag-api:20250402-13.20.23"
     compileOnly "me.caseload.knockbacksync:bukkit:20250331-13.29.54"
     compileOnly "gg.mineral.mineralspigot:mineralspigot-server:20250324-00.03.34"
     compileOnly "gg.mineral:bot-api:20250329-18.43.40"
