@@ -41,7 +41,7 @@ dependencies {
     compileOnly "gg.mineral:bot-api:20250411-10.25.50"
     compileOnly "gg.mineral:database-api:20250411-10.26.31"
     compileOnly 'de.jeezycore:jeezy-core:20250408-10.07.08'
-    compileOnly "gg.mineral:bot-intelligence:20250411-10.25.50"
+    compileOnly "gg.mineral:bot-intelligence:20250415-19.17.37"
     compileOnly 'com.github.retrooper:packetevents-spigot:2.7.0'
     compileOnly 'com.lunarclient:apollo-api:1.1.7'
     implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk8"
