@@ -40,7 +40,7 @@ dependencies {
     compileOnly "gg.mineral.mineralspigot:mineralspigot-server:20250422-21.30.06"
     compileOnly "gg.mineral:bot-api:20250423-22.26.44"
     compileOnly "gg.mineral:database-api:20250411-10.26.31"
-    compileOnly 'de.jeezycore:jeezy-core:20250414-14.13.04'
+    compileOnly 'de.jeezycore:jeezy-core:20250423-23.22.19'
     compileOnly "gg.mineral:bot-intelligence:20250415-19.17.37"
     compileOnly 'com.github.retrooper:packetevents-spigot:2.7.0'
     compileOnly 'com.lunarclient:apollo-api:1.1.7'
