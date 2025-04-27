@@ -1,21 +1,14 @@
 package gg.mineral.practice.events
 
-import gg.mineral.practice.arena.Arena
+import gg.mineral.practice.arena.EventArena
 import gg.mineral.practice.contest.Contest
 import gg.mineral.practice.duel.DuelSettings
 import gg.mineral.practice.entity.Profile
-import gg.mineral.practice.managers.ArenaManager
+import gg.mineral.practice.managers.ArenaManager.arenas
 import gg.mineral.practice.managers.ContestManager.registerContest
 import gg.mineral.practice.managers.ContestManager.remove
 import gg.mineral.practice.managers.GametypeManager
 import gg.mineral.practice.managers.ProfileManager.broadcast
-import gg.mineral.api.collection.GlueList
-import gg.mineral.practice.PracticePlugin
-import gg.mineral.practice.arena.EventArena
-import gg.mineral.practice.entity.Profile
-import gg.mineral.practice.managers.ArenaManager.arenas
-import gg.mineral.practice.managers.EventManager
-import gg.mineral.practice.managers.ProfileManager
 import gg.mineral.practice.match.EventMatch
 import gg.mineral.practice.match.data.MatchData
 import gg.mineral.practice.traits.Spectatable
@@ -39,7 +32,7 @@ open class Event(
     val arena: EventArena
         get() {
             matchData.arenaId = matchData.gametype!!.eventArenaId
-            return (ArenaManager.arenas.get(matchData.arenaId) as? EventArena) ?: error("Arena not found")
+            return (arenas.get(matchData.arenaId) as? EventArena) ?: error("Arena not found")
         }
     final override val world = arena.generate()
 

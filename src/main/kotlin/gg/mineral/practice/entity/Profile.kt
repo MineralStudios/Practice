@@ -1,7 +1,6 @@
 package gg.mineral.practice.entity
 
 import gg.mineral.practice.PracticePlugin
-import gg.mineral.practice.arena.EventArena
 import gg.mineral.practice.arena.SpectatableArena
 import gg.mineral.practice.contest.Contest
 import gg.mineral.practice.duel.DuelSettings
@@ -537,13 +536,12 @@ class Profile(player: Player) : ExtendedProfileData(player.name, player.uniqueId
         spectatable?.let {
             PlayerUtil.teleport(
                 this,
-                if (it is Event) {
-                    val arena = arenas[it.eventArenaId] as? EventArena
-                    arena?.waitingLocation?.bukkit(it.world) ?: throw NullPointerException(
-                        "Event arena not found"
-                    )
-                } else
-                    toBeSpectated.player.location
+                (if (it is Event)
+                    it.arena.waitingLocation.bukkit(it.world)
+                else
+                    toBeSpectated.player?.location) ?: throw NullPointerException(
+                    "Event arena not found"
+                )
             )
 
             message(

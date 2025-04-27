@@ -10,11 +10,12 @@ import gg.mineral.practice.util.world.SchematicFile
 import gg.mineral.practice.util.world.SpawnLocation
 import org.bukkit.World
 import java.io.File
+import java.lang.ref.WeakReference
 import java.util.concurrent.atomic.AtomicInteger
 
-open class ArenaImpl(override var name: String, override val id: Byte) : EventArena, BedFightArena {
+class ArenaImpl(override var name: String, override val id: Byte) : EventArena, BedFightArena {
     val config: FileConfiguration = ArenaManager.config
-    protected val path: String = "Arena.$name."
+    private val path: String = "Arena.$name."
     override var displayName by StringProp(config, path + "DisplayName", name)
     private val schematicFile by lazy { Schematic.get(this.name) ?: SchematicFile(File("", this.name + ".schematic")) }
 
@@ -41,9 +42,9 @@ open class ArenaImpl(override var name: String, override val id: Byte) : EventAr
 
     override fun spectateArena(viewer: Profile) = viewer.spectate(SpectatableArena(this))
 
-    override fun generate(): World = schematicFile.generateWorld("_" + currentNameID.incrementAndGet())
+    override fun generate(): WeakReference<World> = schematicFile.generateWorld("_" + currentNameID.incrementAndGet())
 
-    override fun generateBaseWorld(): World = schematicFile.generateWorld("")
+    override fun generateBaseWorld(): WeakReference<World> = schematicFile.generateWorld("")
 
     override fun delete() {
         config.remove("Arena.$name")

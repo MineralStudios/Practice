@@ -1,7 +1,6 @@
 package gg.mineral.practice.match
 
 import gg.mineral.practice.PracticePlugin
-import gg.mineral.practice.arena.EventArena
 import gg.mineral.practice.entity.PlayerStatus
 import gg.mineral.practice.entity.Profile
 import gg.mineral.practice.events.Event
@@ -67,7 +66,7 @@ class EventMatch(profile1: Profile?, profile2: Profile?, matchData: MatchData, p
             attacker.scoreboard = DefaultScoreboard.INSTANCE
             event.removeMatch(this@EventMatch)
 
-            val eventArena = event.arena as? EventArena
+            val eventArena = event.arena
 
             if (!event.ended) {
                 eventArena.waitingLocation.bukkit(this.world)?.let { PlayerUtil.teleport(attacker, it) }

@@ -4,6 +4,7 @@ import gg.mineral.practice.entity.Profile
 import gg.mineral.practice.util.world.SpawnLocation
 import org.bukkit.World
 import org.bukkit.inventory.ItemStack
+import java.lang.ref.WeakReference
 
 interface Arena {
     /**
@@ -44,7 +45,7 @@ interface Arena {
     /**
      * Generate the arena world.
      */
-    fun generate(): World
+    fun generate(): WeakReference<World>
 
     /**
      * Spectate the arena.
@@ -54,5 +55,5 @@ interface Arena {
     /**
      * Generate the base world of the arena.
      */
-    fun generateBaseWorld(): World
+    fun generateBaseWorld(): WeakReference<World>
 }
