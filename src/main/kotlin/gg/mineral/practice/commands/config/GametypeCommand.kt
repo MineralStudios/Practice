@@ -6,6 +6,7 @@ import dev.rollczi.litecommands.annotations.context.Context
 import dev.rollczi.litecommands.annotations.execute.Execute
 import dev.rollczi.litecommands.annotations.permission.Permission
 import gg.mineral.practice.arena.Arena
+import gg.mineral.practice.arena.EventArena
 import gg.mineral.practice.entity.Profile
 import gg.mineral.practice.entity.appender.CommandSenderAppender
 import gg.mineral.practice.gametype.Gametype
@@ -251,7 +252,7 @@ class GametypeCommand : CommandSenderAppender {
 
     @Execute(name = "seteventarena", aliases = ["eventarena"])
     fun executeSetEventArena(@Context sender: CommandSender, @Arg gametype: Gametype, @Arg arena: Arena) {
-        gametype.setEventArena(arena)
+        gametype.setEventArena(arena as? EventArena ?: return)
         sender.send(
             ChatMessages.GAMETYPE_EVENT_ARENA_SET.clone().replace("%gametype%", gametype.name).replace(
                 "%arena%",

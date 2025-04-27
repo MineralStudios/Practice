@@ -20,9 +20,9 @@ class AutoExpireList<K> : Iterable<K> {
         map.put(e, System.currentTimeMillis())
     }
 
-    fun removeExpired() {
+    private fun removeExpired() {
         map.object2LongEntrySet()
-            .removeIf { entry: Object2LongMap.Entry<K> -> System.currentTimeMillis() - entry.longValue >= 30000 }
+            .removeIf { System.currentTimeMillis() - it.longValue >= 30000 }
     }
 
     fun clear() {

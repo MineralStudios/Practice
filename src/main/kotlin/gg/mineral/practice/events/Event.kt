@@ -2,8 +2,9 @@ package gg.mineral.practice.events
 
 import gg.mineral.api.collection.GlueList
 import gg.mineral.practice.PracticePlugin
+import gg.mineral.practice.arena.EventArena
 import gg.mineral.practice.entity.Profile
-import gg.mineral.practice.managers.ArenaManager
+import gg.mineral.practice.managers.ArenaManager.arenas
 import gg.mineral.practice.managers.EventManager
 import gg.mineral.practice.managers.ProfileManager
 import gg.mineral.practice.match.EventMatch
@@ -37,7 +38,7 @@ class Event(hostProfile: Profile, val eventArenaId: Byte) : Spectatable {
         this.matchData = MatchData(duelSettings, enabledArenas)
         matchData.arenaId = eventArenaId
         this.host = hostProfile.name
-        val arena = ArenaManager.arenas.get(eventArenaId)
+        val arena = arenas.get(eventArenaId)
         this.world = arena?.generate() ?: throw NullPointerException("Arena not found")
         this.addPlayer(hostProfile)
     }
@@ -45,7 +46,7 @@ class Event(hostProfile: Profile, val eventArenaId: Byte) : Spectatable {
     fun addPlayer(profile: Profile): Boolean {
         if (started) return profile.message(ErrorMessages.EVENT_STARTED).let { true }
 
-        ArenaManager.arenas.get(eventArenaId)?.waitingLocation?.bukkit(this.world)
+        (arenas.get(eventArenaId) as? EventArena)?.waitingLocation?.bukkit(this.world)
             ?.let { PlayerUtil.teleport(profile, it) }
             ?: error("Arena not found")
         profile.event = this
