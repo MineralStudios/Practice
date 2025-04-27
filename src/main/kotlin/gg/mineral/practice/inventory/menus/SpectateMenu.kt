@@ -21,7 +21,7 @@ class SpectateMenu : PracticeMenu() {
             val item = gametype?.displayItem?.clone() ?: ItemStacks.LOAD_KIT.build()
 
             val skull = ItemBuilder(item.clone())
-                .name(CC.SECONDARY + CC.B + m.profile1!!.name + " vs " + m.profile2!!.name)
+                .name(CC.SECONDARY + CC.B + m.profile1?.name + " vs " + m.profile2?.name)
                 .lore(
                     CC.WHITE + "Game type:",
                     CC.GOLD + (gametype?.name ?: "Custom"),

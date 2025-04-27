@@ -22,11 +22,11 @@ object PlayerUtil {
     }
 
     fun teleport(from: Profile, to: Location) {
-        teleport(from.player, to)
+        from.player?.let { teleport(it, to) }
     }
 
     fun teleportNoGlitch(from: Profile, to: Location) {
-        teleportNoGlitch(from.player, to)
+        from.player?.let { teleportNoGlitch(it, to) }
     }
 
     fun teleport(from: CraftPlayer, to: Player) {

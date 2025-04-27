@@ -28,19 +28,26 @@ repositories {
     maven { url = uri("https://repo.codemc.io/repository/maven-releases/") }
     maven { url = uri("https://repo.codemc.io/repository/maven-snapshots/") }
     maven { url 'https://www.jitpack.io' }
+    maven {
+        name = 'lunarclient'
+        url = 'https://repo.lunarclient.dev'
+    }
 }
 
 dependencies {
-    compileOnly "gg.mineral:nametag-api:20250217-18.18.19"
-    compileOnly "me.caseload.knockbacksync:bukkit:20250217-18.17.50"
-    compileOnly "gg.mineral.mineralspigot:mineralspigot-server:20241230-23.01.56"
-    compileOnly 'gg.mineral:bot-api:20250219-17.58.37'
-    compileOnly "gg.mineral:database-api:20250217-18.17.46"
-    compileOnly 'de.jeezycore:jeezy-core:20250217-14.33.00'
-    compileOnly "gg.mineral:bot-intelligence:20250217-13.38.40"
+    compileOnly "gg.mineral:nametag-api:20250423-23.24.51"
+    compileOnly "me.caseload.knockbacksync:bukkit:20250414-09.08.05"
+    compileOnly "gg.mineral.mineralspigot:mineralspigot-server:20250422-21.30.06"
+    compileOnly "gg.mineral:bot-api:20250423-22.26.44"
+    compileOnly "gg.mineral:database-api:20250423-23.24.09"
+    compileOnly 'de.jeezycore:jeezy-core:20250423-23.22.19'
+    compileOnly "gg.mineral:bot-intelligence:20250415-19.17.37"
     compileOnly 'com.github.retrooper:packetevents-spigot:2.7.0'
+    compileOnly 'com.lunarclient:apollo-api:1.1.7'
     implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk8"
     implementation "dev.rollczi:litecommands-bukkit:3.9.7"
+    implementation 'com.google.code.gson:gson:2.13.1'
+    implementation "com.squareup.okhttp3:okhttp:4.12.0"
 }
 
 /*detekt {

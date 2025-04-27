@@ -221,7 +221,7 @@ class MechanicsMenu(private val prevMenu: Menu? = null, val submitAction: Submit
         }
 
         addOnRow(slot, 4, ItemStacks.SUBMIT) {
-            viewer.player.closeInventory()
+            viewer.player?.closeInventory()
             submitAction.execute(viewer)
         }
 

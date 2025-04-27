@@ -33,7 +33,7 @@ class SettingsMenu : PracticeMenu(), PlayerAppender {
                 )
                 .build()
         ) { interaction: Interaction ->
-            interaction.profile.player.performCommand("toggleduelrequests")
+            interaction.profile.player?.performCommand("toggleduelrequests")
             reload()
         }
         setSlot(
@@ -51,7 +51,7 @@ class SettingsMenu : PracticeMenu(), PlayerAppender {
                 )
                 .build()
         ) { interaction: Interaction ->
-            interaction.profile.player.performCommand("togglepartyrequests")
+            interaction.profile.player?.performCommand("togglepartyrequests")
             reload()
         }
         setSlot(
@@ -69,7 +69,7 @@ class SettingsMenu : PracticeMenu(), PlayerAppender {
                 )
                 .build()
         ) { interaction: Interaction ->
-            interaction.profile.player.performCommand("togglescoreboard")
+            interaction.profile.player?.performCommand("togglescoreboard")
             reload()
         }
 
@@ -79,7 +79,7 @@ class SettingsMenu : PracticeMenu(), PlayerAppender {
                 CC.WHITE + "Changes the" + CC.SECONDARY + " time" + CC.WHITE + ".",
                 " ",
                 CC.WHITE + "Currently:",
-                if (viewer.player.isNight())
+                if (viewer.player?.isNight() == true)
                     CC.PURPLE + "Night"
                 else
                     CC.GOLD + "Day",
@@ -87,7 +87,7 @@ class SettingsMenu : PracticeMenu(), PlayerAppender {
             )
                 .build()
         ) {
-            it.profile.player.performCommand(if (viewer.player.isNight()) "day" else "night")
+            it.profile.player?.performCommand(if (viewer.player?.isNight() == true) "day" else "night")
             Bukkit.getScheduler().runTaskLater(PracticePlugin.INSTANCE, { reload() }, 2)
         }
         setSlot(
@@ -106,7 +106,7 @@ class SettingsMenu : PracticeMenu(), PlayerAppender {
                 .build()
         ) { interaction: Interaction ->
             val p = interaction.profile
-            p.player.performCommand("toggleplayervisibility")
+            p.player?.performCommand("toggleplayervisibility")
             reload()
         }
 

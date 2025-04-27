@@ -126,7 +126,7 @@ class PartyCommand : CommandSenderAppender {
 
             sb.append(CC.GRAY).append("]")
 
-            profile.player.sendMessage(sb.toString())
+            profile.player?.sendMessage(sb.toString())
         } ?: profile.message(ErrorMessages.YOU_ARE_NOT_IN_PARTY)
     }
 

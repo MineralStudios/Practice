@@ -82,7 +82,7 @@ class MatchStatisticCollector(val profile: Profile) {
         this.alive = alive
         this.potionsRemaining = profile.inventory.getNumber(Material.POTION, 16421.toShort())
         this.soupsRemaining = profile.inventory.getNumber(Material.MUSHROOM_SOUP)
-        this.remainingHealth = if (profile.player.isDead) 0 else profile.player.health.toInt()
+        this.remainingHealth = profile.player?.let { if (it.isDead) 0 else it.health.toInt() } ?: 0
         this.potionAccuracy = (100 - (potionsMissed * 100.0
                 / potionsThrown)).toInt()
         this.wTapAccuracy = (wTapCount * 100.0
@@ -93,14 +93,16 @@ class MatchStatisticCollector(val profile: Profile) {
         this.leggings = profile.inventory.leggings
         this.boots = profile.inventory.boots
 
-        for (potionEffect in profile.player.activePotionEffects) {
-            val romanNumeral = MathUtil.convertToRomanNumeral(potionEffect.amplifier + 1)
-            val effectName = StringUtil.toNiceString(potionEffect.type.name.lowercase(Locale.getDefault()))
-            val duration = MathUtil.convertTicksToMinutes(potionEffect.duration)
-            potionEffectStrings!!.add(
-                (ChatColor.YELLOW.toString() + ChatColor.BOLD + "* " + ChatColor.WHITE + effectName
-                        + " " + romanNumeral + ChatColor.GRAY + " (" + duration + ")")
-            )
+        profile.player?.apply {
+            for (potionEffect in activePotionEffects) {
+                val romanNumeral = MathUtil.convertToRomanNumeral(potionEffect.amplifier + 1)
+                val effectName = StringUtil.toNiceString(potionEffect.type.name.lowercase(Locale.getDefault()))
+                val duration = MathUtil.convertTicksToMinutes(potionEffect.duration)
+                potionEffectStrings!!.add(
+                    (ChatColor.YELLOW.toString() + ChatColor.BOLD + "* " + ChatColor.WHITE + effectName
+                            + " " + romanNumeral + ChatColor.GRAY + " (" + duration + ")")
+                )
+            }
         }
     }
 
@@ -110,7 +112,7 @@ class MatchStatisticCollector(val profile: Profile) {
         hitCount++
         currentCombo++
 
-        if (profile.player.handle.isSprinting) wTapCount++
+        if (profile.player?.handle?.isSprinting == true) wTapCount++
 
         if (currentCombo > 1) {
             averageCombo += currentCombo

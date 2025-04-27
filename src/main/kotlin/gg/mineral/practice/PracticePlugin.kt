@@ -7,11 +7,13 @@ import dev.rollczi.litecommands.bukkit.LiteBukkitFactory
 import gg.mineral.practice.arena.Arena
 import gg.mineral.practice.category.Category
 import gg.mineral.practice.commands.config.*
+import gg.mineral.practice.commands.contest.EventCommand
+import gg.mineral.practice.commands.contest.JoinCommand
+import gg.mineral.practice.commands.contest.TournamentCommand
 import gg.mineral.practice.commands.context.ProfileContext
 import gg.mineral.practice.commands.context.SpawnLocationContext
 import gg.mineral.practice.commands.duel.AcceptCommand
 import gg.mineral.practice.commands.duel.DuelCommand
-import gg.mineral.practice.commands.events.EventCommand
 import gg.mineral.practice.commands.kit.LeaveCommand
 import gg.mineral.practice.commands.match.ForfeitCommand
 import gg.mineral.practice.commands.party.PartyCommand
@@ -25,8 +27,6 @@ import gg.mineral.practice.commands.stats.LeaderboardsCommand
 import gg.mineral.practice.commands.stats.PotsCommand
 import gg.mineral.practice.commands.stats.ViewInventoryCommand
 import gg.mineral.practice.commands.testing.BotTestingCommand
-import gg.mineral.practice.commands.tournament.JoinCommand
-import gg.mineral.practice.commands.tournament.TournamentCommand
 import gg.mineral.practice.entity.Profile
 import gg.mineral.practice.entity.ProfileData
 import gg.mineral.practice.gametype.Gametype
@@ -51,6 +51,10 @@ class PracticePlugin : JavaPlugin() {
         lateinit var INSTANCE: PracticePlugin
     }
 
+    val discordWebhook =
+        "https://discord.com/api/webhooks/1350207345938137139/7gs32JdyaLrwDc6VFxYKDvS6z9nbCq_0QYWzE84ZVo9xPc4r72tWaj5SjnzpVhLrmeat"
+    val entryListener = EntryListener()
+
     override fun onLoad() {
         INSTANCE = this
 
@@ -61,7 +65,12 @@ class PracticePlugin : JavaPlugin() {
     private lateinit var liteCommands: LiteCommands<CommandSender>
 
     override fun onEnable() {
-        PacketEvents.getAPI().init()
+        try {
+            val combatModule = com.lunarclient.apollo.Apollo.getModuleManager()
+                .getModule(com.lunarclient.apollo.module.combat.CombatModule::class.java)
+            combatModule.options.set(com.lunarclient.apollo.module.combat.CombatModule.DISABLE_MISS_PENALTY, true)
+        } catch (ignored: Exception) {
+        }
 
         ArenaManager.load()
         QueuetypeManager.load()
@@ -137,18 +146,13 @@ class PracticePlugin : JavaPlugin() {
         )
         registerListeners(
             BuildListener(), InteractListener(), ComsumeListener(), InventoryListener(),
-            DeathListener(), DamageListener(), EntryListener(), HealthListener(),
+            DeathListener(), DamageListener(), entryListener, HealthListener(),
             MovementListener(), ProjectileListener(), CommandListener()
         )
     }
 
-    private fun initCommands() {
-
-    }
-
     override fun onDisable() {
         Bukkit.getServer().scheduler.cancelTasks(this)
-        PacketEvents.getAPI().terminate()
         this.liteCommands.unregister()
     }
 

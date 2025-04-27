@@ -1,5 +1,6 @@
 package gg.mineral.practice.party
 
+import com.google.common.collect.Sets
 import gg.mineral.practice.entity.Profile
 import gg.mineral.practice.managers.PartyManager.registerParty
 import gg.mineral.practice.managers.PartyManager.remove
@@ -11,7 +12,7 @@ import java.util.*
 
 class Party(val partyLeader: Profile) : QueuedEntity {
     var open = false
-    val partyMembers = mutableSetOf<Profile>()
+    val partyMembers: MutableSet<Profile> = Sets.newConcurrentHashSet()
 
     init {
         registerParty(this)
@@ -33,23 +34,19 @@ class Party(val partyLeader: Profile) : QueuedEntity {
     fun leave(profile: Profile) {
         val leftMessage = ChatMessages.LEFT_PARTY.clone().replace("%player%", profile.name)
 
-        val iter = partyMembers.iterator()
-
         if (partyLeader == profile) {
-            while (iter.hasNext()) {
-                val member = iter.next()
-                iter.remove()
-                member.party = null
-                member.message(leftMessage)
+            partyMembers.removeIf {
+                it.party = null
+                it.message(leftMessage)
+                true
             }
-
             remove(this)
         } else {
             profile.party = null
-
-            while (iter.hasNext()) iter.next().message(leftMessage)
+            partyMembers.forEach { it.message(leftMessage) }
         }
     }
+
 
     override fun hashCode() = javaClass.hashCode()
 

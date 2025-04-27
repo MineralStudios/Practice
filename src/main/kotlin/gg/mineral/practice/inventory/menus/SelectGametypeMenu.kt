@@ -88,11 +88,12 @@ open class SelectGametypeMenu(
                 CC.WHITE + "Currently:", if (oldCombat) CC.GREEN + "Enabled" else CC.RED + "Disabled", " ",
                 CC.BOARD_SEPARATOR, CC.ACCENT + "Click to toggle old combat."
             ).build()
-        ) { interaction: Interaction ->
-            interaction.profile.message(
-                ChatMessages.OLD_COMBAT_ENABLED.clone().replace("%toggled%", if (oldCombat) "enabled" else "disabled")
+        ) {
+            it.profile.queueSettings.oldCombat = !oldCombat
+            it.profile.message(
+                ChatMessages.OLD_COMBAT_ENABLED.clone()
+                    .replace("%toggled%", if (it.profile.queueSettings.oldCombat) "enabled" else "disabled")
             )
-            interaction.profile.queueSettings.oldCombat = !oldCombat
             reload()
         }
 
@@ -208,7 +209,7 @@ open class SelectGametypeMenu(
             else
                 queuetype.randomGametype()
             queue(gametype, interaction)
-            if (viewer.openMenu is SelectGametypeMenu) viewer.player.closeInventory()
+            if (viewer.openMenu is SelectGametypeMenu) viewer.player?.closeInventory()
         }
 
         val arenaSelection = viewer.queueSettings.arenaSelection
@@ -296,7 +297,7 @@ open class SelectGametypeMenu(
                     entry.intValue + (if (type == Type.UNRANKED) 18 else 9) - offset, item
                 ) { interaction: Interaction ->
                     if (type == Type.KIT_EDITOR) {
-                        viewer.player.closeInventory()
+                        viewer.player?.closeInventory()
                         viewer.sendToKitEditor(queuetype, menuEntry)
                         return@setSlot
                     }
@@ -392,10 +393,10 @@ open class SelectGametypeMenu(
                                 % Difficulty.entries.size).toByte()
                 } else if (interaction.clickType == ClickType.RIGHT) {
                     if (queueSettings.teamSize <= 1) {
-                        if (p.player.hasPermission("practice.custombot")
+                        if (p.player?.hasPermission("practice.custombot") == true
                             && menu is SelectGametypeMenu
                         ) p.openMenu(CustomBotDifficultyMenu(menu))
-                        else ErrorMessages.RANK_REQUIRED.send(p.player)
+                        else p.message(ErrorMessages.RANK_REQUIRED)
                         return@Consumer
                     }
 

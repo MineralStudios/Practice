@@ -19,7 +19,7 @@ class InventoryStatsMenu(val opponent: String? = null, val matchStatisticCollect
             53, ItemStacks.VIEW_OPPONENT_INVENTORY
         ) { interaction: Interaction ->
             interaction.profile.player
-                .performCommand("viewinventory $opponent")
+                ?.performCommand("viewinventory $opponent")
         }
 
         setContents(matchStatisticCollector.inventoryContents)

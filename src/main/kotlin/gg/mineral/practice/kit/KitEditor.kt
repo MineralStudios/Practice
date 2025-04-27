@@ -43,7 +43,7 @@ class KitEditor(val gametype: Gametype, val queuetype: Queuetype, val profile: P
             config[path + f] = newItem
         }
 
-        ChatMessages.KIT_SAVED.send(profile.player)
+        profile.message(ChatMessages.KIT_SAVED)
     }
 
     fun start() {
@@ -72,6 +72,6 @@ class KitEditor(val gametype: Gametype, val queuetype: Queuetype, val profile: P
 
         config.save()
 
-        ChatMessages.KIT_DELETED.send(profile.player)
+        profile.message(ChatMessages.KIT_DELETED)
     }
 }

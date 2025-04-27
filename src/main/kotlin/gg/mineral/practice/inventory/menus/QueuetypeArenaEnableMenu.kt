@@ -33,9 +33,10 @@ class QueuetypeArenaEnableMenu(val queuetype: Queuetype) : PracticeMenu() {
 
             add(item) {
                 queuetype.enableArena(a, !arenaEnabled)
-                ChatMessages.QUEUETYPE_ARENA_SET.clone().replace("%queuetype%", queuetype.name)
-                    .replace("%toggled%", "" + !arenaEnabled).replace("%arena%", a.name)
-                    .send(viewer.player)
+                viewer.message(
+                    ChatMessages.QUEUETYPE_ARENA_SET.clone().replace("%queuetype%", queuetype.name)
+                        .replace("%toggled%", "" + !arenaEnabled).replace("%arena%", a.name)
+                )
                 reload()
             }
         }

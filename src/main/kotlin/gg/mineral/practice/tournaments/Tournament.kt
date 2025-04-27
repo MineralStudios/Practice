@@ -1,134 +1,136 @@
 package gg.mineral.practice.tournaments
 
-import gg.mineral.api.collection.GlueList
-import gg.mineral.practice.PracticePlugin
+import gg.mineral.practice.contest.Contest
+import gg.mineral.practice.duel.DuelSettings
 import gg.mineral.practice.entity.Profile
+import gg.mineral.practice.managers.ContestManager.registerContest
+import gg.mineral.practice.managers.ContestManager.remove
+import gg.mineral.practice.managers.GametypeManager
 import gg.mineral.practice.managers.ProfileManager.broadcast
-import gg.mineral.practice.managers.TournamentManager.registerTournament
-import gg.mineral.practice.managers.TournamentManager.remove
-import gg.mineral.practice.match.Match
 import gg.mineral.practice.match.TournamentMatch
 import gg.mineral.practice.match.data.MatchData
-import gg.mineral.practice.util.collection.ProfileList
+import gg.mineral.practice.util.math.Countdown
 import gg.mineral.practice.util.messages.impl.ChatMessages
 import gg.mineral.practice.util.messages.impl.ErrorMessages
 import net.md_5.bungee.api.chat.ClickEvent
 import org.bukkit.Bukkit
 
-class Tournament(p: Profile) {
-    private var matches: GlueList<Match> = GlueList()
-    var players: ProfileList = ProfileList()
-    private var started: Boolean = false
-    var ended: Boolean = false
-    private var matchData: MatchData = MatchData(p.duelSettings)
-    private var round: Int = 1
-    val host: String = p.name
+open class Tournament(
+    private val hostName: String,
+    open val waitTime: Int = 60,
+    override val maxPlayers: Int = 24,
+    override val matchData: MatchData = MatchData(DuelSettings(null, GametypeManager.gametypes.values.randomOrNull()))
+) :
+    Contest(hostName) {
 
-    init {
-        addPlayer(p)
-    }
-
-    fun addPlayer(p: Profile): Boolean {
+    override fun addPlayer(p: Profile): Boolean {
+        if (participants.size >= maxPlayers) return p.message(ErrorMessages.TOURNAMENT_FULL).let { true }
         if (started) return p.message(ErrorMessages.TOURNAMENT_STARTED).let { true }
-
-        p.tournament = this
-
-        val joinedMessage = ChatMessages.JOINED_TOURNAMENT.clone().replace("%player%", p.name)
-        broadcast(players, joinedMessage)
-        return players.add(p)
+        p.contest = this
+        return participants.add(p)
+            .also { broadcast(participants, ChatMessages.JOINED_TOURNAMENT.clone().replace("%player%", p.name)) }
     }
 
-    fun removePlayer(p: Profile) {
-        if (!players.remove(p)) return
-        p.tournament = null
-
-        val leftMessage = ChatMessages.LEFT_TOURNAMENT.clone().replace("%player%", p.name)
-        broadcast(players, leftMessage)
-
-        if (players.isEmpty()) {
+    override fun removePlayer(p: Profile) {
+        if (!participants.remove(p)) return
+        broadcast(participants, ChatMessages.LEFT_TOURNAMENT.clone().replace("%player%", p.name))
+        p.contest = null
+        if (!started) return
+        if (participants.isEmpty()) {
+            onContestEnd()
             remove(this)
-            ended = true
-            return
-        }
-
-        if (started && players.size == 1) {
-            val winner = players.first
-            winner?.tournament = null
-
-            remove(this)
-            ended = true
-
-            val wonMessage = ChatMessages.WON_TOURNAMENT.clone().replace("%player%", winner!!.name)
-
-            broadcast(wonMessage)
+        } else if (participants.size == 1) {
+            val winner = participants.first
+            winner?.contest = null
+            onContestWin(winner)
+            broadcast(ChatMessages.WON_TOURNAMENT.clone().replace("%player%", winner!!.name))
         }
     }
 
-    fun start() {
+    override fun startContest() {
         if (started) return
+        if (registerContest(this) != null) return
 
-        registerTournament(this)
+        val countdown = Countdown(waitTime, this) { time ->
+            if (time % 30 != 0) return@Countdown
+            broadcast(ChatMessages.TOURNAMENT_BROADCAST)
+            Bukkit.getPlayer(hostName)?.let {
+                broadcast(
+                    ChatMessages.CONTEST_HOST.clone().replace(
+                        "%host%",
+                        hostName
+                    )
+                )
+            }
 
-        val messageToBroadcast = ChatMessages.BROADCAST_TOURNAMENT.clone()
-            .replace("%player%", host).setTextEvent(
-                ClickEvent(
-                    ClickEvent.Action.RUN_COMMAND,
-                    "/join $host"
-                ),
-                ChatMessages.CLICK_TO_JOIN
+            matchData.gametype?.name?.let {
+                broadcast(
+                    ChatMessages.CONTEST_MODE.clone().replace(
+                        "%mode%",
+                        it
+                    )
+                )
+            }
+
+            broadcast(
+                ChatMessages.CONTEST_PLAYERS.clone().replace(
+                    "%players%",
+                    participants.size.toString() + "/" + maxPlayers
+                )
             )
 
-        broadcast(messageToBroadcast)
+            if (this is AutomatedTournament)
+                broadcast(ChatMessages.CONTEST_REWARD.clone().replace("%rank%", reward.rank))
 
-        Bukkit.getServer().scheduler.runTaskLater(PracticePlugin.INSTANCE, {
-            started = true
+            fun formatSeconds(seconds: Int): String {
+                val minutes = seconds / 60
+                val remainingSeconds = seconds % 60
+                return "${minutes}m ${remainingSeconds}s"
+            }
 
-            if (players.size == 1) {
-                val winner = players.first
-                winner?.tournament = null
+            broadcast(
+                ChatMessages.CONTEST_STARTS_IN.clone().replace(
+                    "%time%",
+                    formatSeconds(time)
+                )
+            )
 
-                ErrorMessages.TOURNAMENT_NOT_ENOUGH_PLAYERS.send(winner!!.player)
-                remove(this@Tournament)
-                ended = true
-            } else startRound()
-        }, 600)
+            broadcast(
+                ChatMessages.CONTEST_JOIN.clone().setTextEvent(
+                    ClickEvent(ClickEvent.Action.RUN_COMMAND, "/join $hostName"),
+                    ChatMessages.CLICK_TO_JOIN
+                )
+            )
+        }
+        countdown.start()
     }
 
-    private fun startRound() {
-        if (players.size == 1) {
-            val winner = players.first
-            winner?.tournament = null
-            ended = true
-            remove(this)
-            return
-        }
+    override fun createMatch(p1: Profile, p2: Profile) = TournamentMatch(p1, p2, matchData, this)
 
-        val iter: Iterator<Profile> = players.iterator()
-
-        while (iter.hasNext()) {
-            val profile1 = iter.next()
-
-            if (!iter.hasNext()) return profile1.message(ChatMessages.NO_OPPONENT)
-
-            val profile2 = iter.next()
-            val match = TournamentMatch(profile1, profile2, matchData, this)
-            match.start()
-            matches.add(match)
-        }
+    override fun onContestWin(winner: Profile?) {
+        winner?.contest = null
+        ended = true
+        remove(this)
     }
 
-    fun removeMatch(m: Match) {
-        matches.remove(m)
+    override fun onContestEnd() {
+        ended = true
+        remove(this)
+    }
 
-        if (ended) return
+    override fun onStart(profile: Profile) {
+    }
 
-        if (matches.isEmpty()) {
-            broadcast(players, ChatMessages.ROUND_OVER.clone().replace("%round%", "" + round))
+    override fun onStart() {
+        started = true
+        if (participants.size == 1) {
+            val winner = participants.first
+            winner?.contest = null
+            winner?.message(ErrorMessages.TOURNAMENT_NOT_ENOUGH_PLAYERS)
+            onContestEnd()
+        } else startRound()
+    }
 
-            Bukkit.getServer().scheduler.runTaskLater(PracticePlugin.INSTANCE, {
-                startRound()
-                round++
-            }, 100)
-        }
+    override fun onCountdownStart(profile: Profile) {
     }
 }

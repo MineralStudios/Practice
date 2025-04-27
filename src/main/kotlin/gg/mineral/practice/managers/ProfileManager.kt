@@ -5,6 +5,7 @@ import gg.mineral.practice.entity.Profile
 import gg.mineral.practice.entity.ProfileData
 import gg.mineral.practice.entity.appender.PlayerAppender
 import gg.mineral.practice.inventory.menus.InventoryStatsMenu
+import gg.mineral.practice.util.collection.ProfileList
 import gg.mineral.practice.util.config.SpawnLocationProp
 import gg.mineral.practice.util.config.yaml.FileConfiguration
 import gg.mineral.practice.util.messages.Message
@@ -20,7 +21,7 @@ import java.util.function.Predicate
 
 object ProfileManager : PlayerAppender {
 
-    class ProfileMap : Object2ObjectOpenHashMap<UUID, Profile>()
+    class ProfileMap : Object2ObjectOpenHashMap<UUID, Profile?>()
 
     private val lobbyConfig: FileConfiguration = FileConfiguration("lobby.yml", "plugins/Practice")
 
@@ -40,6 +41,7 @@ object ProfileManager : PlayerAppender {
 
     val lobbyLocation: Location
         get() = spawnLocation.bukkit(lobbyWorld)
+            ?: throw IllegalStateException("Lobby world not found")
 
     val profiles = ProfileMap()
     private val inventoryStats = Object2ObjectOpenHashMap<String, List<InventoryStatsMenu>>()
@@ -51,7 +53,7 @@ object ProfileManager : PlayerAppender {
     fun count(predicate: Predicate<Profile>): Int {
         var count = 0
         for (profile in profiles.values) {
-            if (!predicate.test(profile)) continue
+            if (profile?.let { predicate.test(it) } == false) continue
             count++
         }
 
@@ -94,13 +96,13 @@ object ProfileManager : PlayerAppender {
         return profile
     }
 
-    fun getProfile(name: String) = profiles.values.find { it.name.equals(name, ignoreCase = true) }
+    fun getProfile(name: String) = profiles.values.find { it?.name.equals(name, ignoreCase = true) }
 
     fun removeIfExists(pl: Player) = profiles.remove(pl.uniqueId)
 
     fun getOrCreateProfile(pl: Player): Profile = profiles.computeIfAbsent(
         pl.uniqueId,
-        Object2ObjectFunction { Profile(pl) })
+        Object2ObjectFunction { Profile(pl) })!!
 
     fun setInventoryStats(p: Profile, menu: InventoryStatsMenu) {
         inventoryStats[p.name] = listOf(menu)
@@ -114,7 +116,11 @@ object ProfileManager : PlayerAppender {
         for (p in c) p.message(message)
     }
 
-    fun broadcast(message: Message) = broadcast(profiles.values, message)
+    fun broadcast(c: ProfileList, message: Message) {
+        for (p in c) p.message(message)
+    }
+
+    fun broadcast(message: Message) = broadcast(profiles.values.filterNotNull(), message)
 
     fun getProfile(player: Player) = profiles[player.uniqueId]
 }

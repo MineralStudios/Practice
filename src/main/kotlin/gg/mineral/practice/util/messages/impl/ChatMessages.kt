@@ -8,6 +8,7 @@ import net.md_5.bungee.api.chat.ComponentBuilder
 import net.md_5.bungee.api.chat.HoverEvent
 
 object ChatMessages {
+
     // Value Set
     val ARENA_CREATED: ChatMessage = ChatMessage("The %arena% arena has been created.", CC.YELLOW)
         .highlightText(CC.GOLD, "%arena%")
@@ -360,11 +361,13 @@ object ChatMessages {
     val WON_EVENT: ChatMessage =
         ChatMessage("%player% has won the event.", CC.AQUA).highlightText(CC.D_AQUA, "%player%")
     val ROUND_OVER: ChatMessage =
-        ChatMessage("Round %round% his over. The next round will start in 5 seconds.", CC.AQUA)
+        ChatMessage("Round %round% is over. The next round will start in 5 seconds.", CC.AQUA)
             .highlightText(CC.D_AQUA, "%round%")
-    val BEGINS_IN: ChatMessage = ChatMessage("The match will begin in %time% second(s).", CC.WHITE)
-        .highlightText(CC.SECONDARY, "match", "%time% second(s)")
-    val MATCH_STARTED: ChatMessage = ChatMessage("The match has started.", CC.SECONDARY, true)
+    val BEGINS_IN_SECONDS: ChatMessage = ChatMessage("The %type% will begin in %time% second(s).", CC.WHITE)
+        .highlightText(CC.SECONDARY, "%type%", "%time% second(s)")
+    val BEGINS_IN_MINUTES: ChatMessage = ChatMessage("The %type% will begin in %time% minutes(s).", CC.WHITE)
+        .highlightText(CC.SECONDARY, "%type%", "%time% minutes(s)")
+    val BATTLE_STARTED: ChatMessage = ChatMessage("The %type% has started.", CC.SECONDARY, true)
     val FOLLOWING: ChatMessage = ChatMessage("You are now following %player%.", CC.AQUA).highlightText(
         CC.D_AQUA,
         "%player%"
@@ -418,16 +421,20 @@ object ChatMessages {
         CC.AQUA
     )
         .highlightText(CC.D_AQUA, "%player%").highlightText(CC.GREEN, "[Click To Accept]")
-    val BROADCAST_TOURNAMENT: ClickableChatMessage = ClickableChatMessage(
-        "%player% has started a tournament. [Click To Join]",
-        CC.AQUA
+    val CONTEST_JOIN: ClickableChatMessage = ClickableChatMessage(
+        "(CLICK TO JOIN)",
+        CC.GREEN, true
     )
-        .highlightText(CC.D_AQUA, "%player%").highlightText(CC.GREEN, "[Click To Join]")
-    val BROADCAST_EVENT: ClickableChatMessage = ClickableChatMessage(
-        "%player% has started an event. [Click To Join]",
-        CC.AQUA
-    )
-        .highlightText(CC.D_AQUA, "%player%").highlightText(CC.GREEN, "[Click To Join]")
+    val TOURNAMENT_BROADCAST: ChatMessage = ChatMessage("Tournament", CC.SECONDARY, true)
+    val EVENT_BROADCAST: ChatMessage = ChatMessage("Event", CC.SECONDARY, true)
+
+    val CONTEST_HOST = ChatMessage("✱ Host: %host%", CC.WHITE).highlightText(CC.YELLOW, "%host%")
+    val CONTEST_MODE =
+        ChatMessage("✱ Mode: %mode%", CC.WHITE).highlightText(CC.YELLOW, "%mode%")
+    val CONTEST_PLAYERS = ChatMessage("✱ Players: %players%", CC.WHITE).highlightText(CC.YELLOW, "%players%")
+    val CONTEST_REWARD = ChatMessage("✱ Reward: %rank% Rank", CC.WHITE).highlightText(CC.YELLOW, "%rank% Rank")
+    val CONTEST_STARTS_IN = ChatMessage("Starts in %time%...", CC.ACCENT)
+
     val PARTY_REQUEST_RECIEVED: ClickableChatMessage = ClickableChatMessage(
         "You have recieved a party invite from %player%. [Click To Accept]",
         CC.AQUA

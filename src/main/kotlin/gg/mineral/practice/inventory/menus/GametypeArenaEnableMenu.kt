@@ -29,9 +29,10 @@ class GametypeArenaEnableMenu(private val gametype: Gametype) : PracticeMenu() {
 
             add(item) {
                 gametype.enableArena(a, !arenaEnabled)
-                ChatMessages.GAMETYPE_ARENA_SET.clone().replace("%gametype%", gametype.name)
-                    .replace("%toggled%", "" + !arenaEnabled).replace("%arena%", a.name)
-                    .send(viewer.player)
+                viewer.message(
+                    ChatMessages.GAMETYPE_ARENA_SET.clone().replace("%gametype%", gametype.name)
+                        .replace("%toggled%", "" + !arenaEnabled).replace("%arena%", a.name)
+                )
                 reload()
             }
         }

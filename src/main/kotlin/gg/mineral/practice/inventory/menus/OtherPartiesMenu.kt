@@ -21,7 +21,7 @@ class OtherPartiesMenu : PracticeMenu() {
                         .name(CC.SECONDARY + CC.B + partyLeader.name).build()
                 ) { interaction: Interaction ->
                     interaction.profile.player
-                        .performCommand("duel " + partyLeader.name)
+                        ?.performCommand("duel " + partyLeader.name)
                 }
             }
         }

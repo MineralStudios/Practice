@@ -29,10 +29,10 @@ class TournamentMatch(profile1: Profile?, profile2: Profile?, matchData: MatchDa
         val loseMessage = getLoseMessage(victim)
 
         for (profile in participants) {
-            profile.player.sendMessage(CC.SEPARATOR)
-            profile.player.sendMessage(Strings.MATCH_RESULTS)
-            profile.player.spigot().sendMessage(winMessage, TextComponents.SPLITTER, loseMessage)
-            profile.player.sendMessage(CC.SEPARATOR)
+            profile.player?.sendMessage(CC.SEPARATOR)
+            profile.player?.sendMessage(Strings.MATCH_RESULTS)
+            profile.player?.spigot()?.sendMessage(winMessage, TextComponents.SPLITTER, loseMessage)
+            profile.player?.sendMessage(CC.SEPARATOR)
         }
 
         resetPearlCooldown(attacker, victim)
@@ -40,10 +40,10 @@ class TournamentMatch(profile1: Profile?, profile2: Profile?, matchData: MatchDa
         victim.scoreboard = DefaultScoreboard.INSTANCE
         if (!remove(this)) return
 
-        victim.player.heal()
-        victim.player.removePotionEffects()
+        victim.player?.heal()
+        victim.player?.removePotionEffects()
         sendBackToLobby(victim)
-        victim.tournament = null
+        victim.contest = null
 
         Bukkit.getServer().scheduler.runTaskLater(PracticePlugin.INSTANCE, {
             attacker.scoreboard = DefaultScoreboard.INSTANCE
@@ -51,7 +51,7 @@ class TournamentMatch(profile1: Profile?, profile2: Profile?, matchData: MatchDa
 
             attacker.teleportToLobby()
 
-            if (!tournament.ended) {
+            if (!tournament.ended && tournament.participants.contains(attacker)) {
                 attacker.playerStatus = PlayerStatus.IDLE
                 attacker.inventory.setInventoryForTournament()
             } else attacker.inventory.setInventoryForLobby()
@@ -59,13 +59,13 @@ class TournamentMatch(profile1: Profile?, profile2: Profile?, matchData: MatchDa
         }, POST_MATCH_TIME.toLong())
 
         for (spectator in spectators) {
-            spectator.player.sendMessage(CC.SEPARATOR)
-            spectator.player.sendMessage(Strings.MATCH_RESULTS)
-            spectator.player.spigot().sendMessage(winMessage, TextComponents.SPLITTER, loseMessage)
-            spectator.player.sendMessage(CC.SEPARATOR)
+            spectator.player?.sendMessage(CC.SEPARATOR)
+            spectator.player?.sendMessage(Strings.MATCH_RESULTS)
+            spectator.player?.spigot()?.sendMessage(winMessage, TextComponents.SPLITTER, loseMessage)
+            spectator.player?.sendMessage(CC.SEPARATOR)
             spectator.stopSpectating()
         }
 
-        clearWorld()
+        cleanup()
     }
 }

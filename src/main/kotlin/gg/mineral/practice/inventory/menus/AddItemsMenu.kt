@@ -39,7 +39,7 @@ class AddItemsMenu : PracticeMenu() {
                         val material = iterator.nextInt()
                         val item = ItemStack(material, 64)
                         add(item) { interaction: Interaction ->
-                            interaction.profile.player.itemOnCursor =
+                            interaction.profile.player?.itemOnCursor =
                                 item
                         }
                     }
@@ -56,13 +56,13 @@ class AddItemsMenu : PracticeMenu() {
                             viewer.message(ErrorMessages.ITEM_LIMIT)
                             return@add
                         }
-                        viewer.player.itemOnCursor = `is`
+                        viewer.player?.itemOnCursor = `is`
                     }
                     continue
                 }
 
                 add(`is`) {
-                    viewer.player.itemOnCursor =
+                    viewer.player?.itemOnCursor =
                         `is`
                 }
             }

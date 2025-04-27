@@ -11,10 +11,10 @@ class InMatchScoreboard : Scoreboard {
         board.updateTitle(CC.PRIMARY + CC.B + "Mineral")
         board.updateLines(
             CC.BOARD_SEPARATOR,
-            CC.ACCENT + "Opponent: " + CC.SECONDARY + profile.match!!.getOpponent(profile)!!.name,
+            CC.ACCENT + "Opponent: " + CC.SECONDARY + profile.match!!.getOpponent(profile)?.name,
             CC.ACCENT + "Your Ping: " + CC.SECONDARY + (board.player as CraftPlayer).handle.ping,
             (CC.ACCENT + "Their Ping: " + CC.SECONDARY
-                    + profile.match!!.getOpponent(profile)!!.player.handle.ping),
+                    + profile.match?.getOpponent(profile)?.player?.handle?.ping),
             CC.SPACER,
             CC.SECONDARY + "mineral.gg",
             CC.BOARD_SEPARATOR

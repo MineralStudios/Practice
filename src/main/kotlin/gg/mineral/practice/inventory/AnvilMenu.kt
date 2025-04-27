@@ -31,10 +31,10 @@ abstract class AnvilMenu : Menu {
         }
 
     fun closeInventory() {
-        viewer?.let {
-            handleInventoryCloseEvent(it.player)
-            setActiveContainerDefault(it.player)
-            sendPacketCloseWindow(it.player, containerId)
+        viewer?.player?.let {
+            handleInventoryCloseEvent(it)
+            setActiveContainerDefault(it)
+            sendPacketCloseWindow(it, containerId)
         }
     }
 
@@ -128,25 +128,26 @@ abstract class AnvilMenu : Menu {
     override fun contains(itemStack: ItemStack) = items.containsValue(itemStack)
 
     override fun open(viewer: Profile) {
-        this.closed = false
-        this.viewer = viewer
+        viewer.player?.let {
+            this.closed = false
+            this.viewer = viewer
 
-        this.update()
+            this.update()
+            this.handleInventoryCloseEvent(it)
+            this.setActiveContainerDefault(it)
 
-        this.handleInventoryCloseEvent(viewer.player)
-        this.setActiveContainerDefault(viewer.player)
+            val container = newContainerAnvil(it)
 
-        val container = newContainerAnvil(viewer.player)
+            this.inventory = toBukkitInventory(container)
 
-        this.inventory = toBukkitInventory(container)
-
-        this.containerId = getNextContainerId(viewer.player)
-        this.sendPacketOpenWindow(viewer.player, containerId)
-        this.setActiveContainer(viewer.player, container)
-        this.setActiveContainerId(container, containerId)
-        this.addActiveContainerSlotListener(container, viewer.player)
-        viewer.openMenu = this
-        viewer.player.updateInventory()
+            this.containerId = getNextContainerId(it)
+            this.sendPacketOpenWindow(it, containerId)
+            this.setActiveContainer(it, container)
+            this.setActiveContainerId(container, containerId)
+            this.addActiveContainerSlotListener(container, it)
+            viewer.openMenu = this
+            it.updateInventory()
+        }
     }
 
     override fun reload() {

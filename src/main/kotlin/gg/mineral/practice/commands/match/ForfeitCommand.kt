@@ -16,6 +16,6 @@ class ForfeitCommand {
         if (profile.playerStatus !== PlayerStatus.FIGHTING) return profile.message(ErrorMessages.NOT_IN_MATCH)
         if (profile.match?.data?.ranked == true) return profile.message(ErrorMessages.CANNOT_FORFEIT_RANKED)
 
-        profile.player.kill()
+        profile.player?.kill()
     }
 }

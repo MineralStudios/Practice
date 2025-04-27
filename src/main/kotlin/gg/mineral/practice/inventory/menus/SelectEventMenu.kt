@@ -1,6 +1,6 @@
 package gg.mineral.practice.inventory.menus
 
-import gg.mineral.practice.events.Event
+import gg.mineral.practice.events.HostedEvent
 import gg.mineral.practice.inventory.ClickCancelled
 import gg.mineral.practice.inventory.PracticeMenu
 import gg.mineral.practice.managers.GametypeManager.gametypes
@@ -24,7 +24,7 @@ class SelectEventMenu : PracticeMenu() {
                 .build()
 
             add(item) {
-                viewer.player.closeInventory()
+                viewer.player?.closeInventory()
                 viewer.duelSettings.gametype = g
 
                 if (g.eventArenaId.toInt() == -1) {
@@ -32,8 +32,8 @@ class SelectEventMenu : PracticeMenu() {
                     return@add
                 }
 
-                val event = Event(viewer, g.eventArenaId)
-                event.start()
+                val event = HostedEvent(viewer, g.eventArenaId)
+                event.startContest()
             }
         }
     }

@@ -4,6 +4,7 @@ import org.bukkit.Location
 import org.bukkit.World
 import org.bukkit.util.NumberConversions
 import org.bukkit.util.Vector
+import java.lang.ref.WeakReference
 import kotlin.math.*
 
 class SpawnLocation(
@@ -49,4 +50,6 @@ class SpawnLocation(
         }
 
     fun bukkit(world: World) = Location(world, x, y, z, yaw, pitch)
+
+    fun bukkit(worldRef: WeakReference<World>) = worldRef.get()?.let { bukkit(it) }
 }

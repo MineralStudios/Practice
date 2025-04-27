@@ -31,6 +31,7 @@ import net.md_5.bungee.api.chat.HoverEvent
 import net.md_5.bungee.api.chat.TextComponent
 import org.bukkit.Bukkit
 import org.bukkit.entity.Player
+import java.util.*
 
 open class TeamMatch : Match, MatchAppender {
 
@@ -67,8 +68,8 @@ open class TeamMatch : Match, MatchAppender {
         val team2 = participants.subList((size + 1) / 2, size)
 
         fun Object2BooleanLinkedOpenHashMap<Profile>.add(profile: Profile) = put(profile, true)
-        for (profile in team1) team1Players.add(profile)
-        for (profile in team2) team2Players.add(profile)
+        for (profile in team1) profile.let { team1Players.add(it) }
+        for (profile in team2) profile.let { team2Players.add(it) }
     }
 
     override fun startMatchTimeLimit() {
@@ -87,8 +88,8 @@ open class TeamMatch : Match, MatchAppender {
         if (!registerMatch(this)) return
 
         val arena = arenas[data.arenaId] ?: throw NullPointerException("Arena not found")
-        val location1 = arena.location1.bukkit(world)
-        val location2 = arena.location2.bukkit(world)
+        val location1 = arena.location1.bukkit(world) ?: return
+        val location2 = arena.location2.bukkit(world) ?: return
         setupLocations(location1, location2)
 
         team1Players.alive { teamMember: Profile ->
@@ -161,8 +162,8 @@ open class TeamMatch : Match, MatchAppender {
         }
 
         pearlCooldown.cooldowns.removeInt(victim.uuid)
-        victim.player.heal()
-        victim.player.removePotionEffects()
+        victim.player?.heal()
+        victim.player?.removePotionEffects()
         victim.inventory.clear()
 
         victim.scoreboard = DefaultScoreboard.INSTANCE
@@ -182,11 +183,11 @@ open class TeamMatch : Match, MatchAppender {
             participants.remove(victim)
             if (victim.match == this) victim.match = null
 
-            if (BotAPI.INSTANCE.despawn(victim.player.uniqueId)) return
+            if (BotAPI.INSTANCE.despawn(victim.uuid)) return
 
             var allBots = true
 
-            for (profile in participants) if (!profile.player.isFake()) {
+            for (profile in participants) if (profile.player?.isFake() == false) {
                 allBots = false
                 break
             }
@@ -222,12 +223,12 @@ open class TeamMatch : Match, MatchAppender {
 
         for (invStats in attackerInventoryStatsMenus) {
             val profile = invStats.matchStatisticCollector.profile
-            setInventoryStats(profile, attackerInventoryStatsMenus)
+            setInventoryStats(profile, Collections.unmodifiableList(ArrayList(attackerInventoryStatsMenus)))
         }
 
         for (invStats in victimInventoryStatsMenus) {
             val profile = invStats.matchStatisticCollector.profile
-            setInventoryStats(profile, victimInventoryStatsMenus)
+            setInventoryStats(profile, Collections.unmodifiableList(ArrayList(victimInventoryStatsMenus)))
         }
 
         if (!remove(this)) return
@@ -236,7 +237,7 @@ open class TeamMatch : Match, MatchAppender {
             CC.GREEN + "Winner: " + CC.GRAY + attackerTeamLeader.name + "'s team"
         )
         val loseMessage = TextComponent(
-            CC.RED + "Loser: " + CC.GRAY + victimTeam.firstKey()!!.name + "'s team"
+            CC.RED + "Loser: " + CC.GRAY + victimTeam.firstKey().name + "'s team"
         )
         loseMessage.hoverEvent = HoverEvent(
             HoverEvent.Action.SHOW_TEXT,
@@ -255,17 +256,17 @@ open class TeamMatch : Match, MatchAppender {
         )
 
         for (profile in participants) {
-            profile.player.sendMessage(CC.SEPARATOR)
-            profile.player.sendMessage(Strings.MATCH_RESULTS)
-            profile.player.spigot().sendMessage(winMessage)
-            profile.player.spigot().sendMessage(loseMessage)
-            profile.player.sendMessage(CC.SEPARATOR)
+            profile.player?.sendMessage(CC.SEPARATOR)
+            profile.player?.sendMessage(Strings.MATCH_RESULTS)
+            profile.player?.spigot()?.sendMessage(winMessage)
+            profile.player?.spigot()?.sendMessage(loseMessage)
+            profile.player?.sendMessage(CC.SEPARATOR)
         }
 
         participants.remove(victim)
 
-        if (!BotAPI.INSTANCE.despawn(victim.player.uniqueId)) {
-            victim.player.removePotionEffects()
+        if (!BotAPI.INSTANCE.despawn(victim.uuid)) {
+            victim.player?.removePotionEffects()
             victim.teleportToLobby()
 
             if (victim.party != null) victim.inventory.setInventoryForParty()
@@ -276,15 +277,15 @@ open class TeamMatch : Match, MatchAppender {
 
         for (spectator in spectators) {
             val player = spectator.player
-            player.sendMessage(CC.SEPARATOR)
-            player.sendMessage(Strings.MATCH_RESULTS)
-            player.spigot().sendMessage(winMessage)
-            player.spigot().sendMessage(loseMessage)
-            player.sendMessage(CC.SEPARATOR)
+            player?.sendMessage(CC.SEPARATOR)
+            player?.sendMessage(Strings.MATCH_RESULTS)
+            player?.spigot()?.sendMessage(winMessage)
+            player?.spigot()?.sendMessage(loseMessage)
+            player?.sendMessage(CC.SEPARATOR)
             spectator.stopSpectating()
         }
 
-        clearWorld()
+        cleanup()
     }
 
     override fun getTeam(profile: Profile, alive: Boolean): ProfileList {
@@ -295,24 +296,38 @@ open class TeamMatch : Match, MatchAppender {
         return profileSet.alive()
     }
 
-    override fun getOpponent(p: Profile): Profile {
+    override fun getOpponent(p: Profile): Profile? {
         return if (team1Players.all().contains(p))
-            team2Players.firstKey()!!
-        else
-            team1Players.firstKey()!!
+            team2Players.firstKey()
+        else if (team1Players.isNotEmpty())
+            team1Players.firstKey()
+        else null
+    }
+
+    override fun cleanup() {
+        super.cleanup()
+        team1Players.clear()
+        team2Players.clear()
+        team1InventoryStatsMenus.clear()
+        team2InventoryStatsMenus.clear()
+        team1HitCount = 0
+        team2HitCount = 0
+        team1RequiredHitCount = 0
+        team2RequiredHitCount = 0
+        nametagGroups = null
     }
 
     private fun attackerEndMatch(attacker: Profile, attackerInventoryStatsMenus: MutableList<InventoryStatsMenu>) {
         stat(attacker) { collector: MatchStatisticCollector -> collector.end(true) }
 
-        stat(attacker) { collector: MatchStatisticCollector? ->
+        stat(attacker) {
             attackerInventoryStatsMenus
-                .add(setInventoryStats(collector!!))
+                .add(setInventoryStats(it))
         }
 
         pearlCooldown.cooldowns.removeInt(attacker.uuid)
-        attacker.player.heal()
-        attacker.player.removePotionEffects()
+        attacker.player?.heal()
+        attacker.player?.removePotionEffects()
         attacker.inventory.clear()
 
         attacker.scoreboard = MatchEndScoreboard.INSTANCE
@@ -327,7 +342,7 @@ open class TeamMatch : Match, MatchAppender {
 
             if (attacker.match == this) attacker.match = null
             attacker.scoreboard = DefaultScoreboard.INSTANCE
-            BotAPI.INSTANCE.despawn(attacker.player.uniqueId)
+            BotAPI.INSTANCE.despawn(attacker.uuid)
         }, POST_MATCH_TIME.toLong())
     }
 

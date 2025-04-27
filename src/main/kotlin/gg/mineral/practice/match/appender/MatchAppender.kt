@@ -8,9 +8,11 @@ import java.util.function.Consumer
 interface MatchAppender {
     fun Object2BooleanLinkedOpenHashMap<Profile>.alive(): ProfileList {
         val list = ProfileList()
-        for (e in object2BooleanEntrySet()) if (e.booleanValue) list.add(
-            e.key!!
-        )
+        for (e in object2BooleanEntrySet()) if (e.booleanValue)
+            list.add(
+                e.key
+            )
+
         return list
     }
 

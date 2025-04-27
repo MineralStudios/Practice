@@ -23,7 +23,7 @@ class ProfileDataResolver : ArgumentResolver<CommandSender, ProfileData>() {
     ): ParseResult<ProfileData> {
         if (!string.isValidUsername())
             return ParseResult.failure("Invalid username")
-        
+
         val profile = ProfileManager.getProfileData(string)
         return ParseResult.success(profile)
     }
@@ -33,5 +33,5 @@ class ProfileDataResolver : ArgumentResolver<CommandSender, ProfileData>() {
         argument: Argument<ProfileData>,
         context: SuggestionContext
     ): SuggestionResult = ProfileManager.profiles.values.stream()
-        .map { it.name }.collect(SuggestionResult.collector())
+        .map { it?.name }.collect(SuggestionResult.collector())
 }

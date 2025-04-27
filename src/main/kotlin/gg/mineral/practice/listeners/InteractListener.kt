@@ -45,7 +45,7 @@ class InteractListener : Listener {
 
         if (predicate?.test(profile) == true) return
 
-        if (profile.inMatchCountdown) {
+        if (profile.inCountdown) {
             e.isCancelled = true
             return
         }
@@ -82,16 +82,15 @@ class InteractListener : Listener {
             if (e.material == Material.MUSHROOM_SOUP) {
                 object : BukkitRunnable() {
                     override fun run() {
-                        if (profile.player.health >= 20) return
+                        profile.player?.let {
+                            if (it.health >= 20) return
 
-                        profile.inventory.itemInHand = ItemStacks.EMPTY_BOWL
+                            profile.inventory.itemInHand = ItemStacks.EMPTY_BOWL
 
-                        if (profile.player.health <= 14.0) {
-                            profile.player.health += 6.0
-                            return
+                            if (it.health <= 14.0) it.health += 6.0
+                            else it.health = 20.0
                         }
 
-                        profile.player.health = 20.0
                     }
                 }.runTaskLater(PracticePlugin.INSTANCE, 1)
                 return
