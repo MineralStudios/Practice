@@ -1,6 +1,7 @@
 package gg.mineral.practice.managers
 
 import gg.mineral.practice.arena.Arena
+import gg.mineral.practice.arena.ArenaImpl
 import gg.mineral.practice.util.config.yaml.FileConfiguration
 import it.unimi.dsi.fastutil.bytes.Byte2ObjectOpenHashMap
 import org.bukkit.configuration.ConfigurationSection
@@ -30,7 +31,7 @@ object ArenaManager {
 
         for (key in configSection.getKeys(false)) {
             if (key == null) continue
-            registerArena(Arena(key, CURRENT_ID++))
+            registerArena(ArenaImpl(key, CURRENT_ID++))
         }
     }
 }

@@ -8,12 +8,12 @@ import java.lang.ref.WeakReference
 import kotlin.math.*
 
 class SpawnLocation(
-    val blockX: Int,
-    val blockY: Int,
-    val blockZ: Int,
+    blockX: Int,
+    blockY: Int,
+    blockZ: Int,
     private var yaw: Float = 0f,
     private var pitch: Float = 0f
-) {
+) : BlockPosition(blockX, blockY, blockZ) {
     private val x: Double
         get() = blockX + 0.5
     val y: Double

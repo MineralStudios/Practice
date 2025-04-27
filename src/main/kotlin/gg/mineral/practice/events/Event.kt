@@ -9,6 +9,13 @@ import gg.mineral.practice.managers.ContestManager.registerContest
 import gg.mineral.practice.managers.ContestManager.remove
 import gg.mineral.practice.managers.GametypeManager
 import gg.mineral.practice.managers.ProfileManager.broadcast
+import gg.mineral.api.collection.GlueList
+import gg.mineral.practice.PracticePlugin
+import gg.mineral.practice.arena.EventArena
+import gg.mineral.practice.entity.Profile
+import gg.mineral.practice.managers.ArenaManager.arenas
+import gg.mineral.practice.managers.EventManager
+import gg.mineral.practice.managers.ProfileManager
 import gg.mineral.practice.match.EventMatch
 import gg.mineral.practice.match.data.MatchData
 import gg.mineral.practice.traits.Spectatable
@@ -29,10 +36,10 @@ open class Event(
 ) : Contest(hostName, false),
     Spectatable {
     override val spectators: ProfileList = ProfileList()
-    val arena: Arena
+    val arena: EventArena
         get() {
             matchData.arenaId = matchData.gametype!!.eventArenaId
-            return ArenaManager.arenas.get(matchData.arenaId) ?: error("Arena not found")
+            return (ArenaManager.arenas.get(matchData.arenaId) as? EventArena) ?: error("Arena not found")
         }
     final override val world = arena.generate()
 

@@ -2,6 +2,7 @@ package gg.mineral.practice.gametype
 
 import gg.mineral.api.collection.GlueList
 import gg.mineral.practice.arena.Arena
+import gg.mineral.practice.arena.EventArena
 import gg.mineral.practice.entity.ExtendedProfileData
 import gg.mineral.practice.entity.Profile
 import gg.mineral.practice.entity.ProfileData
@@ -80,7 +81,7 @@ class Gametype(val name: String, val id: Byte) : QueuetypeMenuEntry {
         eloCache.defaultReturnValue(1000)
     }
 
-    fun setEventArena(arena: Arena) {
+    fun setEventArena(arena: EventArena) {
         this.eventArenaId = arena.id
         config[path + "EventArena"] = arena.name
     }

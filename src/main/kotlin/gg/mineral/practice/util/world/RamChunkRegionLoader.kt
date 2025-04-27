@@ -2,6 +2,7 @@ package gg.mineral.practice.util.world
 
 import it.unimi.dsi.fastutil.longs.Long2ObjectOpenHashMap
 import net.minecraft.server.v1_8_R3.*
+import net.minecraft.server.v1_8_R3.BlockPosition
 import java.io.File
 import net.minecraft.server.v1_8_R3.ChunkCoordIntPair.a as longHash
 

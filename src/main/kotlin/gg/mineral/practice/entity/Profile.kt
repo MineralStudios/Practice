@@ -1,6 +1,7 @@
 package gg.mineral.practice.entity
 
 import gg.mineral.practice.PracticePlugin
+import gg.mineral.practice.arena.EventArena
 import gg.mineral.practice.arena.SpectatableArena
 import gg.mineral.practice.contest.Contest
 import gg.mineral.practice.duel.DuelSettings
@@ -38,11 +39,9 @@ import gg.mineral.practice.traits.Spectatable
 import gg.mineral.practice.util.PlayerUtil
 import gg.mineral.practice.util.collection.AutoExpireList
 import gg.mineral.practice.util.collection.ProfileList
-import gg.mineral.practice.util.collection.Registry
 import gg.mineral.practice.util.messages.Message
 import gg.mineral.practice.util.messages.impl.ChatMessages
 import gg.mineral.practice.util.messages.impl.ErrorMessages
-import gg.mineral.practice.util.world.BlockData
 import it.unimi.dsi.fastutil.ints.Int2ObjectOpenHashMap
 import it.unimi.dsi.fastutil.objects.ObjectOpenHashSet
 import it.unimi.dsi.fastutil.shorts.Short2ObjectOpenHashMap
@@ -55,7 +54,6 @@ import org.bukkit.craftbukkit.v1_8_R3.entity.CraftPlayer
 import org.bukkit.entity.Player
 import org.bukkit.inventory.ItemStack
 import java.util.*
-import java.util.function.Consumer
 import net.minecraft.server.v1_8_R3.PacketPlayOutPlayerInfo as PlayerInfoPacket
 import net.minecraft.server.v1_8_R3.PacketPlayOutPlayerInfo.EnumPlayerInfoAction as InfoAction
 
@@ -156,7 +154,6 @@ class Profile(player: Player) : ExtendedProfileData(player.name, player.uniqueId
     var kitLoaded = false
     var inCountdown = false
     var ridingEntityID = -1
-    private val fakeBlocks = Registry { obj: BlockData -> obj.toString() }
     val customKits = Short2ObjectOpenHashMap<Int2ObjectOpenHashMap<Array<ItemStack?>>>()
     val visiblePlayersOnTab = ObjectOpenHashSet<UUID>()
     var spectatable: Spectatable? = null
@@ -281,21 +278,6 @@ class Profile(player: Player) : ExtendedProfileData(player.name, player.uniqueId
                         this
                     )
                 }, 0, 10
-            )
-        )
-
-        taskIds.add(
-            Bukkit.getServer().scheduler.scheduleSyncRepeatingTask(
-                PracticePlugin.INSTANCE,
-                {
-                    fakeBlocks.registeredObjects.forEach(Consumer { blockData: BlockData ->
-                        this.player?.let {
-                            blockData.update(
-                                it
-                            )
-                        }
-                    })
-                }, 0, 3
             )
         )
     }
@@ -555,9 +537,13 @@ class Profile(player: Player) : ExtendedProfileData(player.name, player.uniqueId
         spectatable?.let {
             PlayerUtil.teleport(
                 this,
-                if (it is Event) it.arena.waitingLocation.bukkit(it.world)
-                    ?: throw NullPointerException("Event arena not found")
-                else toBeSpectated.player?.location ?: throw NullPointerException("Player location not found")
+                if (it is Event) {
+                    val arena = arenas[it.eventArenaId] as? EventArena
+                    arena?.waitingLocation?.bukkit(it.world) ?: throw NullPointerException(
+                        "Event arena not found"
+                    )
+                } else
+                    toBeSpectated.player.location
             )
 
             message(

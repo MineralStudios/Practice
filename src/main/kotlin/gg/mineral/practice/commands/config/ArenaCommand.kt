@@ -6,6 +6,8 @@ import dev.rollczi.litecommands.annotations.context.Context
 import dev.rollczi.litecommands.annotations.execute.Execute
 import dev.rollczi.litecommands.annotations.permission.Permission
 import gg.mineral.practice.arena.Arena
+import gg.mineral.practice.arena.ArenaImpl
+import gg.mineral.practice.arena.EventArena
 import gg.mineral.practice.entity.appender.CommandSenderAppender
 import gg.mineral.practice.managers.ArenaManager
 import gg.mineral.practice.managers.ArenaManager.arenas
@@ -34,7 +36,7 @@ class ArenaCommand : CommandSenderAppender, LocationAppender {
             return
         }
 
-        registerArena(Arena(name, ArenaManager.CURRENT_ID++))
+        registerArena(ArenaImpl(name, ArenaManager.CURRENT_ID++))
         sender.send(ChatMessages.ARENA_CREATED.clone().replace(PLACEHOLDER, name))
     }
 
@@ -48,7 +50,7 @@ class ArenaCommand : CommandSenderAppender, LocationAppender {
         when (spawn.lowercase()) {
             "1" -> arena.location1 = location
             "2" -> arena.location2 = location
-            "waiting" -> arena.waitingLocation = location
+            "waiting" -> (arena as? EventArena)?.waitingLocation = location
             else -> {
                 sender.send(UsageMessages.ARENA_SPAWN)
                 return
@@ -56,6 +58,11 @@ class ArenaCommand : CommandSenderAppender, LocationAppender {
         }
 
         sender.send(ChatMessages.ARENA_SPAWN_SET.clone().replace(PLACEHOLDER, arena.name))
+    }
+
+    @Execute(name = "edit")
+    fun executeEdit() {
+
     }
 
     @Execute(name = "setdisplay", aliases = ["display"])
