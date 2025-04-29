@@ -98,6 +98,8 @@ object QueueSystem {
 
         if (records.playerCount() < requiredPlayers) return false
 
+        for (record in records) queueRecords.remove(record)
+
         return startMatch(queueRecord, records, teamSize).let { true }
     }
 
