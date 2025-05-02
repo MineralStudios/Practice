@@ -189,6 +189,14 @@ object QueueSystem {
         val teamB = LinkedList<Profile>()
 
         for (record in records) record.entity.profiles.let {
+            for (profile in it)
+                if (profile.player?.isOnline == false) {
+                    val queueEntry = sampleRecord.queueEntry
+                    val queueAndGametypeHash = queuetypeAndGametypeHash(queueEntry.queuetype, queueEntry.gametype)
+                    val queueRecords = queueMap[queueAndGametypeHash] ?: continue
+                    queueRecords.remove(record)
+                }
+
             if (teamA.size + it.size <= teamSize) teamA.addAll(it)
             else teamB.addAll(it)
         }
