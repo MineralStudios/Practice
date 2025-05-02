@@ -8,7 +8,7 @@ import dev.rollczi.litecommands.annotations.permission.Permission
 import gg.mineral.practice.arena.Arena
 import gg.mineral.practice.arena.EventArena
 import gg.mineral.practice.entity.Profile
-import gg.mineral.practice.entity.appender.CommandSenderAppender
+import gg.mineral.practice.entity.appender.send
 import gg.mineral.practice.gametype.Gametype
 import gg.mineral.practice.inventory.menus.GametypeArenaEnableMenu
 import gg.mineral.practice.kit.Kit
@@ -27,7 +27,7 @@ import java.util.*
 
 @Command(name = "gametype")
 @Permission("practice.config")
-class GametypeCommand : CommandSenderAppender {
+class GametypeCommand {
 
     @Execute(name = "create")
     fun executeCreate(@Context sender: CommandSender, @Arg name: String) {

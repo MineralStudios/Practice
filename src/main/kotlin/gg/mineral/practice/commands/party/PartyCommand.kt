@@ -6,7 +6,7 @@ import dev.rollczi.litecommands.annotations.context.Context
 import dev.rollczi.litecommands.annotations.execute.Execute
 import gg.mineral.practice.entity.PlayerStatus
 import gg.mineral.practice.entity.Profile
-import gg.mineral.practice.entity.appender.CommandSenderAppender
+import gg.mineral.practice.entity.appender.send
 import gg.mineral.practice.managers.ProfileManager.broadcast
 import gg.mineral.practice.party.Party
 import gg.mineral.practice.util.messages.CC
@@ -16,7 +16,7 @@ import net.md_5.bungee.api.chat.ClickEvent
 import org.bukkit.command.CommandSender
 
 @Command(name = "party", aliases = ["p"])
-class PartyCommand : CommandSenderAppender {
+class PartyCommand {
     @Execute(name = "create")
     fun executeCreate(@Context profile: Profile) {
         if (profile.playerStatus !== PlayerStatus.IDLE) return profile.message(ErrorMessages.YOU_ARE_NOT_IN_LOBBY)

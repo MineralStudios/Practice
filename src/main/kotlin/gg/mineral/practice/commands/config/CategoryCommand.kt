@@ -6,7 +6,7 @@ import dev.rollczi.litecommands.annotations.context.Context
 import dev.rollczi.litecommands.annotations.execute.Execute
 import dev.rollczi.litecommands.annotations.permission.Permission
 import gg.mineral.practice.category.Category
-import gg.mineral.practice.entity.appender.CommandSenderAppender
+import gg.mineral.practice.entity.appender.send
 import gg.mineral.practice.gametype.Gametype
 import gg.mineral.practice.managers.CategoryManager
 import gg.mineral.practice.managers.CategoryManager.categories
@@ -23,7 +23,7 @@ import java.util.*
 
 @Command(name = "category")
 @Permission("practice.config")
-class CategoryCommand : CommandSenderAppender {
+class CategoryCommand {
 
     @Execute(name = "create")
     fun executeCreate(@Context sender: CommandSender, @Arg name: String) {

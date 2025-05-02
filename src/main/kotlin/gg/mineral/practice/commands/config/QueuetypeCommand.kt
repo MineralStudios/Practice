@@ -6,7 +6,7 @@ import dev.rollczi.litecommands.annotations.context.Context
 import dev.rollczi.litecommands.annotations.execute.Execute
 import dev.rollczi.litecommands.annotations.permission.Permission
 import gg.mineral.practice.entity.Profile
-import gg.mineral.practice.entity.appender.CommandSenderAppender
+import gg.mineral.practice.entity.appender.send
 import gg.mineral.practice.inventory.menus.QueuetypeArenaEnableMenu
 import gg.mineral.practice.managers.QueuetypeManager
 import gg.mineral.practice.managers.QueuetypeManager.getQueuetypeByName
@@ -24,7 +24,7 @@ import java.util.*
 
 @Command(name = "queuetype")
 @Permission("practice.config")
-class QueuetypeCommand : CommandSenderAppender {
+class QueuetypeCommand {
 
     @Execute(name = "create")
     fun executeCreate(@Context sender: CommandSender, @Arg name: String) {

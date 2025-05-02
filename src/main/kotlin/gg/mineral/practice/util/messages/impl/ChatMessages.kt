@@ -22,6 +22,15 @@ object ChatMessages {
         .highlightText(CC.GOLD, "%arena%", "the item in your hand")
     val ARENA_DELETED: ChatMessage = ChatMessage("The %arena% arena has been deleted.", CC.YELLOW)
         .highlightText(CC.GOLD, "%arena%")
+    val ARENA_EDITING: ChatMessage = ChatMessage(
+        "You are now editing the %arena% arena.",
+        CC.YELLOW
+    )
+        .highlightText(CC.GOLD, "%arena%")
+    val ARENA_NOT_EDITING: ChatMessage = ChatMessage(
+        "You are no longer editing an arena.",
+        CC.YELLOW
+    )
     val CATEGORY_CREATED: ChatMessage = ChatMessage(
         "The %category% category has been created.",
         CC.YELLOW
@@ -503,6 +512,10 @@ object ChatMessages {
     )
     val ARENA_LIST: ChatMessage = ListElementMessage(
         "/arena list",
+        CC.SECONDARY
+    )
+    val ARENA_EDIT: ChatMessage = ListElementMessage(
+        "/arena edit <Arena>",
         CC.SECONDARY
     )
     val ARENA_TP: ChatMessage = ListElementMessage(

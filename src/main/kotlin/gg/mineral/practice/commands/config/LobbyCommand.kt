@@ -4,7 +4,7 @@ import dev.rollczi.litecommands.annotations.command.Command
 import dev.rollczi.litecommands.annotations.context.Context
 import dev.rollczi.litecommands.annotations.execute.Execute
 import dev.rollczi.litecommands.annotations.permission.Permission
-import gg.mineral.practice.entity.appender.CommandSenderAppender
+import gg.mineral.practice.entity.appender.send
 import gg.mineral.practice.managers.ProfileManager
 import gg.mineral.practice.util.PlayerUtil
 import gg.mineral.practice.util.messages.impl.ChatMessages
@@ -15,7 +15,7 @@ import org.bukkit.entity.Player
 
 @Command(name = "lobby")
 @Permission("practice.config")
-class LobbyCommand : CommandSenderAppender {
+class LobbyCommand {
     @Execute
     fun execute(@Context sender: CommandSender, @Context location: SpawnLocation) {
         ProfileManager.spawnLocation = location

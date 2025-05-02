@@ -8,7 +8,8 @@ import dev.rollczi.litecommands.annotations.permission.Permission
 import gg.mineral.practice.arena.Arena
 import gg.mineral.practice.arena.ArenaImpl
 import gg.mineral.practice.arena.EventArena
-import gg.mineral.practice.entity.appender.CommandSenderAppender
+import gg.mineral.practice.entity.Profile
+import gg.mineral.practice.entity.appender.send
 import gg.mineral.practice.managers.ArenaManager
 import gg.mineral.practice.managers.ArenaManager.arenas
 import gg.mineral.practice.managers.ArenaManager.getArenaByName
@@ -20,7 +21,6 @@ import gg.mineral.practice.util.messages.impl.ChatMessages
 import gg.mineral.practice.util.messages.impl.ErrorMessages
 import gg.mineral.practice.util.messages.impl.UsageMessages
 import gg.mineral.practice.util.world.SpawnLocation
-import gg.mineral.practice.util.world.appender.LocationAppender
 import org.bukkit.command.CommandSender
 import org.bukkit.craftbukkit.v1_8_R3.entity.CraftPlayer
 import org.bukkit.entity.Player
@@ -28,7 +28,7 @@ import java.util.*
 
 @Command(name = "arena")
 @Permission("practice.config")
-class ArenaCommand : CommandSenderAppender, LocationAppender {
+class ArenaCommand {
     @Execute(name = "create")
     fun executeCreate(@Context sender: CommandSender, @Arg name: String) {
         if (getArenaByName(name) != null) {
@@ -61,8 +61,14 @@ class ArenaCommand : CommandSenderAppender, LocationAppender {
     }
 
     @Execute(name = "edit")
-    fun executeEdit() {
+    fun executeEdit(@Context sender: Profile, @Arg arenaOptional: Optional<Arena>) {
+        val arena = arenaOptional.orElse(null)
 
+        sender.editingArena = arena
+
+        if (arena == null) return sender.message(ChatMessages.ARENA_NOT_EDITING)
+
+        sender.message(ChatMessages.ARENA_EDITING.clone().replace(PLACEHOLDER, arena.name))
     }
 
     @Execute(name = "setdisplay", aliases = ["display"])

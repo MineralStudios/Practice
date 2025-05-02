@@ -1,9 +1,12 @@
 package gg.mineral.practice.listeners
 
+import gg.mineral.practice.arena.BuildArena
 import gg.mineral.practice.entity.PlayerStatus
 import gg.mineral.practice.entity.Profile
 import gg.mineral.practice.managers.ProfileManager.getProfile
 import gg.mineral.practice.util.messages.impl.ErrorMessages
+import gg.mineral.practice.util.world.BlockData
+import gg.mineral.practice.util.world.appender.toBlockPosition
 import org.bukkit.GameMode
 import org.bukkit.Material
 import org.bukkit.event.EventHandler
@@ -21,9 +24,17 @@ class BuildListener : Listener {
     fun onBlockBreak(e: BlockBreakEvent) {
         val profile = getProfile(
             e.player.uniqueId
-        ) { p: Profile -> p.playerStatus === PlayerStatus.FIGHTING }
+        )
 
-        if (profile == null) {
+        (profile?.editingArena as? BuildArena)?.let {
+            e.isCancelled = false
+            val newList = it.breakableBlockLocations.toMutableList()
+            newList.removeIf { data -> data.location.isLocation(e.block.location) }
+            it.breakableBlockLocations = newList
+            return
+        }
+
+        if (profile == null || profile.playerStatus !== PlayerStatus.FIGHTING) {
             e.isCancelled = !(e.player.isOp && e.player.gameMode == GameMode.CREATIVE)
             return
         }
@@ -52,10 +63,19 @@ class BuildListener : Listener {
     fun onBlockPlace(e: BlockPlaceEvent) {
         val profile = getProfile(
             e.player.uniqueId
-        ) { p: Profile -> p.playerStatus === PlayerStatus.FIGHTING }
+        )
+
+        (profile?.editingArena as? BuildArena)?.let {
+            e.isCancelled = false
+            val newList = it.breakableBlockLocations.toMutableList()
+            newList.add(BlockData(e.blockPlaced.location.toBlockPosition(), e.blockPlaced.type, e.blockPlaced.data))
+            it.breakableBlockLocations = newList
+            return
+        }
+
         val canPlace = e.player.isOp && e.player.gameMode == GameMode.CREATIVE
 
-        if (profile == null) {
+        if (profile == null || profile.playerStatus !== PlayerStatus.FIGHTING) {
             e.isCancelled = !canPlace
             return
         }

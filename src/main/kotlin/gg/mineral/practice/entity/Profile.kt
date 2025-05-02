@@ -1,10 +1,11 @@
 package gg.mineral.practice.entity
 
 import gg.mineral.practice.PracticePlugin
+import gg.mineral.practice.arena.Arena
 import gg.mineral.practice.arena.SpectatableArena
 import gg.mineral.practice.contest.Contest
 import gg.mineral.practice.duel.DuelSettings
-import gg.mineral.practice.entity.appender.CommandSenderAppender
+import gg.mineral.practice.entity.appender.send
 import gg.mineral.practice.events.Event
 import gg.mineral.practice.gametype.Gametype
 import gg.mineral.practice.inventory.Menu
@@ -57,7 +58,7 @@ import net.minecraft.server.v1_8_R3.PacketPlayOutPlayerInfo as PlayerInfoPacket
 import net.minecraft.server.v1_8_R3.PacketPlayOutPlayerInfo.EnumPlayerInfoAction as InfoAction
 
 class Profile(player: Player) : ExtendedProfileData(player.name, player.uniqueId),
-    QueuedEntity, CommandSenderAppender {
+    QueuedEntity {
     override val profiles = LinkedList(listOf(this))
     private var nameCache = name
     override val name: String
@@ -149,6 +150,7 @@ class Profile(player: Player) : ExtendedProfileData(player.name, player.uniqueId
             }
             field = value
         }
+    var editingArena: Arena? = null
     var killer: Profile? = null
     var kitLoaded = false
     var inCountdown = false

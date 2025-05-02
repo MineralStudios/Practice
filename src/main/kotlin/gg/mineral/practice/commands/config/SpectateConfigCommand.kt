@@ -5,7 +5,7 @@ import dev.rollczi.litecommands.annotations.command.Command
 import dev.rollczi.litecommands.annotations.context.Context
 import dev.rollczi.litecommands.annotations.execute.Execute
 import dev.rollczi.litecommands.annotations.permission.Permission
-import gg.mineral.practice.entity.appender.CommandSenderAppender
+import gg.mineral.practice.entity.appender.send
 import gg.mineral.practice.managers.SpectateManager
 import gg.mineral.practice.util.messages.impl.ChatMessages
 import org.bukkit.command.CommandSender
@@ -14,7 +14,7 @@ import java.util.*
 
 @Command(name = "spectateconfig", aliases = ["specconfig"])
 @Permission("practice.config")
-class SpectateConfigCommand : CommandSenderAppender {
+class SpectateConfigCommand {
 
     @Execute(name = "enable")
     fun executeEnable(@Context sender: CommandSender, @Arg toggled: Boolean) {

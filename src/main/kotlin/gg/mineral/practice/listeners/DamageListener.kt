@@ -5,7 +5,7 @@ import gg.mineral.practice.bukkit.events.PlayerDamageByProjectileEvent
 import gg.mineral.practice.bukkit.events.PlayerDamageEvent
 import gg.mineral.practice.entity.PlayerStatus
 import gg.mineral.practice.entity.Profile
-import gg.mineral.practice.entity.appender.CommandSenderAppender
+import gg.mineral.practice.entity.appender.send
 import gg.mineral.practice.managers.ProfileManager.getProfile
 import gg.mineral.practice.managers.ProfileManager.lobbyLocation
 import gg.mineral.practice.match.TeamMatch
@@ -24,7 +24,7 @@ import org.bukkit.event.entity.EntityDamageEvent
 import org.bukkit.event.entity.EntityDamageEvent.DamageCause
 import java.util.function.Predicate
 
-class DamageListener : Listener, CommandSenderAppender {
+class DamageListener : Listener {
     @EventHandler
     fun onEntityDamage(e: EntityDamageEvent) {
         if (e.entity !is Player) return

@@ -5,20 +5,20 @@ import dev.rollczi.litecommands.annotations.command.Command
 import dev.rollczi.litecommands.annotations.context.Context
 import dev.rollczi.litecommands.annotations.execute.Execute
 import dev.rollczi.litecommands.annotations.permission.Permission
-import gg.mineral.practice.entity.appender.CommandSenderAppender
+import gg.mineral.practice.entity.appender.send
 import gg.mineral.practice.managers.KitEditorManager
 import gg.mineral.practice.managers.KitEditorManager.displayItem
 import gg.mineral.practice.managers.KitEditorManager.enabled
 import gg.mineral.practice.managers.KitEditorManager.location
 import gg.mineral.practice.util.messages.impl.ChatMessages
-import gg.mineral.practice.util.world.appender.LocationAppender
+import gg.mineral.practice.util.world.appender.toSpawnLocation
 import org.bukkit.command.CommandSender
 import org.bukkit.entity.Player
 import java.util.*
 
 @Command(name = "kiteditor")
 @Permission("practice.config")
-class KitEditorCommand : CommandSenderAppender, LocationAppender {
+class KitEditorCommand {
 
     @Execute(name = "enable")
     fun executeEnable(@Context sender: CommandSender, @Arg toggled: Boolean) {
