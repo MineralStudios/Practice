@@ -1,11 +1,11 @@
 package gg.mineral.practice.scoreboard.impl
 
 import gg.mineral.practice.entity.Profile
+import gg.mineral.practice.managers.ProfileManager.getPing
 import gg.mineral.practice.match.data.MatchStatisticCollector
 import gg.mineral.practice.scoreboard.Scoreboard
 import gg.mineral.practice.scoreboard.ScoreboardHandler
 import gg.mineral.practice.util.messages.CC
-import org.bukkit.craftbukkit.v1_8_R3.entity.CraftPlayer
 
 class BoxingScoreboard : Scoreboard {
     override fun updateBoard(board: ScoreboardHandler, profile: Profile) {
@@ -36,10 +36,10 @@ class BoxingScoreboard : Scoreboard {
                 (CC.ACCENT + "Their Hits: " + CC.SECONDARY
                         + opponentHitCount),
                 (CC.ACCENT + "Your Ping: " + CC.SECONDARY
-                        + (board.player as CraftPlayer).handle.ping),
+                        + board.player.getPing()),
                 (CC.ACCENT + "Their Ping: " + CC.SECONDARY
                         + profile.match!!.getOpponent(profile)?.player
-                    ?.handle?.ping),
+                    ?.getPing()),
                 CC.SPACER,
                 CC.SECONDARY + "mineral.gg",
                 CC.BOARD_SEPARATOR
