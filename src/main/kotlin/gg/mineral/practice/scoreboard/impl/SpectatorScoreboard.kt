@@ -1,6 +1,7 @@
 package gg.mineral.practice.scoreboard.impl
 
 import gg.mineral.practice.entity.Profile
+import gg.mineral.practice.managers.ProfileManager.getPing
 import gg.mineral.practice.match.Match
 import gg.mineral.practice.match.TeamMatch
 import gg.mineral.practice.match.data.MatchStatisticCollector
@@ -82,14 +83,14 @@ class SpectatorScoreboard
                     CC.SECONDARY + profile1?.name,
                     (CC.YELLOW + " * " + CC.ACCENT + "Ping: "
                             + CC.WHITE
-                            + profile1?.player?.handle?.ping),
+                            + profile1?.player?.getPing()),
                     (CC.YELLOW + " * " + CC.ACCENT + "Hits: "
                             + CC.WHITE
                             + profile1HitCount),
                     CC.SECONDARY
                             + profile2?.name,
                     (CC.YELLOW + " * " + CC.ACCENT + "Ping: " + CC.WHITE
-                            + profile2?.player?.handle?.ping),
+                            + profile2?.player?.getPing()),
                     (CC.YELLOW + " * " + CC.ACCENT + "Hits: "
                             + CC.WHITE
                             + profile2HitCount),
@@ -104,11 +105,11 @@ class SpectatorScoreboard
                 CC.BOARD_SEPARATOR,
                 CC.SECONDARY + spectatable.profile1?.name,
                 (CC.YELLOW + " * " + CC.ACCENT + "Ping: "
-                        + CC.WHITE + spectatable.profile1?.player?.handle?.ping),
+                        + CC.WHITE + spectatable.profile1?.player?.getPing()),
                 CC.SECONDARY
                         + spectatable.profile2?.name,
                 (CC.YELLOW + " * " + CC.ACCENT + "Ping: " + CC.WHITE
-                        + spectatable.profile2?.player?.handle?.ping),
+                        + spectatable.profile2?.player?.getPing()),
                 CC.SPACER,
                 CC.SECONDARY + "mineral.gg",
                 CC.BOARD_SEPARATOR

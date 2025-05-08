@@ -1,5 +1,6 @@
 package gg.mineral.practice.entity.appender
 
+import com.github.retrooper.packetevents.PacketEvents
 import gg.mineral.bot.api.BotAPI
 import org.bukkit.Bukkit
 import org.bukkit.craftbukkit.v1_8_R3.entity.CraftPlayer
@@ -48,6 +49,18 @@ interface PlayerAppender {
         } catch (ignored: Exception) {
             Bukkit.getLogger().warning("Failed to set knockback sync for ${this.name}")
         }
+    }
+
+    fun Player.getPing(): Int {
+        try {
+            val hasPlayerData = me.caseload.knockbacksync.manager.PlayerDataManager.containsPlayerData(this.uniqueId)
+            if (hasPlayerData) {
+                val playerData = me.caseload.knockbacksync.manager.PlayerDataManager.getPlayerData(this.uniqueId)
+                if (playerData != null) return playerData.notNullPing.toInt()
+            } else return PacketEvents.getAPI().playerManager.getPing(this)
+        } catch (ignored: Exception) {
+        }
+        return PacketEvents.getAPI().playerManager.getPing(this)
     }
 
     fun Player.setBacktrack(enabled: Boolean) {
