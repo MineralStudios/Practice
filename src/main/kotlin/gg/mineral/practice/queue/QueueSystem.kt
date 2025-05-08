@@ -98,6 +98,8 @@ object QueueSystem {
 
         if (records.playerCount() < requiredPlayers) return false
 
+        for (record in records) queueRecords.remove(record)
+
         return startMatch(queueRecord, records, teamSize).let { true }
     }
 
@@ -187,6 +189,14 @@ object QueueSystem {
         val teamB = LinkedList<Profile>()
 
         for (record in records) record.entity.profiles.let {
+            for (profile in it)
+                if (profile.player?.isOnline == false) {
+                    val queueEntry = sampleRecord.queueEntry
+                    val queueAndGametypeHash = queuetypeAndGametypeHash(queueEntry.queuetype, queueEntry.gametype)
+                    val queueRecords = queueMap[queueAndGametypeHash] ?: continue
+                    queueRecords.remove(record)
+                }
+
             if (teamA.size + it.size <= teamSize) teamA.addAll(it)
             else teamB.addAll(it)
         }
