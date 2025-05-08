@@ -201,6 +201,7 @@ open class Match(
         stat(p) { it.start() }
         p.kitLoaded = false
 
+        p.player?.closeInventory()
         giveLoadoutSelection(p)
         setAttributes(p)
         setPotionEffects(p)

@@ -396,6 +396,10 @@ class Profile(player: Player) : ExtendedProfileData(player.name, player.uniqueId
         val botQueue = queuetype.botsEnabled && queueSettings.botQueue
         if (botQueue && !gametype.botsEnabled) return message(ErrorMessages.COMING_SOON)
 
+        val queueEntry = QueueSystem.getQueueEntry(this, queuetype, gametype)
+        if (queueEntry != null) return message(ErrorMessages.ALREADY_IN_QUEUE)
+        if (playerStatus == PlayerStatus.FIGHTING && match?.ended == false) return message(ErrorMessages.IN_MATCH)
+
         if (playerStatus === PlayerStatus.IDLE || playerStatus === PlayerStatus.QUEUEING || match?.ended == true) {
             if (playerStatus !== PlayerStatus.QUEUEING) {
                 playerStatus = PlayerStatus.QUEUEING

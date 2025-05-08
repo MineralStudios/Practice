@@ -4,6 +4,7 @@ import gg.mineral.practice.util.messages.ErrorMessage
 import gg.mineral.practice.util.messages.Message
 
 object ErrorMessages {
+    val ALREADY_IN_QUEUE: Message = ErrorMessage("You are already in a queue.")
     val CANNOT_FORFEIT_RANKED: Message = ErrorMessage("You can not leave ranked matches.")
 
     // Arena
@@ -85,6 +86,7 @@ object ErrorMessages {
     val PLAYER_NOT_IN_MATCH_OR_EVENT: Message = ErrorMessage(
         "That player is not in a match or event."
     )
+    val IN_MATCH: Message = ErrorMessage("You are already in a match.")
     val NOT_IN_MATCH: Message = ErrorMessage("You are not in a match.")
 
     // Inventory
