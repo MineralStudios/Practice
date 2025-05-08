@@ -45,9 +45,13 @@ class BotMatch(profile1: Profile, private val config: BotConfiguration, matchDat
 
         teleportPlayers(location1, location2)
 
-        this.clientInstance = Difficulty.spawn(config, location2)
-        PracticePlugin.INSTANCE.entryListener.addJoinListener(config.uuid) {
-            getOrCreateProfile(it).let { profile ->
+        val instanceFuture = Difficulty.spawn(config, location2)
+
+        instanceFuture.onComplete {
+            this.clientInstance = WeakReference(it)
+            val player = Bukkit.getPlayer(it.configuration.uuid) ?: error("Player not found")
+
+            getOrCreateProfile(player).let { profile ->
                 this.profile2 = profile
                 addParticipants(profile)
             }
@@ -56,6 +60,12 @@ class BotMatch(profile1: Profile, private val config: BotConfiguration, matchDat
             startCountdown()
 
             prepareForMatch(participants)
+        }
+
+        instanceFuture.onError {
+            participants.forEach { participant ->
+                end(participant)
+            }
         }
     }
 

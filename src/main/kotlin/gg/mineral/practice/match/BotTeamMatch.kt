@@ -2,9 +2,10 @@ package gg.mineral.practice.match
 
 import gg.mineral.api.collection.GlueList
 import gg.mineral.bot.ai.goal.*
+import gg.mineral.bot.api.concurrent.ListenableFuture
+import gg.mineral.bot.api.concurrent.awaitAll
 import gg.mineral.bot.api.configuration.BotConfiguration
 import gg.mineral.bot.api.instance.ClientInstance
-import gg.mineral.practice.PracticePlugin
 import gg.mineral.practice.bots.Difficulty
 import gg.mineral.practice.entity.Profile
 import gg.mineral.practice.managers.ArenaManager.arenas
@@ -12,6 +13,7 @@ import gg.mineral.practice.managers.MatchManager.registerMatch
 import gg.mineral.practice.managers.ProfileManager.getOrCreateProfile
 import gg.mineral.practice.match.data.MatchData
 import gg.mineral.practice.util.PlayerUtil
+import org.bukkit.Bukkit
 import java.lang.ref.WeakReference
 import java.util.*
 
@@ -82,31 +84,31 @@ class BotTeamMatch(
         team2Players.alive { PlayerUtil.teleport(it, location2) }
 
         var suffix = 0
+        val spawnFutures = mutableListOf<ListenableFuture<ClientInstance>>()
 
         for (config in team1Bots) {
             config.usernameSuffix = "" + (suffix++)
-            Difficulty.spawn(config, location1).let {
-                PracticePlugin.INSTANCE.entryListener.addJoinListener(config.uuid) { player ->
-                    team1Players
-                        .put(getOrCreateProfile(player), true)
-                }
-                team1BotInstances.add(it)
+            val future = Difficulty.spawn(config, location1)
+            spawnFutures += future
+            future.onComplete { instance ->
+                team1BotInstances.add(WeakReference(instance))
+                val player = Bukkit.getPlayer(instance.configuration.uuid) ?: error("Player not found")
+                team1Players.put(getOrCreateProfile(player), true)
             }
         }
 
         for (config in team2Bots) {
             config.usernameSuffix = "" + (suffix++)
-            Difficulty.spawn(config, location2).let {
-                PracticePlugin.INSTANCE.entryListener.addJoinListener(config.uuid) { player ->
-                    team2Players
-                        .put(getOrCreateProfile(player), true)
-                }
-                team2BotInstances.add(it)
+            val future = Difficulty.spawn(config, location2)
+            spawnFutures += future
+            future.onComplete { instance ->
+                team2BotInstances.add(WeakReference(instance))
+                val player = Bukkit.getPlayer(instance.configuration.uuid) ?: error("Player not found")
+                team2Players.put(getOrCreateProfile(player), true)
             }
         }
 
-        PracticePlugin.INSTANCE.entryListener.addJoinListener(arrayOf(*team1Bots.map { it.uuid }
-            .toTypedArray(), *team2Bots.map { it.uuid }.toTypedArray())) {
+        awaitAll(spawnFutures, onSuccess = {
             team1Players.alive { participants.add(it) }
             team2Players.alive { participants.add(it) }
 
@@ -130,6 +132,9 @@ class BotTeamMatch(
             }
 
             startCountdown()
-        }
+        }, onError = {
+            participants.forEach { end(it) }
+        })
     }
+
 }

@@ -1,6 +1,7 @@
 package gg.mineral.practice.bots
 
 import gg.mineral.bot.api.BotAPI
+import gg.mineral.bot.api.concurrent.ListenableFuture
 import gg.mineral.bot.api.configuration.BotConfiguration
 import gg.mineral.bot.api.entity.living.player.skin.Skins
 import gg.mineral.bot.api.instance.ClientInstance
@@ -10,7 +11,6 @@ import gg.mineral.practice.queue.QueueSettings
 import gg.mineral.practice.util.messages.CC
 import org.bukkit.Location
 import org.bukkit.World
-import java.lang.ref.WeakReference
 import java.util.*
 
 enum class Difficulty(val display: String) {
@@ -134,7 +134,7 @@ enum class Difficulty(val display: String) {
     abstract fun configEquals(botConfiguration: BotConfiguration): Boolean
 
     companion object {
-        fun spawn(config: BotConfiguration, location: Location): WeakReference<ClientInstance> {
+        fun spawn(config: BotConfiguration, location: Location): ListenableFuture<ClientInstance> {
             return BotAPI.INSTANCE.spawn(config, object : ServerLocation {
                 override val pitch: Float
                     get() = location.pitch
