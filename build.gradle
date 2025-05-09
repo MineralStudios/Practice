@@ -38,10 +38,10 @@ dependencies {
     compileOnly "gg.mineral:nametag-api:20250507-20.50.05"
     compileOnly "me.caseload.knockbacksync:bukkit:20250501-13.36.34"
     compileOnly "gg.mineral.mineralspigot:mineralspigot-server:20250507-18.30.42"
-    compileOnly "gg.mineral:bot-api:20250426-16.18.17"
+    compileOnly "gg.mineral:bot-api:20250509-00.51.27"
     compileOnly "gg.mineral:database-api:20250507-20.49.40"
     compileOnly 'de.jeezycore:jeezy-core:20250506-07.55.36'
-    compileOnly "gg.mineral:bot-intelligence:20250508-17.46.53"
+    compileOnly "gg.mineral:bot-intelligence:20250509-00.51.27"
     compileOnly 'com.github.retrooper:packetevents-spigot:2.7.0'
     compileOnly 'com.lunarclient:apollo-api:1.1.8'
     implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk8"
