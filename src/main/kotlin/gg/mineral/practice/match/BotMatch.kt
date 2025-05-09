@@ -1,9 +1,11 @@
 package gg.mineral.practice.match
 
-import gg.mineral.bot.ai.goal.*
 import gg.mineral.bot.api.BotAPI
+import gg.mineral.bot.api.behaviour.BehaviourTree
+import gg.mineral.bot.api.behaviour.node.BTNode
 import gg.mineral.bot.api.configuration.BotConfiguration
 import gg.mineral.bot.api.instance.ClientInstance
+import gg.mineral.bot.impl.behaviour.RootNode
 import gg.mineral.practice.PracticePlugin
 import gg.mineral.practice.bots.Difficulty
 import gg.mineral.practice.entity.PlayerStatus
@@ -78,18 +80,11 @@ class BotMatch(profile1: Profile, private val config: BotConfiguration, matchDat
 
         clientInstance?.get()?.let {
             it.configuration.pearlCooldown = data.pearlCooldown
-            it.startGoals(
-                ReplaceArmorGoal(it),
-                HealSoupGoal(it),
-                ThrowHealthPotGoal(it),
-                DrinkPotionGoal(it),
-                EatGappleGoal(it),
-                EatFoodGoal(it),
-                //ThrowDebuffPotGoal(it),
-                ThrowPearlGoal(it),
-                DropEmptyBowlGoal(it),
-                MeleeCombatGoal(it)
-            )
+            it.apply {
+                behaviourTree = object : BehaviourTree(this) {
+                    override val rootNode: BTNode = RootNode(this)
+                }
+            }
         } ?: onError("Client instance is null")
     }
 
