@@ -6,6 +6,7 @@ import gg.mineral.practice.entity.Profile
 import gg.mineral.practice.inventory.Interaction
 import gg.mineral.practice.managers.ProfileManager.getOrCreateProfile
 import gg.mineral.practice.managers.ProfileManager.getProfile
+import gg.mineral.practice.util.messages.impl.ErrorMessages
 import org.bukkit.Bukkit
 import org.bukkit.GameMode
 import org.bukkit.Material
@@ -81,6 +82,16 @@ class InventoryListener : Listener {
             val match = profile.match
 
             if (match != null) {
+                val droppedItem = e.itemDrop.itemStack
+                val gametype = match.data.gametype
+                
+                if (gametype?.preventSwordDropping == true && 
+                    (droppedItem.type == Material.DIAMOND_SWORD || droppedItem.type == Material.IRON_SWORD)) {
+                    e.isCancelled = true
+                    profile.message(ErrorMessages.CANNOT_DROP_SWORD_IN_MATCH)
+                    return
+                }
+                
                 match.itemRemovalQueue.add(e.itemDrop)
                 return
             }

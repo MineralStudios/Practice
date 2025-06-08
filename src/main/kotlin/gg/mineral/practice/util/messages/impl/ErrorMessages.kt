@@ -128,4 +128,5 @@ object ErrorMessages {
     val INVALID_NUMBER: Message = ErrorMessage("You did not input a valid number.")
     val COMING_SOON: Message = ErrorMessage("This feature is not yet released, it will be completed soon.")
     val RANK_REQUIRED: Message = ErrorMessage("A rank is required to access this feature.")
+    val CANNOT_DROP_SWORD_IN_MATCH: Message = ErrorMessage("You cannot drop your sword while in a match.")
 }
