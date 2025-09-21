@@ -38,6 +38,7 @@ class Gametype(val name: String, val id: Byte) : QueuetypeMenuEntry {
     var boxing by BoolProp(config, path + "Boxing", false)
     var event by BoolProp(config, path + "Event", false)
     override var botsEnabled by BoolProp(config, path + "Bots", false)
+    var preventSwordDropping by BoolProp(config, path + "PreventSwordDropping", true)
 
     // Keep private
     var inCategory by BoolProp(config, path + "InCategory", false)
