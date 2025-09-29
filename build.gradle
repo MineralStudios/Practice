@@ -46,7 +46,7 @@ dependencies {
     compileOnly 'com.lunarclient:apollo-api:1.1.8'
     implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk8"
     implementation "dev.rollczi:litecommands-bukkit:3.9.7"
-    implementation 'com.google.code.gson:gson:2.13.1'
+    implementation 'com.google.code.gson:gson:2.13.2'
     implementation "com.squareup.okhttp3:okhttp:5.1.0"
 }
 
