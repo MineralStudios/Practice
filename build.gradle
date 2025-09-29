@@ -35,10 +35,10 @@ repositories {
 }
 
 dependencies {
-    compileOnly "gg.mineral:nametag-api:20250509-09.22.40"
+    compileOnly "gg.mineral:nametag-api:20250916-12.52.56"
     compileOnly "me.caseload.knockbacksync:bukkit:20250518-04.08.04"
     compileOnly "gg.mineral.mineralspigot:mineralspigot-server:20250717-19.37.32"
-    compileOnly "gg.mineral:bot-api:20250518-13.34.18"
+    compileOnly "gg.mineral:bot-api:20250924-14.01.19"
     compileOnly "gg.mineral:database-api:20250816-17.23.52"
     compileOnly 'de.jeezycore:jeezy-core:20250509-01.06.45'
     compileOnly "gg.mineral:bot-intelligence:20250508-17.46.53"
@@ -47,7 +47,7 @@ dependencies {
     implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk8"
     implementation "dev.rollczi:litecommands-bukkit:3.9.7"
     implementation 'com.google.code.gson:gson:2.13.1'
-    implementation "com.squareup.okhttp3:okhttp:4.12.0"
+    implementation "com.squareup.okhttp3:okhttp:5.1.0"
 }
 
 /*detekt {
