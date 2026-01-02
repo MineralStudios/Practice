@@ -39,7 +39,7 @@ dependencies {
     compileOnly "me.caseload.knockbacksync:bukkit:20250518-04.08.04"
     compileOnly "gg.mineral.mineralspigot:mineralspigot-server:20250717-19.37.32"
     compileOnly "gg.mineral:bot-api:20260101-02.44.51"
-    compileOnly "gg.mineral:database-api:20250816-17.23.52"
+    compileOnly "gg.mineral:database-api:20260101-10.39.17"
     compileOnly 'de.jeezycore:jeezy-core:20250509-01.06.45'
     compileOnly "gg.mineral:bot-intelligence:20251019-18.01.48"
     compileOnly 'de.jeezycore:jeezy-core:20251009-18.04.26'
