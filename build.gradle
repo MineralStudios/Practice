@@ -42,7 +42,7 @@ dependencies {
     compileOnly "gg.mineral:database-api:20260101-10.39.17"
     compileOnly 'de.jeezycore:jeezy-core:20260102-10.02.16'
     compileOnly "gg.mineral:bot-intelligence:20260103-21.48.01"
-    compileOnly 'de.jeezycore:jeezy-core:20251009-18.04.26'
+    compileOnly 'de.jeezycore:jeezy-core:20260102-10.02.16'
     compileOnly "gg.mineral:bot-intelligence:20260103-21.48.01"
     compileOnly 'com.github.retrooper:packetevents-spigot:2.9.5'
     compileOnly 'com.lunarclient:apollo-api:1.2.1'
