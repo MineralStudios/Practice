@@ -47,7 +47,7 @@ dependencies {
     compileOnly 'com.github.retrooper:packetevents-spigot:2.9.5'
     compileOnly 'com.lunarclient:apollo-api:1.2.1'
     implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk8"
-    implementation "dev.rollczi:litecommands-bukkit:3.10.6"
+    implementation "dev.rollczi:litecommands-bukkit:3.10.9"
     implementation 'com.google.code.gson:gson:2.13.2'
     implementation "com.squareup.okhttp3:okhttp:5.3.2"
 }
