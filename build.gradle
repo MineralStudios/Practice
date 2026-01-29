@@ -40,7 +40,7 @@ dependencies {
     compileOnly "gg.mineral.mineralspigot:mineralspigot-server:20250717-19.37.32"
     compileOnly "gg.mineral:bot-api:20260103-21.48.01"
     compileOnly "gg.mineral:database-api:20260101-10.39.17"
-    compileOnly 'de.jeezycore:jeezy-core:20250509-01.06.45'
+    compileOnly 'de.jeezycore:jeezy-core:20260102-10.02.16'
     compileOnly "gg.mineral:bot-intelligence:20260103-21.48.01"
     compileOnly 'de.jeezycore:jeezy-core:20251009-18.04.26'
     compileOnly "gg.mineral:bot-intelligence:20260103-21.48.01"
